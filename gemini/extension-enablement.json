@@ -1,0 +1,32 @@
+{
+  "context7": {
+    "overrides": [
+      "/Users/*"
+    ]
+  },
+  "conductor": {
+    "overrides": [
+      "/Users/*"
+    ]
+  },
+  "nanobanana": {
+    "overrides": [
+      "/Users/*"
+    ]
+  },
+  "gemini-cli-jules": {
+    "overrides": [
+      "/Users/*"
+    ]
+  },
+  "code-review": {
+    "overrides": [
+      "/Users/*"
+    ]
+  },
+  "flutter": {
+    "overrides": [
+      "/Users/*"
+    ]
+  }
+}
