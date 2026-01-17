@@ -71,7 +71,7 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 **Execution Flow:**
 1. Store analysis request in `$PROMPT` environment variable
 2. Execute 3 models sequentially:
-   - `copilot --model gpt-5.1-codex -p "$PROMPT"`
+   - `copilot --model gpt-5.2-codex -p "$PROMPT"`
    - `copilot --model claude-opus-4.5 -p "$PROMPT"`
    - `copilot --model gemini-3-pro-preview -p "$PROMPT"`
 3. Display each model's response with Claude's commentary
