@@ -1,5 +1,5 @@
 ---
-name: agents copy
+name: agents.md copy
 description: If the CLAUDE.md file has been created or updated, replicate it to AGETNS.md in the same path
 ---
 
