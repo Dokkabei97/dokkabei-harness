@@ -1,0 +1,196 @@
+name = "analyze"
+description = "Comprehensive code analysis with optional AI collaboration (Gemini/Copilot)"
+category = "utility"
+complexity = "basic"
+mcp_servers = []
+personas = []
+
+[triggers]
+events = [
+   "Code quality assessment requests for projects or specific components",
+   "Security vulnerability scanning and compliance validation needs",
+   "Performance bottleneck identification and optimization planning",
+   "Architecture review and technical debt assessment requirements",
+   "AI-assisted collaborative analysis with Gemini or Copilot"
+]
+
+[usage]
+syntax = "/analyze [target] [options]"
+description = "Execute code analysis and quality assessment."
+
+[usage.options]
+focus = { type = "enum", values = ["quality", "security", "performance", "architecture"], description = "Analysis domain" }
+depth = { type = "enum", values = ["quick", "deep"], description = "Analysis depth" }
+format = { type = "enum", values = ["text", "json", "report"], description = "Output format" }
+with = { type = "enum", values = ["copilot", "gemini"], description = "AI collaboration mode" }
+
+[behavior]
+
+[behavior.standard_flow]
+steps = [
+   "Discover: Categorize source files using language detection and project analysis",
+   "Scan: Apply domain-specific analysis techniques and pattern matching",
+   "Evaluate: Generate prioritized findings with severity ratings and impact assessment",
+   "Recommend: Create actionable recommendations with implementation guidance",
+   "Report: Present comprehensive analysis with metrics and improvement roadmap"
+]
+
+[behavior.ai_collaboration_flow]
+condition = "Executed when '--with' option is specified"
+steps = [
+   "Prepare: Build analysis prompt from target and options",
+   "Execute AI Analysis: Run external AI CLI tool",
+   "Compare: Compare Claude's analysis with AI response",
+   "Synthesize: Select optimal findings and recommendations",
+   "Report: Present unified analysis report with source attribution"
+]
+
+[integrations]
+
+[integrations.gemini]
+flag = "--with gemini"
+description = "Collaborates with Gemini CLI for analysis comparison."
+
+execution_flow = [
+   "Store analysis request in $PROMPT environment variable",
+   "Execute: gemini -m gemini-3-pro-preview -p \"$PROMPT\" --output-format stream-json",
+   "Display Gemini response with Claude's commentary",
+   "Compare findings and recommendations",
+   "Select optimal solution based on combined analysis"
+]
+
+prompt_template = """
+PROMPT="Analyze the following code for [focus area]: [target path]
+Provide findings with severity ratings and actionable recommendations.
+Focus on: [--focus value or 'comprehensive analysis']
+Depth: [--depth value or 'deep']"
+"""
+
+[integrations.copilot]
+flag = "--with copilot"
+description = "Collaborates with Copilot CLI using multiple models for comprehensive analysis."
+
+execution_flow = [
+   "Store analysis request in $PROMPT environment variable",
+   "Execute model 1: copilot --model gpt-5.2-codex -p \"$PROMPT\"",
+   "Execute model 2: copilot --model claude-opus-4.5 -p \"$PROMPT\"",
+   "Execute model 3: copilot --model gemini-3-pro-preview -p \"$PROMPT\"",
+   "Display each model's response with Claude's commentary",
+   "Compare all results and identify consensus/divergence",
+   "Select optimal solution based on multi-model analysis",
+   "Retry execution if copilot fails"
+]
+
+prompt_template = """
+PROMPT="Perform code analysis on: [target path]
+Analysis type: [--focus value or 'comprehensive']
+Depth level: [--depth value or 'deep']
+Provide:
+- Severity-rated findings
+- Actionable recommendations
+- Code examples where applicable"
+"""
+
+[tool_coordination]
+glob = "File discovery and project structure analysis"
+grep = "Pattern analysis and code search operations"
+read = "Source code inspection and configuration analysis"
+bash = "External analysis tool execution (Gemini CLI, Copilot CLI)"
+write = "Report generation and metrics documentation"
+
+[patterns]
+domain_analysis = "Quality/Security/Performance/Architecture specialized assessment"
+pattern_recognition = "Language detection with appropriate analysis techniques"
+severity_assessment = "Issue classification with prioritized recommendations"
+report_generation = "Analysis results as structured documentation"
+ai_collaboration = "Multi-model comparison for enhanced accuracy"
+
+[[examples]]
+command = "/analyze"
+description = "Multi-domain analysis of entire project. Generates comprehensive report with key findings and roadmap."
+category = "Comprehensive Project Analysis"
+
+[[examples]]
+command = "/analyze src/auth --focus security --depth deep"
+description = "Deep security analysis of authentication components. Vulnerability assessment with detailed remediation guidance."
+category = "Focused Security Assessment"
+
+[[examples]]
+command = "/analyze --focus performance --format report"
+description = "Performance bottleneck identification. Generates report with optimization recommendations."
+category = "Performance Optimization Analysis"
+
+[[examples]]
+command = "/analyze src/components --focus quality --depth quick"
+description = "Rapid quality assessment of component directory. Identifies code smells and maintainability issues."
+category = "Quick Quality Check"
+
+[[examples]]
+command = "/analyze src --with gemini --focus security"
+description = "Security analysis with Gemini collaboration. Compares Claude and Gemini findings for comprehensive coverage."
+category = "AI-Assisted Analysis with Gemini"
+
+[[examples]]
+command = "/analyze --with copilot --depth deep"
+description = "Deep analysis with Copilot multi-model comparison. Aggregates insights from GPT-5.1, Claude, and Gemini via Copilot."
+category = "AI-Assisted Analysis with Copilot"
+
+[[examples]]
+command = "/analyze src/api --focus architecture --with gemini --format report"
+description = "Architecture review with Gemini collaboration. Generates detailed report comparing both analyses."
+category = "Combined Options"
+
+[output_formats]
+
+[output_formats.standard]
+template = """
+## Analysis Summary
+- Target: [path]
+- Focus: [domain]
+- Depth: [level]
+- Files Analyzed: [count]
+
+## Findings
+### Critical (X issues)
+- [Finding description] - [File:Line]
+
+### High (X issues)
+...
+
+## Recommendations
+1. [Priority] [Recommendation]
+   - Impact: [description]
+   - Effort: [estimate]
+"""
+
+[output_formats.ai_collaboration]
+template = """
+## Analysis Summary
+[Standard summary]
+
+## Claude Analysis
+[Claude's findings and recommendations]
+
+## [Gemini/Copilot] Analysis
+[External AI findings]
+
+## Comparison & Synthesis
+- Consensus: [agreed findings]
+- Divergence: [different perspectives]
+- Selected Approach: [optimal recommendation with rationale]
+"""
+
+[boundaries]
+will = [
+   "Perform comprehensive static code analysis across multiple domains",
+   "Generate severity-rated findings with actionable recommendations",
+   "Execute AI collaboration via Gemini or Copilot CLI when requested",
+   "Provide detailed reports with metrics and improvement guidance",
+   "Compare and synthesize multi-source analysis results"
+]
+will_not = [
+   "Execute dynamic analysis requiring code compilation or runtime",
+   "Modify source code or apply fixes without explicit user consent",
+   "Analyze external dependencies beyond import and usage patterns",
+   "Use both '--with copilot' and '--with gemini' simultaneously"
+]
