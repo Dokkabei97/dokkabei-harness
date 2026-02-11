@@ -1,5 +1,5 @@
 ---
-name: arch-review
+name: arch-review-guide
 description: Use this skill when reviewing or working on project architecture. Provides quick reference for architecture violation detection, dependency direction rules, and structural health assessment across Kotlin, Python, and TypeScript/JavaScript.
 ---
 

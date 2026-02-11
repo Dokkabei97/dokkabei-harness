@@ -288,5 +288,5 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 - `/analyze --focus architecture` - Broader architecture analysis (multi-domain)
 - `/arch-review` - Structural review with violation checklist (this command)
 - `arch-reviewer` agent - The underlying agent with full analysis methodology
-- `skills/arch-review/SKILL.md` - Quick reference for common architecture patterns
+- `skills/arch-review-guide/SKILL.md` - Quick reference for common architecture patterns
 - `/perf-review` - Performance-focused code review (complementary)

@@ -1,5 +1,5 @@
 ---
-name: perf-review
+name: perf-review-guide
 description: Use this skill when reviewing or writing performance-sensitive code. Provides quick reference for common performance anti-patterns and optimization strategies across Kotlin, Python, and TypeScript/JavaScript.
 ---
 

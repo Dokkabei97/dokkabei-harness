@@ -260,4 +260,4 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 - `/analyze --focus performance` - Broader performance analysis (architecture-level)
 - `/perf-review` - Code-level anti-pattern detection (this command)
 - `perf-reviewer` agent - The underlying agent with full checklist knowledge
-- `skills/perf-review/SKILL.md` - Quick reference for common patterns
+- `skills/perf-review-guide/SKILL.md` - Quick reference for common patterns
