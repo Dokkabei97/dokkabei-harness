@@ -24,7 +24,7 @@ Options:
   --focus quality|security|performance|architecture  Analysis domain
   --depth quick|deep                                 Analysis depth
   --format text|json|report                          Output format
-  --with copilot|gemini                              AI collaboration mode
+  --with copilot|gemini|codex                        AI collaboration mode
 ```
 
 ## Behavioral Flow
@@ -78,6 +78,27 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 4. Compare all results and identify consensus/divergence
 5. Select optimal solution based on multi-model analysis
 6. If copilot fails, retry execution
+
+**Prompt Template:**
+```bash
+PROMPT="Perform code analysis on: [target path]
+Analysis type: [--focus value or 'comprehensive']
+Depth level: [--depth value or 'deep']
+Provide:
+- Severity-rated findings
+- Actionable recommendations
+- Code examples where applicable"
+```
+
+### --with codex
+Collaborates with Codex CLI for analysis comparison.
+
+**Execution Flow:**
+1. Store analysis request in `$PROMPT` environment variable
+2. Execute: `codex --model gpt-5.3-codex-spark xhigh exec "$PROMPT"`
+3. Display Codex response with Claude's commentary
+4. Compare findings and recommendations
+5. Select optimal solution based on combined analysis
 
 **Prompt Template:**
 ```bash
@@ -148,6 +169,13 @@ Provide:
 # Aggregates insights from GPT-5.1, Claude, and Gemini via Copilot
 ```
 
+### AI-Assisted Analysis with Codex
+```
+/analyze src --with codex --focus performance
+# Performance analysis with Codex collaboration
+# Compares Claude and Codex findings for comprehensive coverage
+```
+
 ### Combined Options
 ```
 /analyze src/api --focus architecture --with gemini --format report
@@ -208,4 +236,4 @@ Provide:
 - Execute dynamic analysis requiring code compilation or runtime
 - Modify source code or apply fixes without explicit user consent
 - Analyze external dependencies beyond import and usage patterns
-- Use both `--with copilot` and `--with gemini` simultaneously
+- Use multiple `--with` options simultaneously (copilot/gemini/codex)

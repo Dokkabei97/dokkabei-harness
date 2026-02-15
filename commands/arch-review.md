@@ -24,7 +24,7 @@ personas: []
 Options:
   --focus structure|dependency|naming|data|msa|all  Analysis domain (default: all)
   --depth quick|deep                                 Analysis depth (default: deep)
-  --with copilot|gemini                              AI collaboration mode
+  --with copilot|gemini|codex                        AI collaboration mode
 ```
 
 ## Behavioral Flow
@@ -105,6 +105,38 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 5. Select optimal findings based on multi-model analysis
 6. If copilot fails, retry execution
 
+### --with codex
+Collaborates with Codex CLI for architecture analysis comparison.
+
+**Execution Flow:**
+1. Store analysis request in `$PROMPT` environment variable
+2. Execute: `codex --model gpt-5.3-codex-spark xhigh exec "$PROMPT"`
+3. Display Codex response with Claude's commentary
+4. Compare findings and recommendations
+5. Select optimal solution based on combined analysis
+
+**Prompt Template:**
+```bash
+PROMPT="Perform an architecture review on: [target path]
+Focus area: [--focus value or 'all steps']
+Depth: [--depth value or 'deep']
+
+Analyze for:
+- Project structure and module composition
+- Dependency direction compliance (inner vs outer layers)
+- Layer violations (domain depending on infrastructure)
+- Package structure and naming convention consistency
+- DTO/Entity separation maturity
+- MSA patterns and distributed system indicators
+- Architecture health score (0-100)
+
+For each violation provide:
+- Violation ID and severity (Critical/High/Medium/Low)
+- Bad code example
+- Good code example
+- Architectural impact description"
+```
+
 ## Tool Coordination
 - **Glob**: Project structure discovery, build config detection, directory pattern analysis
 - **Grep**: Import statement analysis, violation pattern scanning, architecture marker detection
@@ -181,6 +213,13 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 /arch-review src --with gemini --focus dependency
 # Dependency analysis with Gemini collaboration
 # Compares Claude and Gemini findings for comprehensive coverage
+```
+
+### AI-Assisted Review with Codex
+```
+/arch-review src --with codex --focus structure
+# Structure analysis with Codex collaboration
+# Compares Claude and Codex findings for comprehensive coverage
 ```
 
 ### AI-Assisted Review with Copilot
@@ -281,7 +320,7 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 - Force a specific architecture style (detect and validate, not prescribe)
 - Run actual build/compile processes
 - Guarantee specific health scores (provides objective assessment)
-- Use both `--with copilot` and `--with gemini` simultaneously
+- Use multiple `--with` options simultaneously (copilot/gemini/codex)
 
 ## Related
 

@@ -25,7 +25,7 @@ Options:
   --focus memory|io|concurrency|serialization|all  Analysis domain (default: all)
   --lang kotlin|python|ts|all                      Target language (default: auto-detect)
   --depth quick|deep                               Analysis depth (default: deep)
-  --with copilot|gemini                            AI collaboration mode
+  --with copilot|gemini|codex                      AI collaboration mode
 ```
 
 ## Behavioral Flow
@@ -105,6 +105,39 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 5. Select optimal findings based on multi-model analysis
 6. If copilot fails, retry execution
 
+### --with codex
+Collaborates with Codex CLI for performance analysis comparison.
+
+**Execution Flow:**
+1. Store analysis request in `$PROMPT` environment variable
+2. Execute: `codex --model gpt-5.3-codex-spark xhigh exec "$PROMPT"`
+3. Display Codex response with Claude's commentary
+4. Compare findings and recommendations
+5. Select optimal solution based on combined analysis
+
+**Prompt Template:**
+```bash
+PROMPT="Perform a performance code review on: [target path]
+Language: [--lang value or 'auto-detect']
+Focus area: [--focus value or 'all categories']
+Depth: [--depth value or 'deep']
+
+Analyze for:
+- Object creation and memory anti-patterns
+- I/O and network bottlenecks
+- Concurrency issues
+- Serialization overhead
+- Collection misuse
+- Caching opportunities
+- Logging performance impact
+
+For each finding provide:
+- Severity (Critical/High/Medium/Low)
+- Bad code example
+- Good code example
+- Estimated improvement impact"
+```
+
 ## Tool Coordination
 - **Glob**: File discovery and language detection
 - **Grep**: Anti-pattern scanning using known regex patterns
@@ -167,6 +200,13 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 /perf-review src --with gemini --focus concurrency
 # Concurrency analysis with Gemini collaboration
 # Compares Claude and Gemini findings for comprehensive coverage
+```
+
+### AI-Assisted Review with Codex
+```
+/perf-review src --with codex --focus memory
+# Memory analysis with Codex collaboration
+# Compares Claude and Codex findings for comprehensive coverage
 ```
 
 ### AI-Assisted Review with Copilot
@@ -253,7 +293,7 @@ Collaborates with Copilot CLI using multiple models for comprehensive analysis.
 - Run actual profilers or benchmarks (suggests commands to run)
 - Analyze compiled/binary code
 - Guarantee specific performance numbers (provides estimates)
-- Use both `--with copilot` and `--with gemini` simultaneously
+- Use multiple `--with` options simultaneously (copilot/gemini/codex)
 
 ## Related
 
