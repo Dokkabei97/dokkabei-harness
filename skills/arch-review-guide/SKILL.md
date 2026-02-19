@@ -206,11 +206,11 @@ Rating:
 
 ## Detailed Guide
 
-상세한 분석 방법론, Violation별 Bad/Good 코드 예제, Detection Pattern은 아래 가이드를 참조합니다:
+For detailed analysis methodology, Bad/Good code examples per violation, and detection patterns, refer to the guide below:
 
-- **[Architecture Review Guide](./guide/arch-review-guide.md)** - 6-Step 분석 워크플로우, Violation Checklist (V-C1~V-L3), Health Score 계산 방법 등 전체 방법론
+- **[Architecture Review Guide](./guide/arch-review-guide.md)** - Full methodology including 6-step analysis workflow, Violation Checklist (V-C1~V-L3), and Health Score calculation
 
-이 스킬(SKILL.md)은 빠른 참조용이며, 심층 분석 시 가이드의 Detection Pattern과 코드 예제를 활용합니다.
+This skill (SKILL.md) serves as a quick reference. For in-depth analysis, use the guide's detection patterns and code examples.
 
 ## Integration with Other Tools
 

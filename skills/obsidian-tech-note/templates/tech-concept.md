@@ -3,7 +3,7 @@ title: "<% tp.file.title %>"
 created: "<% tp.date.now('YYYY-MM-DD') %>"
 tags:
   - concept
-  - <% tp.system.prompt("기술 스택? (예: react, docker, kubernetes)") || "untagged" %>
+  - <% tp.system.prompt("Tech stack? (e.g., react, docker, kubernetes)") || "untagged" %>
 category: "concept"
 status: "seedling"
 difficulty: ""
@@ -13,98 +13,98 @@ related: []
 
 # <% tp.file.title %>
 
-> [!abstract] 한줄 요약
+> [!abstract] One-line Summary
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 개념 정의
+## 1. Concept Definition
 
-### 무엇인가?
-
-
-### 왜 필요한가?
+### What is it?
 
 
-### 어디에 사용되는가?
+### Why is it needed?
+
+
+### Where is it used?
 
 
 ---
 
-## 2. 핵심 원리 / 동작 방식
+## 2. Core Principles / How It Works
 
-### 동작 흐름
+### Operational Flow
 
 1.
 2.
 3.
 
-### 주요 구성 요소
+### Key Components
 
-| 구성 요소 | 역할 | 비고 |
-|----------|------|------|
-|          |      |      |
-|          |      |      |
+| Component | Role | Notes |
+|-----------|------|-------|
+|           |      |       |
+|           |      |       |
 
-### 핵심 키워드
+### Key Terms
 
-- **키워드1**: 설명
-- **키워드2**: 설명
-- **키워드3**: 설명
-
----
-
-## 3. 코드 예제
-
-### 기본 사용법
-
-```
-// 기본 사용 예제
-```
-
-### 실전 활용
-
-```
-// 실전 활용 예제
-```
-
-> [!tip] 핵심 포인트
-> 코드에서 주목할 부분을 기록합니다.
+- **Term1**: Description
+- **Term2**: Description
+- **Term3**: Description
 
 ---
 
-<!-- 선택 섹션: 필요시 주석 해제 후 작성 -->
+## 3. Code Examples
+
+### Basic Usage
+
+```
+// Basic usage example
+```
+
+### Practical Application
+
+```
+// Practical application example
+```
+
+> [!tip] Key Takeaway
+> Note the important parts of the code here.
+
+---
+
+<!-- Optional sections: uncomment and fill in as needed -->
 
 <!--
-## 4. 장점과 한계
+## 4. Advantages and Limitations
 
-### 장점
+### Advantages
 -
 
-### 한계 / 주의사항
+### Limitations / Caveats
 -
 -->
 
 <!--
-## 5. 관련 개념
+## 5. Related Concepts
 
-### 연관 노트
+### Related Notes
 - [[]]
 
-### 비교 대상
-- vs [[]] : 차이점 요약
+### Comparisons
+- vs [[]] : Summary of differences
 
-### 참고 자료
-- [공식 문서]()
-- [관련 아티클]()
+### References
+- [Official Documentation]()
+- [Related Article]()
 -->
 
 ---
 
-## 학습 체크리스트
+## Study Checklist
 
-- [ ] 개념 정의 및 핵심 원리 이해
-- [ ] 코드 예제 직접 실행
-- [ ] 관련 개념과의 차이점 정리
-- [ ] 실제 프로젝트에 적용 가능 시나리오 구상
-- [ ] 1주 후 복습 [scheduled:: <% tp.date.now("YYYY-MM-DD", 7) %>]
+- [ ] Understand concept definition and core principles
+- [ ] Run code examples hands-on
+- [ ] Summarize differences with related concepts
+- [ ] Brainstorm real-project application scenarios
+- [ ] Review after 1 week [scheduled:: <% tp.date.now("YYYY-MM-DD", 7) %>]

@@ -1,44 +1,44 @@
 ---
-title: "<% tp.system.prompt('MOC 주제명? (예: Frontend, Backend, DevOps)') || 'Untitled' %> MOC"
+title: "<% tp.system.prompt('MOC topic name? (e.g., Frontend, Backend, DevOps)') || 'Untitled' %> MOC"
 created: "<% tp.date.now('YYYY-MM-DD') %>"
 tags:
   - moc
 category: "moc"
 status: "growing"
-moc-topic: "<% tp.system.prompt('MOC 주제 태그? (예: frontend, backend, devops)') || 'untagged' %>"
+moc-topic: "<% tp.system.prompt('MOC topic tag? (e.g., frontend, backend, devops)') || 'untagged' %>"
 related: []
 ---
 
 # <% tp.file.title %>
 
-> [!abstract] 이 MOC에 대하여
+> [!abstract] About This MOC
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 학습 로드맵
+## 1. Learning Roadmap
 
-### 입문 (Beginner)
-- [[]] -
-- [[]] -
-
-### 중급 (Intermediate)
+### Beginner
 - [[]] -
 - [[]] -
 
-### 고급 (Advanced)
+### Intermediate
+- [[]] -
+- [[]] -
+
+### Advanced
 - [[]] -
 - [[]] -
 
 ---
 
-## 2. 개념 노트
+## 2. Concept Notes
 
 ```dataview
 TABLE
-  status AS "상태",
-  difficulty AS "난이도",
-  created AS "작성일"
+  status AS "Status",
+  difficulty AS "Difficulty",
+  created AS "Created"
 FROM ""
 WHERE category = "concept"
   AND contains(tags, this.moc-topic)
@@ -47,13 +47,13 @@ SORT created DESC
 
 ---
 
-## 3. 실습 노트
+## 3. Lab Notes
 
 ```dataview
 TABLE
-  status AS "상태",
-  difficulty AS "난이도",
-  created AS "작성일"
+  status AS "Status",
+  difficulty AS "Difficulty",
+  created AS "Created"
 FROM ""
 WHERE category = "lab"
   AND contains(tags, this.moc-topic)
@@ -62,12 +62,12 @@ SORT created DESC
 
 ---
 
-## 4. 비교 분석
+## 4. Comparative Analysis
 
 ```dataview
 TABLE
-  status AS "상태",
-  created AS "작성일"
+  status AS "Status",
+  created AS "Created"
 FROM ""
 WHERE category = "comparison"
   AND contains(tags, this.moc-topic)
@@ -76,12 +76,12 @@ SORT created DESC
 
 ---
 
-## 5. 트러블슈팅
+## 5. Troubleshooting
 
 ```dataview
 TABLE
-  status AS "상태",
-  created AS "작성일"
+  status AS "Status",
+  created AS "Created"
 FROM ""
 WHERE category = "troubleshooting"
   AND contains(tags, this.moc-topic)
@@ -90,12 +90,12 @@ SORT created DESC
 
 ---
 
-## 6. 아키텍처 / 패턴
+## 6. Architecture / Patterns
 
 ```dataview
 TABLE
-  status AS "상태",
-  difficulty AS "난이도"
+  status AS "Status",
+  difficulty AS "Difficulty"
 FROM ""
 WHERE category = "pattern"
   AND contains(tags, this.moc-topic)
@@ -104,7 +104,7 @@ SORT created DESC
 
 ---
 
-## 7. 최근 TIL (30일)
+## 7. Recent TIL (30 Days)
 
 ```dataview
 LIST
@@ -118,26 +118,26 @@ LIMIT 10
 
 ---
 
-## 8. 학습 진행 통계
+## 8. Study Progress Statistics
 
-### 상태별 분포
+### Distribution by Status
 
 ```dataview
 TABLE WITHOUT ID
-  status AS "상태",
-  length(rows) AS "개수"
+  status AS "Status",
+  length(rows) AS "Count"
 FROM ""
 WHERE contains(tags, this.moc-topic)
   AND category != null
 GROUP BY status
 ```
 
-### 카테고리별 분포
+### Distribution by Category
 
 ```dataview
 TABLE WITHOUT ID
-  category AS "카테고리",
-  length(rows) AS "개수"
+  category AS "Category",
+  length(rows) AS "Count"
 FROM ""
 WHERE contains(tags, this.moc-topic)
   AND category != null
@@ -146,21 +146,21 @@ GROUP BY category
 
 ---
 
-## 9. 관련 MOC
+## 9. Related MOCs
 
 - [[]] -
 - [[]] -
 
 ---
 
-## 10. 학습 목표
+## 10. Study Goals
 
-### 단기 (1개월)
+### Short-term (1 Month)
 - [ ]
 - [ ]
 
-### 중기 (3개월)
+### Mid-term (3 Months)
 - [ ]
 
-### 장기 (6개월+)
+### Long-term (6 Months+)
 - [ ]

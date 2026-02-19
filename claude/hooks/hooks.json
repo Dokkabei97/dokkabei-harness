@@ -15,7 +15,7 @@
       {
         "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm (install|test)|pnpm (install|test)|yarn (install|test)?|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright|gradlew|pip install|uv (install|sync|pip|run)|tox)\"",
         "hooks": [
-
+          {
             "type": "command",
             "command": "node -e \"if(!process.env.TMUX){console.error('[Hook] Consider running in tmux for session persistence');console.error('[Hook] tmux new -s dev  |  tmux attach -t dev')}\""
           }
@@ -41,40 +41,6 @@
           }
         ],
         "description": "Block creation of random .md files - keeps docs consolidated"
-      },
-      {
-        "matcher": "tool == \"Edit\" || tool == \"Write\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/suggest-compact.js\""
-          }
-        ],
-        "description": "Suggest manual compaction at logical intervals"
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact.js\""
-          }
-        ],
-        "description": "Save state before context compaction"
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
-          }
-        ],
-        "description": "Load previous context and detect package manager on new session"
       }
     ],
     "PostToolUse": [
@@ -191,40 +157,6 @@
           }
         ],
         "description": "Warn about print() statements after Python edits"
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/check-console-log.js\""
-          }
-        ],
-        "description": "Check for console.log/println/print() in modified files after each response"
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-end.js\""
-          }
-        ],
-        "description": "Persist session state on end"
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/evaluate-session.js\""
-          }
-        ],
-        "description": "Evaluate session for extractable patterns"
       }
     ]
   }

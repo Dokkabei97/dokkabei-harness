@@ -11,28 +11,28 @@ related: []
 
 # <% tp.file.title %>
 
-> [!bug] 문제 한줄 요약
+> [!bug] Problem Summary
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 에러 메시지 / 증상
+## 1. Error Message / Symptoms
 
-### 에러 메시지
+### Error Message
 
 ```
-// 에러 메시지 전문 붙여넣기
+// Paste full error message here
 ```
 
-### 발생 환경
+### Environment
 
-| 항목 | 값 |
-|------|---|
+| Item | Value |
+|------|-------|
 | OS | |
-| 런타임/언어 버전 | |
-| 프레임워크 버전 | |
+| Runtime/Language Version | |
+| Framework Version | |
 
-### 재현 조건
+### Steps to Reproduce
 
 1.
 2.
@@ -40,76 +40,76 @@ related: []
 
 ---
 
-## 2. 원인 분석
+## 2. Root Cause Analysis
 
-### 가설 1:
+### Hypothesis 1:
 
-**검증 방법**:
-**결과**:
+**Verification Method**:
+**Result**:
 
-### 가설 2:
+### Hypothesis 2:
 
-**검증 방법**:
-**결과**:
+**Verification Method**:
+**Result**:
 
-### 근본 원인 (Root Cause)
+### Root Cause
 
-> [!important] 근본 원인
+> [!important] Root Cause
 >
 
 ---
 
-## 3. 해결 방법
+## 3. Solution
 
-### 해결 코드
+### Fix
 
-**변경 전**:
+**Before**:
 ```
 // before
 ```
 
-**변경 후**:
+**After**:
 ```
 // after
 ```
 
-### 적용 절차
+### Steps to Apply
 
 1.
 2.
 3.
 
-### 해결 확인
+### Verification
 
 ```
-// 정상 동작 확인 결과
+// Confirmed working result
 ```
 
 ---
 
-<!-- 선택 섹션: 필요시 주석 해제 후 작성 -->
+<!-- Optional sections: uncomment and fill in as needed -->
 
 <!--
-## 4. 예방 조치
+## 4. Preventive Measures
 
-### 재발 방지
-- [ ] 테스트 케이스 추가
-- [ ] 린트 규칙 추가
-- [ ] 문서/가이드 업데이트
+### Preventing Recurrence
+- [ ] Add test cases
+- [ ] Add lint rules
+- [ ] Update documentation/guides
 
-### 팀 공유 사항
+### Notes to Share with Team
 -
 -->
 
 <!--
-## 5. 관련 이슈
+## 5. Related Issues
 
-### 참고 자료
+### References
 - [Stack Overflow]()
 - [GitHub Issue]()
-- [공식 문서]()
+- [Official Documentation]()
 
-### 관련 노트
-- [[]] - 관련 기술 개념
-- [[]] - 유사 트러블슈팅
+### Related Notes
+- [[]] - Related technical concept
+- [[]] - Similar troubleshooting
 -->

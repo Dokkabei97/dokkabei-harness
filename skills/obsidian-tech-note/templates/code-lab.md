@@ -3,7 +3,7 @@ title: "<% tp.file.title %>"
 created: "<% tp.date.now('YYYY-MM-DD') %>"
 tags:
   - lab
-  - <% tp.system.prompt("기술 스택? (예: spring-boot, react, docker)") || "untagged" %>
+  - <% tp.system.prompt("Tech stack? (e.g., spring-boot, react, docker)") || "untagged" %>
 category: "lab"
 status: "seedling"
 difficulty: ""
@@ -13,125 +13,125 @@ related: []
 
 # <% tp.file.title %>
 
-> [!abstract] 실습 목표
+> [!abstract] Lab Objective
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 환경 설정
+## 1. Environment Setup
 
-### 필수 도구
+### Required Tools
 
-| 도구 | 버전 | 설치 방법 |
-|------|------|----------|
-|      |      |          |
+| Tool | Version | Installation |
+|------|---------|-------------|
+|      |         |             |
 
-### 프로젝트 초기화
+### Project Initialization
 
 ```bash
-# 프로젝트 셋업 명령어
+# Project setup commands
 ```
 
-### 의존성 설치
+### Install Dependencies
 
 ```bash
-# 의존성 설치 명령어
+# Dependency installation commands
 ```
 
 ---
 
-## 2. 단계별 실습
+## 2. Step-by-Step Lab
 
 ### Step 1:
 
-**목표**:
+**Objective**:
 
 ```
-// 코드
+// Code
 ```
 
-**실행 결과**:
+**Output**:
 ```
-// 결과
+// Result
 ```
 
 ---
 
 ### Step 2:
 
-**목표**:
+**Objective**:
 
 ```
-// 코드
+// Code
 ```
 
-**실행 결과**:
+**Output**:
 ```
-// 결과
+// Result
 ```
 
 ---
 
 ### Step 3:
 
-**목표**:
+**Objective**:
 
 ```
-// 코드
+// Code
 ```
 
-**실행 결과**:
+**Output**:
 ```
-// 결과
-```
-
----
-
-## 3. 실행 결과
-
-### 최종 코드
-
-```
-// 최종 완성 코드
-```
-
-### 실행 화면 / 결과
-
-```
-// 최종 실행 결과
+// Result
 ```
 
 ---
 
-<!-- 선택 섹션: 필요시 주석 해제 후 작성 -->
+## 3. Final Results
+
+### Final Code
+
+```
+// Final completed code
+```
+
+### Output / Screenshots
+
+```
+// Final execution result
+```
+
+---
+
+<!-- Optional sections: uncomment and fill in as needed -->
 
 <!--
-## 4. 트러블슈팅 메모
+## 4. Troubleshooting Notes
 
-### 발생한 문제
-- **에러**:
-- **원인**:
-- **해결**:
+### Issues Encountered
+- **Error**:
+- **Cause**:
+- **Fix**:
 -->
 
 <!--
-## 5. 배운 점
+## 5. Lessons Learned
 
-### 핵심 학습 포인트
+### Key Takeaways
 1.
 2.
 
-### 다음에 시도해볼 것
+### Things to Try Next
 -
 -->
 
 ---
 
-## 학습 체크리스트
+## Study Checklist
 
-- [ ] 환경 설정 완료
-- [ ] 단계별 실습 완료
-- [ ] 최종 결과물 동작 확인
-- [ ] 배운 점 정리
-- [ ] 관련 노트와 링크 연결
-- [ ] 1주 후 복습: 코드 다시 작성해보기 [scheduled:: <% tp.date.now("YYYY-MM-DD", 7) %>]
+- [ ] Environment setup complete
+- [ ] Step-by-step lab complete
+- [ ] Final output verified and working
+- [ ] Lessons learned documented
+- [ ] Linked to related notes
+- [ ] Review after 1 week: rewrite the code from scratch [scheduled:: <% tp.date.now("YYYY-MM-DD", 7) %>]

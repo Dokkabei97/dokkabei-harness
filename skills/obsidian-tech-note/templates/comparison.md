@@ -7,132 +7,132 @@ category: "comparison"
 status: "seedling"
 difficulty: ""
 tech-stack:
-  - <% tp.system.prompt("비교 대상 A?") || "A" %>
-  - <% tp.system.prompt("비교 대상 B?") || "B" %>
+  - <% tp.system.prompt("Subject A to compare?") || "A" %>
+  - <% tp.system.prompt("Subject B to compare?") || "B" %>
 related: []
 ---
 
 # <% tp.file.title %>
 
-> [!abstract] 비교 목적
+> [!abstract] Purpose of Comparison
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 비교 개요
+## 1. Comparison Overview
 
-### 대상 A:
+### Subject A:
 
-| 항목 | 내용 |
-|------|------|
-| 공식 사이트 | |
-| 최신 버전 | |
-| 라이선스 | |
+| Item | Details |
+|------|---------|
+| Official Site | |
+| Latest Version | |
+| License | |
 | GitHub Stars | |
 
-**한줄 설명**:
+**One-line Description**:
 
-### 대상 B:
+### Subject B:
 
-| 항목 | 내용 |
-|------|------|
-| 공식 사이트 | |
-| 최신 버전 | |
-| 라이선스 | |
+| Item | Details |
+|------|---------|
+| Official Site | |
+| Latest Version | |
+| License | |
 | GitHub Stars | |
 
-**한줄 설명**:
+**One-line Description**:
 
 ---
 
-## 2. 비교 테이블
+## 2. Comparison Table
 
-<!-- Advanced Table 플러그인으로 Tab 키로 셀 이동, 자동 정렬 가능 -->
+<!-- Use the Advanced Table plugin to navigate cells with Tab and auto-align -->
 
-| 비교 기준 | 대상 A | 대상 B | 비고 |
-|----------|--------|--------|------|
-| **러닝 커브** | | | |
-| **성능** | | | |
-| **생태계/커뮤니티** | | | |
-| **TypeScript 지원** | | | |
-| **번들 크기** | | | |
-| **문서 품질** | | | |
-| **테스트 도구** | | | |
+| Criteria | Subject A | Subject B | Notes |
+|----------|-----------|-----------|-------|
+| **Learning Curve** | | | |
+| **Performance** | | | |
+| **Ecosystem/Community** | | | |
+| **TypeScript Support** | | | |
+| **Bundle Size** | | | |
+| **Documentation Quality** | | | |
+| **Testing Tools** | | | |
 
 ---
 
-## 3. 코드 비교
+## 3. Code Comparison
 
-### 동일 기능 구현
+### Same Feature Implementation
 
-**대상 A 방식**:
+**Subject A Approach**:
 ```
-// 대상 A 코드
-```
-
-**대상 B 방식**:
-```
-// 대상 B 코드
+// Subject A code
 ```
 
-> [!tip] 코드 스타일 차이점
+**Subject B Approach**:
+```
+// Subject B code
+```
+
+> [!tip] Code Style Differences
 >
 
 ---
 
-## 4. 종합 평가
+## 4. Overall Assessment
 
-> [!success] 추천
-> **선택**:
-> **이유**:
+> [!success] Recommendation
+> **Choice**:
+> **Reason**:
 
-### 의사결정 매트릭스
+### Decision Matrix
 
-| 기준 | 가중치 | 대상 A 점수 | 대상 B 점수 |
-|------|--------|-----------|-----------|
-| 성능 | 30% | /10 | /10 |
-| 생산성 | 25% | /10 | /10 |
-| 생태계 | 20% | /10 | /10 |
-| 학습 비용 | 15% | /10 | /10 |
-| 유지보수 | 10% | /10 | /10 |
-| **합계** | **100%** | | |
-
----
-
-<!-- 선택 섹션: 필요시 주석 해제 후 작성 -->
-
-<!--
-## 5. 벤치마크
-
-| 측정 항목 | 대상 A | 대상 B | 차이 |
-|----------|--------|--------|------|
-| 초기 로드 시간 | | | |
-| 메모리 사용량 | | | |
-| 빌드 시간 | | | |
-
-**측정 환경**:
-**측정 도구**:
--->
-
-<!--
-## 6. 추천 시나리오
-
-### 대상 A를 선택해야 할 때
--
-
-### 대상 B를 선택해야 할 때
--
--->
+| Criteria | Weight | Subject A Score | Subject B Score |
+|----------|--------|-----------------|-----------------|
+| Performance | 30% | /10 | /10 |
+| Productivity | 25% | /10 | /10 |
+| Ecosystem | 20% | /10 | /10 |
+| Learning Cost | 15% | /10 | /10 |
+| Maintainability | 10% | /10 | /10 |
+| **Total** | **100%** | | |
 
 ---
 
-## 참고 자료
+<!-- Optional sections: uncomment and fill in as needed -->
 
-- [공식 문서 A]()
-- [공식 문서 B]()
-- [비교 아티클]()
+<!--
+## 5. Benchmarks
 
-## 관련 노트
+| Metric | Subject A | Subject B | Difference |
+|--------|-----------|-----------|------------|
+| Initial Load Time | | | |
+| Memory Usage | | | |
+| Build Time | | | |
 
-- [[]] - 대상 A 개념 노트
-- [[]] - 대상 B 개념 노트
+**Test Environment**:
+**Measurement Tools**:
+-->
+
+<!--
+## 6. Recommended Scenarios
+
+### When to Choose Subject A
+-
+
+### When to Choose Subject B
+-
+-->
+
+---
+
+## References
+
+- [Official Docs A]()
+- [Official Docs B]()
+- [Comparison Article]()
+
+## Related Notes
+
+- [[]] - Subject A concept note
+- [[]] - Subject B concept note

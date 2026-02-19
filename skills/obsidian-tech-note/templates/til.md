@@ -11,61 +11,61 @@ related: []
 
 # TIL - <% tp.date.now('YYYY-MM-DD (ddd)') %>
 
-> [!abstract] 오늘의 핵심
+> [!abstract] Today's Key Insight
 > <% tp.file.cursor(1) %>
 
 ---
 
-## 1. 오늘 배운 것
+## 1. What I Learned Today
 
-### 학습 1:
+### Learning 1:
 
-**무엇을?**
+**What?**
 
 
-**핵심 포인트**
+**Key Points**
 -
 -
 
 ---
 
-## 2. 핵심 코드 / 명령어
+## 2. Key Code / Commands
 
 ```
-// 오늘 작성하거나 배운 핵심 코드
+// Key code written or learned today
 ```
 
 ---
 
-<!-- 선택 섹션: 필요시 주석 해제 후 작성 -->
+<!-- Optional sections: uncomment and fill in as needed -->
 
 <!--
-## 3. 깊이 파기
+## 3. Deep Dive
 
-### 더 알아볼 것
+### Topics to Explore Further
 -
 
-### 관련 질문
+### Related Questions
 -
 -->
 
 <!--
-## 4. 다음 액션
+## 4. Next Actions
 
 - [ ] [priority:: high]
 - [ ] [priority:: medium]
 -->
 
 <!--
-## 5. 관련 노트
+## 5. Related Notes
 
-- [[]] - 관련 개념
-- [[]] - 관련 실습
+- [[]] - Related concept
+- [[]] - Related lab
 -->
 
 ---
 
-## 이전/다음 TIL
+## Previous/Next TIL
 
-- 이전: [[TIL - <% tp.date.now("YYYY-MM-DD", -1) %>]]
-- 다음: [[TIL - <% tp.date.now("YYYY-MM-DD", 1) %>]]
+- Previous: [[TIL - <% tp.date.now("YYYY-MM-DD", -1) %>]]
+- Next: [[TIL - <% tp.date.now("YYYY-MM-DD", 1) %>]]
