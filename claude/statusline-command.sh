@@ -2,6 +2,8 @@
 
 # Session start time tracking file
 SESSION_FILE="/Users/jmk/.claude/statusline-session.txt"
+USAGE_CACHE_FILE="/Users/jmk/.claude/statusline-usage-cache.json"
+USAGE_CACHE_TTL=120  # seconds
 
 # Read JSON input from stdin
 input=$(cat)
@@ -61,6 +63,138 @@ fi
 
 reset=$'\033[0m'
 dim_gray=$'\033[90m'
+bright_white=$'\033[97m'
+bright_yellow=$'\033[93m'
+bright_green=$'\033[92m'
+bright_red=$'\033[91m'
+bright_blue=$'\033[94m'
+bright_cyan=$'\033[96m'
+bold_red=$'\033[1;31m'
+
+# === Usage API (5h/7d rate limits) with file-based caching ===
+refresh_usage_cache() {
+    local now=$(date +%s)
+    local creds
+    creds=$(/usr/bin/security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null)
+    [ -z "$creds" ] && return 1
+
+    local token
+    token=$(echo "$creds" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
+    [ -z "$token" ] && return 1
+
+    local response
+    response=$(curl -s --max-time 3 \
+        -H "Authorization: Bearer $token" \
+        -H "anthropic-beta: oauth-2025-04-20" \
+        "https://api.anthropic.com/api/oauth/usage" 2>/dev/null)
+    [ -z "$response" ] && return 1
+
+    local five_hour seven_day
+    five_hour=$(echo "$response" | jq -r '.five_hour.utilization // empty' 2>/dev/null)
+    seven_day=$(echo "$response" | jq -r '.seven_day.utilization // empty' 2>/dev/null)
+    [ -z "$five_hour" ] && return 1
+
+    local five_hour_reset seven_day_reset
+    five_hour_reset=$(echo "$response" | jq -r '.five_hour.resets_at // empty' 2>/dev/null)
+    seven_day_reset=$(echo "$response" | jq -r '.seven_day.resets_at // empty' 2>/dev/null)
+
+    printf '{"timestamp":%d,"five_hour":%s,"seven_day":%s,"five_hour_reset":"%s","seven_day_reset":"%s"}\n' \
+        "$now" "$five_hour" "$seven_day" "$five_hour_reset" "$seven_day_reset" > "$USAGE_CACHE_FILE"
+}
+
+get_usage() {
+    local now=$(date +%s)
+    local need_refresh=1
+
+    if [ -f "$USAGE_CACHE_FILE" ]; then
+        local cache_time
+        cache_time=$(jq -r '.timestamp // 0' "$USAGE_CACHE_FILE" 2>/dev/null)
+        local age=$(( now - cache_time ))
+        [ "$age" -lt "$USAGE_CACHE_TTL" ] && need_refresh=0
+    fi
+
+    [ "$need_refresh" -eq 1 ] && refresh_usage_cache
+
+    if [ -f "$USAGE_CACHE_FILE" ]; then
+        cat "$USAGE_CACHE_FILE"
+    else
+        echo '{}'
+    fi
+}
+
+usage_json=$(get_usage)
+five_hour=$(echo "$usage_json" | jq -r '.five_hour // "-"' 2>/dev/null)
+seven_day=$(echo "$usage_json" | jq -r '.seven_day // "-"' 2>/dev/null)
+five_hour_reset=$(echo "$usage_json" | jq -r '.five_hour_reset // ""' 2>/dev/null)
+seven_day_reset=$(echo "$usage_json" | jq -r '.seven_day_reset // ""' 2>/dev/null)
+
+# Format ISO 8601 reset time as absolute local time (e.g., "14:30", "3/9 14:30")
+format_reset_time() {
+    local reset_at=$1
+    [ -z "$reset_at" ] || [ "$reset_at" = "null" ] || [ "$reset_at" = "" ] && return
+
+    # Strip fractional seconds and timezone suffix, parse as UTC
+    local clean=$(echo "$reset_at" | sed -E 's/\.[0-9]+(Z|\+[0-9:]+)$//' | sed 's/Z$//' | sed 's/+00:00$//')
+    local reset_epoch=$(TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$clean" "+%s" 2>/dev/null)
+    [ -z "$reset_epoch" ] && return
+
+    local now=$(date +%s)
+    [ "$reset_epoch" -le "$now" ] && printf "now" && return
+
+    # Compare dates: if same day, show only HH:MM; otherwise show M/D HH:MM
+    local today=$(date +%Y%m%d)
+    local reset_day=$(date -r "$reset_epoch" +%Y%m%d)
+
+    if [ "$today" = "$reset_day" ]; then
+        date -r "$reset_epoch" "+%H:%M"
+    else
+        date -r "$reset_epoch" "+%-m/%-d %H:%M"
+    fi
+}
+
+# Build a colored progress bar for usage (same style as context bar)
+make_usage_bar() {
+    local label=$1
+    local val=$2
+    local reset_at=$3
+    local bw=10
+
+    local int_val=0
+    if [ "$val" != "-" ] && [ "$val" != "null" ]; then
+        int_val=$(printf "%.0f" "$val" 2>/dev/null || echo "0")
+    fi
+
+    # Color based on usage
+    local bar_color
+    if [ "$int_val" -lt 50 ]; then
+        bar_color=$'\033[32m'  # Green
+    elif [ "$int_val" -lt 80 ]; then
+        bar_color=$'\033[33m'  # Yellow
+    else
+        bar_color=$'\033[31m'  # Red
+    fi
+
+    local f=$(( int_val * bw / 100 ))
+    [ "$f" -lt 0 ] && f=0
+    [ "$f" -gt "$bw" ] && f=$bw
+    local e=$(( bw - f ))
+
+    local bar_f="" bar_e=""
+    for ((i=0; i<f; i++)); do bar_f="${bar_f}█"; done
+    for ((i=0; i<e; i++)); do bar_e="${bar_e}░"; done
+
+    local reset_label=""
+    if [ -n "$reset_at" ] && [ "$reset_at" != "null" ]; then
+        local rt=$(format_reset_time "$reset_at")
+        [ -n "$rt" ] && reset_label=$(printf " ${bright_white}(%s)${reset}" "$rt")
+    fi
+
+    printf "${bright_white}%s${reset} ${bar_color}%s${dim_gray}%s${reset} ${bright_white}%d%%${reset}%s" \
+        "$label" "$bar_f" "$bar_e" "$int_val" "$reset_label"
+}
+
+five_hour_bar=$(make_usage_bar "5h" "$five_hour" "$five_hour_reset")
+seven_day_bar=$(make_usage_bar "7d" "$seven_day" "$seven_day_reset")
 
 # Get current folder name
 folder_name=$(basename "$cwd")
@@ -144,7 +278,7 @@ bar_empty=""
 for ((i=0; i<filled; i++)); do bar_filled="${bar_filled}█"; done
 for ((i=0; i<empty_chars; i++)); do bar_empty="${bar_empty}░"; done
 
-progress_bar=$(printf "${ctx_color}%s${dim_gray}%s${reset} ${used_int}%% | ${dim_gray}%s${reset}" "$bar_filled" "$bar_empty" "$ctx_usage_label")
+progress_bar=$(printf "${bright_white}Context${reset} ${ctx_color}%s${dim_gray}%s${reset} ${bright_white}${used_int}%%${reset} | ${bright_white}%s${reset}" "$bar_filled" "$bar_empty" "$ctx_usage_label")
 
 # Line 1: Robot icon + Model | Progress bar | context usage
 # U+1F916 ROBOT FACE in UTF-8: F0 9F A4 96
@@ -163,13 +297,45 @@ icon_worktree=$(printf '\xF0\x9F\x8C\xBF')
 # If in a linked worktree: show "📁 main-repo | 🌿 worktree-dir"
 # Otherwise: show "📁 current-dir"
 if [ "$is_worktree" -eq 1 ]; then
-    line2=$(printf "%s %s | %s %s" "$icon_dir" "$main_repo_name" "$icon_worktree" "$worktree_dir_name")
+    line2=$(printf "%s ${bright_yellow}%s${reset} | %s ${bright_green}%s${reset}" "$icon_dir" "$main_repo_name" "$icon_worktree" "$worktree_dir_name")
 else
-    line2=$(printf "%s %s" "$icon_dir" "$folder_name")
+    line2=$(printf "%s ${bright_yellow}%s${reset}" "$icon_dir" "$folder_name")
 fi
 if [ -n "$git_branch" ]; then
-    line2=$(printf "%s | %s %s" "$line2" "$icon_branch" "$git_branch")
+    # Color branch by type
+    branch_color="$bright_white"
+    if [ "$git_branch" = "master" ] || [ "$git_branch" = "main" ]; then
+        branch_color="$bright_red"
+    elif echo "$git_branch" | grep -q "^develop"; then
+        branch_color="$bright_blue"
+    elif echo "$git_branch" | grep -q "^feat" || echo "$git_branch" | grep -q "^feature"; then
+        branch_color="$bright_cyan"
+    elif echo "$git_branch" | grep -q "^release"; then
+        branch_color="$bright_yellow"
+    elif echo "$git_branch" | grep -q "^hotfix"; then
+        branch_color="$bold_red"
+    elif [ "$is_worktree" -eq 1 ]; then
+        branch_color="$bright_green"
+    fi
+    line2=$(printf "%s | %s ${branch_color}%s${reset}" "$line2" "$icon_branch" "$git_branch")
+
+    # Git file change stats (added/modified/deleted)
+    git_status=$(git -c core.useBuiltinFSMonitor=false -c core.fsmonitor=false status --porcelain 2>/dev/null)
+    if [ -n "$git_status" ]; then
+        added=$(echo "$git_status" | grep -c '^??\|^A \|^A[MD]')
+        modified=$(echo "$git_status" | grep -c '^ M\|^M \|^MM\|^AM\|^R ')
+        deleted=$(echo "$git_status" | grep -c '^ D\|^D \|^MD')
+
+        git_changes=""
+        [ "$added" -gt 0 ] && git_changes="${git_changes} ${bright_green}+${added}${reset}"
+        [ "$modified" -gt 0 ] && git_changes="${git_changes} ${bright_yellow}~${modified}${reset}"
+        [ "$deleted" -gt 0 ] && git_changes="${git_changes} ${bright_red}-${deleted}${reset}"
+        [ -n "$git_changes" ] && line2=$(printf "%s |%s" "$line2" "$git_changes")
+    fi
 fi
+
+# Append usage bars to line 1
+line1=$(printf "%s | ${bright_white}Usage${reset} %s | %s" "$line1" "$five_hour_bar" "$seven_day_bar")
 
 # Output both lines
 printf "%s\n%s" "$line1" "$line2"
