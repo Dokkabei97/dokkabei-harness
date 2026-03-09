@@ -403,17 +403,168 @@ DTO/VO class names     | Very High      | Daily            | Never include
 
 Rule of thumb: If a path changes more than once per sprint, it is too granular for the index.
 
+## Semantic Staleness Detection
+
+Path existence checks only catch deleted paths. Semantic staleness -- where paths exist but
+no longer represent the mapped concept -- requires deeper detection.
+
+### Review Freshness Check
+
+Validates `last_reviewed` metadata in `.claude/rules/*.md` frontmatter:
+
+```bash
+#!/bin/bash
+# check-review-freshness.sh
+# Warns when rule files haven't been reviewed within their staleness window
+
+for rule_file in .claude/rules/*.md; do
+  [ -f "$rule_file" ] || continue
+
+  reviewed=$(grep 'last_reviewed:' "$rule_file" | sed 's/.*: *"//;s/"//')
+  window=$(grep 'staleness_window:' "$rule_file" | sed 's/.*: *//')
+  owner=$(grep 'owner:' "$rule_file" | sed 's/.*: *"//;s/"//')
+
+  # Default staleness window: 90 days
+  window=${window:-90}
+
+  if [ -n "$reviewed" ]; then
+    reviewed_ts=$(date -j -f "%Y-%m-%d" "$reviewed" +%s 2>/dev/null || \
+                  date -d "$reviewed" +%s 2>/dev/null)
+    today_ts=$(date +%s)
+    days=$(( (today_ts - reviewed_ts) / 86400 ))
+
+    if [ "$days" -gt "$window" ]; then
+      echo "::warning::$rule_file last reviewed $days days ago (limit: ${window}d, owner: ${owner:-unassigned})"
+    fi
+  else
+    echo "::warning::$rule_file has no last_reviewed metadata"
+  fi
+done
+```
+
+### Technology Marker Drift Detection
+
+Detects when technology-specific annotations/decorators appear OUTSIDE indexed paths,
+indicating the index may be stale:
+
+```bash
+#!/bin/bash
+# detect-semantic-drift.sh
+# Run in CI on PRs to catch technology markers migrating outside indexed paths
+
+CHANGED=$(git diff --name-only origin/main...HEAD)
+DRIFT_FOUND=false
+
+# Define: technology marker -> expected indexed path pattern
+# Format: "MARKER_REGEX|INDEXED_PATH_PATTERN|RULE_FILE"
+TECH_MARKERS=(
+  "@KafkaListener|KafkaTemplate|inbound-consumer|outbound-event|kafka.md"
+  "@Entity|JpaRepository|CrudRepository|outbound-persistence|jpa.md"
+  "@Cacheable|RedisTemplate|ReactiveRedisTemplate|outbound-cache|redis.md"
+  "@GrpcService|@GrpcClient|outbound-client|grpc.md"
+  "@Controller|@RequestMapping|inbound-api|api.md"
+  "@router\\.|@app\\.|src/app|routes.md"
+  "class.*Base\\)|DeclarativeBase|models|db.md"
+)
+
+for entry in "${TECH_MARKERS[@]}"; do
+  IFS='|' read -r marker indexed rule <<< "$entry"
+
+  # Find changed files with this marker that are OUTSIDE the indexed path
+  outside=$(echo "$CHANGED" | grep -v -E "$indexed" | \
+    xargs grep -l "$marker" 2>/dev/null)
+
+  if [ -n "$outside" ]; then
+    DRIFT_FOUND=true
+    echo "::warning::Tech marker '$marker' found OUTSIDE indexed path '$indexed':"
+    echo "$outside" | sed 's/^/  - /'
+    echo "  → Consider updating .claude/rules/$rule"
+  fi
+done
+
+if [ "$DRIFT_FOUND" = false ]; then
+  echo "No semantic drift detected."
+fi
+```
+
+### Mass Change Detection in Indexed Paths
+
+Warns when many files change within an indexed path, suggesting structural refactoring:
+
+```bash
+#!/bin/bash
+# detect-mass-changes.sh
+# Warns when indexed paths have unusually high churn in a PR
+
+CHANGED=$(git diff --name-only origin/main...HEAD)
+THRESHOLD=10
+
+for rule_file in .claude/rules/*.md; do
+  [ -f "$rule_file" ] || continue
+
+  # Extract path patterns from frontmatter
+  patterns=$(sed -n '/^paths:/,/^[^- ]/p' "$rule_file" | \
+    grep -oE '"[^"]*"' | tr -d '"' | sed 's/\*\*\///')
+
+  for pattern in $patterns; do
+    clean=$(echo "$pattern" | sed 's/\*\*//g;s/\*//g')
+    [ -z "$clean" ] && continue
+
+    count=$(echo "$CHANGED" | grep -c "$clean" 2>/dev/null)
+    if [ "$count" -gt "$THRESHOLD" ]; then
+      echo "::warning::$rule_file: $count files changed matching '$clean' (threshold: $THRESHOLD)"
+      echo "  → High churn may indicate structural refactoring. Review index freshness."
+    fi
+  done
+done
+```
+
+### Agent Self-Verification Template
+
+Add this section to any `.claude/rules/*.md` file to enable runtime staleness detection:
+
+```markdown
+## Self-Verification
+
+When you arrive at an indexed path from the inverted index:
+1. Confirm the actual business logic exists at this location
+2. If you find only a thin wrapper, delegate, or deprecated code:
+   - Search for the real implementation location
+   - Complete your task using the correct location
+   - After task completion, suggest updating the relevant index entry
+3. If the path is accurate, proceed normally -- no extra verification needed
+```
+
+### CI Workflow for Semantic Staleness
+
+Add these steps to the existing `.github/workflows/claude-md-check.yml`:
+
+```yaml
+      - name: Check review freshness
+        run: bash scripts/check-review-freshness.sh
+
+      - name: Detect technology marker drift
+        run: bash scripts/detect-semantic-drift.sh
+
+      - name: Detect mass changes in indexed paths
+        run: bash scripts/detect-mass-changes.sh
+```
+
 ## Recommended Maintenance Cadence
 
 ```
 Weekly:   Run validate-index (CI does this on every PR)
           - Covers both CLAUDE.md and .claude/rules/*.md paths
+          - Includes semantic drift detection on changed files
 Monthly:  Run generate-index + generate-rules, diff with current files, update if needed
           - CLAUDE.md: top-level structure and tech map
           - .claude/rules/*.md: domain-specific rules per module/layer
+          - Update last_reviewed timestamps on reviewed rule files
 Quarter:  Review technology groupings, add new techs, remove deprecated ones
           - Audit .claude/rules/ for orphaned rules (deleted modules)
           - Verify rule file naming conventions remain consistent
+          - Full semantic review: run detect-semantic-drift.sh across entire codebase
 On Event: New module/service added -> update CLAUDE.md + create .claude/rules/<module>.md
 On Event: Major refactor -> regenerate entire index and all rules
+On Event: Technology migration (e.g., Redis → Memcached) -> update rule file + owner review
 ```

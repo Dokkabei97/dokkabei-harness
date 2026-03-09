@@ -8,11 +8,11 @@ description: |
   Go, Rust, and polyglot monorepos.
 license: MIT
 metadata:
-  version: 2.0.0
+  version: 2.1.0
   author: jmk
   category: developer-productivity
   domain: ai-agent-optimization
-  updated: 2026-02-24
+  updated: 2026-03-09
   research-basis: 3-phase team research (12 agents, 6 languages, 10+ architectures)
   languages: kotlin, java, python, typescript, javascript, go, rust
   frameworks: spring-hexagonal, fastapi, django, nextjs, nestjs, turborepo, axum, gin
@@ -165,6 +165,90 @@ references/maintenance-automation.md -- Auto-generation scripts, CI checks
 4. **Technology-grouped** format (not layer-grouped)
 5. **Auto-generate paths, manually curate descriptions**
 6. **Validate in CI** (check paths still exist)
+7. **Defend against semantic staleness** (paths exist but meaning drifted)
+
+## Semantic Staleness Defense
+
+Path existence checks catch deleted paths, but NOT semantic drift -- where a path still exists but no longer represents the concept it's mapped to.
+
+### The Problem
+
+```
+Index says:    Kafka consumer → inbound-consumer/.../listener/
+Reality:       Listener is now a thin wrapper; real logic moved to event-processor/.../handler/
+CI path check: ✅ PASS (folder exists)
+Agent result:  ❌ Reads wrapper, misses real logic, falls back to Grep
+```
+
+### 4-Layer Defense
+
+**Layer 1: Metadata Tagging** (passive, time-based trigger)
+
+Add staleness metadata to `.claude/rules/*.md` frontmatter:
+
+```yaml
+---
+description: "Kafka consumer/producer conventions"
+paths: ["**/inbound-consumer/**", "**/outbound-event/**"]
+last_reviewed: "2026-03-01"
+review_commit: "a1b2c3d"
+owner: "@backend-team"
+staleness_window: 90
+---
+```
+
+CI warns when `last_reviewed` exceeds `staleness_window` days.
+
+**Layer 2: Generated vs Curated Separation** (structural)
+
+Explicitly separate auto-generated paths from human-curated descriptions:
+
+```markdown
+## Kafka
+
+### Location Map (auto-generated, 2026-03-01)
+<!-- regenerate: make generate-index -->
+- consumer: inbound-consumer/.../listener/
+- producer: outbound-event/.../producer/
+
+### Conventions (curated, @backend-team)
+<!-- manual review required on structural changes -->
+- Event classes live in the domain module
+- Consumers call inbound ports after deserialization
+```
+
+Auto-generated sections can be refreshed by scripts. Curated sections require human review.
+
+**Layer 3: Structural Change Detection** (active, PR-time)
+
+Detect technology markers appearing OUTSIDE indexed paths:
+
+```bash
+# If @KafkaListener found outside inbound-consumer/outbound-event → warn
+# If @Entity found outside outbound-persistence → warn
+```
+
+See `references/maintenance-automation.md` for full detection scripts.
+
+**Layer 4: Agent Self-Verification** (runtime, zero-cost)
+
+Add to `.claude/rules/` files:
+
+```markdown
+## Self-Verification
+When landing on an indexed path, verify actual logic exists there.
+If only wrapper/delegate found, find real location, complete the task,
+then suggest updating the index.
+```
+
+### Defense Layer Comparison
+
+| Layer | When | Cost | Catches |
+|-------|------|------|---------|
+| Metadata tagging | Time-based | Very low | Unreviewed sections |
+| Generated/Curated split | On regeneration | Low | Path drift |
+| Structural change detection | PR time | Medium | Tech marker migration |
+| Agent self-verification | Runtime | ~Zero | Actual staleness at point of use |
 
 ## References
 

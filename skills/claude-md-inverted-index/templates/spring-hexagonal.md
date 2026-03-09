@@ -56,6 +56,9 @@ Replace `{base_package}` with your actual package path.
 ---
 description: "Hexagonal architecture port/adapter mapping and dependency rules"
 paths: ["**/domain/**", "**/port/**", "**/service/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -93,6 +96,9 @@ paths: ["**/domain/**", "**/port/**", "**/service/**"]
 ---
 description: "Kafka consumer/producer conventions and locations"
 paths: ["**/inbound-consumer/**", "**/outbound-event/**", "**/event/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -121,6 +127,9 @@ paths: ["**/inbound-consumer/**", "**/outbound-event/**", "**/event/**"]
 ---
 description: "JPA entity, repository, and migration locations"
 paths: ["**/outbound-persistence/**", "**/entity/**", "**/repository/**", "**/db/migration/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -148,6 +157,9 @@ paths: ["**/outbound-persistence/**", "**/entity/**", "**/repository/**", "**/db
 ---
 description: "Redis cache adapter conventions and locations"
 paths: ["**/outbound-cache/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -173,6 +185,9 @@ paths: ["**/outbound-cache/**"]
 ---
 description: "Elasticsearch document, adapter, and config locations"
 paths: ["**/outbound-search/**", "**/document/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -198,6 +213,9 @@ paths: ["**/outbound-search/**", "**/document/**"]
 ---
 description: "gRPC client, proto, and config locations"
 paths: ["**/outbound-client/**", "**/proto/**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -223,6 +241,9 @@ paths: ["**/outbound-client/**", "**/proto/**"]
 ---
 description: "Security filter, handler, and auth config locations"
 paths: ["**/security/**", "**/config/SecurityConfig**"]
+last_reviewed: "2026-03-09"
+owner: "@backend-team"
+staleness_window: 90
 ---
 ```
 
@@ -238,4 +259,20 @@ paths: ["**/security/**", "**/config/SecurityConfig**"]
 - Security filters and handlers live in the inbound-api module.
 - Authentication/authorization logic that is domain-specific goes through AuthPort.
 - Framework-specific security config (CORS, CSRF, filter chain) stays in SecurityConfig.
+```
+
+---
+
+### Self-Verification Rule (add to any .claude/rules/*.md)
+
+```markdown
+## Self-Verification
+
+When you arrive at an indexed path from the inverted index:
+1. Confirm the actual business logic exists at this location
+2. If you find only a thin wrapper, delegate, or deprecated code:
+   - Search for the real implementation location
+   - Complete your task using the correct location
+   - After task completion, suggest updating the relevant index entry
+3. If the path is accurate, proceed normally
 ```
