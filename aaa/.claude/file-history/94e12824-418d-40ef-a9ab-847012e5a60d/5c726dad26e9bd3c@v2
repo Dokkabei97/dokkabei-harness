@@ -1,0 +1,100 @@
+package output
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+	"text/tabwriter"
+)
+
+// TableFormatter outputs data as an ASCII table.
+type TableFormatter struct {
+	columns []Column
+}
+
+// NewTableFormatter creates a new table formatter.
+func NewTableFormatter(columns []Column) *TableFormatter {
+	return &TableFormatter{columns: columns}
+}
+
+func (f *TableFormatter) Format(data interface{}) error {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("marshaling for table: %w", err)
+	}
+	return f.formatJSON(jsonData)
+}
+
+func (f *TableFormatter) formatJSON(data []byte) error {
+	// Try as array first
+	var items []map[string]interface{}
+	if err := json.Unmarshal(data, &items); err != nil {
+		// Try as single object
+		var item map[string]interface{}
+		if err := json.Unmarshal(data, &item); err != nil {
+			return fmt.Errorf("table format requires JSON object or array")
+		}
+		items = []map[string]interface{}{item}
+	}
+
+	if len(items) == 0 {
+		fmt.Println("No results found.")
+		return nil
+	}
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+
+	// Header
+	headers := make([]string, len(f.columns))
+	for i, col := range f.columns {
+		headers[i] = col.Header
+	}
+	fmt.Fprintln(w, strings.Join(headers, "\t"))
+
+	// Rows
+	for _, item := range items {
+		row := make([]string, len(f.columns))
+		for i, col := range f.columns {
+			row[i] = extractField(item, col.Field)
+		}
+		fmt.Fprintln(w, strings.Join(row, "\t"))
+	}
+
+	return w.Flush()
+}
+
+// extractField gets a value from a map.
+func extractField(item map[string]interface{}, field string) string {
+	val, ok := item[field]
+	if !ok || val == nil {
+		return "-"
+	}
+
+	switch v := val.(type) {
+	case string:
+		if v == "" {
+			return "-"
+		}
+		return truncate(v, 60)
+	case float64:
+		if v == float64(int64(v)) {
+			return fmt.Sprintf("%d", int64(v))
+		}
+		return fmt.Sprintf("%.2f", v)
+	case bool:
+		if v {
+			return "true"
+		}
+		return "false"
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
+func truncate(s string, max int) string {
+	if len(s) <= max {
+		return s
+	}
+	return s[:max-3] + "..."
+}

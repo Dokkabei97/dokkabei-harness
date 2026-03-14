@@ -1,0 +1,124 @@
+package config
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/spf13/viper"
+)
+
+// Load reads configuration from file and environment variables.
+// Priority: CLI flags > env vars > config file > defaults.
+func Load(configPath string) (*Config, error) {
+	v := viper.New()
+
+	// Set defaults
+	v.SetDefault("format", "json")
+
+	// Config file
+	if configPath != "" {
+		v.SetConfigFile(configPath)
+	} else {
+		v.SetConfigName("config")
+		v.SetConfigType("yaml")
+		v.AddConfigPath(Dir())
+	}
+
+	// Environment variables: PLANE_API_KEY, PLANE_BASE_URL, etc.
+	v.SetEnvPrefix("PLANE")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
+
+	// Read config file (ignore if not found)
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// Only error if file exists but can't be read
+			if _, statErr := os.Stat(FilePath()); statErr == nil {
+				return nil, fmt.Errorf("reading config: %w", err)
+			}
+		}
+	}
+
+	cfg := Defaults()
+	if err := v.Unmarshal(cfg); err != nil {
+		return nil, fmt.Errorf("parsing config: %w", err)
+	}
+
+	return cfg, nil
+}
+
+// Save writes the config to disk.
+func Save(cfg *Config) error {
+	if err := EnsureDir(); err != nil {
+		return fmt.Errorf("creating config directory: %w", err)
+	}
+
+	v := viper.New()
+	v.Set("base_url", cfg.BaseURL)
+	v.Set("api_key", cfg.APIKey)
+	v.Set("workspace", cfg.Workspace)
+	v.Set("project", cfg.Project)
+	v.Set("format", cfg.Format)
+
+	v.SetConfigFile(FilePath())
+	v.SetConfigType("yaml")
+
+	if err := v.WriteConfig(); err != nil {
+		return v.SafeWriteConfig()
+	}
+	return nil
+}
+
+// Set updates a single config key and saves.
+func Set(key, value string) error {
+	cfg, err := Load("")
+	if err != nil {
+		cfg = Defaults()
+	}
+
+	switch key {
+	case "base_url":
+		cfg.BaseURL = value
+	case "api_key":
+		cfg.APIKey = value
+	case "workspace":
+		cfg.Workspace = value
+	case "project":
+		cfg.Project = value
+	case "format":
+		cfg.Format = value
+	default:
+		return fmt.Errorf("unknown config key: %s", key)
+	}
+
+	return Save(cfg)
+}
+
+// Get retrieves a single config value.
+func Get(key string) (string, error) {
+	cfg, err := Load("")
+	if err != nil {
+		return "", err
+	}
+
+	switch key {
+	case "base_url":
+		return cfg.BaseURL, nil
+	case "api_key":
+		return cfg.APIKey, nil
+	case "workspace":
+		return cfg.Workspace, nil
+	case "project":
+		return cfg.Project, nil
+	case "format":
+		return cfg.Format, nil
+	default:
+		return "", fmt.Errorf("unknown config key: %s", key)
+	}
+}
+
+// ValidKeys returns all valid configuration keys.
+func ValidKeys() []string {
+	return []string{"base_url", "api_key", "workspace", "project", "format"}
+}

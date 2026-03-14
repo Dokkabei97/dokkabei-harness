@@ -1,0 +1,200 @@
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :compileKotlin FAILED
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/AnalysisProductNamePlugin.kt:69:32 Return type of 'getActions' is not a subtype of the return type of the overridden member 'fun getActions(): (MutableCollection<ActionPlugin.ActionHandler!>..Collection<ActionPlugin.ActionHandler!>?)' defined in 'org/elasticsearch/plugins/ActionPlugin'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/AnalysisProductNamePlugin.kt:69:69 No type arguments expected for class 'ActionHandler'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:791:55 This type has a constructor, so it must be initialized here.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:966:50 Argument type mismatch: actual type is 'org.elasticsearch.client.internal.Client?', but 'org.elasticsearch.client.internal.Client' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1000:28 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'org.elasticsearch.action.bulk.BulkRequestBuilder?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1002:32 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'org.elasticsearch.action.bulk.BulkRequestBuilder?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1008:28 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'org.elasticsearch.action.bulk.BulkRequestBuilder?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1120:61 Argument type mismatch: actual type is 'com.danawa.util.CharVector?', but 'kotlin.CharSequence' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1120:87 Argument type mismatch: actual type is 'kotlin.collections.MutableMap<kotlin.CharSequence, kotlin.Array<kotlin.CharSequence>>?', but 'kotlin.collections.Map<kotlin.CharSequence, kotlin.Array<kotlin.CharSequence>>' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1353:64 Assignment type mismatch: actual type is 'kotlin.collections.List<*>?', but 'kotlin.collections.List<kotlin.CharSequence>?' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1585:69 Assignment type mismatch: actual type is 'kotlin.collections.List<*>?', but 'kotlin.collections.List<kotlin.CharSequence>?' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1615:69 Assignment type mismatch: actual type is 'kotlin.collections.List<*>?', but 'kotlin.collections.List<kotlin.CharSequence>?' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1637:44 Assignment type mismatch: actual type is 'kotlin.collections.List<*>?', but 'kotlin.collections.List<kotlin.CharSequence>?' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt:1812:32 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:340:31 Assignment type mismatch: actual type is 'com.danawa.search.analysis.korean.KoreanWordExtractor.ExtractedEntry?', but 'com.danawa.search.analysis.korean.KoreanWordExtractor.ExtractedEntry' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:422:62 Type inference failed. The value of the type parameter 'T' should be mentioned in input types (argument types, receiver type, or expected type). Try to specify it explicitly.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:233:99 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.CharVector?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizerFactory.kt:27:25 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizerFactory.kt:28:44 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizerFactory.kt:31:25 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizerFactory.kt:31:77 Argument type mismatch: actual type is 'com.danawa.search.analysis.dict.ProductNameDictionary?', but 'kotlin.Any' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesRequest.kt:9:48 No type arguments expected for class 'BaseNodesRequest'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesRequest.kt:16:27 Too many arguments for 'constructor(): Any'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesRequest.kt:21:50 Too many arguments for 'constructor(): Any'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesResponse.kt:16:1 Class 'ReloadDictNodesResponse' is not abstract and does not implement abstract member 'toXContent'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesResponse.kt:41:5 'toXContent' overrides nothing.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/ReloadDictNodesResponse.kt:41:80 Unresolved reference 'Params'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:27:28 Return type of 'routes' is not a subtype of the return type of the overridden member 'fun routes(): (MutableList<RestHandler.Route!>..List<RestHandler.Route!>?)' defined in 'org/elasticsearch/rest/BaseRestHandler'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:27:33 Unresolved reference 'Route'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:28:16 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:29:13 Unresolved reference 'Route'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:29:13 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:30:13 Unresolved reference 'Route'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:43:20 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/RestReloadDictAction.kt:45:17 Argument type mismatch: actual type is 'com.danawa.search.analysis.product.action.ReloadDictNodesRequest', but 'Request!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:40:9 Type argument is not within its bounds: should be subtype of 'org.elasticsearch.action.support.nodes.BaseNodesRequest!'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:45:5 Argument type mismatch: actual type is 'kotlin.String', but 'kotlin.String!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:46:5 Argument type mismatch: actual type is 'org.elasticsearch.cluster.service.ClusterService', but 'org.elasticsearch.cluster.service.ClusterService!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:47:5 Argument type mismatch: actual type is 'org.elasticsearch.transport.TransportService', but 'org.elasticsearch.transport.TransportService!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:48:5 Argument type mismatch: actual type is 'org.elasticsearch.action.support.ActionFilters', but 'org.elasticsearch.action.support.ActionFilters!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:50:7 None of the following candidates is applicable:
+constructor(dictionaryType: String?): ReloadDictNodeRequest
+constructor(input: StreamInput): ReloadDictNodeRequest
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:52:5 Argument type mismatch: actual type is 'java.util.concurrent.ExecutorService!', but 'java.util.concurrent.Executor!' was expected.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:89:13 This variable access is resolved to Java field, but it is clashed with Kotlin property 'val logger: Logger!' with backing field which leads to the incorrect bytecode generation and failure at runtime. So such calls are prohibited until corresponding bug will be fixed. See https://youtrack.jetbrains.com/issue/KT-56386 for more details
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:93:30 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:94:17 This variable access is resolved to Java field, but it is clashed with Kotlin property 'val logger: Logger!' with backing field which leads to the incorrect bytecode generation and failure at runtime. So such calls are prohibited until corresponding bug will be fixed. See https://youtrack.jetbrains.com/issue/KT-56386 for more details
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:100:42 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.ContextStore?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:117:13 This variable access is resolved to Java field, but it is clashed with Kotlin property 'val logger: Logger!' with backing field which leads to the incorrect bytecode generation and failure at runtime. So such calls are prohibited until corresponding bug will be fixed. See https://youtrack.jetbrains.com/issue/KT-56386 for more details
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:126:13 This variable access is resolved to Java field, but it is clashed with Kotlin property 'val logger: Logger!' with backing field which leads to the incorrect bytecode generation and failure at runtime. So such calls are prohibited until corresponding bug will be fixed. See https://youtrack.jetbrains.com/issue/KT-56386 for more details
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/action/TransportReloadDictAction.kt:141:13 This variable access is resolved to Java field, but it is clashed with Kotlin property 'val logger: Logger!' with backing field which leads to the incorrect bytecode generation and failure at runtime. So such calls are prohibited until corresponding bug will be fixed. See https://youtrack.jetbrains.com/issue/KT-56386 for more details
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:70:33 Unresolved reference 'FULL_STRING'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:73:32 Unresolved reference 'HANGUL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:75:32 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:77:32 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:79:32 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:81:32 Unresolved reference 'UNCATEGORIZED'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:83:33 Unresolved reference 'FULL_STRING'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:92:71 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:95:76 Unresolved reference 'HANGUL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:114:25 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:124:44 Unresolved reference 'WHITESPACE'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:164:71 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:177:31 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:189:55 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:189:86 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:196:42 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:201:47 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:201:67 Unresolved reference 'NUMBER_TRANS'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:213:45 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:216:55 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:226:45 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:254:71 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:267:31 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:285:42 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:293:45 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:296:55 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:304:45 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:346:49 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.CharVector?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:346:66 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.danawa.util.CharVector?'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:353:28 Unresolved reference 'NUMBER_TRANS'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:359:80 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:374:39 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:375:17 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:377:17 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:390:31 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:407:44 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:408:48 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:409:46 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:409:67 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:409:95 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:415:53 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:415:81 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:415:106 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:423:46 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:423:67 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:424:50 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:424:75 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:429:44 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:430:48 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:431:52 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:432:46 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:432:67 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:433:50 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:434:54 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:434:83 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:437:46 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:437:67 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:438:50 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:438:75 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:439:54 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:439:83 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:452:57 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:457:54 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:467:55 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:467:85 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:468:56 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:468:87 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:469:55 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:494:99 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:494:129 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:501:53 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:509:53 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:538:49 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:570:71 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:571:62 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:571:89 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:573:89 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:582:49 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:595:46 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:604:99 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:607:66 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:608:68 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:608:99 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:609:75 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:609:107 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:610:200 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:627:63 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:627:95 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:628:67 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:628:94 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:628:122 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:628:152 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:631:70 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:631:102 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:632:67 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:632:94 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:632:122 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:632:152 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:636:67 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:636:94 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:647:71 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:648:72 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:652:53 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:668:53 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:700:53 Unresolved reference 'UNIT_ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:707:49 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:709:49 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:712:53 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:715:92 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:731:37 Unresolved reference 'getType'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:733:91 Unresolved reference 'SYMBOL'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:734:51 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:734:79 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:735:58 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:735:85 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:739:45 Unresolved reference 'MODEL_NAME'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:767:72 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:767:103 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:767:203 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:771:80 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:775:91 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:775:119 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:775:210 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:51 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:80 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:108 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:204 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:235 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:776:332 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:115 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:142 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:236 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:264 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:297 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:780:328 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:781:111 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:115 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:142 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:236 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:264 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:297 Unresolved reference 'ALPHA'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:784:328 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:785:97 Unresolved reference 'ALPHANUM'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:826:42 Unresolved reference 'UNIT'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:829:46 Unresolved reference 'NUMBER'.
+e: file:///Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:829:75 Unresolved reference 'UNIT'.

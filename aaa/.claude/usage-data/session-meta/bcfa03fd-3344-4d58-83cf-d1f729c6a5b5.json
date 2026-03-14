@@ -1,0 +1,45 @@
+{
+  "session_id": "bcfa03fd-3344-4d58-83cf-d1f729c6a5b5",
+  "project_path": "/Users/admin/project/integrated-search",
+  "start_time": "2026-02-26T06:28:47.919Z",
+  "duration_minutes": 6,
+  "user_message_count": 1,
+  "assistant_message_count": 51,
+  "tool_counts": {
+    "mcp__plugin_serena_serena__find_symbol": 1,
+    "Glob": 4,
+    "Grep": 10,
+    "Read": 8,
+    "Bash": 5,
+    "Write": 1,
+    "Edit": 1
+  },
+  "languages": {
+    "Markdown": 1,
+    "Java": 2
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 59,
+  "output_tokens": 10684,
+  "first_prompt": "좋아 그럼 이제 실제 테스트 앞서 kafka 메시지 토픽을 발급해야 하는데 로컬로  문제 없는 케이스의 토픽 100건, 문제 있는 케이스의 토픽 100건 이렇게 발급해서 확인하고 싶어",
+  "user_interruptions": 0,
+  "user_response_times": [
+    92.549
+  ],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": true,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 108,
+  "lines_removed": 2,
+  "files_modified": 1,
+  "message_hours": [
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-02-26T06:31:23.951Z"
+  ]
+}

@@ -1,0 +1,284 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+**integrated-search** (`com.cowave`)는 Kotlin 1.9.25 + Spring Boot 3.5.7 기반의 상품 통합 검색 엔진이다. Elasticsearch를 핵심 검색 엔진으로 사용하며, Kafka를 통한 실시간 인덱싱, Redis(Valkey) 캐싱, gRPC 기반 형태소 분석 서비스 연동을 지원한다. 헥사고날 아키텍처를 따르며, 두 개의 독립 부트스트랩 서비스로 구성된다.
+
+## Bootstrap Services
+
+| 서비스 | 설명 | 상세 문서 |
+|--------|------|----------|
+| **search-api** | ES 기반 읽기 전용 REST 검색 API (형태소 분석 + 부스팅) | [`bootstrap/search-api/CLAUDE.md`](bootstrap/search-api/CLAUDE.md) |
+| **dynamic-indexer** | Kafka CDC 이벤트 소비 → ES 실시간 증분 색인 서비스 | [`bootstrap/dynamic-indexer/CLAUDE.md`](bootstrap/dynamic-indexer/CLAUDE.md) |
+
+## Commands
+
+```bash
+# 전체 빌드
+./gradlew build
+
+# Search API 실행 (로컬)
+./gradlew :bootstrap:search-api:bootRun --args='--spring.profiles.active=local'
+
+# Dynamic Indexer 실행 (로컬)
+./gradlew :bootstrap:dynamic-indexer:bootRun --args='--spring.profiles.active=local'
+
+# 특정 모듈 테스트
+./gradlew :application:search:test
+./gradlew :outbound-adapter:keyword:test
+
+# 단일 테스트 클래스 실행
+./gradlew :domain:index:test --tests "com.cowave.search.domain.index.policy.UsedRentalDetectorTest"
+
+# 코드 포맷팅 (커밋 전 필수)
+./gradlew ktlintFormat
+
+# 코드 스타일 검사
+./gradlew ktlintCheck
+
+# Proto/gRPC 코드 생성 (shared 모듈 빌드 시 자동)
+./gradlew :shared:generateProto
+
+# Avro 스키마 다운로드 + 코드 생성 (로컬 only, CI에서는 스킵됨)
+./gradlew :inbound-adapter:handler:generateAvroJava
+
+# 로컬 인프라 (ES, Kafka, Valkey, Kibana 등)
+docker compose up -d
+```
+
+## Architecture
+
+### 헥사고날 아키텍처 레이어
+
+```
+bootstrap/                  → 부트스트랩 (DI 조립, Spring Boot 진입점)
+├── search-api              → REST 검색 API 서비스 (SearchApiApplication)
+└── dynamic-indexer          → Kafka 소비 + ES 인덱싱 서비스 (DynamicIndexerApplication)
+
+application/                → 애플리케이션 서비스 + OutputPort 인터페이스
+├── search                  → 검색 유스케이스, Repository 인터페이스 (OutputPort)
+└── index                   → 인덱싱 유스케이스, Repository 인터페이스 (OutputPort)
+
+domain/                     → 도메인 (순수 Kotlin, 프레임워크 의존성 없음)
+├── search                  → 검색 도메인 모델, 쿼리 모델, 정책(policy)
+├── index                   → 인덱싱 도메인 모델, MergeStrategy, Evaluator
+├── keyword                 → 키워드/형태소 분석 도메인 (KeywordAnalyzer 인터페이스)
+└── proxy                   → 프록시 API 도메인 (Brand/Category/Mall/Manufacturer)
+
+inbound-adapter/            → 인바운드 어댑터 (외부 → 내부)
+├── rest-api                → REST 컨트롤러 + Request/Response DTO + Mapper
+└── handler                 → Kafka Batch 리스너 + Avro CDC 이벤트 핸들러
+
+outbound-adapter/           → 아웃바운드 어댑터 (OutputPort 구현체)
+├── search                  → 검색 Repository → ES 어댑터 + QueryBuilder
+├── index                   → 인덱싱 Repository → ES bulk 어댑터
+├── keyword                 → 키워드 분석 → gRPC 어댑터
+└── proxy                   → 프록시 → HTTP/GraphQL 어댑터
+
+outbound/                   → 인프라 클라이언트/리포지토리 (기술 종속적)
+├── repository/elasticsearch → ES 클라이언트 래퍼
+├── repository/cache        → Redis/Valkey 캐시
+├── client/keyword-analyzer → 형태소 분석 gRPC 클라이언트 (Proto 정의 포함)
+└── client/proxy-api        → 프록시 API WebFlux + GraphQL 클라이언트
+
+shared/                     → 공통 유틸, 예외, gRPC 인터셉터, 응답 DTO
+```
+
+### 의존성 규칙 (위반 금지)
+
+1. **domain** → 외부 의존성 없음. 순수 Kotlin만 사용. Spring 어노테이션 금지.
+2. **application** → domain만 의존. OutputPort는 인터페이스로 정의.
+3. **outbound-adapter** → application의 OutputPort를 구현. domain + outbound(인프라) 의존.
+4. **inbound-adapter** → application의 UseCase를 호출. domain 의존.
+5. **bootstrap** → 모든 레이어를 조립. `@SpringBootApplication`의 `scanBasePackages`로 컴포넌트 스캔 범위 지정.
+
+### 기술 스택
+
+- **Java 21**, **Kotlin 1.9.25**, **Spring Boot 3.5.7**
+- **Elasticsearch 8.x** (elasticsearch-java 클라이언트 8.13.4)
+- **Kafka** (Spring Kafka + Confluent Avro Serializer, Schema Registry)
+- **Redis/Valkey** (Spring Data Redis, 3-node 클러스터)
+- **gRPC** (Spring gRPC, protobuf-kotlin, grpc-kotlin-stub)
+- **GraphQL** (Spring GraphQL, WebFlux)
+- **Kotest 5.9.1** + **MockK** (테스트 프레임워크)
+
+## Key Patterns
+
+### 패키지 이름 규칙
+
+Gradle 모듈명은 하이픈(`inbound-adapter`)이지만, Kotlin 패키지명은 언더스코어(`inbound_adapter`)를 사용한다. scanBasePackages 등록 시 반드시 언더스코어를 사용할 것.
+- 모듈: `inbound-adapter/rest-api` → 패키지: `com.cowave.search.inbound_adapter.api`
+- 모듈: `outbound-adapter/search` → 패키지: `com.cowave.search.outbound_adapter.search`
+- 모듈: `outbound/client/keyword-analyzer` → 패키지: `com.cowave.search.client.keyword_analyzer`
+
+### OutputPort = Repository 인터페이스
+
+이 프로젝트에서 헥사고날의 OutputPort는 `Repository`라는 이름을 사용한다. application 레이어에 인터페이스로 정의하고 outbound-adapter에서 `*Impl`로 구현한다.
+```
+application/search/repository/CatalogRepository.kt    ← 인터페이스 (OutputPort)
+outbound-adapter/search/CatalogRepositoryImpl.kt       ← 구현체
+```
+
+### 도메인 policy 패턴
+
+domain 레이어의 비즈니스 규칙은 `policy/` 하위에 object 또는 companion 함수로 구현한다.
+- `MergeStrategy<T>` — CDC 이벤트 병합 전략 (인터페이스 + 구현: CatalogMergeStrategy, ProductMergeStrategy)
+- `*Evaluator` — 인덱싱/검색 대상 판정 (AdminCatalogEvaluator, ProductEvaluator)
+- `UsedRentalDetector` — 중고/렌탈 상품 판별
+
+## Testing
+
+### 테스트 프레임워크
+
+- Kotest **FunSpec** 스타일 (`context` + `test` 블록)
+- MockK 사용, 네이밍은 `*Test.kt`
+- 한국어 테스트 이름 허용 (예: `test("중고 키워드가 있으면 true 반환")`)
+
+### search-api 관련 테스트
+
+```bash
+./gradlew :domain:search:test
+./gradlew :domain:keyword:test
+./gradlew :application:search:test
+./gradlew :outbound-adapter:search:test
+./gradlew :outbound-adapter:keyword:test
+./gradlew :inbound-adapter:rest-api:test
+```
+
+### dynamic-indexer 관련 테스트
+
+```bash
+./gradlew :domain:index:test
+./gradlew :application:index:test
+./gradlew :inbound-adapter:handler:test
+```
+
+### 단일 테스트 실행
+
+```bash
+./gradlew :domain:index:test --tests "com.cowave.search.domain.index.policy.CatalogMergeStrategyTest"
+./gradlew :domain:index:test --tests "com.cowave.search.domain.index.policy.UsedRentalDetectorTest"
+```
+
+## CI/CD
+
+### 파이프라인 구조
+
+GitLab CI 기반, 5단계 파이프라인으로 구성된다.
+
+```
+prepare → test → build → docker_build_push → manifest_deploy
+```
+
+| Stage | 설명 | 이미지 |
+|-------|------|--------|
+| **prepare** | 환경변수 확인 및 파이프라인 초기화 | docker:27.4.0 |
+| **test** | `./gradlew :${MODULE}:clean :${MODULE}:test` | eclipse-temurin:21-jdk-jammy |
+| **build** | `./gradlew clean ${MODULE}:bootJar` → artifacts 생성 | eclipse-temurin:21-jdk-jammy |
+| **docker_build_push** | Docker 이미지 빌드 → Harbor 푸시 | docker:27.4.0 |
+| **manifest_deploy** | GitOps manifest(values-dev/prod.yaml) 업데이트 | docker:27.4.0 |
+
+### 트리거 조건
+
+- **MR 이벤트**: `develop` 또는 `main` 브랜치 대상 MR + 변경 감지(changes)
+- **Push**: `develop` 또는 `main` 브랜치 직접 push + 변경 감지
+- **Web UI 수동**: `$FORCE_BUILD_TARGET`으로 대상 지정 (`all` 또는 `bootstrap/{service}`)
+- `docker_build_push`는 search-api만 **수동 승인(manual)** 필요, dynamic-indexer는 자동
+- `manifest_deploy`는 `main` 브랜치에서만 실행 (dev + prod 동시 배포)
+
+### search-api CI/CD
+
+설정 파일: `bootstrap/search-api/.gitlab/.gitlab-ci.yml`
+
+변경 감지 대상 (changes):
+```
+bootstrap/search-api/**/*,  shared/**/*,  proto/**/*,
+domain/search/**/*,  domain/keyword/**/*,  application/search/**/*,
+inbound-adapter/rest-api/**/*,  outbound-adapter/keyword/**/*,  outbound-adapter/search/**/*,
+outbound/client/keyword-analyzer/**/*,  outbound/repository/cache/**/*,
+outbound/repository/elasticsearch/common/**/*,  outbound/repository/elasticsearch/backoffice/**/*,
+outbound/repository/elasticsearch/front/**/*
+```
+
+Jobs: `search_api_gradle_test` → `search_api_gradle_build` → `search_api_docker_build_push` (manual) → `search_api_manifest_dev_push` + `search_api_manifest_prod_push`
+
+### dynamic-indexer CI/CD
+
+설정 파일: `bootstrap/dynamic-indexer/.gitlab/.gitlab-ci.yml`
+
+변경 감지 대상 (changes):
+```
+bootstrap/dynamic-indexer/**/*,  shared/**/*,  proto/**/*,
+domain/index/**/*,  domain/keyword/**/*,  application/search/**/*,
+inbound-adapter/handler/**/*,  outbound-adapter/keyword/**/*,  outbound-adapter/index/**/*,
+outbound/repository/elasticsearch/common/**/*,  outbound/repository/elasticsearch/backoffice/**/*,
+outbound/repository/elasticsearch/front/**/*
+```
+
+Jobs: `dynamic_indexer_gradle_test` → `dynamic_indexer_gradle_build` → `dynamic_indexer_docker_build_push` → `dynamic_indexer_manifest_dev_push` + `dynamic_indexer_manifest_prod_push`
+
+### CI 참고 사항
+
+- Avro 스키마 다운로드는 CI에서 스킵됨 (사전 커밋된 `.avsc` 파일로 코드 생성)
+- 빌드 아티팩트: `build/$PROJECT_PATH/libs/`, 1주일 유효
+- Manifest 경로: `apps/next-search/{service}/values/values-{env}.yaml`
+
+## Configuration
+
+### Spring Profile
+
+- `local` — 로컬 개발 (local.properties에서 환경변수 로드)
+- `outbound` — 외부 시스템 연결 설정 (application-outbound.yml, 자동 import)
+- `observability` — OpenTelemetry/메트릭 설정 (자동 import)
+- `override` — 개인별 로컬 오버라이드 (.gitignore 대상)
+
+### 로컬 환경 설정 구조
+
+- `application.yml` — 기본 설정 (환경변수 참조)
+- `application-local.yml` — 로컬 프로필 (local.properties import)
+- `local.properties` — 환경변수 값 정의 (git 관리됨)
+- `application-override.yml` / `override.properties` — 개인 전용 (.gitignore)
+
+### 로컬 인프라 (docker-compose.yml)
+
+| 서비스 | 포트 | 비고 |
+|--------|------|------|
+| Elasticsearch | 9200 | single-node, xpack.security 비활성화 |
+| Kibana | 5601 | ES 대시보드 |
+| Kafka | 9092 | Confluent CP |
+| Schema Registry | 8081 | Avro 스키마 관리 |
+| Kafka UI | 8080 | 토픽/컨슈머 모니터링 |
+| Valkey Cluster | 6379-6381 | 3-node, 레플리카 없음 |
+
+## Conventions
+
+### 커밋 메시지 (한글)
+
+타입: `feat`, `fix`, `refactor`, `design`, `comment`, `style`, `docs`, `test`, `chore`, `init`, `rename`, `remove`
+형식: `feat: 검색 필터 로직 추가` (제목 50자 이내, 명령문, 마침표 없음)
+본문: "어떻게" 보다 "무엇을", "왜"를 설명. 여러 줄은 `-`로 구분.
+꼬리말(선택): `Fixes: #47`, `Resolves: #32`, `Ref: #21`, `Related to: #32, #21`
+
+### 코드 스타일
+
+- ktlint 강제 적용. 커밋 전 반드시 `./gradlew ktlintFormat`
+- Kotlin 컨벤션: immutable data class 선호, sealed interface/class 활용
+- 한국어 주석 허용 (도메인 용어)
+- 로거: `io.github.oshai:kotlin-logging-jvm` 사용, `private val logger by logger()`
+
+### 기능 추가 시 패턴
+
+1. domain에 순수 엔티티/VO/policy 정의
+2. application에 `*ApplicationService` + `*Repository` 인터페이스 (OutputPort) 정의
+3. outbound-adapter에 `*RepositoryImpl` 구현 (ES/Kafka/gRPC 어댑터)
+4. inbound-adapter에 Controller + Request/Response DTO + Mapper 추가 (또는 Kafka Listener)
+5. bootstrap의 `scanBasePackages`에 새 패키지 등록 (언더스코어 주의)
+
+### 빌드 특이사항
+
+- `settings.gradle.kts`가 `fileTree(".")` + `include("**/build.gradle.kts")`로 모듈을 자동 탐색
+- 모든 모듈의 build 디렉토리가 루트 `build/` 하위로 통합됨 (`layout.buildDirectory`)
+- `BootJar`는 allSubProjects에서 `enabled = false`로 설정, bootstrap 모듈에서만 재활성화
+- `allSubProjects`는 leaf 모듈(subprojects가 비어있는)에만 플러그인/의존성 적용

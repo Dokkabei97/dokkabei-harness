@@ -1,0 +1,161 @@
+---
+title: "3-5 Milvus 벡터 스토어 실전 연동"
+aliases:
+  - Milvus 실전 연동
+  - Milvus Vector Store
+tags:
+  - llm-rag
+  - phase3
+  - milvus
+  - vector-db
+created: ""
+updated: ""
+phase: "3-5"
+status: "todo"
+difficulty: "고급"
+---
+
+> [!summary]
+> Milvus는 대규모 벡터 검색 성능과 운영 안정성이 높아 RAG 인프라 핵심 요소다.  
+> Collection/partition 설계, 인덱스 유형(IVF_FLAT, HNSW, DiskANN), 하이브리드 검색이 실전 품질을 좌우한다.  
+> LangChain 연동과 배치 임베딩 파이프라인까지 연결해 ES+Milvus 확장 기반을 만든다.
+
+## 관련 노트
+[[3-2 Advanced RAG]]
+[[3-3 Modular RAG]]
+[[3-4 문서 청킹 전략 심화]]
+[[3-6 ES-Milvus 하이브리드 RAG 아키텍처]]
+[[RAG 운영 가이드]]
+
+## 개념 설명
+Milvus는 벡터 저장/유사도 검색 특화 시스템이다.  
+RAG에서 특히 대규모 문서군의 ANN 검색 지연을 낮추는 데 유리하다.
+
+`Collection`은 논리적 테이블이다.  
+Schema에는 id, vector field, text, metadata 등이 들어간다.  
+`Partition`은 tenant, domain, 언어, 시간축 분리 등을 위한 물리적 필터링 단위다.
+
+`IVF_FLAT`은 클러스터 기반 접근으로 정확도/속도 균형이 상대적으로 좋다.  
+`HNSW`는 graph 구조 탐색으로 빠른 top-k 성능이 강점이다.  
+`DiskANN`은 대용량·저비용 운영에서 SSD 오프로딩을 통해 비용을 낮출 수 있다.
+
+Dense + Sparse 하이브리드 검색은 keyword와 semantic을 합쳐 recall을 개선한다.  
+LangChain의 Milvus 통합은 빠른 PoC부터 운영 이전까지 일관된 인터페이스를 제공한다.
+
+### Collection 설계 원칙
+임베딩 차원은 모델 변경시 일치해야 한다.  
+메타데이터 인덱스는 tenant/date/project처럼 빈번한 필터에 먼저 둔다.  
+soft delete/버전 필드로 오래된 텍스트 추적을 한다.  
+동일 내용 업데이트는 upsert 전략으로 처리한다.
+
+### 파티션 설계 포인트
+tenant 분리로 보안과 성능을 동시에 확보한다.  
+도메인별 파티션은 검색 범위를 축소해 latency를 낮춘다.  
+시간 기반 파티션은 최신성 우선 질의에 유리하다.  
+파티션 오버헤드가 높으면 운영 쿼터와 연결 정책을 조정해야 한다.
+
+## Python 코드 예제 (Milvus + LangChain + 하이브리드 검색)
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain_milvus import Milvus
+from langchain_core.documents import Document
+from sentence_transformers import CrossEncoder
+
+emb = OpenAIEmbeddings(model="text-embedding-3-small")
+
+# 1) Milvus 컬렉션 및 retriever 구성
+vector_store = Milvus(
+    embedding_function=emb,
+    collection_name="rag_notes_phase3_3_5",
+    connection_args={"uri": "http://localhost:19530"},
+    vector_field="vector",
+    index_params={
+        "index_type": "HNSW",
+        "metric_type": "COSINE",
+        "params": {"M": 16, "efConstruction": 64}
+    },
+    consistency_level="Session"
+)
+
+retriever_dense = vector_store.as_retriever(
+    search_kwargs={"k": 6, "expr": 'tenant == "engineering"'}
+)
+
+# 2) sparse 후보(예: BM25 등) - 실제로는 별도 구현 또는 ES 연동
+def sparse_search(query: str):
+    return [
+        Document(page_content="예시 sparse snippet", metadata={"score": 0.82, "source": "bm25"})
+    ]
+
+# 3) hybrid fusion
+def hybrid_search(q: str, dense_k=6, sparse_k=6):
+    dense_docs = retriever_dense.invoke(q)
+    sparse_docs = sparse_search(q)[:sparse_k]
+    pool = dense_docs + sparse_docs
+    rerank_model = CrossEncoder("BAAI/bge-reranker-large")
+    pairs = [(q, d.page_content) for d in pool]
+    scores = rerank_model.predict(pairs)
+    ranked = sorted(zip(pool, scores), key=lambda x: x[1], reverse=True)
+    return [d for d, s in ranked[:6]]
+
+hybrid = hybrid_search("사용자 인증 로그 파이프라인이 어떤 순서로 동작해?")
+print(hybrid)
+```
+
+## 코드 예제 (배치 임베딩 적재 파이프라인)
+```python
+import uuid
+from tqdm import tqdm
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+docs = [
+    "RAG 아키텍처 문서 1...",
+    "RAG 운영 매뉴얼 2..."
+]
+splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+chunks = []
+for d in docs:
+    for c in splitter.split_text(d):
+        chunks.append(
+            Document(
+                page_content=c,
+                metadata={"tenant": "engineering", "source": "wiki", "doc_id": str(uuid.uuid4())}
+            )
+        )
+
+# 배치 단위 upsert
+batch_size = 64
+for i in range(0, len(chunks), batch_size):
+    batch = chunks[i:i+batch_size]
+    vector_store.add_documents(batch, ids=[str(uuid.uuid4()) for _ in batch])
+
+print(f"upsert count={len(chunks)}")
+```
+
+## 표: Milvus 인덱스 비교
+|인덱스|특징|장점|단점|추천 시나리오|
+|---|---|---|---|---|
+|IVF_FLAT|클러스터 중심|구현 단순, 안정적|메모리/속도 트레이드오프|중간 규모, 정확도 우선|
+|HNSW|그래프 탐색|빠른 응답, 좋은 상호탐색|메모리 요구 가능|실시간 검색, 대규모|
+|DiskANN|디스크 중심|저비용 저장, 큰 데이터 대응|초기 warmup 비용|저장비용 제약, 대용량|
+
+## 실습 체크리스트
+- [ ] Milvus 서버/데이터베이스 접근 정책과 네트워크 보안 설정
+- [ ] collection schema에서 vector 차원과 메타 필드 동기화
+- [ ] tenant/date/domain filter를 expr에서 테스트
+- [ ] IVF_FLAT/HNSW/DiskANN로 동일 질의 recall 비교
+- [ ] k=3,5,10별 latency 측정
+- [ ] 배치 크기(32/64/128)별 적재 시간과 QPS 추적
+- [ ] 인덱스 빌드 후 compaction/flush 로그 점검
+- [ ] dense + sparse 후보합성 후 rerank 품질 측정
+- [ ] 업서트 id 충돌 검사와 멱등성 검증
+- [ ] 하드 삭제 vs soft delete 정책 선택
+- [ ] 백업/복구 시나리오 점검
+- [ ] 파티션 수 과다 시 검색 오버헤드 확인
+- [ ] 실패 시 fallback ES로 전환 테스트
+- [ ] 운영 모니터링: disk, mem, cpu, query_error rate
+- [ ] 3-6 노트에서 ES-Milvus 병렬 라우팅 설계
+
+## 실전 설계 메모
+Milvus는 단독으로도 강력하지만 ES와 결합했을 때 실무성이 높아진다.  
+파이프라인의 검색 파트만 바꾸어도 전체 구조는 유지되므로 앞단 모듈화(3-3)가 매우 중요하다.

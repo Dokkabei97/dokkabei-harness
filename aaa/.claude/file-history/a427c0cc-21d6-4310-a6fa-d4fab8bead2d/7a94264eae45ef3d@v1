@@ -1,0 +1,44 @@
+package com.cowave.search.application.index.service.proxy
+
+import com.cowave.search.application.index.property.LocalCacheProperties
+import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
+import com.cowave.search.domain.proxy.manufacturer.ManufacturerProxyReader
+import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
+import com.cowave.shared.cache.GlobalCache
+import com.cowave.shared.cache.LocalCacheFactory
+import com.cowave.shared.cache.TieredLoadingCacheFactory
+import org.springframework.stereotype.Service
+
+@Service
+class ManufacturerApplicationService(
+    private val manufacturerProxyReader: ManufacturerProxyReader,
+    private val manufacturerRepository: ManufacturerRepository,
+    manufacturerGlobalCache: GlobalCache<Long, ManufacturerProjection>,
+    localCacheProperties: LocalCacheProperties,
+) {
+    private val localCache =
+        LocalCacheFactory.create<Long, ManufacturerProjection>(
+            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
+            ttlSeconds = localCacheProperties.manufacturer.ttlSeconds,
+        )
+
+    private val tieredCache =
+        TieredLoadingCacheFactory.create(
+            localCache = localCache,
+            globalCache = manufacturerGlobalCache,
+            fetcher = { ids -> manufacturerProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
+        )
+
+    fun getCachedAllByIds(ids: List<Long>): Map<Long, ManufacturerProjection> =
+        tieredCache.getAll(ids)
+            .filterValues { it != null }
+            .mapValues { it.value!! }
+
+    fun getAllByIds(ids: List<Long>): List<ManufacturerProjection> =
+        if (ids.isEmpty()) emptyList()
+        else manufacturerRepository.getAllByIds(ids)
+
+    companion object {
+        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.manufacturer"
+    }
+}

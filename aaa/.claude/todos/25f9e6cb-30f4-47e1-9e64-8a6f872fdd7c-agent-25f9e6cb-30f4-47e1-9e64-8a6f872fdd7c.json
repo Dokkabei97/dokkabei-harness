@@ -1,0 +1,32 @@
+[
+  {
+    "content": "브로드캐스트 패턴 구현을 위한 Redis 설정 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Redis Pub/Sub 브로드캐스트 서비스 구현",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "수동 동기화 API에 브로드캐스트 기능 통합",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "캐시 무효화 리스너 구현",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "테스트 및 검증",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

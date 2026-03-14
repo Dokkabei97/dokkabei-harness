@@ -1,0 +1,14 @@
+{
+  "id": "2",
+  "subject": "JVM/GC 튜닝 커리큘럼 섹션 작성",
+  "description": "JVM 메모리 구조 심화, GC 알고리즘(G1, ZGC, Shenandoah) 상세 비교, GC 튜닝 실전 가이드, JVM 옵션 체크리스트, 프로파일링 도구 활용법, JVM 성능 모니터링, 컨테이너 환경에서의 JVM 튜닝 등을 포함한 상세 커리큘럼 섹션을 작성한다.",
+  "activeForm": "JVM/GC 튜닝 심화 커리큘럼 섹션 작성 중",
+  "owner": "tech-leader",
+  "status": "completed",
+  "blocks": [
+    "7"
+  ],
+  "blockedBy": [
+    "1"
+  ]
+}

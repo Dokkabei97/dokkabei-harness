@@ -1,0 +1,36 @@
+{
+  "session_id": "a2079f94-feda-4397-a919-a057e484e1fc",
+  "project_path": "/Users/admin/project/shopping-k8s-manifest",
+  "start_time": "2026-03-09T03:28:27.240Z",
+  "duration_minutes": 1,
+  "user_message_count": 1,
+  "assistant_message_count": 3,
+  "tool_counts": {
+    "Edit": 1
+  },
+  "languages": {
+    "YAML": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 9,
+  "output_tokens": 616,
+  "first_prompt": "@infra/eck-stack/dev/values-dev.yaml data 노드의 pvc 용량을 150Gi에서 1테라바이트로 변경하고 싶어",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 1,
+  "lines_removed": 1,
+  "files_modified": 1,
+  "message_hours": [
+    12
+  ],
+  "user_message_timestamps": [
+    "2026-03-09T03:28:54.589Z"
+  ]
+}

@@ -1,0 +1,140 @@
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-5-import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-6-import com.cowave.search.application.index.dto.UnlinkedProductRequest
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-7-import com.cowave.search.application.index.mapper.LegacySyncMapper
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:8:import com.cowave.search.application.index.repository.LegacyReserveSyncRepository
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-9-import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-10-import com.cowave.search.domain.index.dto.ChangedData
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-11-import com.cowave.search.domain.index.dto.LegacyProductData
+--
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-23-
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-24-@Service
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-25-@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true", matchIfMissing = false)
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:26:class LegacyReserveSyncApplicationService(
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:27:    private val legacyReserveSyncRepository: LegacyReserveSyncRepository,
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-28-    private val cachedProxyApplicationService: CachedProxyApplicationService,
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-29-) {
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-30-    private val logger by logger()
+--
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-91-                }
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-92-            }
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-93-
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:94:            if (linked.isNotEmpty()) pushTasks.add { legacyReserveSyncRepository.pushLinkedProducts(linked, op) }
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:95:            if (unlinked.isNotEmpty()) pushTasks.add { legacyReserveSyncRepository.pushUnlinkedProducts(unlinked, op) }
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-96-            if (unlinkedDeletes.isNotEmpty()) {
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-97-                pushTasks.add {
+application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt:98:                    legacyReserveSyncRepository.pushUnlinkedProductDeletes(
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-99-                        unlinkedDeletes,
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-100-                    )
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt-101-                }
+--
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-5-import com.cowave.search.application.index.dto.UnlinkedProductRequest
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-6-import com.cowave.search.domain.index.enums.Operation
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-7-
+application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt:8:interface LegacyReserveSyncRepository {
+/Users/admin/project/integrated-search/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-9-    suspend fun pushLinkedProducts(
+application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-10-        products: List<LinkedProductRequest>,
+application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt-11-        operation: Operation,
+--
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-3-import com.cowave.search.application.index.dto.LinkedProductRequest
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-4-import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-5-import com.cowave.search.application.index.dto.UnlinkedProductRequest
+outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt:6:import com.cowave.search.application.index.repository.LegacyReserveSyncRepository
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-7-import com.cowave.search.client.legacy_api.LegacyApiClient
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-8-import com.cowave.search.domain.index.enums.Operation
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-9-import com.cowave.shared.utils.logger
+--
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-11-import org.springframework.stereotype.Component
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-12-
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-13-@Component
+outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt:14:class LegacyReserveSyncRepositoryImpl(
+outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-15-    private val legacyApiClient: LegacyApiClient,
+outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt:16:) : LegacyReserveSyncRepository {
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-17-    private val logger by logger()
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-18-
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt-19-    override suspend fun pushLinkedProducts(
+--
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-16-    FunSpec({
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-17-
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-18-        val legacyApiClient = mockk<LegacyApiClient>()
+outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt:19:        val repository = LegacyReserveSyncRepositoryImpl(legacyApiClient)
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-20-
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-21-        beforeEach {
+/Users/admin/project/integrated-search/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt-22-            coEvery { legacyApiClient.pushQueue(any(), any(), any()) } returns Unit
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-2-
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-3-import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.ProductCdcEnvelope
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-4-import com.cowave.search.application.index.mapper.LegacySyncMapper
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt:5:import com.cowave.search.application.index.service.LegacyReserveSyncApplicationService
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-6-import com.cowave.search.domain.index.policy.ProductMergeStrategy
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-7-import com.cowave.search.inbound_adapter.legacy.mapper.toChangedProductData
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-8-import com.cowave.shared.utils.logger
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-12-import org.springframework.kafka.listener.BatchAcknowledgingConsumerAwareMessageListener
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-13-import org.springframework.kafka.support.Acknowledgment
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-14-
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt:15:class LegacyReserveSyncListener(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt:16:    private val legacyReserveSyncApplicationService: LegacyReserveSyncApplicationService,
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-17-) : BatchAcknowledgingConsumerAwareMessageListener<SpecificRecord, SpecificRecord> {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-18-    private val logger by logger()
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-19-
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-40-                }
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-41-
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-42-            val mergedDocuments = ProductMergeStrategy.merge(changedDocuments)
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt:43:            legacyReserveSyncApplicationService.syncToLegacy(LegacySyncMapper.convertToChangedLegacyData(mergedDocuments))
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-44-        }.onSuccess {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-45-            acknowledgment?.acknowledge()
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt-46-        }.onFailure { ex ->
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-13-import org.springframework.util.backoff.FixedBackOff
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-14-import org.springframework.util.backoff.FixedBackOff.UNLIMITED_ATTEMPTS
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-15-
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt:16:object LegacyReserveSyncContainerFactory {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-17-    fun createCdcContainer(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt:18:        dynamicIndexConsumer: LegacyReserveSyncConsumerProperties.DynamicIndexConsumer,
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-19-        listener: BatchAcknowledgingConsumerAwareMessageListener<SpecificRecord, SpecificRecord>,
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-20-    ): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-21-        val containerFactory =
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-39-        }
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-40-    }
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-41-
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt:42:    private fun getKafkaConsumerProperties(dynamicIndexConsumer: LegacyReserveSyncConsumerProperties.DynamicIndexConsumer): Map<String, Any> =
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-43-        mutableMapOf(
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-44-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to dynamicIndexConsumer.bootstrapServers,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt-45-            ConsumerConfig.ISOLATION_LEVEL_CONFIG to IsolationLevel.READ_COMMITTED.toString().lowercase(),
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-1-package com.cowave.search.inbound_adapter.legacy.config
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-2-
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:3:import com.cowave.search.application.index.service.LegacyReserveSyncApplicationService
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:4:import com.cowave.search.inbound_adapter.legacy.listener.LegacyReserveSyncListener
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-5-import org.apache.avro.specific.SpecificRecord
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-6-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-7-import org.springframework.context.annotation.Bean
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-10-
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-11-@Configuration
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-12-@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true", matchIfMissing = true)
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:13:class LegacyReserveSyncConfig(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:14:    private val legacyReserveSyncConsumerProperties: LegacyReserveSyncConsumerProperties,
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:15:    private val legacyReserveSyncApplicationService: LegacyReserveSyncApplicationService,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-16-) {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-17-    @Bean
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:18:    fun legacyReserveSyncKafkaListenerContainer(): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-19-        val listener =
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:20:            LegacyReserveSyncListener(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:21:                legacyReserveSyncApplicationService = legacyReserveSyncApplicationService,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-22-            )
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:23:        return LegacyReserveSyncContainerFactory.createCdcContainer(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt:24:            dynamicIndexConsumer = legacyReserveSyncConsumerProperties.productCdc,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-25-            listener = listener,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-26-        )
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt-27-    }
+--
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-3-import org.springframework.boot.context.properties.ConfigurationProperties
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-4-
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-5-@ConfigurationProperties(prefix = "legacy-sync-consumer")
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt:6:data class LegacyReserveSyncConsumerProperties(
+inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-7-    val productCdc: DynamicIndexConsumer,
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-8-) {
+/Users/admin/project/integrated-search/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt-9-    data class DynamicIndexConsumer(

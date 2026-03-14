@@ -1,0 +1,212 @@
+     1→<!DOCTYPE html>
+     2→<html>
+     3→<head>
+     4→<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+     5→<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+     6→<title>Test results - Test Summary</title>
+     7→<link href="css/base-style.css" rel="stylesheet" type="text/css"/>
+     8→<link href="css/style.css" rel="stylesheet" type="text/css"/>
+     9→<script src="js/report.js" type="text/javascript"></script>
+    10→</head>
+    11→<body>
+    12→<div id="content">
+    13→<h1>Test Summary</h1>
+    14→<div id="summary">
+    15→<table>
+    16→<tr>
+    17→<td>
+    18→<div class="summaryGroup">
+    19→<table>
+    20→<tr>
+    21→<td>
+    22→<div class="infoBox" id="tests">
+    23→<div class="counter">15</div>
+    24→<p>tests</p>
+    25→</div>
+    26→</td>
+    27→<td>
+    28→<div class="infoBox" id="failures">
+    29→<div class="counter">4</div>
+    30→<p>failures</p>
+    31→</div>
+    32→</td>
+    33→<td>
+    34→<div class="infoBox" id="ignored">
+    35→<div class="counter">0</div>
+    36→<p>ignored</p>
+    37→</div>
+    38→</td>
+    39→<td>
+    40→<div class="infoBox" id="duration">
+    41→<div class="counter">0.598s</div>
+    42→<p>duration</p>
+    43→</div>
+    44→</td>
+    45→</tr>
+    46→</table>
+    47→</div>
+    48→</td>
+    49→<td>
+    50→<div class="infoBox failures" id="successRate">
+    51→<div class="percent">73%</div>
+    52→<p>successful</p>
+    53→</div>
+    54→</td>
+    55→</tr>
+    56→</table>
+    57→</div>
+    58→<div class="tab-container">
+    59→<ul class="tabLinks">
+    60→<li>
+    61→<a href="#">Failed tests</a>
+    62→</li>
+    63→<li>
+    64→<a href="#">Packages</a>
+    65→</li>
+    66→<li>
+    67→<a href="#">Classes</a>
+    68→</li>
+    69→</ul>
+    70→<div class="tab">
+    71→<h2>Failed tests</h2>
+    72→<ul class="linkList">
+    73→<li>
+    74→<a href="classes/com.danawa.search.analysis.product.HighlighterTest.html">HighlighterTest</a>.
+    75→<a href="classes/com.danawa.search.analysis.product.HighlighterTest.html#testPlain">testPlain</a>
+    76→</li>
+    77→<li>
+    78→<a href="classes/com.danawa.search.analysis.product.KoreanWordExtractorTest.html">KoreanWordExtractorTest</a>.
+    79→<a href="classes/com.danawa.search.analysis.product.KoreanWordExtractorTest.html#testUnitDictionaryAdd">testUnitDictionaryAdd</a>
+    80→</li>
+    81→<li>
+    82→<a href="classes/com.danawa.search.analysis.product.KoreanWordExtractorTest.html">KoreanWordExtractorTest</a>.
+    83→<a href="classes/com.danawa.search.analysis.product.KoreanWordExtractorTest.html#testUserDictionary">testUserDictionary</a>
+    84→</li>
+    85→<li>
+    86→<a href="classes/com.danawa.search.analysis.product.ProductNameAnalysisFilterTest.html">ProductNameAnalysisFilterTest</a>.
+    87→<a href="classes/com.danawa.search.analysis.product.ProductNameAnalysisFilterTest.html#testSamplesPerformance">testSamplesPerformance</a>
+    88→</li>
+    89→</ul>
+    90→</div>
+    91→<div class="tab">
+    92→<h2>Packages</h2>
+    93→<table>
+    94→<thead>
+    95→<tr>
+    96→<th>Package</th>
+    97→<th>Tests</th>
+    98→<th>Failures</th>
+    99→<th>Ignored</th>
+   100→<th>Duration</th>
+   101→<th>Success rate</th>
+   102→</tr>
+   103→</thead>
+   104→<tbody>
+   105→<tr>
+   106→<td class="failures">
+   107→<a href="packages/com.danawa.search.analysis.product.html">com.danawa.search.analysis.product</a>
+   108→</td>
+   109→<td>15</td>
+   110→<td>4</td>
+   111→<td>0</td>
+   112→<td>0.598s</td>
+   113→<td class="failures">73%</td>
+   114→</tr>
+   115→</tbody>
+   116→</table>
+   117→</div>
+   118→<div class="tab">
+   119→<h2>Classes</h2>
+   120→<table>
+   121→<thead>
+   122→<tr>
+   123→<th>Class</th>
+   124→<th>Tests</th>
+   125→<th>Failures</th>
+   126→<th>Ignored</th>
+   127→<th>Duration</th>
+   128→<th>Success rate</th>
+   129→</tr>
+   130→</thead>
+   131→<tbody>
+   132→<tr>
+   133→<td class="success">
+   134→<a href="classes/com.danawa.search.analysis.product.DictionaryScanTest.html">com.danawa.search.analysis.product.DictionaryScanTest</a>
+   135→</td>
+   136→<td>1</td>
+   137→<td>0</td>
+   138→<td>0</td>
+   139→<td>0.321s</td>
+   140→<td class="success">100%</td>
+   141→</tr>
+   142→<tr>
+   143→<td class="failures">
+   144→<a href="classes/com.danawa.search.analysis.product.HighlighterTest.html">com.danawa.search.analysis.product.HighlighterTest</a>
+   145→</td>
+   146→<td>1</td>
+   147→<td>1</td>
+   148→<td>0</td>
+   149→<td>0.114s</td>
+   150→<td class="failures">0%</td>
+   151→</tr>
+   152→<tr>
+   153→<td class="failures">
+   154→<a href="classes/com.danawa.search.analysis.product.KoreanWordExtractorTest.html">com.danawa.search.analysis.product.KoreanWordExtractorTest</a>
+   155→</td>
+   156→<td>5</td>
+   157→<td>2</td>
+   158→<td>0</td>
+   159→<td>0.041s</td>
+   160→<td class="failures">60%</td>
+   161→</tr>
+   162→<tr>
+   163→<td class="failures">
+   164→<a href="classes/com.danawa.search.analysis.product.ProductNameAnalysisFilterTest.html">com.danawa.search.analysis.product.ProductNameAnalysisFilterTest</a>
+   165→</td>
+   166→<td>5</td>
+   167→<td>1</td>
+   168→<td>0</td>
+   169→<td>0.110s</td>
+   170→<td class="failures">80%</td>
+   171→</tr>
+   172→<tr>
+   173→<td class="success">
+   174→<a href="classes/com.danawa.search.analysis.product.ProductNameAnalyzerTest.html">com.danawa.search.analysis.product.ProductNameAnalyzerTest</a>
+   175→</td>
+   176→<td>1</td>
+   177→<td>0</td>
+   178→<td>0</td>
+   179→<td>0.007s</td>
+   180→<td class="success">100%</td>
+   181→</tr>
+   182→<tr>
+   183→<td class="success">
+   184→<a href="classes/com.danawa.search.analysis.product.ProductNameTokenizerTest.html">com.danawa.search.analysis.product.ProductNameTokenizerTest</a>
+   185→</td>
+   186→<td>2</td>
+   187→<td>0</td>
+   188→<td>0</td>
+   189→<td>0.005s</td>
+   190→<td class="success">100%</td>
+   191→</tr>
+   192→</tbody>
+   193→</table>
+   194→</div>
+   195→</div>
+   196→<div id="footer">
+   197→<p>
+   198→<div>
+   199→<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+   200→<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+   201→</label>
+   202→</div>Generated by 
+   203→<a href="https://www.gradle.org">Gradle 9.0.0</a> at 2026. 1. 15. 오전 9:26:33</p>
+   204→</div>
+   205→</div>
+   206→</body>
+   207→</html>
+   208→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

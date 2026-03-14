@@ -1,0 +1,193 @@
+     1→package com.danawa.search.analysis.product
+     2→
+     3→import com.danawa.util.CharVector
+     4→import java.util.regex.Pattern
+     5→
+     6→/**
+     7→ * Token type constants and utility methods shared between Kotlin and Java code.
+     8→ * Extracted from ProductNameTokenizer for mixed compilation compatibility.
+     9→ */
+    10→object TokenTypes {
+    11→    const val DEFAULT_MAX_WORD_LEN = 255
+    12→    const val IO_BUFFER_SIZE = 1000
+    13→    const val FULL_TERM_LENGTH = 64
+    14→
+    15→    const val WHITESPACE = "<WHITESPACE>"
+    16→    const val SYMBOL = "<SYMBOL>"
+    17→    const val ALPHA = "<ALPHA>"
+    18→    const val NUMBER = "<NUMBER>"
+    19→    const val HANGUL = "<HANGUL>"
+    20→    const val HANGUL_JAMO = "<HANGUL_JAMO>"
+    21→    const val JAPANESE = "<JAPANESE>"
+    22→    const val CHINESE = "<CHINESE>"
+    23→    const val OTHER_LANGUAGE = "<OTHER_LANGUAGE>"
+    24→    const val UNCATEGORIZED = "<UNCATEGORIZED>"
+    25→
+    26→    const val NUMBER_TRANS = "<NUMBER_TRANS>"
+    27→    const val MODEL_NAME = "<MODEL_NAME>"
+    28→    const val ALPHANUM = "<ALPHANUM>"
+    29→    const val ASCII = "<ASCII>"
+    30→    const val UNIT = "<UNIT>"
+    31→    const val UNIT_ALPHA = "<UNIT_ALPHA>"
+    32→    const val FULL_STRING = "<FULL_STRING>"
+    33→    const val MAKER = "<MAKER>"
+    34→    const val BRAND = "<BRAND>"
+    35→    const val COMPOUND = "<COMPOUND>"
+    36→    const val STOPWORD = "<STOPWORD>"
+    37→
+    38→    const val MAX_UNIT_LENGTH = 10
+    39→    const val SYMBOL_COLON = ':'
+    40→
+    41→    @JvmField
+    42→    val AVAIL_SYMBOLS = charArrayOf('-', '.', '/', '+', '&')
+    43→
+    44→    @JvmField
+    45→    val AVAIL_SYMBOLS_STANDALONE = charArrayOf()
+    46→
+    47→    @JvmField
+    48→    val AVAIL_SYMBOLS_CONNECTOR = charArrayOf('-', '.', '/', '&')
+    49→
+    50→    @JvmField
+    51→    val PTN_NUMBER: Pattern = Pattern.compile(
+    52→        "^(" +
+    53→            "(" +
+    54→                "(" +
+    55→                    "([0-9]{0,3}([,][0-9]{3})*)" + "|" +
+    56→                    "([0-9]+)" +
+    57→                ")" +
+    58→                "([.][0-9]+)*" +
+    59→            ")" +
+    60→        ")" +
+    61→        "(" +
+    62→            "[:]" +
+    63→            "(" +
+    64→                "(" +
+    65→                    "([0-9]{0,3}([,][0-9]{3})*)" + "|" +
+    66→                    "([0-9]+)" +
+    67→                ")" +
+    68→                "([.][0-9]+)*" +
+    69→            ")" +
+    70→        "){0,1}" +
+    71→        "$"
+    72→    )
+    73→
+    74→    @JvmField
+    75→    val AVAIL_SYMBOLS_INNUMBER = charArrayOf(',', '.', SYMBOL_COLON)
+    76→
+    77→    @JvmField
+    78→    val AVAIL_SYMBOLS_SPLIT = charArrayOf(',', '|', '[', ']', '<', '>', '{', '}', '^')
+    79→
+    80→    @JvmStatic
+    81→    fun containsChar(array: CharArray, c: Char): Boolean {
+    82→        for (ch in array) {
+    83→            if (ch == c) return true
+    84→        }
+    85→        return false
+    86→    }
+    87→
+    88→    @JvmStatic
+    89→    fun containsChar(array: CharArray, buf: CharArray, length: Int): Boolean {
+    90→        for (ch in array) {
+    91→            if (!containsChar(array, ch)) return false
+    92→        }
+    93→        return true
+    94→    }
+    95→
+    96→    @JvmStatic
+    97→    fun isSplit(c: Char): String? {
+    98→        val ret = getType(c.code)
+    99→        return when {
+   100→            ret == WHITESPACE || ret == SYMBOL -> ret
+   101→            ret == SYMBOL && (containsChar(AVAIL_SYMBOLS_SPLIT, c) || c.code > 128) -> ret
+   102→            else -> null
+   103→        }
+   104→    }
+   105→
+   106→    @JvmStatic
+   107→    fun getUniType(cv: CharSequence): String? {
+   108→        var prevType: String? = null
+   109→        var type: String? = null
+   110→        for (inx in 0 until cv.length) {
+   111→            prevType = type
+   112→            type = getType(cv[inx].code)
+   113→            if (prevType != null && type != prevType) {
+   114→                type = UNCATEGORIZED
+   115→                break
+   116→            }
+   117→        }
+   118→        return type
+   119→    }
+   120→
+   121→    @JvmStatic
+   122→    fun isAlphaNum(cv: CharVector): Boolean {
+   123→        if (cv.length == 0) return false
+   124→        for (inx in 0 until cv.length) {
+   125→            val type = getType(cv.array()[cv.offset() + inx].code)
+   126→            if (type != ALPHA && type != NUMBER) return false
+   127→        }
+   128→        return true
+   129→    }
+   130→
+   131→    @JvmStatic
+   132→    fun getTermType(cv: CharSequence): String? {
+   133→        var prevType: String? = null
+   134→        var type: String? = null
+   135→        for (inx in 0 until cv.length) {
+   136→            prevType = type
+   137→            type = getType(cv[inx].code)
+   138→            if (prevType != null && type != prevType) {
+   139→                type = when {
+   140→                    (prevType == ALPHA && type == NUMBER) || (prevType == NUMBER && type == ALPHA) -> ALPHANUM
+   141→                    prevType == ALPHANUM && (type == ALPHA || type == NUMBER) -> ALPHANUM
+   142→                    (prevType == ALPHA && type == SYMBOL) || (prevType == NUMBER && type == SYMBOL) ||
+   143→                    (prevType == ALPHANUM && type == SYMBOL) -> ASCII
+   144→                    prevType == ASCII && (type == ALPHA || type == NUMBER || type == SYMBOL) -> ASCII
+   145→                    else -> UNCATEGORIZED
+   146→                }
+   147→            }
+   148→        }
+   149→        return type
+   150→    }
+   151→
+   152→    @JvmStatic
+   153→    fun getType(ch: Int): String {
+   154→        if (Character.isWhitespace(ch)) return WHITESPACE
+   155→
+   156→        return when (Character.getType(ch)) {
+   157→            Character.DASH_PUNCTUATION.toInt(),
+   158→            Character.START_PUNCTUATION.toInt(),
+   159→            Character.END_PUNCTUATION.toInt(),
+   160→            Character.CONNECTOR_PUNCTUATION.toInt(),
+   161→            Character.OTHER_PUNCTUATION.toInt(),
+   162→            Character.MATH_SYMBOL.toInt(),
+   163→            Character.CURRENCY_SYMBOL.toInt(),
+   164→            Character.MODIFIER_SYMBOL.toInt(),
+   165→            Character.OTHER_SYMBOL.toInt(),
+   166→            Character.INITIAL_QUOTE_PUNCTUATION.toInt(),
+   167→            Character.FINAL_QUOTE_PUNCTUATION.toInt() -> SYMBOL
+   168→
+   169→            Character.OTHER_LETTER.toInt() -> {
+   170→                val unicodeBlock = Character.UnicodeBlock.of(ch)
+   171→                when (unicodeBlock) {
+   172→                    Character.UnicodeBlock.HANGUL_SYLLABLES -> HANGUL
+   173→                    Character.UnicodeBlock.HANGUL_COMPATIBILITY_JAMO -> HANGUL_JAMO
+   174→                    Character.UnicodeBlock.HIRAGANA, Character.UnicodeBlock.KATAKANA -> JAPANESE
+   175→                    Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS -> CHINESE
+   176→                    else -> OTHER_LANGUAGE
+   177→                }
+   178→            }
+   179→
+   180→            Character.UPPERCASE_LETTER.toInt(),
+   181→            Character.LOWERCASE_LETTER.toInt() -> ALPHA
+   182→
+   183→            Character.DECIMAL_DIGIT_NUMBER.toInt() -> NUMBER
+   184→
+   185→            else -> UNCATEGORIZED
+   186→        }
+   187→    }
+   188→}
+   189→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

@@ -1,0 +1,26 @@
+[
+  {
+    "content": "참고 자료를 바탕으로 올바른 next-themes 및 CSS 변수 설정",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "suppressHydrationWarning 및 테마 설정 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Tailwind 다크모드 설정 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "다크모드 최종 테스트",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  }
+]

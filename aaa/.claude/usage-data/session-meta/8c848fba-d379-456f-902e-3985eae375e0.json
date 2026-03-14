@@ -1,0 +1,37 @@
+{
+  "session_id": "8c848fba-d379-456f-902e-3985eae375e0",
+  "project_path": "/Users/admin/project/shopping-k8s-manifest",
+  "start_time": "2026-02-23T07:54:57.049Z",
+  "duration_minutes": 1,
+  "user_message_count": 1,
+  "assistant_message_count": 5,
+  "tool_counts": {
+    "Glob": 2,
+    "Read": 1
+  },
+  "languages": {
+    "YAML": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 13,
+  "output_tokens": 61,
+  "first_prompt": "@apps/next-search/legacy-sync/values/values-dev.yaml 에 config를 legacy-sync-consumer:   product-cdc:     bootstrap-servers: ${KAFKA_LEGACY_SYNC_PRODUCT_SERVER}     topic: ${KAFKA_LEGACY_SYNC_PRODUCT_TO…",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    16
+  ],
+  "user_message_timestamps": [
+    "2026-02-23T07:55:37.576Z"
+  ]
+}

@@ -1,0 +1,37 @@
+package models
+
+// Cycle represents a project cycle (sprint).
+type Cycle struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description,omitempty"`
+	StartDate   *string `json:"start_date,omitempty"`
+	EndDate     *string `json:"end_date,omitempty"`
+	Status      string  `json:"status,omitempty"`
+	OwnedBy    string  `json:"owned_by,omitempty"`
+	Project     string  `json:"project"`
+	Workspace   string  `json:"workspace"`
+	IsArchived  bool    `json:"archived_at,omitempty"`
+	Timestamps
+}
+
+// CreateCycleRequest is the request body for creating a cycle.
+type CreateCycleRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	StartDate   string `json:"start_date,omitempty"`
+	EndDate     string `json:"end_date,omitempty"`
+}
+
+// UpdateCycleRequest is the request body for updating a cycle.
+type UpdateCycleRequest struct {
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+	StartDate   *string `json:"start_date,omitempty"`
+	EndDate     *string `json:"end_date,omitempty"`
+}
+
+// CycleItemsRequest is the request body for adding items to a cycle.
+type CycleItemsRequest struct {
+	WorkItems []string `json:"work_items"`
+}

@@ -1,0 +1,11 @@
+{
+  "id": "6",
+  "subject": "code-analyst",
+  "description": "당신은 이 프로젝트의 코드 분석가입니다. Elasticsearch 커스텀 한글 형태소분석기의 전체 코드베이스를 분석해주세요.\n\n프로젝트 경로: /Users/admin/project",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

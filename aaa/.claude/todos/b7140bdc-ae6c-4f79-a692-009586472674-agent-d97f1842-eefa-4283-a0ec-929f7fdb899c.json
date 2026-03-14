@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Examine the dictionary sync API implementation to identify the CommonResponse usage issue",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Check how CommonResponse class is implemented and its FastAPI compatibility",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Review other working API endpoints to understand the correct response pattern",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Fix the dictionary sync API endpoints to properly return FastAPI-compatible responses",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Test the fix to ensure the error is resolved",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "id": "10",
+  "subject": "Phase 8: Kotlin Expert 리뷰",
+  "description": "리뷰 항목:\n- O(n) 성능 이슈 검증 (Kotlin stdlib의 숨은 복사 방지)\n- MutableList 조작 패턴 안전성\n- bit operation 정확성 (DataInput/DataOutput)\n- when expression 활용 제안\n- 불필요한 boxing/unboxing 방지",
+  "activeForm": "Kotlin 리뷰 중",
+  "status": "pending",
+  "blocks": [
+    "12"
+  ],
+  "blockedBy": [
+    "9"
+  ]
+}

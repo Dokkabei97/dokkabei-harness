@@ -1,0 +1,204 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 서비스 개요
+
+**legacy-sync**는 Kafka CDC 상품 이벤트를 소비하여 레거시 백엔드 시스템에 HTTP API로 동기화하는 Spring Boot 서비스이다. dynamic-indexer가 Elasticsearch에 색인하는 것과 달리, legacy-sync는 상품 데이터를 **연동상품(PDM)**과 **비연동상품(TCMPNY_LINK)** 두 경로로 분류하여 레거시 API의 `/pushQueue.json` 엔드포인트에 전송한다.
+
+## Commands
+
+```bash
+# 빌드
+./gradlew :bootstrap:legacy-sync:build
+
+# 로컬 실행
+./gradlew :bootstrap:legacy-sync:bootRun --args='--spring.profiles.active=local'
+
+# 의존 모듈별 테스트
+./gradlew :domain:index:test
+./gradlew :application:index:test
+./gradlew :outbound-adapter:legacy:test
+./gradlew :inbound-adapter:legacy:test
+
+# 단일 테스트 클래스 실행
+./gradlew :outbound-adapter:legacy:test --tests "com.cowave.search.outbound_adapter.legacy.LegacySyncRepositoryImplTest"
+
+# 코드 포맷팅 (커밋 전 필수)
+./gradlew ktlintFormat
+
+# 로컬 인프라 (ES, Kafka, Valkey, Schema Registry 등)
+docker compose up -d
+```
+
+## 의존 모듈 맵
+
+```
+bootstrap/legacy-sync               ← DI 조립, Spring Boot 진입점
+├── shared                           ← 공통 유틸, 예외, 응답 DTO
+├── domain:cdc                       ← Avro 스키마 + 생성 클래스 (Product CDC)
+├── domain:index                     ← ChangedData, MergeStrategy, Operation
+├── domain:proxy                     ← Category, Mall 프록시 도메인
+├── application:index                ← LegacyReserveSyncApplicationService, Repository 인터페이스
+├── inbound-adapter:legacy           ← Kafka Listener, CDC 이벤트 소비 + 매핑
+├── outbound-adapter:legacy          ← LegacyReserveSyncRepository 구현 (HTTP 클라이언트 래핑)
+├── outbound-adapter:proxy           ← 프록시 API (HTTP/GraphQL) 어댑터
+├── outbound:client:legacy-api       ← WebFlux 기반 레거시 API 클라이언트
+├── outbound:client:proxy-api        ← 프록시 API 클라이언트
+└── outbound:repository:cache        ← Valkey 캐시 (Category, Mall 캐싱)
+```
+
+## 데이터 플로우
+
+```
+Kafka (Product CDC 토픽, Avro)
+    │
+    ▼
+LegacyReserveSyncListener (배치 소비)
+    │  filter: categoryId > 0
+    │  map: Avro → ChangedData<Product>
+    ▼
+ProductMergeStrategy.merge()
+    │  같은 ID 이벤트 병합 (offset 순 정렬 → fold)
+    ▼
+LegacySyncMapper.convertToChangedLegacyData()
+    │  Product → LegacyProductData 변환
+    │  DANAWA 채널 데이터 추출 (price, url, benefit, promotion)
+    ▼
+LegacyReserveSyncApplicationService.syncToLegacy()
+    │
+    ├─ getDependencyId() → categoryIds, mallIds 추출
+    ├─ CachedProxyApplicationService.fetchDependencies() → 캐시에서 조회
+    │
+    └─ buildPushTasks() → Operation별 그룹화 후 상품 분류:
+        │
+        ├─ isCatalogMatch == true  →  LinkedProductRequest    → pushQueue("PDM", POST/PUT/DELETE)
+        ├─ op == DELETE            →  UnlinkedDeleteRequest   → pushQueue("TCMPNY_LINK", DELETE)
+        └─ else (CREATE/UPDATE)    →  UnlinkedProductRequest  → pushQueue("TCMPNY_LINK", POST/PUT)
+                                                                    │
+                                                                    ▼
+                                                            Legacy API
+                                                     /pushQueue.json?service={service}
+```
+
+## 핵심 설계
+
+### 상품 분류 전략
+
+| 조건 | 분류 | 대상 서비스 | HTTP 메서드 |
+|------|------|------------|------------|
+| `isCatalogMatch == true` | 연동상품 | PDM | POST/PUT/DELETE |
+| `isCatalogMatch == false` + DELETE | 비연동 삭제 | TCMPNY_LINK | DELETE |
+| `isCatalogMatch == false` + CREATE/UPDATE | 비연동상품 | TCMPNY_LINK | POST/PUT |
+
+카탈로그 매칭 판정: `catalogMatchings?.any { it.source != "NONE" }`
+
+### 조건부 활성화
+
+`@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true")`로 Bean이 등록된다. `application.yml`에서 `index.enabled: false`, `dynamic-indexer.enabled: false`를 설정하여 다른 서비스 컴포넌트와 충돌을 방지한다.
+
+### 비동기 실행 & 장애 격리
+
+- Kafka 리스너는 blocking, 내부 HTTP 호출은 `runBlocking(Dispatchers.IO)` + `supervisorScope`
+- `supervisorScope` 내에서 pushTask별 `async` 실행 → 하나의 실패가 다른 push를 차단하지 않음
+- 리스너 레벨 예외 시 Kafka ACK 미수행 → `DefaultErrorHandler`가 1초 간격 무한 재시도
+
+### 의존성 캐싱
+
+Category, Mall 데이터는 `CachedProxyApplicationService`를 통해 Valkey 캐시에서 조회한다. 배치 내 모든 상품의 고유 ID를 추출하여 한 번에 조회하므로 네트워크 호출을 최소화한다. TTL은 600초(10분).
+
+## Kafka 컨슈머 설정
+
+| 항목 | 값 |
+|------|-----|
+| 토픽 | `cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1` (dynamic-indexer와 동일) |
+| Group ID | `cmn-search-team-group-legacy-sync` (별도 컨슈머 그룹) |
+| Concurrency | 3 |
+| AckMode | `MANUAL_IMMEDIATE` |
+| 에러 핸들링 | `DefaultErrorHandler` (1초 간격, 무한 재시도) |
+| Serializer | Avro (KafkaAvroDeserializer) |
+
+프로퍼티 바인딩: `LegacyReserveSyncConsumerProperties` (`@ConfigurationProperties(prefix = "legacy-sync-consumer")`)
+
+## Legacy API 클라이언트
+
+- **엔드포인트**: `/pushQueue.json?service={PDM|TCMPNY_LINK}`
+- **WebFlux 기반**: `WebClient` + Reactor Netty, 코루틴 `awaitSingle()`
+- **커넥션 풀**: max 50, timeout 500ms (connect + response)
+- **프로퍼티**: `LegacyApiClientProperties` (`@ConfigurationProperties(prefix = "client.legacy-api")`)
+
+## OutputPort 구조
+
+```
+application/index/repository/LegacyReserveSyncRepository.kt   ← 인터페이스 (OutputPort)
+outbound-adapter/legacy/LegacyReserveSyncRepositoryImpl.kt     ← 구현체 (HTTP 클라이언트 래핑)
+```
+
+세 가지 suspend 메서드:
+- `pushLinkedProducts(products, operation)` → PDM 서비스
+- `pushUnlinkedProducts(products, operation)` → TCMPNY_LINK 서비스
+- `pushUnlinkedProductDeletes(products)` → TCMPNY_LINK DELETE
+
+## scanBasePackages
+
+```kotlin
+scanBasePackages = [
+    "com.cowave.shared",
+    "com.cowave.search.inbound_adapter.legacy",
+    "com.cowave.search.domain.index",
+    "com.cowave.search.domain.proxy",
+    "com.cowave.search.application.index",
+    "com.cowave.search.outbound_adapter.legacy",
+    "com.cowave.search.outbound_adapter.proxy",
+    "com.cowave.search.infrastructure.valkey",
+    "com.cowave.search.repository.cache",
+    "com.cowave.search.client.legacy_api",
+    "com.cowave.search.client.proxy_api",
+]
+```
+
+> Gradle 모듈명은 하이픈(`inbound-adapter`)이지만, Kotlin 패키지명은 **언더스코어**(`inbound_adapter`)를 사용한다.
+
+## dynamic-indexer와의 차이
+
+| 구분 | dynamic-indexer | legacy-sync |
+|------|-----------------|-------------|
+| 데이터 싱크 | Elasticsearch (bulk API) | Legacy HTTP API (/pushQueue.json) |
+| 처리 대상 | Catalog + Product CDC | Product CDC만 |
+| 상품 분류 | 단일 인덱스 | 연동(PDM) / 비연동(TCMPNY_LINK) |
+| HTTP 메서드 | ES bulk (PUT/POST) | 명시적 POST/PUT/DELETE |
+| 타임아웃 | bulk 크기에 따라 가변 | 500ms 고정 |
+| offset 관리 | ConsumerCallbackManager (seek/rewind) | 단순 manual ACK |
+
+## 설정 구조
+
+```
+application.yml              ← 기본 설정 (legacy-sync.enabled: true)
+├── application-outbound.yml ← 자동 import: Kafka, Legacy API, Proxy API, Valkey
+application-local.yml        ← local 프로필: local.properties import
+├── local.properties         ← 환경변수 값 정의 (git 관리됨)
+application-override.yml     ← 개인별 오버라이드 (.gitignore 대상)
+├── override.properties      ← 개인별 환경변수 (.gitignore 대상)
+```
+
+## 핵심 파일 빠른 참조
+
+| 역할 | 파일 경로 |
+|------|----------|
+| 부트스트랩 진입점 | `bootstrap/legacy-sync/.../LegacySyncApplication.kt` |
+| Kafka 컨슈머 설정 | `inbound-adapter/legacy/.../config/LegacyReserveSyncKafkaConfig.kt` |
+| 컨슈머 프로퍼티 | `inbound-adapter/legacy/.../config/LegacyReserveSyncConsumerProperties.kt` |
+| 컨테이너 팩토리 | `inbound-adapter/legacy/.../config/LegacyReserveSyncContainerFactory.kt` |
+| Kafka 리스너 | `inbound-adapter/legacy/.../listener/LegacyReserveSyncListener.kt` |
+| CDC 매퍼 | `inbound-adapter/legacy/.../mapper/ChangeDataMapper.kt` |
+| 앱 서비스 | `application/index/.../service/LegacyReserveSyncApplicationService.kt` |
+| 레거시 DTO 매퍼 | `application/index/.../mapper/LegacySyncMapper.kt` |
+| 레거시 도메인 모델 | `application/index/.../dto/LegacyProductData.kt` |
+| 요청 DTO | `application/index/.../dto/LinkedProductRequest.kt`, `UnlinkedProductRequest.kt` |
+| OutputPort 인터페이스 | `application/index/.../repository/LegacyReserveSyncRepository.kt` |
+| OutputPort 구현체 | `outbound-adapter/legacy/.../LegacyReserveSyncRepositoryImpl.kt` |
+| HTTP 클라이언트 | `outbound/client/legacy-api/.../LegacyApiClient.kt` |
+| 클라이언트 설정 | `outbound/client/legacy-api/.../LegacyApiClientConfig.kt` |
+| 기본 설정 | `bootstrap/legacy-sync/.../resources/application.yml` |
+| 외부 연결 설정 | `bootstrap/legacy-sync/.../resources/application-outbound.yml` |
+| 로컬 환경변수 | `bootstrap/legacy-sync/.../resources/local.properties` |

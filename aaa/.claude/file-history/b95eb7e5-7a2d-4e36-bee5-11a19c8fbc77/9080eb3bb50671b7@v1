@@ -1,0 +1,87 @@
+import { NextConfig } from 'next'
+
+const ENV_URLS = {
+    // # 가격비교 GRAPHQL URL(카탈로그, 상품, 카테고리, 속성, 제조사/브랜드 등등)
+    SHOPPING_URL: process.env.SHOPPING_URL,
+    // # 회원 GRAPHQL URL(사용자, 권한, 메뉴 등등)
+    AUTH_URL: process.env.GRAPHQL_AUTH_URL,
+    // # AI 속성 감지 도구 API URL
+    AI_ATTRIBUTE_URL: process.env.AI_ATTRIBUTE_URL
+}
+
+const API_PATHS = Object.entries(ENV_URLS).map(([key, url]) => {
+    const source = `/${key.replace('_URL', '')}/:path*`
+    return {
+        source,
+        destination: `${url}/:path*`
+    }
+})
+
+// Place system REST API proxy rewrites (CORS bypass)
+// Restricted to /api/* paths only to prevent SSRF on internal/actuator endpoints
+const PLACE_REWRITES = [
+    {
+        source: '/place-api/api/:path*',
+        destination: `${process.env.PLACE_API_URL || 'http://localhost:8081'}/api/:path*`
+    }
+]
+
+// Billing system REST API proxy rewrites (CORS bypass)
+// Backend URLs are server-side only (no NEXT_PUBLIC_ prefix)
+const BILLING_REWRITES = [
+    {
+        source: '/billing-api/settlements/:path*',
+        destination: `${process.env.SETTLEMENT_API_URL || 'http://localhost:8085'}/api/settlements/:path*`
+    },
+    {
+        source: '/billing-api/admin/:path*',
+        destination: `${process.env.ADMIN_API_URL || 'http://localhost:8086'}/api/admin/:path*`
+    },
+    {
+        source: '/billing-api/payments/:path*',
+        destination: `${process.env.PAYMENT_API_URL || 'http://localhost:8083'}/api/payments/:path*`
+    },
+    {
+        source: '/billing-api/orders/:path*',
+        destination: `${process.env.ORDER_API_URL || 'http://localhost:8082'}/api/orders/:path*`
+    },
+    {
+        source: '/billing-api/carts/:path*',
+        destination: `${process.env.CART_API_URL || 'http://localhost:8081'}/api/carts/:path*`
+    },
+    {
+        source: '/billing-api/purchase-proxy/:path*',
+        destination: `${process.env.PURCHASE_PROXY_API_URL || 'http://localhost:8098'}/api/purchase-proxy/:path*`
+    },
+    // INICIS PG checkout & callback proxy (PAYMENT_SERVER_BASE_URL points to admin domain)
+    {
+        source: '/api/payments/checkout/:path*',
+        destination: `${process.env.PAYMENT_API_URL || 'http://localhost:8083'}/api/payments/checkout/:path*`
+    },
+    {
+        source: '/api/payments/inicis/:path*',
+        destination: `${process.env.PAYMENT_API_URL || 'http://localhost:8083'}/api/payments/inicis/:path*`
+    }
+]
+
+const nextConfig: NextConfig = {
+    reactStrictMode: true,
+    output: 'standalone',
+    async rewrites() {
+        return [...API_PATHS, ...PLACE_REWRITES, ...BILLING_REWRITES]
+    },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/home',
+                permanent: false
+            }
+        ]
+    },
+    images: {
+        unoptimized: true
+    }
+}
+
+export default nextConfig

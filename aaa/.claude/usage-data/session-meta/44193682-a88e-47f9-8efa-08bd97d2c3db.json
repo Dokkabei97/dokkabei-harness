@@ -1,0 +1,36 @@
+{
+  "session_id": "44193682-a88e-47f9-8efa-08bd97d2c3db",
+  "project_path": "/Users/admin/project/test",
+  "start_time": "2026-03-10T06:01:13.355Z",
+  "duration_minutes": 1,
+  "user_message_count": 3,
+  "assistant_message_count": 0,
+  "tool_counts": {},
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "first_prompt": "No prompt",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15,
+    15,
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-10T06:02:42.851Z",
+    "2026-03-10T06:02:42.849Z",
+    "2026-03-10T06:02:42.849Z"
+  ]
+}

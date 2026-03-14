@@ -1,0 +1,43 @@
+package models
+
+// Module represents a project module.
+type Module struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description,omitempty"`
+	StartDate   *string  `json:"start_date,omitempty"`
+	TargetDate  *string  `json:"target_date,omitempty"`
+	Status      string   `json:"status,omitempty"`
+	Lead        *string  `json:"lead,omitempty"`
+	Members     []string `json:"members,omitempty"`
+	Project     string   `json:"project"`
+	Workspace   string   `json:"workspace"`
+	Timestamps
+}
+
+// CreateModuleRequest is the request body for creating a module.
+type CreateModuleRequest struct {
+	Name        string   `json:"name"`
+	Description string   `json:"description,omitempty"`
+	StartDate   string   `json:"start_date,omitempty"`
+	TargetDate  string   `json:"target_date,omitempty"`
+	Status      string   `json:"status,omitempty"`
+	Lead        string   `json:"lead,omitempty"`
+	Members     []string `json:"members,omitempty"`
+}
+
+// UpdateModuleRequest is the request body for updating a module.
+type UpdateModuleRequest struct {
+	Name        *string  `json:"name,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	StartDate   *string  `json:"start_date,omitempty"`
+	TargetDate  *string  `json:"target_date,omitempty"`
+	Status      *string  `json:"status,omitempty"`
+	Lead        *string  `json:"lead,omitempty"`
+	Members     []string `json:"members,omitempty"`
+}
+
+// ModuleItemsRequest is the request body for adding items to a module.
+type ModuleItemsRequest struct {
+	WorkItems []string `json:"work_items"`
+}

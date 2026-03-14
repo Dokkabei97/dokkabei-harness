@@ -1,0 +1,76 @@
+# legacy-sync 의존성 changes 목록
+.legacy_sync_changes: &legacy_sync_changes
+  - .gitlab-ci.yml
+  - bootstrap/legacy-sync/**/*
+  - shared/**/*
+  - domain/cdc/**/*
+  - domain/index/**/*
+  - domain/proxy/**/*
+  - application/index/**/*
+  - inbound-adapter/legacy/**/*
+  - outbound-adapter/proxy/**/*
+  - outbound-adapter/legacy/**/*
+  - outbound/client/legacy-api/**/*
+  - outbound/client/proxy-api/**/*
+  - outbound/repository/cache/**/*
+
+# MR → 테스트 (코드 검증)
+.mr_rules: &mr_rules
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    changes: *legacy_sync_changes
+
+# Push → 배포 (main/develop)
+.deploy_rules: &deploy_rules
+  - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+    changes: *legacy_sync_changes
+
+# ── Test ──
+legacy_sync_test:
+  extends: .jvm_common
+  stage: test
+  script:
+    - ./gradlew :bootstrap:legacy-sync:clean :bootstrap:legacy-sync:test
+  rules: *mr_rules
+
+# ── Image Tag ──
+legacy_sync_image_tag:
+  extends: .image_tag
+  stage: image_tag
+  needs: []
+  rules: *deploy_rules
+
+# ── Docker Build & Push (Dockerfile 멀티 스테이지 빌드) ──
+legacy_sync_docker_build_push:
+  extends: .build_image_push
+  stage: docker_build_push
+  variables:
+    IMAGE_REPO_PATH: legacy-sync
+  script:
+    - echo "$HARBOR_PASSWORD" | docker login "$HARBOR_URL" -u "$HARBOR_USERNAME" --password-stdin
+    - >-
+      docker build
+      --build-arg HTTP_PROXY=$HTTP_PROXY
+      --build-arg HTTPS_PROXY=$HTTPS_PROXY
+      --build-arg NO_PROXY=$NO_PROXY
+      --build-arg "JAVA_OPTS=${JAVA_OPTS}"
+      -t "$HARBOR_URL/$HARBOR_PROJECT/$IMAGE_REPO_PATH:$IMAGE_TAG"
+      -f bootstrap/legacy-sync/Dockerfile
+      .
+    - docker push "$HARBOR_URL/$HARBOR_PROJECT/$IMAGE_REPO_PATH:$IMAGE_TAG"
+  needs:
+    - job: legacy_sync_image_tag
+      artifacts: true
+  allow_failure: false
+  rules: *deploy_rules
+
+# ── Chart Update ──
+legacy_sync_chart_update:
+  extends: .helm_update_push
+  stage: chart_update
+  variables:
+    SERVICE_NAME: legacy-sync
+  needs:
+    - job: legacy_sync_docker_build_push
+    - job: legacy_sync_image_tag
+      artifacts: true
+  rules: *deploy_rules

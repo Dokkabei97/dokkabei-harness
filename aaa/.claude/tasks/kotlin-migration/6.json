@@ -1,0 +1,13 @@
+{
+  "id": "6",
+  "subject": "Phase 4: Korean Analysis 마이그레이션 (4 files)",
+  "description": "순서: PosTagProbEntry → PreResult → MorphUtil → KoreanWordExtractor\n\n- PosTagProbEntry.PosTag enum → enum class PosTag\n- KoreanWordExtractor의 tabular 2D 배열 초기화 직접 번역\n- MorphUtil 비트 연산 정확히 번역",
+  "activeForm": "Korean Analysis 마이그레이션 중",
+  "status": "pending",
+  "blocks": [
+    "7"
+  ],
+  "blockedBy": [
+    "4"
+  ]
+}

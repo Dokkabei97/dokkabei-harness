@@ -1,0 +1,11 @@
+{
+  "id": "8",
+  "subject": "tech-leader",
+  "description": "당신은 **테크리더**입니다. 기존 커리큘럼(curriculum_final.md)을 기반으로 확장 커리큘럼의 전체 틀을 설계하는 역할입니다.\n\n## 배경\n기존 커리큘럼 `/User",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

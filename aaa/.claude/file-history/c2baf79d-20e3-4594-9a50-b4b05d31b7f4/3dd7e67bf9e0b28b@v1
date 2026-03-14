@@ -1,0 +1,11 @@
+{
+  "name": "agents-utils",
+  "version": "1.0.0",
+  "description": "Claude code plugins 사내 배포용",
+  "author": {
+    "name": "SearchLeader",
+    "email": "wkdrn970@cowave.kr"
+  },
+  "license": "MIT",
+  "repository": "https://labs.cowave.kr/consumer-commerce-dev/search/techlab/agent-utils"
+}

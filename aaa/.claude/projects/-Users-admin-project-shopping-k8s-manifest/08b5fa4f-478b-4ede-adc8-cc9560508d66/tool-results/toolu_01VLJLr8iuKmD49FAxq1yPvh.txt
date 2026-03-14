@@ -1,0 +1,1452 @@
+apps/billing/order-service/templates/deployment.yaml-34-      volumes:
+apps/billing/order-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/order-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/order-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/order-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/order-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/order-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/order-service/templates/deployment.yaml-41-            {{- end }}
+--
+apps/billing/inventory-service/templates/deployment.yaml-34-      volumes:
+apps/billing/inventory-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/inventory-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/inventory-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/inventory-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/inventory-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/inventory-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/inventory-service/templates/deployment.yaml-41-            {{- end }}
+--
+apps/billing/delivery-service/templates/deployment.yaml-34-      volumes:
+apps/billing/delivery-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/delivery-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/delivery-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/delivery-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/delivery-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/delivery-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/delivery-service/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/vendor/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/vendor/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/vendor/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/vendor/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/vendor/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/vendor/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/vendor/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/vendor/templates/deployment.yaml-41-            {{- end }}
+--
+apps/billing/saga-orchestrator/templates/deployment.yaml-34-      volumes:
+apps/billing/saga-orchestrator/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/saga-orchestrator/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/saga-orchestrator/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/saga-orchestrator/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/saga-orchestrator/templates/deployment.yaml-39-            {{- else }}
+apps/billing/saga-orchestrator/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/saga-orchestrator/templates/deployment.yaml-41-            {{- end }}
+--
+apps/billing/cart-service/templates/deployment.yaml-34-      volumes:
+apps/billing/cart-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/cart-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/cart-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/cart-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/cart-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/cart-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/cart-service/templates/deployment.yaml-41-            {{- end }}
+--
+infra/gitlab-runner/values.yaml-458-  ## ref: https://kubernetes.io/docs/concepts/configuration/secret/
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values.yaml-459-
+infra/gitlab-runner/values.yaml-460-  cache:
+infra/gitlab-runner/values.yaml:461:    persistentVolumeClaim:
+infra/gitlab-runner/values.yaml-462-      accessMode: ReadWriteMany
+infra/gitlab-runner/values.yaml-463-      size: 20Gi
+infra/gitlab-runner/values.yaml-464-      storageClassName: "smtx-elf-csi-driver"
+--
+infra/gitlab-runner/values.yaml-679-volumes: []
+infra/gitlab-runner/values.yaml-680-  # Example:
+infra/gitlab-runner/values.yaml-681-  # - name: my-volume
+infra/gitlab-runner/values.yaml:682:  #   persistentVolumeClaim:
+infra/gitlab-runner/values.yaml:683:  #     claimName: my-pvc
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values.yaml-684-
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values.yaml-685-## Array of extra K8s manifests to deploy
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values.yaml-686-##
+--
+apps/fixity-shopping/product/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/product/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/product/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/product/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/product/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/enuri/templates/deployment.yaml-35-      volumes:
+apps/fixity-shopping/enuri/templates/deployment.yaml-36-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/enuri/templates/deployment.yaml-37-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/enuri/templates/deployment.yaml:38:          persistentVolumeClaim:
+apps/fixity-shopping/enuri/templates/deployment.yaml:39:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/enuri/templates/deployment.yaml-40-            {{- else }}
+apps/fixity-shopping/enuri/templates/deployment.yaml-41-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/enuri/templates/deployment.yaml-42-            {{- end }}
+--
+apps/billing/payment-service/templates/deployment.yaml-34-      volumes:
+apps/billing/payment-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/payment-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/payment-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/payment-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/payment-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/payment-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/payment-service/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/keyword/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/keyword/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/keyword/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/keyword/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/keyword/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/keyword/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/keyword/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/keyword/templates/deployment.yaml-41-            {{- end }}
+--
+apps/billing/report-service/templates/deployment.yaml-34-      volumes:
+apps/billing/report-service/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/billing/report-service/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/billing/report-service/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/billing/report-service/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/billing/report-service/templates/deployment.yaml-39-            {{- else }}
+apps/billing/report-service/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/billing/report-service/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-detailinfo/templates/deployment.yaml-41-            {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values/dnw-values.yaml-105-        [runners.cache.kubernetes]
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values/dnw-values.yaml-106-          pvc_name = "gitlab-runner-cache-pvc"
+infra/gitlab-runner/values/dnw-values.yaml-107-  cache:
+infra/gitlab-runner/values/dnw-values.yaml:108:    persistentVolumeClaim:
+infra/gitlab-runner/values/dnw-values.yaml-109-      accessMode: ReadWriteMany
+infra/gitlab-runner/values/dnw-values.yaml-110-      size: 200Gi
+infra/gitlab-runner/values/dnw-values.yaml-111-      storageClassName: "nfs-filesystem"
+--
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values/cmn-values.yaml-104-        [runners.cache.kubernetes]
+/Users/admin/project/shopping-k8s-manifest/infra/gitlab-runner/values/cmn-values.yaml-105-          pvc_name = "gitlab-runner-cache-pvc"
+infra/gitlab-runner/values/cmn-values.yaml-106-  cache:
+infra/gitlab-runner/values/cmn-values.yaml:107:    persistentVolumeClaim:
+infra/gitlab-runner/values/cmn-values.yaml-108-      accessMode: ReadWriteMany
+infra/gitlab-runner/values/cmn-values.yaml-109-      size: 200Gi
+infra/gitlab-runner/values/cmn-values.yaml-110-      storageClassName: "nfs-filesystem"
+--
+apps/fixity-shopping/catalog-content/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/catalog-content/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-content/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/catalog-content/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/catalog-content/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-content/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/catalog-content/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog-content/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/mall/templates/deployment.yaml-35-      volumes:
+apps/fixity-shopping/mall/templates/deployment.yaml-36-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/mall/templates/deployment.yaml-37-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/mall/templates/deployment.yaml:38:          persistentVolumeClaim:
+apps/fixity-shopping/mall/templates/deployment.yaml:39:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/mall/templates/deployment.yaml-40-            {{- else }}
+apps/fixity-shopping/mall/templates/deployment.yaml-41-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/mall/templates/deployment.yaml-42-            {{- end }}
+--
+apps/fixity-shopping/uicategory/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/uicategory/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/uicategory/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/uicategory/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/uicategory/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/uicategory/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/uicategory/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/uicategory/templates/deployment.yaml-41-            {{- end }}
+--
+apps/attr-parser/templates/deployment.yaml-35-      volumes:
+apps/attr-parser/templates/deployment.yaml-36-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/attr-parser/templates/deployment.yaml-37-            {{- if .Values.persistence.enabled }}
+apps/attr-parser/templates/deployment.yaml:38:          persistentVolumeClaim:
+apps/attr-parser/templates/deployment.yaml:39:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/attr-parser/templates/deployment.yaml-40-            {{- else }}
+apps/attr-parser/templates/deployment.yaml-41-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/attr-parser/templates/deployment.yaml-42-            {{- end }}
+--
+apps/fixity-shopping/dictionary/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/dictionary/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/dictionary/templates/deployment.yaml-36-          {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/dictionary/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/dictionary/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/dictionary/templates/deployment.yaml-39-          {{- else }}
+apps/fixity-shopping/dictionary/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/dictionary/templates/deployment.yaml-41-          {{- end }}
+--
+apps/fixity-shopping/catalog/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/catalog/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/catalog/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/catalog/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/catalog/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/catalog/templates/deployment.yaml-41-            {{- end }}
+--
+apps/web/admin/templates/deployment.yaml-35-      volumes:
+apps/web/admin/templates/deployment.yaml-36-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/web/admin/templates/deployment.yaml-37-            {{- if .Values.persistence.enabled }}
+apps/web/admin/templates/deployment.yaml:38:          persistentVolumeClaim:
+apps/web/admin/templates/deployment.yaml:39:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/web/admin/templates/deployment.yaml-40-            {{- else }}
+apps/web/admin/templates/deployment.yaml-41-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/web/admin/templates/deployment.yaml-42-            {{- end }}
+--
+apps/fixity-shopping/groupcatalog/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/groupcatalog/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/groupcatalog/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/groupcatalog/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/groupcatalog/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/groupcatalog/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/groupcatalog/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/groupcatalog/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/category/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/category/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/category/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/category/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/category/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/category/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/category/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/category/templates/deployment.yaml-41-            {{- end }}
+--
+apps/proxy/billing/templates/deployment.yaml-34-      volumes:
+apps/proxy/billing/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/billing/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/proxy/billing/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/proxy/billing/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/billing/templates/deployment.yaml-39-            {{- else }}
+apps/proxy/billing/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/billing/templates/deployment.yaml-41-            {{- end }}
+--
+apps/fixity-shopping/image/templates/deployment.yaml-41-      volumes:
+apps/fixity-shopping/image/templates/deployment.yaml-42-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/image/templates/deployment.yaml-43-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/image/templates/deployment.yaml:44:          persistentVolumeClaim:
+apps/fixity-shopping/image/templates/deployment.yaml:45:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/image/templates/deployment.yaml-46-            {{- else }}
+apps/fixity-shopping/image/templates/deployment.yaml-47-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/image/templates/deployment.yaml-48-            {{- end }}
+--
+infra/streampark/charts/2.1.7/templates/deployment.yml-364-          emptyDir: {}
+infra/streampark/charts/2.1.7/templates/deployment.yml-365-        - name: streampark-storage
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.7/templates/deployment.yml-366-        {{- if .Values.pvc.enabled }}
+infra/streampark/charts/2.1.7/templates/deployment.yml:367:          persistentVolumeClaim:
+infra/streampark/charts/2.1.7/templates/deployment.yml:368:            claimName: {{ include "streampark.fullname" . }}-storage-pvc
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.7/templates/deployment.yml-369-        {{- else }}
+infra/streampark/charts/2.1.7/templates/deployment.yml-370-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.7/templates/deployment.yml-371-        {{- end }}
+--
+infra/streampark/charts/2.1.6/templates/deployment.yml-364-          emptyDir: {}
+infra/streampark/charts/2.1.6/templates/deployment.yml-365-        - name: streampark-storage
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.6/templates/deployment.yml-366-        {{- if .Values.pvc.enabled }}
+infra/streampark/charts/2.1.6/templates/deployment.yml:367:          persistentVolumeClaim:
+infra/streampark/charts/2.1.6/templates/deployment.yml:368:            claimName: {{ include "streampark.fullname" . }}-storage-pvc
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.6/templates/deployment.yml-369-        {{- else }}
+infra/streampark/charts/2.1.6/templates/deployment.yml-370-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/infra/streampark/charts/2.1.6/templates/deployment.yml-371-        {{- end }}
+--
+apps/web/storybook/templates/deployment.yaml-34-      volumes:  
+apps/web/storybook/templates/deployment.yaml-35-        - name: data  
+/Users/admin/project/shopping-k8s-manifest/apps/web/storybook/templates/deployment.yaml-36-          {{- if .Values.persistence.enabled }}  
+apps/web/storybook/templates/deployment.yaml:37:          persistentVolumeClaim:  
+apps/web/storybook/templates/deployment.yaml:38:            claimName: {{ include "app.fullname" . }}  
+/Users/admin/project/shopping-k8s-manifest/apps/web/storybook/templates/deployment.yaml-39-          {{- else }}  
+apps/web/storybook/templates/deployment.yaml-40-          emptyDir: {}  
+/Users/admin/project/shopping-k8s-manifest/apps/web/storybook/templates/deployment.yaml-41-          {{- end }}  
+--
+apps/fixity-shopping/attribute/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/attribute/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/attribute/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/attribute/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/attribute/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/attribute/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/attribute/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/attribute/templates/deployment.yaml-41-            {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values.yaml-409-  ## @param persistence.matchExpressions matchExpressions Persistent Volume selectors
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values.yaml-410-  ##
+infra/valkey-cluster/charts/2.2.0/values.yaml-411-  matchExpressions: {}
+infra/valkey-cluster/charts/2.2.0/values.yaml:412:## persistentVolumeClaimRetentionPolicy
+infra/valkey-cluster/charts/2.2.0/values.yaml-413-## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+infra/valkey-cluster/charts/2.2.0/values.yaml:414:## @param persistentVolumeClaimRetentionPolicy.enabled Controls if and how PVCs are deleted during the lifecycle of a StatefulSet
+infra/valkey-cluster/charts/2.2.0/values.yaml:415:## @param persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+infra/valkey-cluster/charts/2.2.0/values.yaml:416:## @param persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+infra/valkey-cluster/charts/2.2.0/values.yaml:417:persistentVolumeClaimRetentionPolicy:
+infra/valkey-cluster/charts/2.2.0/values.yaml-418-  enabled: false
+infra/valkey-cluster/charts/2.2.0/values.yaml-419-  whenScaled: Retain
+infra/valkey-cluster/charts/2.2.0/values.yaml-420-  whenDeleted: Retain
+--
+apps/fixity-shopping/product-review/templates/deployment.yaml-34-      volumes:
+apps/fixity-shopping/product-review/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product-review/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/fixity-shopping/product-review/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/fixity-shopping/product-review/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product-review/templates/deployment.yaml-39-            {{- else }}
+apps/fixity-shopping/product-review/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/fixity-shopping/product-review/templates/deployment.yaml-41-            {{- end }}
+--
+apps/proxy/graphdoc/templates/deployment.yaml-34-      volumes:
+apps/proxy/graphdoc/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/graphdoc/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/proxy/graphdoc/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/proxy/graphdoc/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/graphdoc/templates/deployment.yaml-39-            {{- else }}
+apps/proxy/graphdoc/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/graphdoc/templates/deployment.yaml-41-            {{- end }}
+--
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-469-        - name: valkey-data
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-470-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-471-        {{- end }}
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml:472:  {{- if .Values.persistentVolumeClaimRetentionPolicy.enabled }}
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml:473:  persistentVolumeClaimRetentionPolicy:
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml:474:    whenDeleted: {{ .Values.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml:475:    whenScaled: {{ .Values.persistentVolumeClaimRetentionPolicy.whenScaled }}
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-476-  {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-477-  {{- if .Values.persistence.enabled }}
+infra/valkey-cluster/charts/2.2.0/templates/valkey-statefulset.yaml-478-  volumeClaimTemplates:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-833-  ## PostgreSQL Primary Persistent Volume Claim Retention Policy
+infra/postgresql/charts/17.5.0/values.yaml-834-  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-835-  ##
+infra/postgresql/charts/17.5.0/values.yaml:836:  persistentVolumeClaimRetentionPolicy:
+infra/postgresql/charts/17.5.0/values.yaml:837:    ## @param primary.persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for Primary Statefulset
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-838-    ##
+infra/postgresql/charts/17.5.0/values.yaml-839-    enabled: false
+infra/postgresql/charts/17.5.0/values.yaml:840:    ## @param primary.persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-841-    ##
+infra/postgresql/charts/17.5.0/values.yaml-842-    whenScaled: Retain
+infra/postgresql/charts/17.5.0/values.yaml:843:    ## @param primary.persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-844-    ##
+infra/postgresql/charts/17.5.0/values.yaml-845-    whenDeleted: Retain
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-846-## @section PostgreSQL read only replica parameters (only used when `architecture` is set to `replication`)
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1287-  ## PostgreSQL Read only Persistent Volume Claim Retention Policy
+infra/postgresql/charts/17.5.0/values.yaml-1288-  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1289-  ##
+infra/postgresql/charts/17.5.0/values.yaml:1290:  persistentVolumeClaimRetentionPolicy:
+infra/postgresql/charts/17.5.0/values.yaml:1291:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for read only Statefulset
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1292-    ##
+infra/postgresql/charts/17.5.0/values.yaml-1293-    enabled: false
+infra/postgresql/charts/17.5.0/values.yaml:1294:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1295-    ##
+infra/postgresql/charts/17.5.0/values.yaml-1296-    whenScaled: Retain
+infra/postgresql/charts/17.5.0/values.yaml:1297:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1298-    ##
+infra/postgresql/charts/17.5.0/values.yaml-1299-    whenDeleted: Retain
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values.yaml-1300-## @section Backup parameters
+--
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-492-| `persistence.size`                                          | Size of data volume                                                                                                                                                                                                                                   | `8Gi`                            |
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-493-| `persistence.matchLabels`                                   | Persistent Volume selectors                                                                                                                                                                                                                           | `{}`                             |
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-494-| `persistence.matchExpressions`                              | matchExpressions Persistent Volume selectors                                                                                                                                                                                                          | `{}`                             |
+infra/valkey-cluster/charts/2.2.0/README.md:495:| `persistentVolumeClaimRetentionPolicy.enabled`              | Controls if and how PVCs are deleted during the lifecycle of a StatefulSet                                                                                                                                                                            | `false`                          |
+infra/valkey-cluster/charts/2.2.0/README.md:496:| `persistentVolumeClaimRetentionPolicy.whenScaled`           | Volume retention behavior when the replica count of the StatefulSet is reduced                                                                                                                                                                        | `Retain`                         |
+infra/valkey-cluster/charts/2.2.0/README.md:497:| `persistentVolumeClaimRetentionPolicy.whenDeleted`          | Volume retention behavior that applies when the StatefulSet is deleted                                                                                                                                                                                | `Retain`                         |
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-498-| `volumePermissions.enabled`                                 | Enable init container that changes volume permissions in the registry (for cases where the default k8s `runAsUser` and `fsUser` values do not work)                                                                                                   | `false`                          |
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-499-| `volumePermissions.image.registry`                          | Init container volume-permissions image registry                                                                                                                                                                                                      | `REGISTRY_NAME`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/README.md-500-| `volumePermissions.image.repository`                        | Init container volume-permissions image repository                                                                                                                                                                                                    | `REPOSITORY_NAME/os-shell`       |
+--
+apps/proxy/image/templates/deployment.yaml-37-      volumes:
+apps/proxy/image/templates/deployment.yaml-38-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/image/templates/deployment.yaml-39-            {{- if .Values.persistence.enabled }}
+apps/proxy/image/templates/deployment.yaml:40:          persistentVolumeClaim:
+apps/proxy/image/templates/deployment.yaml:41:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/image/templates/deployment.yaml-42-            {{- else }}
+apps/proxy/image/templates/deployment.yaml-43-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/image/templates/deployment.yaml-44-            {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-665-        {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-666-  {{- if and .Values.primary.persistence.enabled .Values.primary.persistence.existingClaim }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-667-        - name: {{ .Values.primary.persistence.volumeName }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:668:          persistentVolumeClaim:
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:669:            claimName: {{ tpl .Values.primary.persistence.existingClaim $ }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-670-  {{- else if not .Values.primary.persistence.enabled }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-671-        - name: {{ .Values.primary.persistence.volumeName }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-672-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-673-  {{- else }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:674:  {{- if .Values.primary.persistentVolumeClaimRetentionPolicy.enabled }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:675:  persistentVolumeClaimRetentionPolicy:
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:676:    whenDeleted: {{ .Values.primary.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml:677:    whenScaled: {{ .Values.primary.persistentVolumeClaimRetentionPolicy.whenScaled }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-678-  {{- end }}
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-679-  volumeClaimTemplates:
+infra/postgresql/charts/17.5.0/templates/primary/statefulset.yaml-680-    - apiVersion: v1
+--
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1144-                                      format:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1145-                                        type: string
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1146-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:1147:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1148-                                type: object
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1149-                                properties:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:1150:                                  claimName:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1151-                                    type: string
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1152-                                  readOnly:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1153-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1184-                                  secret: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1185-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1186-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:1187:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1188-                                  csi: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1189-                                  image: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-1190-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2199-                                      format:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2200-                                        type: string
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2201-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:2202:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2203-                                type: object
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2204-                                properties:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:2205:                                  claimName:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2206-                                    type: string
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2207-                                  readOnly:
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2208-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2239-                                  secret: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2240-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2241-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml:2242:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2243-                                  csi: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2244-                                  image: {}
+infra/strimzi-kafka-operator/crds/041-Crd-kafkaconnect.yaml-2245-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml-284-      memory: 1Gi
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml-285-
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml-286-# === PVC 정책 ===
+infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml:287:persistentVolumeClaimRetentionPolicy:
+infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml-288-  enabled: true
+infra/valkey-cluster/charts/2.2.0/values/common/values-prod.yaml-289-  whenDeleted: Delete
+--
+infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml-299-  enabled: false
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml-300-
+/Users/admin/project/shopping-k8s-manifest/infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml-301-# === PVC 정책 ===
+infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml:302:persistentVolumeClaimRetentionPolicy:
+infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml-303-  enabled: true
+infra/valkey-cluster/charts/2.2.0/values/common/values-dev.yaml-304-  whenDeleted: Delete
+--
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1119-                                      format:
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1120-                                        type: string
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1121-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml:1122:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1123-                                type: object
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1124-                                properties:
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml:1125:                                  claimName:
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1126-                                    type: string
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1127-                                  readOnly:
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1128-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1159-                                  secret: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1160-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1161-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml:1162:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1163-                                  csi: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1164-                                  image: {}
+infra/strimzi-kafka-operator/crds/046-Crd-kafkabridge.yaml-1165-                          description: Additional volumes that can be mounted to the pod.
+--
+apps/proxy/shopping/templates/deployment.yaml-34-      volumes:
+apps/proxy/shopping/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/shopping/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/proxy/shopping/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/proxy/shopping/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/shopping/templates/deployment.yaml-39-            {{- else }}
+apps/proxy/shopping/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/proxy/shopping/templates/deployment.yaml-41-            {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-126-            {{- if .Values.backup.cronjob.storage.enabled }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-127-            {{- if .Values.backup.cronjob.storage.existingClaim }}
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-128-            - name: datadir
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml:129:              persistentVolumeClaim:
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml:130:                claimName: {{ printf "%s" (tpl .Values.backup.cronjob.storage.existingClaim .) }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-131-            {{- else }}
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-132-            - name: datadir
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml:133:              persistentVolumeClaim:
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml:134:                claimName: {{ include "postgresql.v1.primary.fullname" . }}-pgdumpall
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-135-            {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-136-            {{- end }}
+infra/postgresql/charts/17.5.0/templates/backup/cronjob.yaml-137-            - name: empty-dir
+--
+infra/postgresql/charts/17.5.0/templates/psp.yaml-18-  volumes:
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/psp.yaml-19-    - 'configMap'
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/psp.yaml-20-    - 'secret'
+infra/postgresql/charts/17.5.0/templates/psp.yaml:21:    - 'persistentVolumeClaim'
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/psp.yaml-22-    - 'emptyDir'
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/psp.yaml-23-    - 'projected'
+infra/postgresql/charts/17.5.0/templates/psp.yaml-24-  hostNetwork: false
+--
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1361-                                      format:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1362-                                        type: string
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1363-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1364:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1365-                                type: object
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1366-                                properties:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1367:                                  claimName:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1368-                                    type: string
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1369-                                  readOnly:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1370-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1401-                                  secret: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1402-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1403-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1404:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1405-                                  csi: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1406-                                  image: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1407-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2416-                                      format:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2417-                                        type: string
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2418-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2419:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2420-                                type: object
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2421-                                properties:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2422:                                  claimName:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2423-                                    type: string
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2424-                                  readOnly:
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2425-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2456-                                  secret: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2457-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2458-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2459:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2460-                                  csi: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2461-                                  image: {}
+infra/strimzi-kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2462-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-857-                                      format:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-858-                                        type: string
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-859-                                description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml:860:                              persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-861-                                type: object
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-862-                                properties:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml:863:                                  claimName:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-864-                                    type: string
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-865-                                  readOnly:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-866-                                    type: boolean
+--
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-897-                                  secret: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-898-                                  configMap: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-899-                                  emptyDir: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml:900:                                  persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-901-                                  csi: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-902-                                  image: {}
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-903-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-956-                              description: Annotations added to the Kubernetes resource.
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-957-                          description: Metadata applied to the resource.
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-958-                      description: Template for Kafka per-pod `Ingress` used for access from outside of Kubernetes.
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml:959:                    persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-960-                      type: object
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-961-                      properties:
+infra/strimzi-kafka-operator/crds/045-Crd-kafkanodepool.yaml-962-                        metadata:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-547-        {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-548-  {{- if and .Values.readReplicas.persistence.enabled .Values.readReplicas.persistence.existingClaim }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-549-        - name: data
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:550:          persistentVolumeClaim:
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:551:            claimName: {{ tpl .Values.readReplicas.persistence.existingClaim $ }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-552-  {{- else if not .Values.readReplicas.persistence.enabled }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-553-        - name: data
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-554-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-555-  {{- else }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:556:  {{- if .Values.readReplicas.persistentVolumeClaimRetentionPolicy.enabled }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:557:  persistentVolumeClaimRetentionPolicy:
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:558:    whenDeleted: {{ .Values.readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml:559:    whenScaled: {{ .Values.readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled }}
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-560-  {{- end }}
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-561-  volumeClaimTemplates:
+infra/postgresql/charts/17.5.0/templates/read/statefulset.yaml-562-    - apiVersion: v1
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1604-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1605-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1606-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:1607:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1608-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1609-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:1610:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1611-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1612-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1613-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1644-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1645-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1646-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:1647:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1648-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1649-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1650-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1823-                                  description: Annotations added to the Kubernetes resource.
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1824-                              description: Metadata applied to the resource.
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1825-                          description: Template for Kafka per-pod `Ingress` used for access from outside of Kubernetes.
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:1826:                        persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1827-                          type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1828-                          properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-1829-                            metadata:
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3214-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3215-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3216-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:3217:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3218-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3219-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:3220:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3221-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3222-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3223-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3254-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3255-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3256-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:3257:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3258-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3259-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3260-                              description: Additional volumes that can be mounted to the pod.
+--
+/Users/admin/project/shopping-k8s-manifest/infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3325-                                  - IPv6
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3326-                              description: "Specifies the IP Families used by the service. Available options are `IPv4` and `IPv6`. If unspecified, Kubernetes will choose the default value based on the `ipFamilyPolicy` setting."
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3327-                          description: Template for ZooKeeper nodes `Service`.
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:3328:                        persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3329-                          type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3330-                          properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-3331-                            metadata:
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4630-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4631-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4632-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:4633:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4634-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4635-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:4636:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4637-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4638-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4639-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4670-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4671-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4672-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:4673:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4674-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4675-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-4676-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6095-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6096-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6097-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:6098:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6099-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6100-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:6101:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6102-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6103-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6104-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6135-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6136-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6137-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:6138:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6139-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6140-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-6141-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7359-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7360-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7361-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:7362:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7363-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7364-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:7365:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7366-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7367-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7368-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7399-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7400-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7401-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:7402:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7403-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7404-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-7405-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8301-                                          format:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8302-                                            type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8303-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:8304:                                  persistentVolumeClaim:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8305-                                    type: object
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8306-                                    properties:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:8307:                                      claimName:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8308-                                        type: string
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8309-                                      readOnly:
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8310-                                        type: boolean
+--
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8341-                                      secret: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8342-                                      configMap: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8343-                                      emptyDir: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml:8344:                                      persistentVolumeClaim: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8345-                                      csi: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8346-                                      image: {}
+infra/strimzi-kafka-operator/crds/040-Crd-kafka.yaml-8347-                              description: Additional volumes that can be mounted to the pod.
+--
+apps/cdc/billing/templates/deployment.yaml-34-      volumes:
+apps/cdc/billing/templates/deployment.yaml-35-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/billing/templates/deployment.yaml-36-            {{- if .Values.persistence.enabled }}
+apps/cdc/billing/templates/deployment.yaml:37:          persistentVolumeClaim:
+apps/cdc/billing/templates/deployment.yaml:38:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/billing/templates/deployment.yaml-39-            {{- else }}
+apps/cdc/billing/templates/deployment.yaml-40-          emptyDir: { }
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/billing/templates/deployment.yaml-41-            {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-569-| `primary.persistence.labels`                                | Labels for the PVC                                                                                                                                                                                                                | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-570-| `primary.persistence.selector`                              | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                                                                                                                           | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-571-| `primary.persistence.dataSource`                            | Custom PVC data source                                                                                                                                                                                                            | `{}`                  |
+infra/postgresql/charts/17.5.0/README.md:572:| `primary.persistentVolumeClaimRetentionPolicy.enabled`      | Enable Persistent volume retention policy for Primary Statefulset                                                                                                                                                                 | `false`               |
+infra/postgresql/charts/17.5.0/README.md:573:| `primary.persistentVolumeClaimRetentionPolicy.whenScaled`   | Volume retention behavior when the replica count of the StatefulSet is reduced                                                                                                                                                    | `Retain`              |
+infra/postgresql/charts/17.5.0/README.md:574:| `primary.persistentVolumeClaimRetentionPolicy.whenDeleted`  | Volume retention behavior that applies when the StatefulSet is deleted                                                                                                                                                            | `Retain`              |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-575-
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-576-### PostgreSQL read only replica parameters (only used when `architecture` is set to `replication`)
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-577-
+--
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-686-| `readReplicas.persistence.labels`                                | Labels for the PVC                                                                                                                                                                                                                          | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-687-| `readReplicas.persistence.selector`                              | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                                                                                                                                     | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-688-| `readReplicas.persistence.dataSource`                            | Custom PVC data source                                                                                                                                                                                                                      | `{}`                  |
+infra/postgresql/charts/17.5.0/README.md:689:| `readReplicas.persistentVolumeClaimRetentionPolicy.enabled`      | Enable Persistent volume retention policy for read only Statefulset                                                                                                                                                                         | `false`               |
+infra/postgresql/charts/17.5.0/README.md:690:| `readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled`   | Volume retention behavior when the replica count of the StatefulSet is reduced                                                                                                                                                              | `Retain`              |
+infra/postgresql/charts/17.5.0/README.md:691:| `readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted`  | Volume retention behavior that applies when the StatefulSet is deleted                                                                                                                                                                      | `Retain`              |
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-692-
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-693-### Backup parameters
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/README.md-694-
+--
+apps/cdc/shopping/templates/deployment.yaml-35-      volumes:
+apps/cdc/shopping/templates/deployment.yaml-36-        - name: data
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/shopping/templates/deployment.yaml-37-          {{- if .Values.persistence.enabled }}
+apps/cdc/shopping/templates/deployment.yaml:38:          persistentVolumeClaim:
+apps/cdc/shopping/templates/deployment.yaml:39:            claimName: {{ .Values.persistence.existingClaim | default (include "app.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/shopping/templates/deployment.yaml-40-          {{- else }}
+apps/cdc/shopping/templates/deployment.yaml-41-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/apps/cdc/shopping/templates/deployment.yaml-42-          {{- end }}
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README_percona.md-33-| `crVersion`                                         | CR Cluster Manifest version                                                                                                                                                                   | `1.20.1`                              |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README_percona.md-34-| `pause`                                             | Stop PSMDB Database safely                                                                                                                                                                    | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README_percona.md-35-| `unmanaged`                                         | Start cluster and don't manage it (cross cluster replication)                                                                                                                                 | `false`                               |
+infra/psmdb-db/README_percona.md:36:| `enableVolumeExpansion`                             | Allows to resize `PersistentVolumeClaim`s by changing `.volumeSpec.persistentVolumeClaim.resources` field                                                                                     | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README_percona.md-37-| `unsafeFlags.tls`                                   | Allows users from configuring a cluster without TLS/SSL certificates                                                                                                                          | `false`                               |
+infra/psmdb-db/README_percona.md-38-| `unsafeFlags.replsetSize`                           | Allows users from configuring a cluster with unsafe parameters: starting it with less than 3 replica set instances or with an even number of replica set instances without additional arbiter | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README_percona.md-39-| `unsafeFlags.mongosSize`                            | Allows users from configuring a sharded cluster with less than 3 config server Pods or less than 2 mongos Pods                                                                                | `false`                               |
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README.md-277-| `crVersion`                                         | CR Cluster Manifest version                                                                                                                                                                   | `1.21.1`                              |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README.md-278-| `pause`                                             | Stop PSMDB Database safely                                                                                                                                                                    | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README.md-279-| `unmanaged`                                         | Start cluster and don't manage it (cross cluster replication)                                                                                                                                 | `false`                               |
+infra/psmdb-db/README.md:280:| `enableVolumeExpansion`                             | Allows to resize `PersistentVolumeClaim`s by changing `.volumeSpec.persistentVolumeClaim.resources` field                                                                                     | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README.md-281-| `enableExternalVolumeAutoscaling`                   | Supress storage discrepancy error if external volume autoscaling is enabled                                                                                                                   | `false`                               |
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/README.md-282-| `unsafeFlags.tls`                                   | Allows users from configuring a cluster without TLS/SSL certificates                                                                                                                          | `false`                               |
+infra/psmdb-db/README.md-283-| `unsafeFlags.replsetSize`                           | Allows users from configuring a cluster with unsafe parameters: starting it with less than 3 replica set instances or with an even number of replica set instances without additional arbiter | `false`                               |
+--
+infra/psmdb-db/templates/cluster.yaml-250-        type: Directory
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-251-        {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-252-      {{- else if $replset.volumeSpec.pvc }}
+infra/psmdb-db/templates/cluster.yaml:253:      persistentVolumeClaim:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-254-{{ $replset.volumeSpec.pvc | toYaml | indent 8 }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-255-      {{- else }}
+infra/psmdb-db/templates/cluster.yaml-256-      emptyDir: {}
+--
+infra/psmdb-db/templates/cluster.yaml-323-          type: Directory
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-324-          {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-325-        {{- else if $replset.hidden.volumeSpec.pvc }}
+infra/psmdb-db/templates/cluster.yaml:326:        persistentVolumeClaim:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-327-{{ $replset.hidden.volumeSpec.pvc | toYaml | indent 10 }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-328-        {{- else }}
+infra/psmdb-db/templates/cluster.yaml-329-        emptyDir: {}
+--
+infra/psmdb-db/templates/cluster.yaml-395-          type: Directory
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-396-          {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-397-        {{- else if $replset.nonvoting.volumeSpec.pvc }}
+infra/psmdb-db/templates/cluster.yaml:398:        persistentVolumeClaim:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-399-{{ $replset.nonvoting.volumeSpec.pvc | toYaml | indent 10 }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-400-        {{- else }}
+infra/psmdb-db/templates/cluster.yaml-401-        emptyDir: {}
+--
+infra/psmdb-db/templates/cluster.yaml-574-          type: Directory
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-575-          {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-576-        {{- else if .Values.sharding.configrs.volumeSpec.pvc }}
+infra/psmdb-db/templates/cluster.yaml:577:        persistentVolumeClaim:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-578-{{ .Values.sharding.configrs.volumeSpec.pvc | toYaml | indent 10 }}
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-db/templates/cluster.yaml-579-        {{- else }}
+infra/psmdb-db/templates/cluster.yaml-580-        emptyDir: {}
+--
+infra/postgresql/charts/17.5.0/values/values-local.yaml-18-  size: 2Gi           # 2GB로 증가 (데이터 지속성 테스트)
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values/values-local.yaml-19-
+/Users/admin/project/shopping-k8s-manifest/infra/postgresql/charts/17.5.0/values/values-local.yaml-20-# PVC 보존 정책 (삭제/보존 테스트)
+infra/postgresql/charts/17.5.0/values/values-local.yaml:21:persistentVolumeClaimRetentionPolicy:
+infra/postgresql/charts/17.5.0/values/values-local.yaml-22-  enabled: true
+infra/postgresql/charts/17.5.0/values/values-local.yaml-23-  whenScaled: Retain
+infra/postgresql/charts/17.5.0/values/values-local.yaml-24-  whenDeleted: Retain  # 데이터 보존 테스트
+--
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1144-                                      format:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1145-                                        type: string
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1146-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:1147:                              persistentVolumeClaim:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1148-                                type: object
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1149-                                properties:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:1150:                                  claimName:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1151-                                    type: string
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1152-                                  readOnly:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1153-                                    type: boolean
+--
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1184-                                  secret: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1185-                                  configMap: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1186-                                  emptyDir: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:1187:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1188-                                  csi: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1189-                                  image: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-1190-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2199-                                      format:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2200-                                        type: string
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2201-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:2202:                              persistentVolumeClaim:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2203-                                type: object
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2204-                                properties:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:2205:                                  claimName:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2206-                                    type: string
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2207-                                  readOnly:
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2208-                                    type: boolean
+--
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2239-                                  secret: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2240-                                  configMap: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2241-                                  emptyDir: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml:2242:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2243-                                  csi: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2244-                                  image: {}
+infra/kafka-operator/crds/041-Crd-kafkaconnect.yaml-2245-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1119-                                      format:
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1120-                                        type: string
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1121-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml:1122:                              persistentVolumeClaim:
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1123-                                type: object
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1124-                                properties:
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml:1125:                                  claimName:
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1126-                                    type: string
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1127-                                  readOnly:
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1128-                                    type: boolean
+--
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1159-                                  secret: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1160-                                  configMap: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1161-                                  emptyDir: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml:1162:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1163-                                  csi: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1164-                                  image: {}
+infra/kafka-operator/crds/046-Crd-kafkabridge.yaml-1165-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1361-                                      format:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1362-                                        type: string
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1363-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1364:                              persistentVolumeClaim:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1365-                                type: object
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1366-                                properties:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1367:                                  claimName:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1368-                                    type: string
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1369-                                  readOnly:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1370-                                    type: boolean
+--
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1401-                                  secret: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1402-                                  configMap: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1403-                                  emptyDir: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:1404:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1405-                                  csi: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1406-                                  image: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-1407-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2416-                                      format:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2417-                                        type: string
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2418-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2419:                              persistentVolumeClaim:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2420-                                type: object
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2421-                                properties:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2422:                                  claimName:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2423-                                    type: string
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2424-                                  readOnly:
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2425-                                    type: boolean
+--
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2456-                                  secret: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2457-                                  configMap: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2458-                                  emptyDir: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml:2459:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2460-                                  csi: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2461-                                  image: {}
+infra/kafka-operator/crds/048-Crd-kafkamirrormaker2.yaml-2462-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-857-                                      format:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-858-                                        type: string
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-859-                                description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml:860:                              persistentVolumeClaim:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-861-                                type: object
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-862-                                properties:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml:863:                                  claimName:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-864-                                    type: string
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-865-                                  readOnly:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-866-                                    type: boolean
+--
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-897-                                  secret: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-898-                                  configMap: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-899-                                  emptyDir: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml:900:                                  persistentVolumeClaim: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-901-                                  csi: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-902-                                  image: {}
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-903-                          description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-956-                              description: Annotations added to the Kubernetes resource.
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-957-                          description: Metadata applied to the resource.
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-958-                      description: Template for Kafka per-pod `Ingress` used for access from outside of Kubernetes.
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml:959:                    persistentVolumeClaim:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-960-                      type: object
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-961-                      properties:
+infra/kafka-operator/crds/045-Crd-kafkanodepool.yaml-962-                        metadata:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/pmm/templates/statefulset.yaml-24-  {{- if .Values.upgrade.force }}
+/Users/admin/project/shopping-k8s-manifest/infra/pmm/templates/statefulset.yaml-25-  # These fields are only set on fresh installations or forced upgrades
+infra/pmm/templates/statefulset.yaml-26-  minReadySeconds: 10
+infra/pmm/templates/statefulset.yaml:27:  persistentVolumeClaimRetentionPolicy:
+infra/pmm/templates/statefulset.yaml-28-    whenDeleted: Retain
+infra/pmm/templates/statefulset.yaml-29-    whenScaled: Retain
+/Users/admin/project/shopping-k8s-manifest/infra/pmm/templates/statefulset.yaml-30-  {{- end }}
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1604-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1605-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1606-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:1607:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1608-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1609-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:1610:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1611-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1612-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1613-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1644-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1645-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1646-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:1647:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1648-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1649-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1650-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1823-                                  description: Annotations added to the Kubernetes resource.
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1824-                              description: Metadata applied to the resource.
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1825-                          description: Template for Kafka per-pod `Ingress` used for access from outside of Kubernetes.
+infra/kafka-operator/crds/040-Crd-kafka.yaml:1826:                        persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1827-                          type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1828-                          properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-1829-                            metadata:
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3214-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3215-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3216-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:3217:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3218-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3219-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:3220:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3221-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3222-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3223-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3254-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3255-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3256-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:3257:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3258-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3259-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3260-                              description: Additional volumes that can be mounted to the pod.
+--
+/Users/admin/project/shopping-k8s-manifest/infra/kafka-operator/crds/040-Crd-kafka.yaml-3325-                                  - IPv6
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3326-                              description: "Specifies the IP Families used by the service. Available options are `IPv4` and `IPv6`. If unspecified, Kubernetes will choose the default value based on the `ipFamilyPolicy` setting."
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3327-                          description: Template for ZooKeeper nodes `Service`.
+infra/kafka-operator/crds/040-Crd-kafka.yaml:3328:                        persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3329-                          type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3330-                          properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-3331-                            metadata:
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4630-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4631-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4632-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:4633:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4634-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4635-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:4636:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4637-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4638-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4639-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4670-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4671-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4672-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:4673:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4674-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4675-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-4676-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6095-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6096-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6097-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:6098:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6099-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6100-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:6101:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6102-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6103-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6104-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6135-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6136-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6137-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:6138:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6139-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6140-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-6141-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7359-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7360-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7361-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:7362:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7363-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7364-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:7365:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7366-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7367-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7368-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7399-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7400-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7401-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:7402:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7403-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7404-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-7405-                              description: Additional volumes that can be mounted to the pod.
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8301-                                          format:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8302-                                            type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8303-                                    description: '`EmptyDir` to use to populate the volume.'
+infra/kafka-operator/crds/040-Crd-kafka.yaml:8304:                                  persistentVolumeClaim:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8305-                                    type: object
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8306-                                    properties:
+infra/kafka-operator/crds/040-Crd-kafka.yaml:8307:                                      claimName:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8308-                                        type: string
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8309-                                      readOnly:
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8310-                                        type: boolean
+--
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8341-                                      secret: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8342-                                      configMap: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8343-                                      emptyDir: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml:8344:                                      persistentVolumeClaim: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8345-                                      csi: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8346-                                      image: {}
+infra/kafka-operator/crds/040-Crd-kafka.yaml-8347-                              description: Additional volumes that can be mounted to the pod.
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-206-      {{- end }}
+infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-207-      - name: nginx-volume
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-208-      {{- if .Values.nginx.persistence.enabled }}
+infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml:209:        persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml:210:          claimName: {{ .Values.nginx.persistence.existingClaim | default (include "artifactory.nginx.fullname" .) }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-211-      {{- else }}
+infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-212-        emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/nginx-deployment.yaml-213-      {{- end }}
+--
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1920-          name: {{ template "artifactory.fullname" . }}-installer-info
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1921-      {{- if and .Values.artifactory.persistence.enabled .Values.artifactory.persistence.existingClaim }}
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1922-      - name: artifactory-volume
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1923:        persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1924:          claimName: {{ .Values.artifactory.persistence.existingClaim }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1925-      {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1926-      {{- if .Values.artifactory.configMapName }}
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1927-      - name: bootstrap-config
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1940-      {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1941-      {{- if eq .Values.artifactory.persistence.type "nfs" }}
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1942-      - name: artifactory-data
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1943:        persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1944:          claimName: {{ template "artifactory.fullname" . }}-data-pvc
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1945-      - name: artifactory-backup
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1946:        persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml:1947:          claimName: {{ template "artifactory.fullname" . }}-backup-pvc
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1948-      {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1949-      {{- if not .Values.artifactory.persistence.enabled }}
+infra/artifactory-oss/charts/artifactory/templates/artifactory-statefulset.yaml-1950-      - name: artifactory-volume
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-818-  ## PostgreSQL Primary Persistent Volume Claim Retention Policy
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-819-  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-820-  ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:821:  persistentVolumeClaimRetentionPolicy:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:822:    ## @param primary.persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for Primary Statefulset
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-823-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-824-    enabled: false
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:825:    ## @param primary.persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-826-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-827-    whenScaled: Retain
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:828:    ## @param primary.persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-829-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-830-    whenDeleted: Retain
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-831-## @section PostgreSQL read only replica parameters (only used when `architecture` is set to `replication`)
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1269-  ## PostgreSQL Read only Persistent Volume Claim Retention Policy
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1270-  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1271-  ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:1272:  persistentVolumeClaimRetentionPolicy:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:1273:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for read only Statefulset
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1274-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1275-    enabled: false
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:1276:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1277-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1278-    whenScaled: Retain
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml:1279:    ## @param readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted Volume retention behavior that applies when the StatefulSet is deleted
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1280-    ##
+infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1281-    whenDeleted: Retain
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/values.yaml-1282-## @section Backup parameters
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-663-        {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-664-  {{- if and .Values.primary.persistence.enabled .Values.primary.persistence.existingClaim }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-665-        - name: {{ .Values.primary.persistence.volumeName }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:666:          persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:667:            claimName: {{ tpl .Values.primary.persistence.existingClaim $ }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-668-  {{- else if not .Values.primary.persistence.enabled }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-669-        - name: {{ .Values.primary.persistence.volumeName }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-670-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-671-  {{- else }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:672:  {{- if .Values.primary.persistentVolumeClaimRetentionPolicy.enabled }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:673:  persistentVolumeClaimRetentionPolicy:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:674:    whenDeleted: {{ .Values.primary.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml:675:    whenScaled: {{ .Values.primary.persistentVolumeClaimRetentionPolicy.whenScaled }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-676-  {{- end }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-677-  volumeClaimTemplates:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/primary/statefulset.yaml-678-    - apiVersion: v1
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-122-            {{- if .Values.backup.cronjob.storage.enabled }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-123-            {{- if .Values.backup.cronjob.storage.existingClaim }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-124-            - name: datadir
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml:125:              persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml:126:                claimName: {{ printf "%s" (tpl .Values.backup.cronjob.storage.existingClaim .) }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-127-            {{- else }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-128-            - name: datadir
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml:129:              persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml:130:                claimName: {{ include "postgresql.v1.primary.fullname" . }}-pgdumpall
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-131-            {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-132-            {{- end }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/backup/cronjob.yaml-133-            - name: empty-dir
+--
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-18-  volumes:
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-19-    - 'configMap'
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-20-    - 'secret'
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml:21:    - 'persistentVolumeClaim'
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-22-    - 'emptyDir'
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-23-    - 'projected'
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/psp.yaml-24-  hostNetwork: false
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-537-        {{- end }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-538-  {{- if and .Values.readReplicas.persistence.enabled .Values.readReplicas.persistence.existingClaim }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-539-        - name: data
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:540:          persistentVolumeClaim:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:541:            claimName: {{ tpl .Values.readReplicas.persistence.existingClaim $ }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-542-  {{- else if not .Values.readReplicas.persistence.enabled }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-543-        - name: data
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-544-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-545-  {{- else }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:546:  {{- if .Values.readReplicas.persistentVolumeClaimRetentionPolicy.enabled }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:547:  persistentVolumeClaimRetentionPolicy:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:548:    whenDeleted: {{ .Values.readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml:549:    whenScaled: {{ .Values.readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled }}
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-550-  {{- end }}
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-551-  volumeClaimTemplates:
+infra/artifactory-oss/charts/artifactory/charts/postgresql/templates/read/statefulset.yaml-552-    - apiVersion: v1
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-497-| `primary.persistence.labels`                                | Labels for the PVC                                                                                                                                                                                                                | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-498-| `primary.persistence.selector`                              | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                                                                                                                           | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-499-| `primary.persistence.dataSource`                            | Custom PVC data source                                                                                                                                                                                                            | `{}`                  |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:500:| `primary.persistentVolumeClaimRetentionPolicy.enabled`      | Enable Persistent volume retention policy for Primary Statefulset                                                                                                                                                                 | `false`               |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:501:| `primary.persistentVolumeClaimRetentionPolicy.whenScaled`   | Volume retention behavior when the replica count of the StatefulSet is reduced                                                                                                                                                    | `Retain`              |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:502:| `primary.persistentVolumeClaimRetentionPolicy.whenDeleted`  | Volume retention behavior that applies when the StatefulSet is deleted                                                                                                                                                            | `Retain`              |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-503-
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-504-### PostgreSQL read only replica parameters (only used when `architecture` is set to `replication`)
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-505-
+--
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-613-| `readReplicas.persistence.labels`                                | Labels for the PVC                                                                                                                                                                                                                          | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-614-| `readReplicas.persistence.selector`                              | Selector to match an existing Persistent Volume (this value is evaluated as a template)                                                                                                                                                     | `{}`                  |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-615-| `readReplicas.persistence.dataSource`                            | Custom PVC data source                                                                                                                                                                                                                      | `{}`                  |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:616:| `readReplicas.persistentVolumeClaimRetentionPolicy.enabled`      | Enable Persistent volume retention policy for read only Statefulset                                                                                                                                                                         | `false`               |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:617:| `readReplicas.persistentVolumeClaimRetentionPolicy.whenScaled`   | Volume retention behavior when the replica count of the StatefulSet is reduced                                                                                                                                                              | `Retain`              |
+infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md:618:| `readReplicas.persistentVolumeClaimRetentionPolicy.whenDeleted`  | Volume retention behavior that applies when the StatefulSet is deleted                                                                                                                                                                      | `Retain`              |
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-619-
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-620-### Backup parameters
+/Users/admin/project/shopping-k8s-manifest/infra/artifactory-oss/charts/artifactory/charts/postgresql/README.md-621-
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-3211-                                - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-3212-                                - server
+infra/psmdb-operator/crds/crd.yaml-3213-                                type: object
+infra/psmdb-operator/crds/crd.yaml:3214:                              persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-3215-                                properties:
+infra/psmdb-operator/crds/crd.yaml:3216:                                  claimName:
+infra/psmdb-operator/crds/crd.yaml-3217-                                    type: string
+infra/psmdb-operator/crds/crd.yaml-3218-                                  readOnly:
+infra/psmdb-operator/crds/crd.yaml-3219-                                    type: boolean
+infra/psmdb-operator/crds/crd.yaml-3220-                                required:
+infra/psmdb-operator/crds/crd.yaml:3221:                                - claimName
+infra/psmdb-operator/crds/crd.yaml-3222-                                type: object
+infra/psmdb-operator/crds/crd.yaml-3223-                              photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-3224-                                properties:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-5946-                                - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-5947-                                - server
+infra/psmdb-operator/crds/crd.yaml-5948-                                type: object
+infra/psmdb-operator/crds/crd.yaml:5949:                              persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-5950-                                properties:
+infra/psmdb-operator/crds/crd.yaml:5951:                                  claimName:
+infra/psmdb-operator/crds/crd.yaml-5952-                                    type: string
+infra/psmdb-operator/crds/crd.yaml-5953-                                  readOnly:
+infra/psmdb-operator/crds/crd.yaml-5954-                                    type: boolean
+infra/psmdb-operator/crds/crd.yaml-5955-                                required:
+infra/psmdb-operator/crds/crd.yaml:5956:                                - claimName
+infra/psmdb-operator/crds/crd.yaml-5957-                                type: object
+infra/psmdb-operator/crds/crd.yaml-5958-                              photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-5959-                                properties:
+--
+infra/psmdb-operator/crds/crd.yaml-7115-                              required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-7116-                              - path
+infra/psmdb-operator/crds/crd.yaml-7117-                              type: object
+infra/psmdb-operator/crds/crd.yaml:7118:                            persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-7119-                              properties:
+infra/psmdb-operator/crds/crd.yaml-7120-                                accessModes:
+infra/psmdb-operator/crds/crd.yaml-7121-                                  items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-8769-                                - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-8770-                                - server
+infra/psmdb-operator/crds/crd.yaml-8771-                                type: object
+infra/psmdb-operator/crds/crd.yaml:8772:                              persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-8773-                                properties:
+infra/psmdb-operator/crds/crd.yaml:8774:                                  claimName:
+infra/psmdb-operator/crds/crd.yaml-8775-                                    type: string
+infra/psmdb-operator/crds/crd.yaml-8776-                                  readOnly:
+infra/psmdb-operator/crds/crd.yaml-8777-                                    type: boolean
+infra/psmdb-operator/crds/crd.yaml-8778-                                required:
+infra/psmdb-operator/crds/crd.yaml:8779:                                - claimName
+infra/psmdb-operator/crds/crd.yaml-8780-                                type: object
+infra/psmdb-operator/crds/crd.yaml-8781-                              photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-8782-                                properties:
+--
+infra/psmdb-operator/crds/crd.yaml-9938-                              required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-9939-                              - path
+infra/psmdb-operator/crds/crd.yaml-9940-                              type: object
+infra/psmdb-operator/crds/crd.yaml:9941:                            persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-9942-                              properties:
+infra/psmdb-operator/crds/crd.yaml-9943-                                accessModes:
+infra/psmdb-operator/crds/crd.yaml-9944-                                  items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-10889-                            - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-10890-                            - server
+infra/psmdb-operator/crds/crd.yaml-10891-                            type: object
+infra/psmdb-operator/crds/crd.yaml:10892:                          persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-10893-                            properties:
+infra/psmdb-operator/crds/crd.yaml:10894:                              claimName:
+infra/psmdb-operator/crds/crd.yaml-10895-                                type: string
+infra/psmdb-operator/crds/crd.yaml-10896-                              readOnly:
+infra/psmdb-operator/crds/crd.yaml-10897-                                type: boolean
+infra/psmdb-operator/crds/crd.yaml-10898-                            required:
+infra/psmdb-operator/crds/crd.yaml:10899:                            - claimName
+infra/psmdb-operator/crds/crd.yaml-10900-                            type: object
+infra/psmdb-operator/crds/crd.yaml-10901-                          photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-10902-                            properties:
+--
+infra/psmdb-operator/crds/crd.yaml-12110-                          required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-12111-                          - path
+infra/psmdb-operator/crds/crd.yaml-12112-                          type: object
+infra/psmdb-operator/crds/crd.yaml:12113:                        persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-12114-                          properties:
+infra/psmdb-operator/crds/crd.yaml-12115-                            accessModes:
+infra/psmdb-operator/crds/crd.yaml-12116-                              items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-13876-                                  - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-13877-                                  - server
+infra/psmdb-operator/crds/crd.yaml-13878-                                  type: object
+infra/psmdb-operator/crds/crd.yaml:13879:                                persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-13880-                                  properties:
+infra/psmdb-operator/crds/crd.yaml:13881:                                    claimName:
+infra/psmdb-operator/crds/crd.yaml-13882-                                      type: string
+infra/psmdb-operator/crds/crd.yaml-13883-                                    readOnly:
+infra/psmdb-operator/crds/crd.yaml-13884-                                      type: boolean
+infra/psmdb-operator/crds/crd.yaml-13885-                                  required:
+infra/psmdb-operator/crds/crd.yaml:13886:                                  - claimName
+infra/psmdb-operator/crds/crd.yaml-13887-                                  type: object
+infra/psmdb-operator/crds/crd.yaml-13888-                                photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-13889-                                  properties:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-16611-                                  - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-16612-                                  - server
+infra/psmdb-operator/crds/crd.yaml-16613-                                  type: object
+infra/psmdb-operator/crds/crd.yaml:16614:                                persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-16615-                                  properties:
+infra/psmdb-operator/crds/crd.yaml:16616:                                    claimName:
+infra/psmdb-operator/crds/crd.yaml-16617-                                      type: string
+infra/psmdb-operator/crds/crd.yaml-16618-                                    readOnly:
+infra/psmdb-operator/crds/crd.yaml-16619-                                      type: boolean
+infra/psmdb-operator/crds/crd.yaml-16620-                                  required:
+infra/psmdb-operator/crds/crd.yaml:16621:                                  - claimName
+infra/psmdb-operator/crds/crd.yaml-16622-                                  type: object
+infra/psmdb-operator/crds/crd.yaml-16623-                                photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-16624-                                  properties:
+--
+infra/psmdb-operator/crds/crd.yaml-17780-                                required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-17781-                                - path
+infra/psmdb-operator/crds/crd.yaml-17782-                                type: object
+infra/psmdb-operator/crds/crd.yaml:17783:                              persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-17784-                                properties:
+infra/psmdb-operator/crds/crd.yaml-17785-                                  accessModes:
+infra/psmdb-operator/crds/crd.yaml-17786-                                    items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-19434-                                  - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-19435-                                  - server
+infra/psmdb-operator/crds/crd.yaml-19436-                                  type: object
+infra/psmdb-operator/crds/crd.yaml:19437:                                persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-19438-                                  properties:
+infra/psmdb-operator/crds/crd.yaml:19439:                                    claimName:
+infra/psmdb-operator/crds/crd.yaml-19440-                                      type: string
+infra/psmdb-operator/crds/crd.yaml-19441-                                    readOnly:
+infra/psmdb-operator/crds/crd.yaml-19442-                                      type: boolean
+infra/psmdb-operator/crds/crd.yaml-19443-                                  required:
+infra/psmdb-operator/crds/crd.yaml:19444:                                  - claimName
+infra/psmdb-operator/crds/crd.yaml-19445-                                  type: object
+infra/psmdb-operator/crds/crd.yaml-19446-                                photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-19447-                                  properties:
+--
+infra/psmdb-operator/crds/crd.yaml-20603-                                required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-20604-                                - path
+infra/psmdb-operator/crds/crd.yaml-20605-                                type: object
+infra/psmdb-operator/crds/crd.yaml:20606:                              persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-20607-                                properties:
+infra/psmdb-operator/crds/crd.yaml-20608-                                  accessModes:
+infra/psmdb-operator/crds/crd.yaml-20609-                                    items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-21554-                              - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-21555-                              - server
+infra/psmdb-operator/crds/crd.yaml-21556-                              type: object
+infra/psmdb-operator/crds/crd.yaml:21557:                            persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-21558-                              properties:
+infra/psmdb-operator/crds/crd.yaml:21559:                                claimName:
+infra/psmdb-operator/crds/crd.yaml-21560-                                  type: string
+infra/psmdb-operator/crds/crd.yaml-21561-                                readOnly:
+infra/psmdb-operator/crds/crd.yaml-21562-                                  type: boolean
+infra/psmdb-operator/crds/crd.yaml-21563-                              required:
+infra/psmdb-operator/crds/crd.yaml:21564:                              - claimName
+infra/psmdb-operator/crds/crd.yaml-21565-                              type: object
+infra/psmdb-operator/crds/crd.yaml-21566-                            photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-21567-                              properties:
+--
+infra/psmdb-operator/crds/crd.yaml-22775-                            required:
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-22776-                            - path
+infra/psmdb-operator/crds/crd.yaml-22777-                            type: object
+infra/psmdb-operator/crds/crd.yaml:22778:                          persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-22779-                            properties:
+infra/psmdb-operator/crds/crd.yaml-22780-                              accessModes:
+infra/psmdb-operator/crds/crd.yaml-22781-                                items:
+--
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-24384-                              - path
+/Users/admin/project/shopping-k8s-manifest/infra/psmdb-operator/crds/crd.yaml-24385-                              - server
+infra/psmdb-operator/crds/crd.yaml-24386-                              type: object
+infra/psmdb-operator/crds/crd.yaml:24387:                            persistentVolumeClaim:
+infra/psmdb-operator/crds/crd.yaml-24388-                              properties:
+infra/psmdb-operator/crds/crd.yaml:24389:                                claimName:
+infra/psmdb-operator/crds/crd.yaml-24390-                                  type: string
+infra/psmdb-operator/crds/crd.yaml-24391-                                readOnly:
+infra/psmdb-operator/crds/crd.yaml-24392-                                  type: boolean
+infra/psmdb-operator/crds/crd.yaml-24393-                              required:
+infra/psmdb-operator/crds/crd.yaml:24394:                              - claimName
+infra/psmdb-operator/crds/crd.yaml-24395-                              type: object
+infra/psmdb-operator/crds/crd.yaml-24396-                            photonPersistentDisk:
+infra/psmdb-operator/crds/crd.yaml-24397-                              properties:
+--
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-167-          emptyDir: {}
+/Users/admin/project/shopping-k8s-manifest/infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-168-        {{- end }}
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-169-        - name: checkpoint-volume
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:170:          persistentVolumeClaim:
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:171:            claimName: flink-operator-checkpoint-pvc
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-172-        - name: savepoint-volume
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:173:          persistentVolumeClaim:
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:174:            claimName: flink-operator-savepoint-pvc
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-175-        - name: high-availability-volume
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:176:          persistentVolumeClaim:
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml:177:            claimName: flink-operator-high-availability-pvc
+/Users/admin/project/shopping-k8s-manifest/infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-178-
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-179-  jobManager:
+infra/flink-kubernetes-operator/flink-cdc-job/templates/flinkdeployment.yaml-180-    replicas: {{ .Values.jobManager.replicas }}
+--
+infra/flink-kubernetes-operator/1.13.0/values.yaml-134-        path: /tmp/flink/artifacts
+infra/flink-kubernetes-operator/1.13.0/values.yaml-135-        type: DirectoryOrCreate
+infra/flink-kubernetes-operator/1.13.0/values.yaml-136-#    - name: flink-artifacts
+infra/flink-kubernetes-operator/1.13.0/values.yaml:137:#      persistentVolumeClaim:
+infra/flink-kubernetes-operator/1.13.0/values.yaml:138:#        claimName: flink-artifacts
+/Users/admin/project/shopping-k8s-manifest/infra/flink-kubernetes-operator/1.13.0/values.yaml-139-
+infra/flink-kubernetes-operator/1.13.0/values.yaml-140-podSecurityContext:
+infra/flink-kubernetes-operator/1.13.0/values.yaml-141-  runAsUser: 9999
+--
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2836-                                    server:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2837-                                      type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2838-                                  type: object
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:2839:                                persistentVolumeClaim:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2840-                                  properties:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:2841:                                    claimName:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2842-                                      type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2843-                                    readOnly:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-2844-                                      type: boolean
+--
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6365-                                server:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6366-                                  type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6367-                              type: object
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:6368:                            persistentVolumeClaim:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6369-                              properties:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:6370:                                claimName:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6371-                                  type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6372-                                readOnly:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-6373-                                  type: boolean
+--
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9879-                                    server:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9880-                                      type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9881-                                  type: object
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:9882:                                persistentVolumeClaim:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9883-                                  properties:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml:9884:                                    claimName:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9885-                                      type: string
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9886-                                    readOnly:
+infra/flink-kubernetes-operator/1.13.0/crds/flinkdeployments.flink.apache.org-v1.yml-9887-                                      type: boolean
+--
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2905-// PersistentVolumeClaimVolumeSource is, essentially, a wrapper around another
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2906-// type of volume that is owned by someone else (the system).
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2907-message PersistentVolumeClaimVolumeSource {
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto:2908:  // claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume.
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2909-  / More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto:2910:  optional string claimName = 1;
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2911-
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2912-  // readOnly Will force the ReadOnly setting in VolumeMounts.
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-2913-  // Default false.
+--
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5769-
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5770-// volumeDevice describes a mapping of a raw block device within a container.
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5771-message VolumeDevice {
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto:5772:  // name must match the name of a persistentVolumeClaim in the pod
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5773-  optional string name = 1;
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5774-
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5775-  // devicePath is the path inside of the container that the device will be mapped to.
+--
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5894-  // +optional
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5895-  optional GlusterfsVolumeSource glusterfs = 9;
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5896-
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto:5897:  // persistentVolumeClaimVolumeSource represents a reference to a
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5898-  // PersistentVolumeClaim in the same namespace.
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5899-  / More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5900-  // +optional
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto:5901:  optional PersistentVolumeClaimVolumeSource persistentVolumeClaim = 10;
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5902-
+/Users/admin/project/shopping-k8s-manifest/infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5903-  // rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
+infra/istio/1.27.1/common-protos/k8s.io/api/core/v1/generated.proto-5904-  / More info: https://examples.k8s.io/volumes/rbd/README.md

@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Analyze the product model extraction issue and dictionary structure",
+    "status": "completed",
+    "id": "analyze-problem"
+  },
+  {
+    "content": "Design dictionary-based word preservation solution",
+    "status": "completed",
+    "id": "design-solution"
+  },
+  {
+    "content": "Implement dictionary loading functionality",
+    "status": "completed",
+    "id": "implement-dictionary-loader"
+  },
+  {
+    "content": "Update extract_product_model_name to use dictionary",
+    "status": "completed",
+    "id": "update-extraction-logic"
+  },
+  {
+    "content": "Fix dictionary path configuration issue",
+    "status": "completed",
+    "id": "fix-dictionary-paths"
+  },
+  {
+    "content": "Test with '갤럭시 s22ultra' example",
+    "status": "completed",
+    "id": "test-solution"
+  }
+]

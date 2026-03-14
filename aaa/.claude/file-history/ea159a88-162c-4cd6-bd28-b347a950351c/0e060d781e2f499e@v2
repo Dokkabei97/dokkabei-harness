@@ -1,0 +1,191 @@
+---
+title: "데이터 계층 심화 학습 로드맵"
+aliases: [Data Layer MOC, 데이터 계층 MOC, DB 심화 MOC]
+tags: [MOC, postgresql, mongodb, data-layer, hybrid-architecture]
+created: <% tp.date.now("YYYY-MM-DD") %>
+updated: <% tp.date.now("YYYY-MM-DD") %>
+status: active
+duration: 22주
+tech_stack: [Kotlin, Spring Boot, PostgreSQL, MongoDB, Kafka, Debezium]
+---
+
+# 데이터 계층 심화 학습 로드맵
+
+> PostgreSQL + MongoDB를 프로덕션 수준으로 깊이 있게 다루기 위한 시니어 백엔드 개발자 심화 과정
+> 총 22주 | 4~6년차 Kotlin + Spring Boot 환경 | [[backend-tech2|Phase 2 기본]] 이수 후 진행
+
+---
+
+## 학습 진행 현황
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "노트",
+  part AS "Part",
+  week AS "주차",
+  status AS "상태",
+  difficulty AS "난이도"
+FROM "01-Concepts/Data-Layer"
+SORT part ASC, week ASC
+```
+
+### 진행률 요약
+
+```dataview
+TABLE WITHOUT ID
+  part AS "Part",
+  length(rows) AS "총 노트",
+  length(filter(rows, (r) => r.status = "done")) AS "완료",
+  round(length(filter(rows, (r) => r.status = "done")) / length(rows) * 100) + "%" AS "진행률"
+FROM "01-Concepts/Data-Layer"
+GROUP BY part
+SORT part ASC
+```
+
+---
+
+## 전체 아키텍처 개요
+
+```
+[Part A]                    [Part B]                    [Part C]
+PostgreSQL 심화 ───────────→ MongoDB 심화 ──────────────→ 하이브리드 통합
+(9주 + 마일스톤)            (10주 + 마일스톤)            (2주 + 최종 과제)
+
+P1 아키텍처 내부             M1 WiredTiger/OpLog          H1 PG+Mongo 설계
+P2 고급 SQL                 M2 문서 모델링 패턴           H2 최종 마일스톤
+P3 인덱스 전략              M3 Aggregation 심화
+P4 트랜잭션/동시성           M4 인덱스 ESR 규칙
+P5 실행 계획 분석            M5 트랜잭션 심화
+P6 파티셔닝                 M6 Replica Set
+P7 커넥션/운영              M7 Sharding
+                            M8 Change Streams
+                            M9 Spring Data + Kotlin
+                            M10 성능 진단
+```
+
+---
+
+## Part A: PostgreSQL 심화 (9주)
+
+> 목표: "DBA에게 요청하기 전에 스스로 할 수 있는 수준"
+
+### 기반 이론 (1~2주)
+- [[P1-1 PostgreSQL 프로세스 모델과 메모리 구조]] `week:: 1`
+- [[P1-2 MVCC와 VACUUM]] `week:: 2`
+
+### 쿼리 역량 (3~4주)
+- [[P2-1 Window Functions 심화]] `week:: 3`
+- [[P2-2 CTE Recursive CTE LATERAL JOIN]] `week:: 3-4`
+- [[P2-3 GROUPING SETS와 JSONB]] `week:: 4`
+
+### 성능 + 안전성 (5~6주)
+- [[P3 고급 인덱스 전략]] `week:: 5-6`
+- [[P4 트랜잭션과 동시성 제어]] `week:: 5-6`
+
+### 진단 + 대용량 (7~8주)
+- [[P5 실행 계획 심화 분석]] `week:: 7`
+- [[P6 파티셔닝]] `week:: 8`
+
+### 운영 역량 (9주)
+- [[P7-1 커넥션 풀링]] `week:: 9`
+- [[P7-2 모니터링과 운영]] `week:: 9`
+
+---
+
+## Part B: MongoDB 심화 (11주)
+
+> 목표: 프로덕션 수준의 MongoDB 전문 지식
+
+### 기반 이론 (10주)
+- [[M1 MongoDB 아키텍처 심화]] `week:: 10`
+
+### 모델링 역량 (11~12주)
+- [[M2 고급 문서 모델링 패턴]] `week:: 11-12`
+
+### 쿼리 + 성능 (13~14주)
+- [[M3 Aggregation Pipeline 심화]] `week:: 13`
+- [[M4 인덱스 심화 전략]] `week:: 14`
+
+### 안전성 + 고가용성 (15~16주)
+- [[M5 트랜잭션 심화]] `week:: 15`
+- [[M6 Replica Set과 읽기 분산]] `week:: 16`
+
+### 확장성 + 이벤트 (17~18주)
+- [[M7 Sharding 이해]] `week:: 17`
+- [[M8 Change Streams 심화]] `week:: 18`
+
+### 개발 생산성 + 진단 (19~20주)
+- [[M9 Spring Data MongoDB와 Kotlin 패턴]] `week:: 19`
+- [[M10 성능 모니터링과 진단]] `week:: 20`
+
+---
+
+## Part C: 통합 (21~22주)
+
+> 목표: PostgreSQL + MongoDB 하이브리드 아키텍처 설계 역량
+
+- [[H1 하이브리드 아키텍처 설계]] `week:: 21-22`
+
+---
+
+## 마일스톤 과제
+
+### Part A 마일스톤: PostgreSQL 성능 진단 및 최적화
+- [ ] 1000만건 테스트 데이터 생성
+- [ ] pg_stat_statements Top 10 슬로우 쿼리 식별 + EXPLAIN ANALYZE
+- [ ] 인덱스 전략 수립 (B-Tree, GIN, BRIN, 부분 인덱스)
+- [ ] 재고 차감 동시성 테스트 + SKIP LOCKED Job Queue
+- [ ] HikariCP + Autovacuum 모니터링 자동화
+
+### Part B 마일스톤: MongoDB 기반 실시간 이커머스 백엔드
+- [ ] 상품 카탈로그 (다형성 + 속성), 주문 이력 (버킷), 리뷰 (서브셋)
+- [ ] $merge Materialized View + $setWindowFields 분석
+- [ ] ESR 규칙 Compound 인덱스 + Covered Query
+- [ ] Change Streams SSE 알림 + CDC 파이프라인
+- [ ] Reactive MongoDB + Kotlin Coroutine API
+
+### 최종 통합 마일스톤: 데이터 계층 마스터 프로젝트
+- [ ] PG+Mongo 역할 분담 ADR 문서화
+- [ ] Saga 패턴 주문 처리 (PG 결제 + Mongo 재고)
+- [ ] CDC 기반 데이터 동기화 파이프라인
+- [ ] 전체 API p99 200ms 이내
+
+---
+
+## 크로스 레퍼런스 매트릭스
+
+| 개념 | PostgreSQL | MongoDB |
+|------|-----------|---------|
+| 내부 아키텍처 | [[P1-1 PostgreSQL 프로세스 모델과 메모리 구조\|프로세스/메모리]] | [[M1 MongoDB 아키텍처 심화\|WiredTiger/OpLog]] |
+| 동시성 제어 | [[P1-2 MVCC와 VACUUM\|MVCC]] | [[M5 트랜잭션 심화\|Read/Write Concern]] |
+| 인덱스 전략 | [[P3 고급 인덱스 전략\|B-Tree/GIN/BRIN]] | [[M4 인덱스 심화 전략\|ESR/Wildcard]] |
+| 트랜잭션 | [[P4 트랜잭션과 동시성 제어\|격리 수준/잠금]] | [[M5 트랜잭션 심화\|Multi-doc TX]] |
+| 실행 계획 | [[P5 실행 계획 심화 분석\|EXPLAIN ANALYZE]] | [[M10 성능 모니터링과 진단\|explain()]] |
+| 대용량 전략 | [[P6 파티셔닝\|Range/List/Hash]] | [[M7 Sharding 이해\|Shard Key]] |
+| 계층 데이터 | [[P2-2 CTE Recursive CTE LATERAL JOIN\|Recursive CTE]] | [[M3 Aggregation Pipeline 심화\|$graphLookup]] |
+| 윈도우 함수 | [[P2-1 Window Functions 심화\|Window Functions]] | [[M3 Aggregation Pipeline 심화\|$setWindowFields]] |
+| CDC/이벤트 | WAL + Debezium | [[M8 Change Streams 심화\|Change Streams]] |
+
+---
+
+## 참고 자료
+
+### PostgreSQL
+- [PostgreSQL 공식 문서](https://www.postgresql.org/docs/current/)
+- [The Internals of PostgreSQL](https://www.interdb.jp/pg/)
+- [Use The Index, Luke](https://use-the-index-luke.com/)
+- [explain.dalibo.com](https://explain.dalibo.com/)
+
+### MongoDB
+- [MongoDB 공식 문서](https://www.mongodb.com/docs/manual/)
+- [MongoDB Building Patterns](https://www.mongodb.com/blog/post/building-with-patterns-a-summary)
+- [Spring Data MongoDB Reference](https://docs.spring.io/spring-data/mongodb/reference/)
+
+### 하이브리드 아키텍처
+- Designing Data-Intensive Applications (Martin Kleppmann)
+- [Debezium CDC Platform](https://debezium.io/documentation/)
+- [Saga Pattern](https://microservices.io/patterns/data/saga.html)
+
+---
+
+> **탐색**: [[backend-tech1|개요+Phase 1]] | [[backend-tech2|Phase 2 기본]] | **Phase 2 심화** | [[backend-tech3|Phase 3-5]] | [[backend-tech4|Phase 6-7]] | [[backend-tech5|Phase 8-10+부록]]

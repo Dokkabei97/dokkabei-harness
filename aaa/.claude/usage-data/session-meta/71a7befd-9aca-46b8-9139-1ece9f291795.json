@@ -1,0 +1,36 @@
+{
+  "session_id": "71a7befd-9aca-46b8-9139-1ece9f291795",
+  "project_path": "/Users/admin/project/admin/search-admin",
+  "start_time": "2026-02-16T14:51:18.414Z",
+  "duration_minutes": 0,
+  "user_message_count": 1,
+  "assistant_message_count": 12,
+  "tool_counts": {
+    "ToolSearch": 1,
+    "Glob": 1,
+    "Read": 6
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 3425,
+  "output_tokens": 531,
+  "first_prompt": "aa-mcp를 이용해서 codex를 통해 해당 프로젝트의 분석 후 너가 제대로 분석했는지 확인해줘",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    23
+  ],
+  "user_message_timestamps": [
+    "2026-02-16T14:51:23.523Z"
+  ]
+}

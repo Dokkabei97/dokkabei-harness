@@ -1,0 +1,128 @@
+---
+title: "2-9 Callbacks와 Streaming"
+aliases:
+  - "2-9 Callback"
+  - "Streaming Handler"
+tags:
+  - llm-rag
+  - phase2
+  - callbacks
+  - streaming
+  - observability
+created: ""
+updated: ""
+phase: "phase2"
+status: "todo"
+difficulty: "중급"
+---
+
+# 2-9 Callbacks와 Streaming
+
+> [!summary]
+> 실시간 응답과 모니터링이 필요한 RAG 시스템에서 Callback/Streaming은 핵심이다. `StreamingCallbackHandler`, `astream()`, 커스텀 Callback으로 로깅·모니터링·비용 추적까지 파이프라인에 결합할 수 있다.
+
+## 관련 노트
+- [[2-8 Custom Chain 작성]]
+- [[2-1 LangChain 아키텍처와 LCEL]]
+- [[2-6 Retriever 패턴]]
+- [[2-7 Output Parsers와 Structured Output]]
+- [[운영 관측성]]
+
+## 개념 설명
+### StreamingCallbackHandler
+- 토큰 단위 콜백을 통해 실시간 출력 확인 가능
+- `on_llm_start`, `on_llm_new_token`, `on_llm_end`, `on_retriever_start`, `on_retriever_end` 이벤트 사용
+- UX 관점에서 타자 느낌의 응답에 사용
+
+### astream() 비동기 스트리밍
+- Async iterator로 순차 토큰 수신
+- 긴 문서 요약, 대화형 UI에서 체감 지연 감소
+- 동시 요청이 많은 서비스에서 backpressure 처리 고려 필요
+
+### 커스텀 Callback 설계
+- 비용 추적: 입력/출력 토큰 누적과 모델 호출 비용 계산
+- 모니터링: latency와 retry 횟수 기록
+- 감사 로그: 사용자 세션, document id, retriever score 저장
+
+## Mermaid 다이어그램
+```mermaid
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant C as Client UI
+  participant A as Agent Chain
+  participant M as Model
+  participant CB as Callback
+  U->>C: 질문 입력
+  C->>A: invoke/astream
+  A->>M: 호출
+  M->>CB: on_llm_new_token
+  CB->>C: 토큰 즉시 전달
+  C->>U: 스트리밍 출력
+  A->>CB: on_chain_end
+```
+
+## Python 코드 예제
+```python
+import asyncio
+import time
+from langchain_openai import ChatOpenAI
+from langchain_core.callbacks import BaseCallbackHandler
+
+class CostCallback(BaseCallbackHandler):
+    def __init__(self):
+        self.input_tokens = 0
+        self.output_tokens = 0
+        self.start = None
+        self.log = []
+
+    def on_llm_start(self, serialized, prompts, **kwargs):
+        self.start = time.time()
+        self.log.append({"event": "start", "ts": self.start})
+
+    def on_llm_new_token(self, token, **kwargs):
+        # 토큰 스트리밍 표시
+        print(token, end="", flush=True)
+
+    def on_llm_end(self, response, **kwargs):
+        latency = time.time() - self.start if self.start else 0
+        self.log.append({"event": "end", "latency": latency, "usage": response.llm_output.get("token_usage", {})})
+        print(f"'"\\n[latency={latency:.2f}s]\")
+
+    def on_chain_error(self, error, **kwargs):
+        self.log.append({\"event\": \"error\", \"error\": str(error)})
+
+llm = ChatOpenAI(
+    model=\"gpt-4o-mini\",
+    temperature=0.1,
+    streaming=True,
+)
+
+cb = CostCallback()
+chain = llm
+
+async def run_stream():
+    async for token in chain.astream(\"요약: LangChain에서 Callback의 장점을 3줄로 정리해줘\", config={\"callbacks\": [cb]}):
+        # 콜백이 token도 처리하므로 여기선 간단 로깅만
+        pass
+
+asyncio.run(run_stream())
+print(cb.log)
+
+# 동기 모드에서 구조화 비용 추적
+res = chain.invoke(\"짧게 비용 최적화 방법 3개를 설명\", config={\"callbacks\": [cb]})
+print(res)
+"'```
+
+## 실습 체크리스트
+- [ ] 스트리밍 모드에서 사용자 응답 레이턴시 95p 측정
+- [ ] 토큰 출력 누락 시 fallback를 동기 응답으로 전환
+- [ ] callback에서 민감정보를 로깅하지 않도록 필터 처리
+- [ ] 비용 추적 callback으로 모델별 token_cost 집계
+- [ ] retriever 이벤트를 별도 callback에서 분리 추적
+- [ ] 이벤트 타임스탬프 단위 일관성(UTC) 유지
+- [ ] astream 사용시 취소/disconnect 처리 전략 추가
+- [ ] 세션별 callback 인스턴스 생성(공유 객체로 인한 cross-talk 금지)
+- [ ] 스트리밍 중 예외 발생 시 사용자에게 부분 응답 안전 처리
+- [ ] 로그 적재량이 많아지면 sampling 또는 aggregation 정책 적용
+- [ ] 운영 알람: 평균 latency, 실패율, token_per_request 임계치 설정

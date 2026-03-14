@@ -1,0 +1,19 @@
+package com.cowave.search.application.index.config
+
+import com.cowave.search.application.index.repository.LegacyReserveSyncRepository
+import com.cowave.search.application.index.service.LegacyReserveSyncApplicationService
+import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true", matchIfMissing = false)
+class LegacySyncApplicationConfig {
+
+    @Bean
+    fun legacyReserveSyncApplicationService(
+        legacyReserveSyncRepository: LegacyReserveSyncRepository,
+        cachedProxyApplicationService: CachedProxyApplicationService,
+    ) = LegacyReserveSyncApplicationService(legacyReserveSyncRepository, cachedProxyApplicationService)
+}

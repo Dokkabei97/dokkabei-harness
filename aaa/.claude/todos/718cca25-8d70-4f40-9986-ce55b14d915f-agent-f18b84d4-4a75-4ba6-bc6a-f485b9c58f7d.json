@@ -1,0 +1,42 @@
+[
+  {
+    "content": "Review current hexagonal architecture implementation across all layers",
+    "status": "completed",
+    "id": "review_hexagonal_arch"
+  },
+  {
+    "content": "Analyze gRPC to Elasticsearch service flow and DSL processing",
+    "status": "completed",
+    "id": "analyze_service_flow"
+  },
+  {
+    "content": "Design architecture for recursive boolean query processing",
+    "status": "completed",
+    "id": "design_recursive_queries"
+  },
+  {
+    "content": "Design multi-index search routing architecture",
+    "status": "completed",
+    "id": "design_multi_index"
+  },
+  {
+    "content": "Create migration strategy for DSL enhancement with backward compatibility",
+    "status": "completed",
+    "id": "migration_strategy"
+  },
+  {
+    "content": "Analyze performance implications and optimization strategies",
+    "status": "completed",
+    "id": "performance_analysis"
+  },
+  {
+    "content": "Design caching strategies for multi-index searches",
+    "status": "completed",
+    "id": "caching_strategy"
+  },
+  {
+    "content": "Recommend error handling improvements",
+    "status": "completed",
+    "id": "error_handling"
+  }
+]

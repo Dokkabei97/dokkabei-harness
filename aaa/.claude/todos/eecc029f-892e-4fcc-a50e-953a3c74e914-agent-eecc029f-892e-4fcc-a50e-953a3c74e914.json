@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Explore codebase structure to understand project layout",
+    "status": "in_progress",
+    "activeForm": "Exploring codebase structure"
+  },
+  {
+    "content": "Identify CSV reading logic locations",
+    "status": "pending",
+    "activeForm": "Identifying CSV reading logic locations"
+  },
+  {
+    "content": "Remove CSV reading logic from identified files",
+    "status": "pending",
+    "activeForm": "Removing CSV reading logic"
+  }
+]

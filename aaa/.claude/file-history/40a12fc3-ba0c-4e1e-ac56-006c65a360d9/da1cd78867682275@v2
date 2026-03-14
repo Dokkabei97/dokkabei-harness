@@ -1,0 +1,7 @@
+'use client'
+
+import { SearchDictionaryPage } from '@/views/search/dictionary'
+
+export default function App() {
+  return <SearchDictionaryPage />
+}

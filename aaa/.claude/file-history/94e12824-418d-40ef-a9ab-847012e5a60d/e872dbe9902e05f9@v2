@@ -1,0 +1,17 @@
+package config
+
+// Config represents the CLI configuration.
+type Config struct {
+	BaseURL   string `mapstructure:"base_url" yaml:"base_url"`
+	APIKey    string `mapstructure:"api_key" yaml:"api_key"`
+	Workspace string `mapstructure:"workspace" yaml:"workspace"`
+	Project   string `mapstructure:"project" yaml:"project"`
+	Format    string `mapstructure:"format" yaml:"format"`
+}
+
+// Defaults returns a Config with default values.
+func Defaults() *Config {
+	return &Config{
+		Format: "json",
+	}
+}

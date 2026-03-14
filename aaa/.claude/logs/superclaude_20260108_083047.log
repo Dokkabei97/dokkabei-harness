@@ -1,0 +1,6 @@
+2026-01-08 08:30:47 | DEBUG    | superclaude | SuperClaude called with operation: uninstall
+2026-01-08 08:30:47 | DEBUG    | superclaude | Arguments: {'verbose': False, 'quiet': False, 'install_dir': PosixPath('/Users/admin/.claude'), 'dry_run': False, 'force': False, 'yes': False, 'no_update_check': False, 'auto_update': False, 'authors': False, 'operation': 'uninstall', 'components': None, 'complete': False, 'keep_backups': False, 'keep_logs': False, 'keep_settings': False, 'no_confirm': False, 'cleanup_env': False, 'no_restore_script': False}
+2026-01-08 08:30:47 | INFO     | superclaude | Executing operation: uninstall
+2026-01-08 08:30:47 | INFO     | superclaude | Starting uninstall operation
+2026-01-08 08:30:47 | INFO     | superclaude.security | [ALLOW] Claude directory installation validated: /Users/admin/.claude (PID: 35572)
+2026-01-08 08:30:48 | INFO     | superclaude | Uninstall cancelled by user

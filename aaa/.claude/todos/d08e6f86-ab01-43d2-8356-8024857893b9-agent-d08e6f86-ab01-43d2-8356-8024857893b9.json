@@ -1,0 +1,32 @@
+[
+  {
+    "content": "텍스트 가독성 개선 - 회색 텍스트를 검은색으로 변경",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "다크모드 구현 - Context 및 토글 기능 추가",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "실제 Darae API 연동 - 로컬 환경 설정",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "모든 페이지에 다크모드 적용",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "API 에러 핸들링 개선",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

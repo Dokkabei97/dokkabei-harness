@@ -1,0 +1,38 @@
+{
+  "session_id": "30978299-0d34-408e-aeae-1c692e0b66cf",
+  "project_path": "/Users/admin/mkp/agetns-utils",
+  "start_time": "2026-03-08T23:47:08.649Z",
+  "duration_minutes": 1,
+  "user_message_count": 1,
+  "assistant_message_count": 5,
+  "tool_counts": {
+    "ToolSearch": 1,
+    "WebFetch": 1,
+    "Read": 1
+  },
+  "languages": {
+    "Markdown": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 15,
+  "output_tokens": 548,
+  "first_prompt": "https://x.com/artemxtech/status/2028330693659332615 를 보면 너가 파일을 찾을 때 쓰는 검색엔진이라는데   @skills/claude-md-inverted-index/ 해당 스킬하고 궁합이 좋을까? 한번 검토해줘 만약 x.com에 fetch가 실패하면 gemini한테 접근을 요청해서 해당 원문을 전부 받아서 확인해",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": true,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    8
+  ],
+  "user_message_timestamps": [
+    "2026-03-08T23:48:13.989Z"
+  ]
+}

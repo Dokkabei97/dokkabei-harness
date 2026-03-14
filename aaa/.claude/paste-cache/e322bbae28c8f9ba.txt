@@ -1,0 +1,45 @@
+⏺ ★ Insight ─────────────────────────────────────
+  라우트 충돌 가능성과 Content-Type 이슈 분석
+
+  1. ProductNameAnalysisAction은 /_analysis-product-name/{action} 와일드카드 라우트를, RestReloadDictAction은 /_analysis-product-name/reload-dict 리터럴 라우트를 등록합니다. ES는 리터럴 라우트에 우선순위를
+  줍니다.
+  2. ES 9.x의 RestController는 POST 요청에 대해 Content-Type 및 body 유효성 검사가 엄격합니다.
+  ─────────────────────────────────────────────────
+
+  원인 분석
+
+  핵심 원인: Elasticsearch 9.x는 POST 요청에 대해 Content-Type 헤더와 body의 일관성을 엄격히 검증합니다.
+
+  - Kibana Dev Tools: POST 요청 시 자동으로 Content-Type: application/json과 빈 body({})를 함께 전송
+  - Low-Level REST Client: Request("POST", ...) 에 body를 설정하지 않으면 body가 null인 상태로 전송되어, ES가 400 에러를 반환
+
+  해결 방법
+
+  클라이언트 측에서 빈 JSON body를 추가하면 됩니다:
+
+  private fun reloadDictionary(clusterId: String) {
+      logger.info("Reloading dictionary in Elasticsearch cluster: {}", clusterId)
+      val restClient = clientFactory.getLowLevelClient(clusterId)
+      val request = Request("POST", "/_analysis-product-name/reload-dict")
+      request.setJsonEntity("{}")  // 빈 JSON body 추가
+      val response = restClient.performRequest(request)
+      val statusCode = response.statusCode
+      val responseBody = response.entity?.content?.bufferedReader()?.readText()
+      logger.info("Dictionary reload response [{}]: status={}, body={}", clusterId, statusCode, responseBody)
+      if (statusCode !in 200..299) {
+          throw RuntimeException("Failed to reload dictionary: HTTP $statusCode, body=$responseBody")
+      }
+  }
+
+  변경점은 딱 한 줄입니다:
+  request.setJsonEntity("{}")
+
+  setJsonEntity("{}")가 Content-Type: application/json 헤더와 body를 함께 설정해주어 ES의 유효성 검증을 통과합니다.
+
+  대안
+
+  POST 대신 GET으로 호출해도 됩니다. RestReloadDictAction이 GET도 지원하고 있으므로:
+
+  val request = Request("GET", "/_analysis-product-name/reload-dict")
+
+  GET 요청은 body가 없어도 ES에서 400을 반환하지 않습니다. 다만 의미적으로 사전 리로드는 부수효과가 있는 작업이므로 POST + 빈 body 방식이 더 적절합니다.

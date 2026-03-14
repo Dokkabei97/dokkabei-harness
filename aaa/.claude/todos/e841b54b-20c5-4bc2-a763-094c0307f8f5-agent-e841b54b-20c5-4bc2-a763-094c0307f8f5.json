@@ -1,0 +1,50 @@
+[
+  {
+    "content": "Read README.md to understand the DSL to Elasticsearch conversion platform",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Examine search-related code across all modules",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Analyze current query conversion implementation",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Identify issues with nested bool queries (filter > bool > should)",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Design solution for nested bool query support",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Create comprehensive report.md with findings and recommendations",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Explain how custom DSL query structure changes with the proposed improvements",
+    "status": "completed",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Update report.md with simplified DSL approach based on user feedback",
+    "status": "completed",
+    "priority": "high",
+    "id": "8"
+  }
+]

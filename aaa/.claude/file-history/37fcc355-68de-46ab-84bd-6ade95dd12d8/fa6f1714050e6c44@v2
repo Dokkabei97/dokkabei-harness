@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-corporate-blue: #0066ff;
+  --color-background-light: #f5f6f8;
+  --color-surface-light: #ffffff;
+  --color-border-light: #e2e8f0;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+
+  --font-display: "Inter", "sans-serif";
+}
+
+@layer utilities {
+  .corporate-header-shadow {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .term-card-shadow {
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@layer components {
+  .nav-link-active {
+    background-color: var(--color-blue-50);
+    color: var(--color-blue-600);
+    font-weight: 700;
+    border-right-width: 4px;
+    border-right-color: var(--color-blue-600);
+  }
+
+  .nav-link-inactive {
+    color: var(--color-gray-600);
+  }
+
+  .nav-link-inactive:hover {
+    background-color: var(--color-gray-50);
+  }
+
+  .triage-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: rgba(243, 244, 246, 0.5);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px dashed #e5e7eb;
+    min-height: 600px;
+  }
+}
+
+body {
+  font-family: var(--font-display);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+}

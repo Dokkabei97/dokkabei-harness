@@ -1,0 +1,196 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+const ENGINE_ROUTES = ["/engine-dashboard"];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const isEngineMode = ENGINE_ROUTES.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  const isDictPage =
+    pathname.startsWith("/system-dict") || pathname.startsWith("/ai-dict");
+  const [dictOpen, setDictOpen] = useState(true);
+  const [engineSections, setEngineSections] = useState({
+    main: true,
+    cluster: false,
+    index: false,
+    logs: false,
+  });
+
+  if (isEngineMode) {
+    return (
+      <nav className="w-[240px] bg-white border-r border-border-light flex flex-col h-full overflow-y-auto shrink-0 pb-10">
+        <div className="flex flex-col py-2 border-b border-gray-100">
+          <button
+            className="flex items-center justify-between px-5 py-3 text-sm font-bold text-blue-600 hover:bg-gray-50 w-full text-left"
+            onClick={() =>
+              setEngineSections((s) => ({ ...s, main: !s.main }))
+            }
+          >
+            <span>메인관리</span>
+            <span className="material-symbols-outlined text-[18px]">
+              {engineSections.main ? "expand_less" : "expand_more"}
+            </span>
+          </button>
+          {engineSections.main && (
+            <div className="flex flex-col pb-2">
+              <Link
+                className="px-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 pl-8"
+                href="#"
+              >
+                리얼 큐레이션
+              </Link>
+              <Link
+                className="px-5 py-2.5 text-[13px] font-bold text-blue-600 bg-blue-50 pl-8 border-r-2 border-blue-600"
+                href="/engine-dashboard"
+              >
+                특가/기획상품
+              </Link>
+              <Link
+                className="px-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 pl-8"
+                href="#"
+              >
+                쇼핑몰 자동로그인
+              </Link>
+              <Link
+                className="px-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 pl-8"
+                href="#"
+              >
+                프로모션
+              </Link>
+              <Link
+                className="px-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 pl-8"
+                href="#"
+              >
+                미들배너
+              </Link>
+            </div>
+          )}
+        </div>
+        {(["cluster", "index", "logs"] as const).map((section) => (
+          <div
+            key={section}
+            className="flex flex-col py-2 border-b border-gray-100"
+          >
+            <button
+              className="flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 w-full text-left"
+              onClick={() =>
+                setEngineSections((s) => ({ ...s, [section]: !s[section] }))
+              }
+            >
+              <span>
+                {section === "cluster"
+                  ? "검색 클러스터"
+                  : section === "index"
+                    ? "인덱스 관리"
+                    : "로그 분석"}
+              </span>
+              <span className="material-symbols-outlined text-[18px]">
+                {engineSections[section] ? "expand_less" : "expand_more"}
+              </span>
+            </button>
+          </div>
+        ))}
+      </nav>
+    );
+  }
+
+  return (
+    <nav className="w-[240px] bg-white border-r border-border-light flex flex-col h-full overflow-y-auto shrink-0 pb-10">
+      <div className="flex flex-col py-2">
+        <div className="flex flex-col">
+          <button
+            className={`w-full px-5 py-3 text-[14px] flex items-center justify-between ${
+              dictOpen
+                ? "font-bold text-gray-900 bg-gray-50"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+            onClick={() => setDictOpen(!dictOpen)}
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[20px] text-blue-600">
+                menu_book
+              </span>
+              사전
+            </div>
+            <span className="material-symbols-outlined text-[18px] text-gray-600">
+              {dictOpen ? "expand_less" : "expand_more"}
+            </span>
+          </button>
+          {dictOpen && (
+            <div className="flex flex-col bg-white">
+              <Link
+                className={`pl-12 pr-5 py-2.5 text-[13px] flex items-center justify-between transition-colors ${
+                  pathname === "/system-dict"
+                    ? "font-bold text-blue-600 bg-blue-50 border-r-4 border-blue-600"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+                href="/system-dict"
+              >
+                시스템 사전
+                <span className="material-symbols-outlined text-[14px]">
+                  lock
+                </span>
+              </Link>
+              <Link
+                className="pl-12 pr-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 transition-colors"
+                href="#"
+              >
+                사용자 사전
+              </Link>
+              <Link
+                className="pl-12 pr-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 transition-colors"
+                href="#"
+              >
+                동의어 사전
+              </Link>
+              <Link
+                className="pl-12 pr-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 transition-colors"
+                href="#"
+              >
+                단위명 사전
+              </Link>
+              <Link
+                className="pl-12 pr-5 py-2.5 text-[13px] text-gray-600 hover:bg-gray-50 transition-colors"
+                href="#"
+              >
+                복합명사 사전
+              </Link>
+              <Link
+                className={`pl-12 pr-5 py-2.5 text-[13px] flex items-center justify-between transition-colors ${
+                  pathname.startsWith("/ai-dict")
+                    ? "font-bold text-blue-600 bg-blue-50 border-r-4 border-blue-600"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+                href="/ai-dict/triage"
+              >
+                AI 사전
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-blue-100 text-[10px] text-blue-700">
+                  AI
+                </span>
+              </Link>
+            </div>
+          )}
+        </div>
+        <Link
+          className={`px-5 py-3 text-[14px] flex items-center gap-3 transition-colors ${
+            pathname === "/dashboard"
+              ? "font-bold text-blue-600 bg-blue-50 border-r-2 border-blue-600"
+              : "text-gray-600 hover:bg-gray-50"
+          }`}
+          href="/dashboard"
+        >
+          <span className="material-symbols-outlined text-[20px]">
+            analytics
+          </span>
+          형태소 분석기
+        </Link>
+      </div>
+    </nav>
+  );
+}

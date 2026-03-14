@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: dynamic-indexer
+  config:
+    import:
+      - "classpath:application-outbound.yml"
+      - "classpath:application-observability.yml"
+
+index:
+  enabled: true
+
+server:
+  port: 8080
+
+search:
+  indices:
+    admin-product: ${SEARCH_INDEX_ADMIN_PRODUCT}
+    admin-catalog: ${SEARCH_INDEX_ADMIN_CATALOG}
+    app-product: ${SEARCH_INDEX_APP_PRODUCT}
+    app-catalog: ${SEARCH_INDEX_APP_CATALOG}
+  boosting:
+    index-name: categoryboost
+
+local-cache:
+  mall:
+    ttl-seconds: 600
+  category:
+    ttl-seconds: 600
+  brand:
+    ttl-seconds: 3600
+  manufacturer:
+    ttl-seconds: 3600
+
+logging:
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%X{trace_id:-}] %-5level %logger{36} - %msg%n"

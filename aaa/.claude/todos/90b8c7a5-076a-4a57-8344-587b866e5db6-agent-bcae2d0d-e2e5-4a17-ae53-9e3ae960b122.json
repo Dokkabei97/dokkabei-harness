@@ -1,0 +1,50 @@
+[
+  {
+    "content": "현재 프로젝트에서 스케줄러 관련 파일들을 분석하고 식별",
+    "status": "completed",
+    "priority": "high",
+    "id": "analyze-scheduler-files"
+  },
+  {
+    "content": "제거할 파일들과 수정할 파일들을 분류",
+    "status": "completed",
+    "priority": "high",
+    "id": "classify-removal-files"
+  },
+  {
+    "content": "main.py에서 스케줄러 초기화 코드 제거",
+    "status": "completed",
+    "priority": "high",
+    "id": "remove-main-scheduler-init"
+  },
+  {
+    "content": "API 라우터에서 스케줄러 관련 엔드포인트 제거",
+    "status": "completed",
+    "priority": "high",
+    "id": "remove-scheduler-api"
+  },
+  {
+    "content": "스케줄러 설정 관련 코드 제거",
+    "status": "completed",
+    "priority": "medium",
+    "id": "remove-scheduler-config"
+  },
+  {
+    "content": "불필요한 스케줄러 관련 import 문들 정리",
+    "status": "completed",
+    "priority": "medium",
+    "id": "clean-imports"
+  },
+  {
+    "content": "Pub/Sub 방식 사전 동기화를 위한 구조 준비",
+    "status": "completed",
+    "priority": "medium",
+    "id": "prepare-pubsub-integration"
+  },
+  {
+    "content": "애플리케이션 기동 테스트 및 오류 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "test-application"
+  }
+]

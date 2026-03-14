@@ -1,0 +1,27 @@
+[
+  {
+    "content": "클러스터 토폴로지 및 고가용성 구성 분석",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "리소스 할당 및 성능 튜닝 검토",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "스토리지 구성 및 데이터 복원력 평가",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "보안 및 운영 고려사항 검토",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "비용 최적화 방안 제시",
+    "status": "completed",
+    "id": "5"
+  }
+]

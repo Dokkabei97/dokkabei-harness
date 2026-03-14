@@ -1,0 +1,120 @@
+src/main/kotlin/com/danawa/util/CharVector.kt:115:        if (this === other) return true
+src/main/kotlin/org/apache/lucene/analysis/tokenattributes/SynonymAttributeImpl.kt:21:        if (other === this) return true
+src/main/kotlin/org/apache/lucene/analysis/tokenattributes/ExtraTermAttributeImpl.kt:67:        if (other === this) return true
+src/main/kotlin/org/apache/lucene/analysis/tokenattributes/ExtraTermAttributeImpl.kt:89:        if (target === this) return
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameParsingRule.kt:47:        if (queue.size == 1 && queue[0].type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:118:                        if (entry!!.type === UNIT || entry!!.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:121:                                if (subEntryList[sinx].type === NUMBER ||
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:122:                                    subEntryList[sinx].type === NUMBER_TRANS) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:344:        if ((parent == null || parent.type === MODEL_NAME) && entry.type === NUMBER && entry.length >= 5) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:346:        } else if (entry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:348:        } else if (entry.type === NUMBER_TRANS) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisFilter.kt:362:                    if (subEntryList[0] === entry) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:131:                        } else if (typePrev === WHITESPACE && typeCurrent !== WHITESPACE) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:133:                        } else if (typePrev === WHITESPACE && typeCurrent === WHITESPACE) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:135:                        } else if (typePrev !== WHITESPACE && typeCurrent === WHITESPACE) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:159:                            if (typePrev !== WHITESPACE && typeCurrent === WHITESPACE) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:384:            if (ret === WHITESPACE || ret === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:386:            } else if (ret === SYMBOL && (containsChar(AVAIL_SYMBOLS_SPLIT, c) || (c.code > 128))) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:419:                if (!(type === ALPHA || type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:436:                    type = if ((prevType === ALPHA && type === NUMBER) || (prevType === NUMBER && type === ALPHA)) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:438:                    } else if (prevType === ALPHANUM && (type === ALPHA || type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:440:                    } else if ((prevType === ALPHA && type === SYMBOL) || (prevType === NUMBER && type === SYMBOL)
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:441:                        || (prevType === ALPHANUM && type === SYMBOL)) {
+src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt:443:                    } else if (prevType === ASCII && (type === ALPHA || type === NUMBER || type === SYMBOL)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleThree.kt:86:        return prevEntry.buf === nextEntry.buf
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleThree.kt:140:            if (e.type === NUMBER_TRANS) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleThree.kt:157:        return (unitType === ALPHA && (typePrev === UNIT || typePrev === UNIT_ALPHA)) ||
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleThree.kt:158:                !(getType(tempch1) === ALPHA && unitType === ALPHA)
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:53:            if (currentEntry.type === UNCATEGORIZED) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:69:            if (currentEntry.type === HANGUL && currentEntry.modifiable) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:70:                if (getType(currentEntry.buf[currentEntry.start]) === NUMBER) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:98:                                    joinable = currentEntry.start == prevEntry.start + prevEntry.length && (prevEntry.type === ALPHA || prevEntry.type === NUMBER || prevEntry.type === SYMBOL)
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:102:                                    joinable = nextEntry.start == currentEntry.start + currentEntry.length && (nextEntry.type === ALPHA || nextEntry.type === NUMBER || nextEntry.type === SYMBOL)
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:113:                        if (eType === ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:115:                        } else if (eType === NUMBER) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:118:                        } else if (eType === ASCII || eType === ALPHANUM) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:145:                if (prevEntry.buf === tmpBuf && prevEntry.length > 0 && prevEntry.type !== FULL_STRING) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:217:                if (nextEntry.length == 0 || nextEntry.type === FULL_STRING || nextEntry.start != prevEntry.start + prevEntry.length) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:250:        if ((currentEntry.type === NUMBER || currentEntry.type === NUMBER_TRANS)
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:251:            && prevEntry.type === NUMBER && currentEntry.endOffset != prevEntry.startOffset) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleOne.kt:256:            if (getType(c) === SYMBOL && containsChar(AVAIL_SYMBOLS_INNUMBER, c)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFive.kt:112:                if (currentEntry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:68:            if (remainOption.type === UNIT_ALPHA && remainOption.typePrev === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:84:            } else if (remainOption.type === SYMBOL && currentEntry.length == 1) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:86:            } else if (remainOption.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:112:        if (remainOption.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:146:        if (remainOption.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:279:        if (currentEntry.type !== FULL_STRING && getType(cv.charAt(0)) === ALPHA && (option.useForQuery() || (!option.useForQuery() && currentEntry.type !== UNIT))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:280:            if (getTermType(cv) === ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:289:        if (currentEntry.type === FULL_STRING) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/RuleFour.kt:299:        remainOption.isAlphaNum = currentEntry.type === ALPHA || currentEntry.type === NUMBER || currentEntry.type === NUMBER_TRANS
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:63:            if (entryType === FULL_STRING) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:157:            if (queue[removeInx + tc - 1].type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:170:            if (entry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:183:                if (type !== subEntry.type || (type === UNIT_ALPHA && subEntry.type === UNIT_ALPHA)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:190:                    if (subEntry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:195:                                if (e.type === NUMBER || e.type === NUMBER_TRANS) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:209:                                queue[removeInx].also { nextEntry = it }.type === ALPHA &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:247:            if (queue[removeInx + tc - 1].type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:260:            if (entry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:279:                    if (subEntry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:289:                                queue[removeInx].also { nextEntry = it }.type === ALPHA &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:343:            if (e0.type === NUMBER_TRANS) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:367:            if (unitType === ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:378:            if (entry.type === MODEL_NAME) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:397:                            if ((charType === ALPHA || charType === NUMBER) && (nextCharType === SYMBOL)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:403:                            } else if ((charType === SYMBOL) && (nextCharType === ALPHA || nextCharType === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:411:                                (charType === ALPHA || charType === NUMBER) &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:412:                                (nextCharType === ALPHA || nextCharType === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:420:                            if ((charType === ALPHA || charType === NUMBER) &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:421:                                (nextCharType === SYMBOL) &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:422:                                (nextNextCharType === ALPHA || nextNextCharType === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:425:                                (charType === ALPHA || charType === NUMBER) &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:426:                                (nextCharType === ALPHA || nextCharType === NUMBER) &&
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:427:                                (nextNextCharType === ALPHA || nextNextCharType === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:440:                        } else if (currentEntry.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:445:                        } else if (nextEntry.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:455:                            if ((currentEntry.type === ALPHA || currentEntry.type === NUMBER)
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:456:                                && (nextNextEntry.type === ALPHA || nextNextEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:457:                                if (nextEntry.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:461:                                } else if (currentEntry.type === nextNextEntry.type) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:481:                    if (workingEntry != null && workingEntry.length == 1 && (workingEntry.type === ALPHA || workingEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:488:                            if (!(prevEntry.type === SYMBOL && prevEntry.length == 1)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:495:                            if (!(nextEntry.type === SYMBOL && nextEntry.length == 1)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:557:                        if (((prevEntry == null || (prevEntry.type === SYMBOL && prevEntry.start + prevEntry.length == currentEntry.start))
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:558:                                    && (currentEntry.type === ALPHA && nextEntry.type === NUMBER && (currentEntry.start + currentEntry.length == nextEntry.start))
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:560:                                    && (nextNextEntry == null || (nextNextEntry.type === SYMBOL && nextEntry.start + nextEntry.length == nextNextEntry.start)))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:562:                                logger.trace("================================================================================")
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:564:                                logger.trace("================================================================================")
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:580:                    if (currentEntry.type === SYMBOL) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:589:                                    if (!(lastEntry.start == nextEntry.start && lastEntry.type === ALPHANUM)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:592:                                            && prevEntry.type === ALPHA
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:593:                                            && ((nextEntry.type === ALPHA && nextNextEntry.type === NUMBER)
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:594:                                                    || (nextEntry.type === NUMBER && nextNextEntry.type === ALPHA))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:612:                                        if (prevEntry.type === MODEL_NAME || prevEntry.type === ALPHANUM) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:613:                                            if (nextEntry.type === ALPHA || nextEntry.type === NUMBER || nextEntry.type === ALPHANUM || nextEntry.type === MODEL_NAME) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:616:                                        } else if (nextEntry.type === MODEL_NAME || nextEntry.type === ALPHANUM) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:617:                                            if (prevEntry.type === ALPHA || prevEntry.type === NUMBER || prevEntry.type === ALPHANUM || prevEntry.type === MODEL_NAME) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:621:                                            if (prevEntry.type === ALPHA || prevEntry.type === NUMBER) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:622:                                                if (prevEntry.type === nextEntry.type) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:631:                                        if (lastCharTypeOfPrevEntry === firstCharTypeOfNextEntry) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:634:                                                if (getType(prevEntry.buf[prevEntry.start + sinx - 1]) === lastCharTypeOfPrevEntry) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:651:                                                if (getType(nextEntry.buf[nextEntry.start + sinx]) === firstCharTypeOfNextEntry) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:697:                    } else if (currentEntry.type === UNIT_ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:709:                    } else if (currentEntry.type === ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:712:                            if (e1.startOffset == currentEntry.endOffset + 1 && e1.type === ALPHA) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:730:                        currentEntry.length == 1 && nextEntry.length == 1 && finalType === SYMBOL
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:731:                        && ((currentEntry.type === NUMBER && nextEntry.type === ALPHA)
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:732:                                || (currentEntry.type === ALPHA && nextEntry.type === NUMBER))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:764:                if (currentEntry.length == 1 && ((currentEntry.type === ALPHA || (currentEntry.type === UNIT && Character.isAlphabetic(currentEntry.buf[currentEntry.start].code))) || currentEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:772:                    if (nextEntry != null && nextEntry.length == 1 && ((nextEntry.type === ALPHA || (nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code))) || nextEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:773:                        if ((currentEntry.type === NUMBER && (nextEntry.type === ALPHA || (nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code))) || ((currentEntry.type === ALPHA || (currentEntry.type === UNIT && Character.isAlphabetic(currentEntry.buf[currentEntry.start].code))) && nextEntry.type === NUMBER))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:777:                                    if (nextEntry.length == 1 && nextNextEntry.length == 1 && ((nextEntry.type === ALPHA || nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code)) && nextNextEntry.type === NUMBER || nextEntry.type === NUMBER && (nextNextEntry.type === ALPHA || nextNextEntry.type === UNIT && Character.isAlphabetic(nextNextEntry.buf[nextNextEntry.start].code)))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:781:                                    if (nextEntry.length == 1 && nextNextEntry.length == 1 && ((nextEntry.type === ALPHA || nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code)) && nextNextEntry.type === NUMBER || nextEntry.type === NUMBER && (nextNextEntry.type === ALPHA || nextNextEntry.type === UNIT && Character.isAlphabetic(nextNextEntry.buf[nextNextEntry.start].code)))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:821:                    if (currentEntry.type === NUMBER && (nextEntry.type === UNIT || nextEntry.type === UNIT_ALPHA)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:830:            if (nextEntry.length == 1 && nextNextEntry.length == 1 && ((nextEntry.type === ALPHA || nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code)) && nextNextEntry.type === NUMBER || nextEntry.type === NUMBER && (nextNextEntry.type === ALPHA || nextNextEntry.type === UNIT && Character.isAlphabetic(nextNextEntry.buf[nextNextEntry.start].code)))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:836:            if (nextEntry.length == 1 && nextNextEntry.length == 1 && ((nextEntry.type === ALPHA || nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code)) && nextNextEntry.type === NUMBER || nextEntry.type === NUMBER && (nextNextEntry.type === ALPHA || nextNextEntry.type === UNIT && Character.isAlphabetic(nextNextEntry.buf[nextNextEntry.start].code)))) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:843:            if (nextEntry.length == 1 && ((nextEntry.type === ALPHA || currentEntry.type === UNIT && Character.isAlphabetic(currentEntry.buf[currentEntry.start].code)) || nextEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:844:                if ((currentEntry.type === NUMBER && (nextEntry.type === ALPHA || nextEntry.type === UNIT && Character.isAlphabetic(nextEntry.buf[nextEntry.start].code))) || ((currentEntry.type === ALPHA || (currentEntry.type === UNIT && Character.isAlphabetic(currentEntry.buf[currentEntry.start].code))) && nextEntry.type === NUMBER)) {
+src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt:851:            if (currentEntry.type === NUMBER && nextEntry.type === UNIT) {

@@ -1,0 +1,13 @@
+{
+  "id": "5",
+  "subject": "Phase 3: Dictionary Layer 마이그레이션 (15 files)",
+  "description": "순서: Dictionary → ReadableDictionary → WritableDictionary → ReloadableDictionary → SourceDictionary → SetDictionary → MapDictionary → SynonymDictionary → CompoundDictionary → SpaceDictionary → InvertMapDictionary → CustomDictionary → TagProbDictionary → CommonDictionary → ProductNameDictionary\n\n주의사항:\n- SpaceDictionary.DELIMITER = \"\\\\s\" → companion object { private const val DELIMITER = \"\\\\s\" }\n- Pattern.compile() → Pattern 유지 (호환성)\n- 제네릭 타입 파라미터 보존: SourceDictionary<E>",
+  "activeForm": "Dictionary Layer 마이그레이션 중",
+  "status": "pending",
+  "blocks": [
+    "7"
+  ],
+  "blockedBy": [
+    "4"
+  ]
+}

@@ -1,0 +1,72 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Quick Commands
+
+```bash
+# Lint a service chart
+helm lint apps/next-search/<service>
+
+# Template dry-run with environment values
+helm template <service> apps/next-search/<service> \
+  -f apps/next-search/<service>/values/values-dev.yaml
+
+# Create Harbor pull secret
+apps/next-search/script/harbor-secret.sh
+```
+
+## Architecture
+
+next-search는 검색 플랫폼의 마이크로서비스 Helm 차트 모음이다. 모든 서비스는 Spring Boot 기반이며, 환경변수 주입 방식(envFrom)으로 설정을 관리한다.
+
+### 환경변수 주입 계층 (2-layer ConfigMap/Secret 패턴)
+
+모든 서비스는 `envFrom`으로 다음 2가지를 참조한다:
+
+1. **서비스 ConfigMap** (`{env}-cmn-{service}-config`) — 각 서비스의 `templates/configmap.yaml`에서 생성. OTEL, 인덱스 설정 + 인프라 연결 정보(ES, Valkey, Keyword Analysis)를 모두 포함
+2. **Secret** (`{env}-cmn-search-credentials`) — `secret/` 디렉토리의 매니페스트를 클러스터에서 직접 적용. ES API Key, Valkey 비밀번호, Kafka SASL 등
+
+인프라 연결 정보(Elasticsearch, Valkey, Keyword Analysis)는 각 서비스의 `values-{env}.yaml` 내 `config.elasticsearch`, `config.valkey`, `config.keywordAnalysis` 블록에서 관리한다. ConfigMap 템플릿에서 `{{- with .Values.config.elasticsearch }}` 등의 guard 블록으로 렌더링하므로, 해당 키가 values에 없는 환경에서는 자동으로 건너뛴다.
+
+### 서비스별 차이점
+
+| 서비스 | ConfigMap 특징 | Deployment 패턴 | 비고 |
+|--------|---------------|-----------------|------|
+| **search-api** | OTEL + index + ES/Valkey/KeywordAnalysis | 단일 컨테이너 | Ingress nginx |
+| **legacy-sync** | search-api와 동일 패턴 | 단일 컨테이너 | Ingress nginx |
+| **dynamic-indexer** | OTEL + index + Kafka CDC 3개 토픽 + ES/Valkey + KeywordAnalysis + client URL | 단일 컨테이너 | Ingress 미사용, prod는 별도 chart 구조 |
+| **search-admin** | Dictionary path + ES/Valkey/KeywordAnalysis | **Multi-container** (admin + admin-ui) | HTTPRoute 지원, `containers[]` 배열 방식 |
+
+### Chart naming 컨벤션
+
+- `Chart.yaml`의 `name`은 서비스 이름 그대로 (예: `search-api`, `legacy-sync`)
+  - 예외: `dynamic-indexer`는 `name: dev-cmn-dynamic-indexer`로 환경 prefix 포함
+- 환경 prefix는 `values/values-{env}.yaml`의 `nameOverride`/`fullnameOverride`에서 부여
+  - dev: `dev-cmn-{service}`, prod: `cmn-{service}`
+- `otelServiceName` 패턴: `{cluster}.{namespace}.{fullname}` (예: `backend-was.cmn-search.cmn-search-api`)
+
+### shared-resources (deprecated)
+
+`shared-resources/`는 이전에 공통 ConfigMap을 생성하던 차트로, 현재는 모든 인프라 설정이 각 서비스의 개별 ConfigMap으로 이관되었다. 클러스터에서 shared-resources Helm release를 제거한 후 디렉토리 삭제 예정.
+
+### Image Registry
+
+모든 이미지는 `harbor.cowave.kr/search/{service}` 경로를 사용하며, pull secret은 `search-harbor-cowave-secret`이다.
+
+### Observability 설정 (모든 서비스 공통)
+
+OTEL Java agent 기반. ConfigMap에서 아래 환경변수를 설정:
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: alloy 수집기 (`cmn-infra-observability` 네임스페이스)
+- `JAVA_TOOL_OPTIONS`: `-javaagent` + `-Dotel.experimental.config.file` 조합
+- Prometheus 메트릭: 포트 8081 (`/actuator/prometheus`), 서비스 포트와 별도
+
+## 새 서비스 추가 시
+
+1. `search-api/`를 복사하여 시작 (가장 심플한 패턴)
+2. `_helpers.tpl`의 모든 `search-api` → 새 서비스 이름으로 치환
+3. 모든 `templates/*.yaml`의 `include` 호출도 동일하게 치환
+4. `values.yaml`에 `ingress`, `autoscaling`, `config`, `replicaCount` 기본값 필수 (lint 통과 조건)
+5. `values-dev.yaml` / `values-prod.yaml`의 `config:` 블록에 인프라 설정(`elasticsearch`, `valkey`, `keywordAnalysis`) 추가 — 기존 서비스의 values 파일에서 복사
+6. Kafka가 필요하면 `dynamic-indexer/templates/configmap.yaml` 참조
+7. Multi-container가 필요하면 `search-admin/` 참조 (`containers[]` 배열 + 별도 deployment 템플릿)

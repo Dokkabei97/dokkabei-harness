@@ -1,0 +1,8 @@
+{
+  "name": "cowave-devtools",
+  "description": "Cowave 사내 개발 도구 플러그인. Plane 이슈 트래커, Outline 위키, Grafana 모니터링 연동을 제공합니다.",
+  "author": {
+    "name": "Cowave",
+    "email": "dev@cowave.kr"
+  }
+}

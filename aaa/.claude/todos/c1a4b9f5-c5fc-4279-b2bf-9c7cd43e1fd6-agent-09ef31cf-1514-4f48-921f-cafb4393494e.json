@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Split API client into two separate services: dictionaryApiClient (port 8000) and tokenizerApiClient (port 8001)",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Create environment-aware configuration for both development (localhost) and production domains",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Update dictionary page (/Users/admin/project/search-admin-ui/src/app/admin/dictionary/page.tsx) to use dictionaryApiClient",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Update tokenizer page (/Users/admin/project/search-admin-ui/src/app/admin/tokenizer/page.tsx) to use tokenizerApiClient",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Create separate types and interfaces for each API service if needed",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "Test both API clients work correctly with their respective endpoints",
+    "status": "completed",
+    "id": "6"
+  }
+]

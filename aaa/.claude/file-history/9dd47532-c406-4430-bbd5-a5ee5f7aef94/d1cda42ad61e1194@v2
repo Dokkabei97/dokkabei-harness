@@ -1,0 +1,30 @@
+import type { AgentConfig, AgentId, ExecutionOptions } from "./types.js";
+import { BaseAgent } from "./base-agent.js";
+import type { SpawnOptions } from "../orchestrator/executor.js";
+
+export class CopilotAgent extends BaseAgent {
+	readonly id: AgentId = "copilot";
+	readonly displayName = "Copilot CLI";
+	readonly cliCommand = "copilot";
+
+	constructor(config: AgentConfig) {
+		super(config);
+	}
+
+	protected buildSpawnOptions(options: ExecutionOptions, model: string): SpawnOptions {
+		const args = ["-p", options.prompt, "--model", model];
+
+		return {
+			command: this.cliCommand,
+			args,
+			timeout: options.timeout,
+			cwd: options.cwd,
+			stdin: options.context,
+		};
+	}
+
+	protected override parseOutput(stdout: string, stderr: string): string {
+		// Copilot outputs plain text
+		return stdout.trim() || stderr.trim();
+	}
+}

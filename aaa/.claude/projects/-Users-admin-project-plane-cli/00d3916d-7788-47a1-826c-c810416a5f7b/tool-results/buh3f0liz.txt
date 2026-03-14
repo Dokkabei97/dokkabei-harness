@@ -1,0 +1,2663 @@
+diff --git a/.goreleaser.yaml b/.goreleaser.yaml
+index bf917ea..4542c24 100644
+--- a/.goreleaser.yaml
++++ b/.goreleaser.yaml
+@@ -1,12 +1,20 @@
+ version: 2
+ 
++gitlab_urls:
++  api: https://labs.cowave.kr/api/v4/
++  download: https://labs.cowave.kr
++
++release:
++  gitlab:
++    owner: consumer-commerce-dev/search/techlab
++    name: plane-cli
++
+ builds:
+   - env:
+       - CGO_ENABLED=0
+     goos:
+       - linux
+       - darwin
+-      - windows
+     goarch:
+       - amd64
+       - arm64
+@@ -19,9 +27,6 @@ builds:
+ archives:
+   - format: tar.gz
+     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+-    format_overrides:
+-      - goos: windows
+-        format: zip
+ 
+ checksum:
+   name_template: "checksums.txt"
+diff --git a/cmd/customer/customer.go b/cmd/customer/customer.go
+deleted file mode 100644
+index 7356892..0000000
+--- a/cmd/customer/customer.go
++++ /dev/null
+@@ -1,237 +0,0 @@
+-package customer
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the customer command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "customer",
+-		Short: "Manage customers",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-
+-	return cmd
+-}
+-
+-var customerColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "EMAIL", Field: "email"},
+-	{Header: "DOMAIN", Field: "domain"},
+-}
+-
+-func customerPath() string {
+-	return "workspaces/{workspace_slug}/customers/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all customers in workspace",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(customerPath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, customerColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <customer-id>",
+-		Short: "Get customer details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(customerPath()+"{customer_id}/").
+-				Workspace(ws).Param("customer_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, customerColumns)
+-		},
+-	}
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, email, domain string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new customer",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(customerPath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if email != "" {
+-				body["email"] = email
+-			}
+-			if domain != "" {
+-				body["domain"] = domain
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, customerColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Customer name (required)")
+-	cmd.Flags().StringVar(&email, "email", "", "Customer email")
+-	cmd.Flags().StringVar(&domain, "domain", "", "Customer domain")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, email, domain string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <customer-id>",
+-		Short: "Update a customer",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(customerPath()+"{customer_id}/").
+-				Workspace(ws).Param("customer_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("email") {
+-				body["email"] = email
+-			}
+-			if cmd.Flags().Changed("domain") {
+-				body["domain"] = domain
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, customerColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Customer name")
+-	cmd.Flags().StringVar(&email, "email", "", "Customer email")
+-	cmd.Flags().StringVar(&domain, "domain", "", "Customer domain")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "delete <customer-id>",
+-		Short: "Delete a customer",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(customerPath()+"{customer_id}/").
+-				Workspace(ws).Param("customer_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Customer deleted:", args[0])
+-			return nil
+-		},
+-	}
+-}
+diff --git a/cmd/cycle/cycle.go b/cmd/cycle/cycle.go
+index 642e12c..5f63ffd 100644
+--- a/cmd/cycle/cycle.go
++++ b/cmd/cycle/cycle.go
+@@ -2,6 +2,7 @@ package cycle
+ 
+ import (
+ 	"fmt"
++	"time"
+ 
+ 	"github.com/spf13/cobra"
+ 
+@@ -10,6 +11,14 @@ import (
+ 	"github.com/plane-cli/plane-cli/internal/output"
+ )
+ 
++func formatDate(date string) (string, error) {
++	t, err := time.Parse("2006-01-02", date)
++	if err != nil {
++		return "", fmt.Errorf("invalid date format %q, expected YYYY-MM-DD", date)
++	}
++	return t.Format(time.RFC3339), nil
++}
++
+ // NewCmd creates the cycle command.
+ func NewCmd(f *cmdutil.Factory) *cobra.Command {
+ 	cmd := &cobra.Command{
+@@ -23,9 +32,6 @@ func NewCmd(f *cmdutil.Factory) *cobra.Command {
+ 	cmd.AddCommand(newCreateCmd(f))
+ 	cmd.AddCommand(newUpdateCmd(f))
+ 	cmd.AddCommand(newDeleteCmd(f))
+-	cmd.AddCommand(newListItemsCmd(f))
+-	cmd.AddCommand(newAddItemsCmd(f))
+-	cmd.AddCommand(newRemoveItemCmd(f))
+ 	cmd.AddCommand(newTransferCmd(f))
+ 	cmd.AddCommand(newArchiveCmd(f))
+ 	cmd.AddCommand(newUnarchiveCmd(f))
+@@ -139,10 +145,18 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+ 				body["description"] = description
+ 			}
+ 			if startDate != "" {
+-				body["start_date"] = startDate
++				sd, err := formatDate(startDate)
++				if err != nil {
++					return err
++				}
++				body["start_date"] = sd
+ 			}
+ 			if endDate != "" {
+-				body["end_date"] = endDate
++				ed, err := formatDate(endDate)
++				if err != nil {
++					return err
++				}
++				body["end_date"] = ed
+ 			}
+ 
+ 			resp, err := client.Post(path, body)
+@@ -193,10 +207,18 @@ func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+ 				body["description"] = description
+ 			}
+ 			if cmd.Flags().Changed("start-date") {
+-				body["start_date"] = startDate
++				sd, err := formatDate(startDate)
++				if err != nil {
++					return err
++				}
++				body["start_date"] = sd
+ 			}
+ 			if cmd.Flags().Changed("end-date") {
+-				body["end_date"] = endDate
++				ed, err := formatDate(endDate)
++				if err != nil {
++					return err
++				}
++				body["end_date"] = ed
+ 			}
+ 
+ 			if len(body) == 0 {
+@@ -252,115 +274,6 @@ func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+ 	}
+ }
+ 
+-func newListItemsCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list-items <cycle-id>",
+-		Short: "List work items in a cycle",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/").
+-				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, cycleColumns)
+-		},
+-	}
+-}
+-
+-func newAddItemsCmd(f *cmdutil.Factory) *cobra.Command {
+-	var items []string
+-
+-	cmd := &cobra.Command{
+-		Use:   "add-items <cycle-id>",
+-		Short: "Add work items to a cycle",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if len(items) == 0 {
+-				return fmt.Errorf("--items is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/").
+-				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"work_items": items,
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, cycleColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringSliceVar(&items, "items", nil, "Work item IDs to add (comma-separated or repeated)")
+-
+-	return cmd
+-}
+-
+-func newRemoveItemCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "remove-item <cycle-id> <item-id>",
+-		Short: "Remove a work item from a cycle",
+-		Args:  cobra.ExactArgs(2),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/{item_id}/").
+-				Workspace(ws).Project(proj).
+-				Param("cycle_id", args[0]).Param("item_id", args[1]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Work item removed from cycle:", args[1])
+-			return nil
+-		},
+-	}
+-}
+-
+ func newTransferCmd(f *cmdutil.Factory) *cobra.Command {
+ 	var newCycle string
+ 
+diff --git a/cmd/epic/epic.go b/cmd/epic/epic.go
+deleted file mode 100644
+index 6c585a2..0000000
+--- a/cmd/epic/epic.go
++++ /dev/null
+@@ -1,94 +0,0 @@
+-package epic
+-
+-import (
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the epic command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "epic",
+-		Short: "View epics",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-
+-	return cmd
+-}
+-
+-var epicColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "STATE", Field: "state"},
+-	{Header: "PRIORITY", Field: "priority"},
+-}
+-
+-func epicPath() string {
+-	return "workspaces/{workspace_slug}/projects/{project_id}/epics/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all epics in a project",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(epicPath()).
+-				Workspace(ws).Project(proj).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, epicColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <epic-id>",
+-		Short: "Get epic details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(epicPath()+"{epic_id}/").
+-				Workspace(ws).Project(proj).Param("epic_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, epicColumns)
+-		},
+-	}
+-}
+diff --git a/cmd/initiative/initiative.go b/cmd/initiative/initiative.go
+deleted file mode 100644
+index 87c133c..0000000
+--- a/cmd/initiative/initiative.go
++++ /dev/null
+@@ -1,233 +0,0 @@
+-package initiative
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the initiative command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "initiative",
+-		Short: "Manage initiatives",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-
+-	return cmd
+-}
+-
+-var initiativeColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "DESCRIPTION", Field: "description"},
+-	{Header: "STATUS", Field: "status"},
+-}
+-
+-func initiativePath() string {
+-	return "workspaces/{workspace_slug}/initiatives/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all initiatives in workspace",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(initiativePath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, initiativeColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <initiative-id>",
+-		Short: "Get initiative details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(initiativePath()+"{initiative_id}/").
+-				Workspace(ws).Param("initiative_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, initiativeColumns)
+-		},
+-	}
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new initiative",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(initiativePath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, initiativeColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Initiative name (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Initiative description")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description, status string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <initiative-id>",
+-		Short: "Update an initiative",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(initiativePath()+"{initiative_id}/").
+-				Workspace(ws).Param("initiative_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("description") {
+-				body["description"] = description
+-			}
+-			if cmd.Flags().Changed("status") {
+-				body["status"] = status
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, initiativeColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Initiative name")
+-	cmd.Flags().StringVar(&description, "description", "", "Initiative description")
+-	cmd.Flags().StringVar(&status, "status", "", "Initiative status")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "delete <initiative-id>",
+-		Short: "Delete an initiative",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(initiativePath()+"{initiative_id}/").
+-				Workspace(ws).Param("initiative_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Initiative deleted:", args[0])
+-			return nil
+-		},
+-	}
+-}
+diff --git a/cmd/intake/intake.go b/cmd/intake/intake.go
+deleted file mode 100644
+index 2fcfcb9..0000000
+--- a/cmd/intake/intake.go
++++ /dev/null
+@@ -1,261 +0,0 @@
+-package intake
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the intake command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "intake",
+-		Short: "Manage intakes",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-	cmd.AddCommand(newListIssuesCmd(f))
+-
+-	return cmd
+-}
+-
+-var intakeColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "SOURCE", Field: "source"},
+-	{Header: "STATUS", Field: "status"},
+-}
+-
+-func intakePath() string {
+-	return "workspaces/{workspace_slug}/projects/{project_id}/intakes/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all intakes in a project",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(intakePath()).
+-				Workspace(ws).Project(proj).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, intakeColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <intake-id>",
+-		Short: "Get intake details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(intakePath()+"{intake_id}/").
+-				Workspace(ws).Project(proj).Param("intake_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, intakeColumns)
+-		},
+-	}
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, source string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new intake",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(intakePath()).
+-				Workspace(ws).Project(proj).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if source != "" {
+-				body["source"] = source
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, intakeColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Intake name (required)")
+-	cmd.Flags().StringVar(&source, "source", "", "Intake source")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, status string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <intake-id>",
+-		Short: "Update an intake",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(intakePath()+"{intake_id}/").
+-				Workspace(ws).Project(proj).Param("intake_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("status") {
+-				body["status"] = status
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, intakeColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Intake name")
+-	cmd.Flags().StringVar(&status, "status", "", "Intake status")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "delete <intake-id>",
+-		Short: "Delete an intake",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(intakePath()+"{intake_id}/").
+-				Workspace(ws).Project(proj).Param("intake_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Intake deleted:", args[0])
+-			return nil
+-		},
+-	}
+-}
+-
+-func newListIssuesCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list-issues <intake-id>",
+-		Short: "List issues for an intake",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/intakes/{intake_id}/intake-issues/").
+-				Workspace(ws).Project(proj).Param("intake_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, intakeColumns)
+-		},
+-	}
+-}
+diff --git a/cmd/issue/issue.go b/cmd/issue/issue.go
+index 7632812..3dfb049 100644
+--- a/cmd/issue/issue.go
++++ b/cmd/issue/issue.go
+@@ -21,7 +21,6 @@ func NewCmd(f *cmdutil.Factory) *cobra.Command {
+ 	cmd.AddCommand(newListCmd(f))
+ 	cmd.AddCommand(newGetCmd(f))
+ 	cmd.AddCommand(newGetBySeqCmd(f))
+-	cmd.AddCommand(newSearchCmd(f))
+ 	cmd.AddCommand(newCreateCmd(f))
+ 	cmd.AddCommand(newUpdateCmd(f))
+ 	cmd.AddCommand(newDeleteCmd(f))
+@@ -157,46 +156,6 @@ func newGetBySeqCmd(f *cmdutil.Factory) *cobra.Command {
+ 	}
+ }
+ 
+-func newSearchCmd(f *cmdutil.Factory) *cobra.Command {
+-	var query string
+-
+-	cmd := &cobra.Command{
+-		Use:   "search",
+-		Short: "Search issues",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if query == "" {
+-				return fmt.Errorf("--query is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/search/").
+-				Workspace(ws).Project(proj).Query("search", query).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, issueColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&query, "query", "", "Search query (required)")
+-
+-	return cmd
+-}
+-
+ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+ 	var name, description, state, priority, parent string
+ 	var assignees, labels []string
+diff --git a/cmd/label/label.go b/cmd/label/label.go
+index bdf296c..385a7ee 100644
+--- a/cmd/label/label.go
++++ b/cmd/label/label.go
+@@ -20,7 +20,6 @@ func NewCmd(f *cmdutil.Factory) *cobra.Command {
+ 	cmd.AddCommand(newListCmd(f))
+ 	cmd.AddCommand(newGetCmd(f))
+ 	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+ 	cmd.AddCommand(newDeleteCmd(f))
+ 
+ 	return cmd
+@@ -148,56 +147,6 @@ func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+ 	return cmd
+ }
+ 
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, color string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <label-id>",
+-		Short: "Update a label",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(labelPath()+"{label_id}/").
+-				Workspace(ws).Project(proj).Param("label_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("color") {
+-				body["color"] = color
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, labelColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Label name")
+-	cmd.Flags().StringVar(&color, "color", "", "Label color (hex)")
+-
+-	return cmd
+-}
+-
+ func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+ 	return &cobra.Command{
+ 		Use:   "delete <label-id>",
+diff --git a/cmd/module/module.go b/cmd/module/module.go
+index 104e23b..6c58472 100644
+--- a/cmd/module/module.go
++++ b/cmd/module/module.go
+@@ -23,9 +23,6 @@ func NewCmd(f *cmdutil.Factory) *cobra.Command {
+ 	cmd.AddCommand(newCreateCmd(f))
+ 	cmd.AddCommand(newUpdateCmd(f))
+ 	cmd.AddCommand(newDeleteCmd(f))
+-	cmd.AddCommand(newListItemsCmd(f))
+-	cmd.AddCommand(newAddItemsCmd(f))
+-	cmd.AddCommand(newRemoveItemCmd(f))
+ 	cmd.AddCommand(newArchiveCmd(f))
+ 	cmd.AddCommand(newUnarchiveCmd(f))
+ 
+@@ -277,115 +274,6 @@ func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+ 	}
+ }
+ 
+-func newListItemsCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list-items <module-id>",
+-		Short: "List work items in a module",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(modulePath()+"{module_id}/module-work-items/").
+-				Workspace(ws).Project(proj).Param("module_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, moduleColumns)
+-		},
+-	}
+-}
+-
+-func newAddItemsCmd(f *cmdutil.Factory) *cobra.Command {
+-	var items []string
+-
+-	cmd := &cobra.Command{
+-		Use:   "add-items <module-id>",
+-		Short: "Add work items to a module",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if len(items) == 0 {
+-				return fmt.Errorf("--items is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(modulePath()+"{module_id}/module-work-items/").
+-				Workspace(ws).Project(proj).Param("module_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"work_items": items,
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, moduleColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringSliceVar(&items, "items", nil, "Work item IDs to add (comma-separated or repeated)")
+-
+-	return cmd
+-}
+-
+-func newRemoveItemCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "remove-item <module-id> <item-id>",
+-		Short: "Remove a work item from a module",
+-		Args:  cobra.ExactArgs(2),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(modulePath()+"{module_id}/module-work-items/{item_id}/").
+-				Workspace(ws).Project(proj).
+-				Param("module_id", args[0]).Param("item_id", args[1]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Work item removed from module:", args[1])
+-			return nil
+-		},
+-	}
+-}
+-
+ func newArchiveCmd(f *cmdutil.Factory) *cobra.Command {
+ 	return &cobra.Command{
+ 		Use:   "archive <module-id>",
+diff --git a/cmd/page/page.go b/cmd/page/page.go
+deleted file mode 100644
+index 1a665eb..0000000
+--- a/cmd/page/page.go
++++ /dev/null
+@@ -1,199 +0,0 @@
+-package page
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the page command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "page",
+-		Short: "Manage pages",
+-	}
+-
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateWorkspaceCmd(f))
+-	cmd.AddCommand(newGetWorkspaceCmd(f))
+-
+-	return cmd
+-}
+-
+-var pageColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "COLOR", Field: "color"},
+-	{Header: "ARCHIVED", Field: "is_archived"},
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description, color string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new project page",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/pages/").
+-				Workspace(ws).Project(proj).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-			if color != "" {
+-				body["color"] = color
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, pageColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Page name (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Page description")
+-	cmd.Flags().StringVar(&color, "color", "", "Page color")
+-
+-	return cmd
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <page-id>",
+-		Short: "Get project page details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/pages/{page_id}/").
+-				Workspace(ws).Project(proj).Param("page_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, pageColumns)
+-		},
+-	}
+-}
+-
+-func newCreateWorkspaceCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description, color string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create-workspace",
+-		Short: "Create a new workspace page",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/pages/").
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-			if color != "" {
+-				body["color"] = color
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, pageColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Page name (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Page description")
+-	cmd.Flags().StringVar(&color, "color", "", "Page color")
+-
+-	return cmd
+-}
+-
+-func newGetWorkspaceCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get-workspace <page-id>",
+-		Short: "Get workspace page details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath("workspaces/{workspace_slug}/pages/{page_id}/").
+-				Workspace(ws).Param("page_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, pageColumns)
+-		},
+-	}
+-}
+diff --git a/cmd/root.go b/cmd/root.go
+index a7bf7c8..116536f 100644
+--- a/cmd/root.go
++++ b/cmd/root.go
+@@ -8,23 +8,15 @@ import (
+ 
+ 	"github.com/plane-cli/plane-cli/cmd/activity"
+ 	"github.com/plane-cli/plane-cli/cmd/comment"
+-	"github.com/plane-cli/plane-cli/cmd/customer"
+ 	"github.com/plane-cli/plane-cli/cmd/cycle"
+-	"github.com/plane-cli/plane-cli/cmd/epic"
+-	"github.com/plane-cli/plane-cli/cmd/initiative"
+-	"github.com/plane-cli/plane-cli/cmd/intake"
+ 	"github.com/plane-cli/plane-cli/cmd/issue"
+ 	"github.com/plane-cli/plane-cli/cmd/label"
+ 	"github.com/plane-cli/plane-cli/cmd/link"
+ 	"github.com/plane-cli/plane-cli/cmd/member"
+ 	"github.com/plane-cli/plane-cli/cmd/module"
+-	"github.com/plane-cli/plane-cli/cmd/page"
+ 	"github.com/plane-cli/plane-cli/cmd/project"
+ 	"github.com/plane-cli/plane-cli/cmd/state"
+-	"github.com/plane-cli/plane-cli/cmd/sticky"
+-	"github.com/plane-cli/plane-cli/cmd/teamspace"
+ 	"github.com/plane-cli/plane-cli/cmd/user"
+-	"github.com/plane-cli/plane-cli/cmd/worklog"
+ 	"github.com/plane-cli/plane-cli/internal/cmdutil"
+ 	"github.com/plane-cli/plane-cli/internal/config"
+ 	"github.com/plane-cli/plane-cli/internal/output"
+@@ -93,14 +85,6 @@ func Execute() error {
+ 	rootCmd.AddCommand(comment.NewCmd(f))
+ 	rootCmd.AddCommand(link.NewCmd(f))
+ 	rootCmd.AddCommand(activity.NewCmd(f))
+-	rootCmd.AddCommand(page.NewCmd(f))
+-	rootCmd.AddCommand(intake.NewCmd(f))
+-	rootCmd.AddCommand(worklog.NewCmd(f))
+-	rootCmd.AddCommand(initiative.NewCmd(f))
+-	rootCmd.AddCommand(epic.NewCmd(f))
+-	rootCmd.AddCommand(customer.NewCmd(f))
+-	rootCmd.AddCommand(teamspace.NewCmd(f))
+-	rootCmd.AddCommand(sticky.NewCmd(f))
+ 
+ 	if err := rootCmd.Execute(); err != nil {
+ 		cmdutil.CheckErr(err)
+diff --git a/cmd/sticky/sticky.go b/cmd/sticky/sticky.go
+deleted file mode 100644
+index 6b6cb8a..0000000
+--- a/cmd/sticky/sticky.go
++++ /dev/null
+@@ -1,236 +0,0 @@
+-package sticky
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the sticky command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "sticky",
+-		Short: "Manage stickies",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-
+-	return cmd
+-}
+-
+-var stickyColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "COLOR", Field: "color"},
+-}
+-
+-func stickyPath() string {
+-	return "workspaces/{workspace_slug}/stickies/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all stickies in workspace",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(stickyPath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, stickyColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <sticky-id>",
+-		Short: "Get sticky details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(stickyPath()+"{sticky_id}/").
+-				Workspace(ws).Param("sticky_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, stickyColumns)
+-		},
+-	}
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description, color string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new sticky",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(stickyPath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-			if color != "" {
+-				body["color"] = color
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, stickyColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Sticky name (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Sticky description")
+-	cmd.Flags().StringVar(&color, "color", "", "Sticky color")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description, color string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <sticky-id>",
+-		Short: "Update a sticky",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(stickyPath()+"{sticky_id}/").
+-				Workspace(ws).Param("sticky_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("description") {
+-				body["description"] = description
+-			}
+-			if cmd.Flags().Changed("color") {
+-				body["color"] = color
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, stickyColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Sticky name")
+-	cmd.Flags().StringVar(&description, "description", "", "Sticky description")
+-	cmd.Flags().StringVar(&color, "color", "", "Sticky color")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "delete <sticky-id>",
+-		Short: "Delete a sticky",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(stickyPath()+"{sticky_id}/").
+-				Workspace(ws).Param("sticky_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Sticky deleted:", args[0])
+-			return nil
+-		},
+-	}
+-}
+diff --git a/cmd/teamspace/teamspace.go b/cmd/teamspace/teamspace.go
+deleted file mode 100644
+index c46e78b..0000000
+--- a/cmd/teamspace/teamspace.go
++++ /dev/null
+@@ -1,228 +0,0 @@
+-package teamspace
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the teamspace command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "teamspace",
+-		Short: "Manage teamspaces",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-
+-	return cmd
+-}
+-
+-var teamspaceColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "NAME", Field: "name"},
+-	{Header: "DESCRIPTION", Field: "description"},
+-}
+-
+-func teamspacePath() string {
+-	return "workspaces/{workspace_slug}/teamspaces/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "list",
+-		Short: "List all teamspaces in workspace",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(teamspacePath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, teamspaceColumns)
+-		},
+-	}
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "get <teamspace-id>",
+-		Short: "Get teamspace details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(teamspacePath()+"{teamspace_id}/").
+-				Workspace(ws).Param("teamspace_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, teamspaceColumns)
+-		},
+-	}
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description string
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new teamspace",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if name == "" {
+-				return fmt.Errorf("--name is required")
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(teamspacePath()).
+-				Workspace(ws).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"name": name,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, teamspaceColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Teamspace name (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Teamspace description")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var name, description string
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <teamspace-id>",
+-		Short: "Update a teamspace",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(teamspacePath()+"{teamspace_id}/").
+-				Workspace(ws).Param("teamspace_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("name") {
+-				body["name"] = name
+-			}
+-			if cmd.Flags().Changed("description") {
+-				body["description"] = description
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, teamspaceColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&name, "name", "", "Teamspace name")
+-	cmd.Flags().StringVar(&description, "description", "", "Teamspace description")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	return &cobra.Command{
+-		Use:   "delete <teamspace-id>",
+-		Short: "Delete a teamspace",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, err := f.RequireWorkspace()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(teamspacePath()+"{teamspace_id}/").
+-				Workspace(ws).Param("teamspace_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Teamspace deleted:", args[0])
+-			return nil
+-		},
+-	}
+-}
+diff --git a/cmd/worklog/worklog.go b/cmd/worklog/worklog.go
+deleted file mode 100644
+index 087b696..0000000
+--- a/cmd/worklog/worklog.go
++++ /dev/null
+@@ -1,345 +0,0 @@
+-package worklog
+-
+-import (
+-	"fmt"
+-
+-	"github.com/spf13/cobra"
+-
+-	"github.com/plane-cli/plane-cli/internal/api"
+-	"github.com/plane-cli/plane-cli/internal/cmdutil"
+-	"github.com/plane-cli/plane-cli/internal/output"
+-)
+-
+-// NewCmd creates the worklog command.
+-func NewCmd(f *cmdutil.Factory) *cobra.Command {
+-	cmd := &cobra.Command{
+-		Use:   "worklog",
+-		Short: "Manage worklogs",
+-	}
+-
+-	cmd.AddCommand(newListCmd(f))
+-	cmd.AddCommand(newGetCmd(f))
+-	cmd.AddCommand(newCreateCmd(f))
+-	cmd.AddCommand(newUpdateCmd(f))
+-	cmd.AddCommand(newDeleteCmd(f))
+-	cmd.AddCommand(newTotalCmd(f))
+-
+-	return cmd
+-}
+-
+-var worklogColumns = []output.Column{
+-	{Header: "ID", Field: "id"},
+-	{Header: "DESCRIPTION", Field: "description"},
+-	{Header: "DURATION", Field: "duration"},
+-	{Header: "LOGGED_AT", Field: "logged_at"},
+-}
+-
+-func worklogPath() string {
+-	return "workspaces/{workspace_slug}/projects/{project_id}/work-items/{issue_id}/worklogs/"
+-}
+-
+-func newListCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue string
+-
+-	cmd := &cobra.Command{
+-		Use:   "list",
+-		Short: "List all worklogs for an issue",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()).
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, worklogColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-
+-	return cmd
+-}
+-
+-func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue string
+-
+-	cmd := &cobra.Command{
+-		Use:   "get <worklog-id>",
+-		Short: "Get worklog details",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()+"{worklog_id}/").
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Param("worklog_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, worklogColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-
+-	return cmd
+-}
+-
+-func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue, description, loggedAt string
+-	var duration float64
+-
+-	cmd := &cobra.Command{
+-		Use:   "create",
+-		Short: "Create a new worklog entry",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-			if !cmd.Flags().Changed("duration") {
+-				return fmt.Errorf("--duration is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()).
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := map[string]interface{}{
+-				"duration": duration,
+-			}
+-			if description != "" {
+-				body["description"] = description
+-			}
+-			if loggedAt != "" {
+-				body["logged_at"] = loggedAt
+-			}
+-
+-			resp, err := client.Post(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, worklogColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-	cmd.Flags().Float64Var(&duration, "duration", 0, "Duration in hours (required)")
+-	cmd.Flags().StringVar(&description, "description", "", "Worklog description")
+-	cmd.Flags().StringVar(&loggedAt, "logged-at", "", "Date logged (YYYY-MM-DD)")
+-
+-	return cmd
+-}
+-
+-func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue, description string
+-	var duration float64
+-
+-	cmd := &cobra.Command{
+-		Use:   "update <worklog-id>",
+-		Short: "Update a worklog entry",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()+"{worklog_id}/").
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Param("worklog_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			body := make(map[string]interface{})
+-			if cmd.Flags().Changed("duration") {
+-				body["duration"] = duration
+-			}
+-			if cmd.Flags().Changed("description") {
+-				body["description"] = description
+-			}
+-
+-			if len(body) == 0 {
+-				return fmt.Errorf("at least one field must be specified to update")
+-			}
+-
+-			resp, err := client.Patch(path, body)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, worklogColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-	cmd.Flags().Float64Var(&duration, "duration", 0, "Duration in hours")
+-	cmd.Flags().StringVar(&description, "description", "", "Worklog description")
+-
+-	return cmd
+-}
+-
+-func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue string
+-
+-	cmd := &cobra.Command{
+-		Use:   "delete <worklog-id>",
+-		Short: "Delete a worklog entry",
+-		Args:  cobra.ExactArgs(1),
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()+"{worklog_id}/").
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Param("worklog_id", args[0]).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			_, err = client.Delete(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			output.Println("Worklog deleted:", args[0])
+-			return nil
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-
+-	return cmd
+-}
+-
+-func newTotalCmd(f *cmdutil.Factory) *cobra.Command {
+-	var issue string
+-
+-	cmd := &cobra.Command{
+-		Use:   "total",
+-		Short: "Get total logged time for an issue",
+-		RunE: func(cmd *cobra.Command, args []string) error {
+-			if issue == "" {
+-				return fmt.Errorf("--issue is required")
+-			}
+-
+-			issueID, err := f.ResolveIssueID(issue)
+-			if err != nil {
+-				return err
+-			}
+-
+-			client, err := f.Client()
+-			if err != nil {
+-				return err
+-			}
+-			ws, proj, err := f.RequireWorkspaceAndProject()
+-			if err != nil {
+-				return err
+-			}
+-
+-			path, err := api.NewPath(worklogPath()+"total/").
+-				Workspace(ws).Project(proj).Param("issue_id", issueID).Build()
+-			if err != nil {
+-				return err
+-			}
+-
+-			resp, err := client.Get(path)
+-			if err != nil {
+-				return err
+-			}
+-
+-			return output.FormatRaw(f.Format, resp, worklogColumns)
+-		},
+-	}
+-
+-	cmd.Flags().StringVar(&issue, "issue", "", "Work item ID or identifier like PROJ-123 (required)")
+-
+-	return cmd
+-}
+diff --git a/internal/models/customer.go b/internal/models/customer.go
+deleted file mode 100644
+index e02ebdf..0000000
+--- a/internal/models/customer.go
++++ /dev/null
+@@ -1,28 +0,0 @@
+-package models
+-
+-// Customer represents a customer entity.
+-type Customer struct {
+-	ID         string                 `json:"id"`
+-	Name       string                 `json:"name"`
+-	Email      string                 `json:"email,omitempty"`
+-	Domain     string                 `json:"domain,omitempty"`
+-	Properties map[string]interface{} `json:"properties,omitempty"`
+-	Workspace  string                 `json:"workspace"`
+-	Timestamps
+-}
+-
+-// CreateCustomerRequest is the request body for creating a customer.
+-type CreateCustomerRequest struct {
+-	Name       string                 `json:"name"`
+-	Email      string                 `json:"email,omitempty"`
+-	Domain     string                 `json:"domain,omitempty"`
+-	Properties map[string]interface{} `json:"properties,omitempty"`
+-}
+-
+-// UpdateCustomerRequest is the request body for updating a customer.
+-type UpdateCustomerRequest struct {
+-	Name       *string                `json:"name,omitempty"`
+-	Email      *string                `json:"email,omitempty"`
+-	Domain     *string                `json:"domain,omitempty"`
+-	Properties map[string]interface{} `json:"properties,omitempty"`
+-}
+diff --git a/internal/models/epic.go b/internal/models/epic.go
+deleted file mode 100644
+index b9e822f..0000000
+--- a/internal/models/epic.go
++++ /dev/null
+@@ -1,13 +0,0 @@
+-package models
+-
+-// Epic represents a project epic.
+-type Epic struct {
+-	ID          string `json:"id"`
+-	Name        string `json:"name"`
+-	Description string `json:"description,omitempty"`
+-	State       string `json:"state,omitempty"`
+-	Priority    string `json:"priority,omitempty"`
+-	Project     string `json:"project"`
+-	Workspace   string `json:"workspace"`
+-	Timestamps
+-}
+diff --git a/internal/models/initiative.go b/internal/models/initiative.go
+deleted file mode 100644
+index 6b9494b..0000000
+--- a/internal/models/initiative.go
++++ /dev/null
+@@ -1,24 +0,0 @@
+-package models
+-
+-// Initiative represents a workspace-level initiative.
+-type Initiative struct {
+-	ID          string `json:"id"`
+-	Name        string `json:"name"`
+-	Description string `json:"description,omitempty"`
+-	Status      string `json:"status,omitempty"`
+-	Workspace   string `json:"workspace"`
+-	Timestamps
+-}
+-
+-// CreateInitiativeRequest is the request body for creating an initiative.
+-type CreateInitiativeRequest struct {
+-	Name        string `json:"name"`
+-	Description string `json:"description,omitempty"`
+-}
+-
+-// UpdateInitiativeRequest is the request body for updating an initiative.
+-type UpdateInitiativeRequest struct {
+-	Name        *string `json:"name,omitempty"`
+-	Description *string `json:"description,omitempty"`
+-	Status      *string `json:"status,omitempty"`
+-}
+diff --git a/internal/models/intake.go b/internal/models/intake.go
+deleted file mode 100644
+index 8a0f91b..0000000
+--- a/internal/models/intake.go
++++ /dev/null
+@@ -1,27 +0,0 @@
+-package models
+-
+-// Intake represents an intake item (external issue submission).
+-type Intake struct {
+-	ID        string                 `json:"id"`
+-	Name      string                 `json:"name"`
+-	Source    string                 `json:"source,omitempty"`
+-	Status    string                 `json:"status,omitempty"`
+-	Extra     map[string]interface{} `json:"extra,omitempty"`
+-	Project   string                 `json:"project"`
+-	Workspace string                 `json:"workspace"`
+-	Timestamps
+-}
+-
+-// CreateIntakeRequest is the request body for creating an intake.
+-type CreateIntakeRequest struct {
+-	Name   string                 `json:"name"`
+-	Source string                 `json:"source,omitempty"`
+-	Extra  map[string]interface{} `json:"extra,omitempty"`
+-}
+-
+-// UpdateIntakeRequest is the request body for updating an intake.
+-type UpdateIntakeRequest struct {
+-	Name   *string                `json:"name,omitempty"`
+-	Status *string                `json:"status,omitempty"`
+-	Extra  map[string]interface{} `json:"extra,omitempty"`
+-}
+diff --git a/internal/models/page.go b/internal/models/page.go
+deleted file mode 100644
+index 642608a..0000000
+--- a/internal/models/page.go
++++ /dev/null
+@@ -1,23 +0,0 @@
+-package models
+-
+-// Page represents a Plane page (document).
+-type Page struct {
+-	ID              string `json:"id"`
+-	Name            string `json:"name"`
+-	Description     string `json:"description,omitempty"`
+-	DescriptionHTML string `json:"description_html,omitempty"`
+-	Color           string `json:"color,omitempty"`
+-	Archived        bool   `json:"is_archived"`
+-	Project         string `json:"project,omitempty"`
+-	Workspace       string `json:"workspace"`
+-	OwnedBy         string `json:"owned_by"`
+-	Timestamps
+-}
+-
+-// CreatePageRequest is the request body for creating a page.
+-type CreatePageRequest struct {
+-	Name            string `json:"name"`
+-	Description     string `json:"description,omitempty"`
+-	DescriptionHTML string `json:"description_html,omitempty"`
+-	Color           string `json:"color,omitempty"`
+-}
+diff --git a/internal/models/sticky.go b/internal/models/sticky.go
+deleted file mode 100644
+index 24e1b33..0000000
+--- a/internal/models/sticky.go
++++ /dev/null
+@@ -1,26 +0,0 @@
+-package models
+-
+-// Sticky represents a sticky note.
+-type Sticky struct {
+-	ID          string `json:"id"`
+-	Name        string `json:"name"`
+-	Description string `json:"description,omitempty"`
+-	Color       string `json:"color,omitempty"`
+-	Workspace   string `json:"workspace"`
+-	CreatedBy   string `json:"created_by"`
+-	Timestamps
+-}
+-
+-// CreateStickyRequest is the request body for creating a sticky.
+-type CreateStickyRequest struct {
+-	Name        string `json:"name"`
+-	Description string `json:"description,omitempty"`
+-	Color       string `json:"color,omitempty"`
+-}
+-
+-// UpdateStickyRequest is the request body for updating a sticky.
+-type UpdateStickyRequest struct {
+-	Name        *string `json:"name,omitempty"`
+-	Description *string `json:"description,omitempty"`
+-	Color       *string `json:"color,omitempty"`
+-}
+diff --git a/internal/models/teamspace.go b/internal/models/teamspace.go
+deleted file mode 100644
+index d33de1e..0000000
+--- a/internal/models/teamspace.go
++++ /dev/null
+@@ -1,28 +0,0 @@
+-package models
+-
+-// Teamspace represents a workspace team.
+-type Teamspace struct {
+-	ID          string   `json:"id"`
+-	Name        string   `json:"name"`
+-	Description string   `json:"description,omitempty"`
+-	Members     []string `json:"members,omitempty"`
+-	Projects    []string `json:"projects,omitempty"`
+-	Workspace   string   `json:"workspace"`
+-	Timestamps
+-}
+-
+-// CreateTeamspaceRequest is the request body for creating a teamspace.
+-type CreateTeamspaceRequest struct {
+-	Name        string   `json:"name"`
+-	Description string   `json:"description,omitempty"`
+-	Members     []string `json:"members,omitempty"`
+-	Projects    []string `json:"projects,omitempty"`
+-}
+-
+-// UpdateTeamspaceRequest is the request body for updating a teamspace.
+-type UpdateTeamspaceRequest struct {
+-	Name        *string  `json:"name,omitempty"`
+-	Description *string  `json:"description,omitempty"`
+-	Members     []string `json:"members,omitempty"`
+-	Projects    []string `json:"projects,omitempty"`
+-}
+diff --git a/internal/models/worklog.go b/internal/models/worklog.go
+deleted file mode 100644
+index 0ac2fea..0000000
+--- a/internal/models/worklog.go
++++ /dev/null
+@@ -1,33 +0,0 @@
+-package models
+-
+-// Worklog represents a time tracking entry.
+-type Worklog struct {
+-	ID          string  `json:"id"`
+-	Description string  `json:"description,omitempty"`
+-	Duration    float64 `json:"duration"`
+-	LoggedAt    string  `json:"logged_at,omitempty"`
+-	WorkItem    string  `json:"work_item"`
+-	Project     string  `json:"project"`
+-	Workspace   string  `json:"workspace"`
+-	CreatedBy   string  `json:"created_by"`
+-	Timestamps
+-}
+-
+-// CreateWorklogRequest is the request body for creating a worklog.
+-type CreateWorklogRequest struct {
+-	Description string  `json:"description,omitempty"`
+-	Duration    float64 `json:"duration"`
+-	LoggedAt    string  `json:"logged_at,omitempty"`
+-}
+-
+-// UpdateWorklogRequest is the request body for updating a worklog.
+-type UpdateWorklogRequest struct {
+-	Description *string  `json:"description,omitempty"`
+-	Duration    *float64 `json:"duration,omitempty"`
+-}
+-
+-// WorklogTotal represents total time logged.
+-type WorklogTotal struct {
+-	Total    float64 `json:"total"`
+-	Duration float64 `json:"duration"`
+-}

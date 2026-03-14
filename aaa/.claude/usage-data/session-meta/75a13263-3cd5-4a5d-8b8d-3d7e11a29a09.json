@@ -1,0 +1,47 @@
+{
+  "session_id": "75a13263-3cd5-4a5d-8b8d-3d7e11a29a09",
+  "project_path": "/Users/admin/Documents/Obsidian Vault",
+  "start_time": "2026-02-15T16:15:35.431Z",
+  "duration_minutes": 24,
+  "user_message_count": 5,
+  "assistant_message_count": 12,
+  "tool_counts": {
+    "Bash": 4,
+    "AskUserQuestion": 1
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 24,
+  "output_tokens": 102,
+  "first_prompt": "@00-MOC/, @01-Concepts/ 디렉토리명 개선이 필요할꺼 같아",
+  "user_interruptions": 1,
+  "user_response_times": [
+    37.784
+  ],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "User Rejected": 1
+  },
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "user_message_timestamps": [
+    "2026-02-15T16:15:35.475Z",
+    "2026-02-15T16:15:35.419Z",
+    "2026-02-15T16:15:35.475Z",
+    "2026-02-15T16:38:27.365Z",
+    "2026-02-15T16:39:54.222Z"
+  ]
+}

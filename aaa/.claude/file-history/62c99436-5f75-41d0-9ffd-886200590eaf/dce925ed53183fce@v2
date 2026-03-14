@@ -1,0 +1,92 @@
+image:
+  repository: harbor.cowave.kr/search/legacy-sync
+  pullPolicy: IfNotPresent
+  tag: latest
+
+imagePullSecrets:
+  - name: search-harbor-cowave-secret
+
+nameOverride: "cmn-legacy-sync"
+fullnameOverride: "cmn-legacy-sync"
+otelServiceName: "cmn-legacy-sync"
+
+replicaCount: 1
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+otel:
+  enabled: true
+  endpoint: http://alloy.cmn-infra-observability.svc.cluster.local:4318
+  tracesExporter: otlp
+  metricsExporter: none
+  logsExporter: none
+  micrometerEnabled: true
+  agentPath: /apps/otel-javaagent.jar
+  otelConfig: /apps/otel-config.yaml
+
+podAnnotations:
+  grafana.danuricorp.com/app: legacy-sync
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /actuator/prometheus
+  prometheus.io/port: "8081"
+  prometheus.io/interval: 30s
+
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+config:
+  index:
+    adminCatalog: catalogs
+    adminProduct: products
+
+resources: {}
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8081
+  initialDelaySeconds: 60
+  timeoutSeconds: 10
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8081
+  initialDelaySeconds: 60
+  timeoutSeconds: 10
+  periodSeconds: 10
+  failureThreshold: 3

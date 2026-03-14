@@ -1,0 +1,14 @@
+{
+  "id": "7",
+  "subject": "Phase 5: Core Pipeline 마이그레이션 (21 files) - rule/ + product/",
+  "description": "rule/ (8 files): RuleEntry → Entry → Rule → RuleOne → RuleTwo → RuleThree → RuleFour → RuleFive\n\nEntry.java (934줄) - Dragon File: line-by-line 기계적 변환, 리팩토링 금지\n- queue.remove(qinx); qinx-- → var qinx while loop 사용\n- subList().clear() 패턴 유지\n- 49+ String identity comparison → Kotlin == (structural equality)로 안전\n\nproduct/ (13 files): AnalyzeExceedException → AnalyzerOption → ProductNameTokenizer → ProductNameParsingRule → ProductNameAnalysisFilter → 팩토리들 → 액션들 → Plugin\n\nType Constants: const val String 유지 (sealed class 전환 금지)",
+  "activeForm": "Core Pipeline 마이그레이션 중",
+  "status": "pending",
+  "blocks": [
+    "8"
+  ],
+  "blockedBy": [
+    "5",
+    "6"
+  ]
+}

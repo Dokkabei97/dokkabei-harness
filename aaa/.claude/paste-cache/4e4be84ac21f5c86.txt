@@ -1,0 +1,276 @@
+> Task :inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()
+11:02:42.714 [main] INFO org.apache.kafka.clients.producer.ProducerConfig -- ProducerConfig values: 
+    acks = -1
+    auto.include.jmx.reporter = true
+    batch.size = 16384
+    bootstrap.servers = [localhost:9092]
+    buffer.memory = 33554432
+    client.dns.lookup = use_all_dns_ips
+    client.id = producer-1
+    compression.gzip.level = -1
+    compression.lz4.level = 9
+    compression.type = none
+    compression.zstd.level = 3
+    connections.max.idle.ms = 540000
+    delivery.timeout.ms = 120000
+    enable.idempotence = true
+    enable.metrics.push = true
+    interceptor.classes = []
+    key.serializer = class io.confluent.kafka.serializers.KafkaAvroSerializer
+    linger.ms = 0
+    max.block.ms = 60000
+    max.in.flight.requests.per.connection = 5
+    max.request.size = 1048576
+    metadata.max.age.ms = 300000
+    metadata.max.idle.ms = 300000
+    metadata.recovery.strategy = none
+    metric.reporters = []
+    metrics.num.samples = 2
+    metrics.recording.level = INFO
+    metrics.sample.window.ms = 30000
+    partitioner.adaptive.partitioning.enable = true
+    partitioner.availability.timeout.ms = 0
+    partitioner.class = null
+    partitioner.ignore.keys = false
+    receive.buffer.bytes = 32768
+    reconnect.backoff.max.ms = 1000
+    reconnect.backoff.ms = 50
+    request.timeout.ms = 30000
+    retries = 2147483647
+    retry.backoff.max.ms = 1000
+    retry.backoff.ms = 100
+    sasl.client.callback.handler.class = null
+    sasl.jaas.config = null
+    sasl.kerberos.kinit.cmd = /usr/bin/kinit
+    sasl.kerberos.min.time.before.relogin = 60000
+    sasl.kerberos.service.name = null
+    sasl.kerberos.ticket.renew.jitter = 0.05
+    sasl.kerberos.ticket.renew.window.factor = 0.8
+    sasl.login.callback.handler.class = null
+    sasl.login.class = null
+    sasl.login.connect.timeout.ms = null
+    sasl.login.read.timeout.ms = null
+    sasl.login.refresh.buffer.seconds = 300
+    sasl.login.refresh.min.period.seconds = 60
+    sasl.login.refresh.window.factor = 0.8
+    sasl.login.refresh.window.jitter = 0.05
+    sasl.login.retry.backoff.max.ms = 10000
+    sasl.login.retry.backoff.ms = 100
+    sasl.mechanism = GSSAPI
+    sasl.oauthbearer.clock.skew.seconds = 30
+    sasl.oauthbearer.expected.audience = null
+    sasl.oauthbearer.expected.issuer = null
+    sasl.oauthbearer.header.urlencode = false
+    sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+    sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+    sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+    sasl.oauthbearer.jwks.endpoint.url = null
+    sasl.oauthbearer.scope.claim.name = scope
+    sasl.oauthbearer.sub.claim.name = sub
+    sasl.oauthbearer.token.endpoint.url = null
+    security.protocol = PLAINTEXT
+    security.providers = null
+    send.buffer.bytes = 131072
+    socket.connection.setup.timeout.max.ms = 30000
+    socket.connection.setup.timeout.ms = 10000
+    ssl.cipher.suites = null
+    ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    ssl.endpoint.identification.algorithm = https
+    ssl.engine.factory.class = null
+    ssl.key.password = null
+    ssl.keymanager.algorithm = SunX509
+    ssl.keystore.certificate.chain = null
+    ssl.keystore.key = null
+    ssl.keystore.location = null
+    ssl.keystore.password = null
+    ssl.keystore.type = JKS
+    ssl.protocol = TLSv1.3
+    ssl.provider = null
+    ssl.secure.random.implementation = null
+    ssl.trustmanager.algorithm = PKIX
+    ssl.truststore.certificates = null
+    ssl.truststore.location = null
+    ssl.truststore.password = null
+    ssl.truststore.type = JKS
+    transaction.timeout.ms = 60000
+    transactional.id = null
+    value.serializer = class io.confluent.kafka.serializers.KafkaAvroSerializer
+
+11:02:42.736 [main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector -- initializing Kafka metrics collector
+11:02:42.805 [main] INFO io.confluent.kafka.serializers.KafkaAvroSerializerConfig -- KafkaAvroSerializerConfig values: 
+    auto.register.schemas = true
+    avro.reflection.allow.null = false
+    avro.remove.java.properties = false
+    avro.use.logical.type.converters = false
+    basic.auth.credentials.source = URL
+    basic.auth.user.info = [hidden]
+    bearer.auth.cache.expiry.buffer.seconds = 300
+    bearer.auth.client.id = null
+    bearer.auth.client.secret = null
+    bearer.auth.credentials.source = STATIC_TOKEN
+    bearer.auth.custom.provider.class = null
+    bearer.auth.identity.pool.id = null
+    bearer.auth.issuer.endpoint.url = null
+    bearer.auth.logical.cluster = null
+    bearer.auth.scope = null
+    bearer.auth.scope.claim.name = scope
+    bearer.auth.sub.claim.name = sub
+    bearer.auth.token = [hidden]
+    context.name.strategy = class io.confluent.kafka.serializers.context.NullContextNameStrategy
+    http.connect.timeout.ms = 60000
+    http.read.timeout.ms = 60000
+    id.compatibility.strict = true
+    key.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    key.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    key.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+    latest.cache.size = 1000
+    latest.cache.ttl.sec = -1
+    latest.compatibility.strict = true
+    max.retries = 3
+    max.schemas.per.subject = 1000
+    normalize.schemas = false
+    propagate.schema.tags = false
+    proxy.host = 
+    proxy.port = -1
+    retries.max.wait.ms = 20000
+    retries.wait.ms = 1000
+    rule.actions = []
+    rule.executors = []
+    rule.service.loader.enable = true
+    schema.format = null
+    schema.reflection = false
+    schema.registry.basic.auth.user.info = [hidden]
+    schema.registry.ssl.cipher.suites = null
+    schema.registry.ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    schema.registry.ssl.endpoint.identification.algorithm = https
+    schema.registry.ssl.engine.factory.class = null
+    schema.registry.ssl.key.password = null
+    schema.registry.ssl.keymanager.algorithm = SunX509
+    schema.registry.ssl.keystore.certificate.chain = null
+    schema.registry.ssl.keystore.key = null
+    schema.registry.ssl.keystore.location = null
+    schema.registry.ssl.keystore.password = null
+    schema.registry.ssl.keystore.type = JKS
+    schema.registry.ssl.protocol = TLSv1.3
+    schema.registry.ssl.provider = null
+    schema.registry.ssl.secure.random.implementation = null
+    schema.registry.ssl.trustmanager.algorithm = PKIX
+    schema.registry.ssl.truststore.certificates = null
+    schema.registry.ssl.truststore.location = null
+    schema.registry.ssl.truststore.password = null
+    schema.registry.ssl.truststore.type = JKS
+    schema.registry.url = [http://localhost:8081]
+    schema.registry.url.randomize = false
+    use.latest.version = false
+    use.latest.with.metadata = null
+    use.schema.id = -1
+    value.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    value.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    value.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+
+11:02:42.935 [main] INFO io.confluent.kafka.serializers.KafkaAvroSerializerConfig -- KafkaAvroSerializerConfig values: 
+    auto.register.schemas = true
+    avro.reflection.allow.null = false
+    avro.remove.java.properties = false
+    avro.use.logical.type.converters = false
+    basic.auth.credentials.source = URL
+    basic.auth.user.info = [hidden]
+    bearer.auth.cache.expiry.buffer.seconds = 300
+    bearer.auth.client.id = null
+    bearer.auth.client.secret = null
+    bearer.auth.credentials.source = STATIC_TOKEN
+    bearer.auth.custom.provider.class = null
+    bearer.auth.identity.pool.id = null
+    bearer.auth.issuer.endpoint.url = null
+    bearer.auth.logical.cluster = null
+    bearer.auth.scope = null
+    bearer.auth.scope.claim.name = scope
+    bearer.auth.sub.claim.name = sub
+    bearer.auth.token = [hidden]
+    context.name.strategy = class io.confluent.kafka.serializers.context.NullContextNameStrategy
+    http.connect.timeout.ms = 60000
+    http.read.timeout.ms = 60000
+    id.compatibility.strict = true
+    key.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    key.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    key.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+    latest.cache.size = 1000
+    latest.cache.ttl.sec = -1
+    latest.compatibility.strict = true
+    max.retries = 3
+    max.schemas.per.subject = 1000
+    normalize.schemas = false
+    propagate.schema.tags = false
+    proxy.host = 
+    proxy.port = -1
+    retries.max.wait.ms = 20000
+    retries.wait.ms = 1000
+    rule.actions = []
+    rule.executors = []
+    rule.service.loader.enable = true
+    schema.format = null
+    schema.reflection = false
+    schema.registry.basic.auth.user.info = [hidden]
+    schema.registry.ssl.cipher.suites = null
+    schema.registry.ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    schema.registry.ssl.endpoint.identification.algorithm = https
+    schema.registry.ssl.engine.factory.class = null
+    schema.registry.ssl.key.password = null
+    schema.registry.ssl.keymanager.algorithm = SunX509
+    schema.registry.ssl.keystore.certificate.chain = null
+    schema.registry.ssl.keystore.key = null
+    schema.registry.ssl.keystore.location = null
+    schema.registry.ssl.keystore.password = null
+    schema.registry.ssl.keystore.type = JKS
+    schema.registry.ssl.protocol = TLSv1.3
+    schema.registry.ssl.provider = null
+    schema.registry.ssl.secure.random.implementation = null
+    schema.registry.ssl.trustmanager.algorithm = PKIX
+    schema.registry.ssl.truststore.certificates = null
+    schema.registry.ssl.truststore.location = null
+    schema.registry.ssl.truststore.password = null
+    schema.registry.ssl.truststore.type = JKS
+    schema.registry.url = [http://localhost:8081]
+    schema.registry.url.randomize = false
+    use.latest.version = false
+    use.latest.with.metadata = null
+    use.schema.id = -1
+    value.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    value.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    value.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+
+11:02:42.939 [main] INFO org.apache.kafka.clients.producer.KafkaProducer -- [Producer clientId=producer-1] Instantiated an idempotent producer.
+11:02:42.959 [main] INFO org.apache.kafka.clients.producer.ProducerConfig -- These configurations '[schema.registry.url, auto.register.schemas]' were supplied but are not used yet.
+11:02:42.960 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka version: 3.9.1
+11:02:42.960 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka commitId: f745dfdcee2b9851
+11:02:42.960 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka startTimeMs: 1772157762960
+=== 정상 케이스 100건 발행 시작 ===
+11:02:43.094 [kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata -- [Producer clientId=producer-1] Cluster ID: jdiJVuaASAu7wM1hExRbxg
+11:02:43.095 [kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.producer.internals.TransactionManager -- [Producer clientId=producer-1] ProducerId set to 1 with epoch 0
+11:02:45.727 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=1: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+11:02:48.335 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=2: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+11:02:51.750 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=3: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+11:02:55.118 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=4: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+11:02:59.726 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=5: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+11:03:03.368 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException: 미 처리 런타임 에러; error code: 0. Failing over to next URL if available...
+[ERROR] id=6: Error registering Avro schema{"type":"record","name":"ProductCdcKey","namespace":"com.commerce.proxy.shopping.product.infrastructure.consumer.dto","fields":[{"name":"_id","type":"long"}]}
+
+> Task :inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main() FAILED
+
+Execution failed for task ':inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()'.
+> Build cancelled while executing task ':inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()'
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+BUILD FAILED in 22s
+17 actionable tasks: 1 executed, 16 up-to-date
+
+

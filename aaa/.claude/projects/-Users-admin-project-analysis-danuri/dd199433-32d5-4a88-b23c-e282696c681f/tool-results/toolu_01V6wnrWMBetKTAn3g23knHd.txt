@@ -1,0 +1,49 @@
+     1→package com.danawa.search.analysis.product;
+     2→
+     3→import com.danawa.search.analysis.dict.ProductNameDictionary;
+     4→import com.danawa.util.TestUtil;
+     5→import org.apache.logging.log4j.Logger;
+     6→import org.apache.lucene.analysis.Analyzer;
+     7→import org.apache.lucene.index.Term;
+     8→import org.apache.lucene.search.Query;
+     9→import org.apache.lucene.search.TermQuery;
+    10→import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
+    11→import org.apache.lucene.search.highlight.QueryScorer;
+    12→import org.elasticsearch.common.logging.Loggers;
+    13→import org.elasticsearch.search.fetch.subphase.highlight.CustomQueryScorer;
+    14→import org.junit.Before;
+    15→import org.junit.Test;
+    16→
+    17→import java.io.IOException;
+    18→
+    19→public class HighlighterTest {
+    20→    private static Logger logger = Loggers.getLogger(HighlighterTest.class, "");
+    21→
+    22→    @Before
+    23→    public void init() {
+    24→        TestUtil.setLogLevel(System.getProperty("LOG_LEVEL"),
+    25→                ProductNameTokenizer.class,
+    26→                ProductNameParsingRule.class,
+    27→                ProductNameAnalysisFilter.class);
+    28→    }
+    29→    @Test
+    30→    public void testPlain() throws IOException, InvalidTokenOffsetsException {
+    31→        Query query = new TermQuery(new Term("field", "CRP"));
+    32→        QueryScorer queryScorer = new CustomQueryScorer(query);
+    33→        org.apache.lucene.search.highlight.Highlighter highlighter = new org.apache.lucene.search.highlight.Highlighter(queryScorer);
+    34→
+    35→		ProductNameDictionary dictionary = TestUtil.loadInternalDictionary();
+    36→		TestUtil.loadExtraDictionary(dictionary);
+    37→
+    38→        Analyzer analyzer = new ProductNameAnalyzer(dictionary);
+    39→
+    40→        String text = "적용모델: CRP-JHR0660FD/FBM, CRP-JHTS0660FS, CRP-JHTR0610FD, CRP-JHT0610FS, CRP-JHI0630FG, CRP-JHR0610FB, CRP-JHR0620FD, CRP-FHR0610FG/FD, CRP-FHTS0610FD, CRP-FHTR0610FS, CRP-BHSL0610FB 등(상세정보참고)";
+    41→        String[] frags = highlighter.getBestFragments(analyzer, "field", text, 3);
+    42→        logger.debug("{}{}", "", frags);
+    43→    }
+    44→}
+    45→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

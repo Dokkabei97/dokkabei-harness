@@ -1,0 +1,99 @@
+# dynamic-indexer 의존성 changes 목록
+.dynamic_indexer_changes: &dynamic_indexer_changes
+  - .gitlab-ci.yml
+  - bootstrap/dynamic-indexer/**/*
+  - proto/**/*
+  - shared/**/*
+  - domain/index/**/*
+  - domain/keyword/**/*
+  - application/search/**/*
+  - inbound-adapter/handler/**/*
+  - outbound-adapter/keyword/**/*
+  - outbound-adapter/index/**/*
+  - outbound/repository/elasticsearch/common/**/*
+  - outbound/repository/elasticsearch/backoffice/**/*
+  - outbound/repository/elasticsearch/front/**/*
+
+# CI 규칙 (test, build, image_tag, docker_build_push)
+.dynamic_indexer_ci_rules: &dynamic_indexer_ci_rules
+  - if: '$CI_PIPELINE_SOURCE == "web" && $FORCE_BUILD_TARGET != "" && ($FORCE_BUILD_TARGET == "all" || $FORCE_BUILD_TARGET == "bootstrap/dynamic-indexer")'
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main")'
+    changes: *dynamic_indexer_changes
+  - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main")'
+    changes: *dynamic_indexer_changes
+  - when: never
+
+# 배포 규칙 (chart_update)
+.dynamic_indexer_deploy_rules: &dynamic_indexer_deploy_rules
+  - if: '$CI_PIPELINE_SOURCE == "web" && $FORCE_BUILD_TARGET != "" && ($FORCE_BUILD_TARGET == "all" || $FORCE_BUILD_TARGET == "bootstrap/dynamic-indexer")'
+  - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main")'
+    changes: *dynamic_indexer_changes
+  - when: never
+
+# ── Test ──
+dynamic_indexer_test:
+  extends: .jvm_common
+  stage: test
+  script:
+    - ./gradlew :bootstrap:dynamic-indexer:clean :bootstrap:dynamic-indexer:test
+  rules: *dynamic_indexer_ci_rules
+
+# ── Build ──
+dynamic_indexer_build:
+  extends: .jvm_common
+  stage: build
+  script:
+    - ./gradlew clean :bootstrap:dynamic-indexer:bootJar
+  artifacts:
+    paths:
+      - build/bootstrap/dynamic-indexer/libs/
+    expire_in: 1 week
+  needs:
+    - job: dynamic_indexer_test
+  rules: *dynamic_indexer_ci_rules
+
+# ── Image Tag ──
+dynamic_indexer_image_tag:
+  extends: .image_tag
+  stage: image_tag
+  needs:
+    - job: dynamic_indexer_build
+  rules: *dynamic_indexer_ci_rules
+
+# ── Docker Build & Push ──
+dynamic_indexer_docker_build_push:
+  extends: .build_image_push
+  stage: docker_build_push
+  variables:
+    IMAGE_REPO_PATH: dynamic-indexer
+  script:
+    - echo "$HARBOR_PASSWORD" | docker login "$HARBOR_URL" -u "$HARBOR_USERNAME" --password-stdin
+    - >-
+      docker build
+      --build-arg HTTP_PROXY=$HTTP_PROXY
+      --build-arg HTTPS_PROXY=$HTTPS_PROXY
+      --build-arg NO_PROXY=$NO_PROXY
+      --build-arg PROJECT_PATH=bootstrap/dynamic-indexer
+      -t "$HARBOR_URL/$HARBOR_PROJECT/$IMAGE_REPO_PATH:$IMAGE_TAG"
+      -f bootstrap/dynamic-indexer/Dockerfile
+      .
+    - docker push "$HARBOR_URL/$HARBOR_PROJECT/$IMAGE_REPO_PATH:$IMAGE_TAG"
+  needs:
+    - job: dynamic_indexer_build
+      artifacts: true
+    - job: dynamic_indexer_image_tag
+      artifacts: true
+  allow_failure: false
+  rules: *dynamic_indexer_ci_rules
+
+# ── Chart Update ──
+dynamic_indexer_chart_update:
+  extends: .helm_update_push
+  stage: chart_update
+  variables:
+    SERVICE_NAME: dynamic-indexer
+  needs:
+    - job: dynamic_indexer_docker_build_push
+    - job: dynamic_indexer_image_tag
+      artifacts: true
+  rules: *dynamic_indexer_deploy_rules

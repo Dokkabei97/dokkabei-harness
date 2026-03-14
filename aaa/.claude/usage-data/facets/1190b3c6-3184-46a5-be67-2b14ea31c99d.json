@@ -1,0 +1,17 @@
+{
+  "underlying_goal": "Create a CLAUDE.md file documenting the codebase architecture, build commands, and development workflow for future Claude instances",
+  "goal_categories": {
+    "documentation_generation": 1
+  },
+  "outcome": "partially_achieved",
+  "user_satisfaction_counts": {
+    "likely_satisfied": 1
+  },
+  "claude_helpfulness": "moderately_helpful",
+  "session_type": "single_task",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "fast_accurate_search",
+  "brief_summary": "User requested a CLAUDE.md file for a Kotlin/Spring Boot monorepo; Claude explored the codebase structure but session ended before completing the file creation.",
+  "session_id": "1190b3c6-3184-46a5-be67-2b14ea31c99d"
+}

@@ -1,0 +1,7 @@
+[
+  {
+    "content": "API response에서 SimpleDictionary 대신 BaseDictionary 형태로 반환되는 문제 해결",
+    "status": "completed",
+    "id": "1"
+  }
+]

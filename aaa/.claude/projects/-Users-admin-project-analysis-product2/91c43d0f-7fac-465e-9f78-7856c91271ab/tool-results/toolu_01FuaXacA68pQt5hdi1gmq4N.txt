@@ -1,0 +1,1861 @@
+     1→package com.danawa.search.analysis.product;
+     2→
+     3→import com.danawa.search.analysis.dict.ProductNameDictionary;
+     4→import com.danawa.search.analysis.dict.ProductNameDictionary.DictionaryRepository;
+     5→import com.danawa.search.analysis.dict.SourceDictionary;
+     6→import com.danawa.search.analysis.dict.SynonymDictionary;
+     7→import com.danawa.search.analysis.dict.TagProbDictionary;
+     8→import com.danawa.search.analysis.korean.PosTagProbEntry.TagProb;
+     9→import com.danawa.search.index.DanawaBulkTextIndexer;
+    10→import com.danawa.search.index.DanawaSearchQueryBuilder;
+    11→import com.danawa.search.index.FastcatMigrateIndexer;
+    12→import com.danawa.search.util.RemoteNodeClient;
+    13→import com.danawa.search.util.SearchUtil;
+    14→import com.danawa.search.util.SearchUtil.DataModifier;
+    15→import com.danawa.util.CharVector;
+    16→import com.danawa.util.ContextStore;
+    17→import org.apache.logging.log4j.Logger;
+    18→import org.apache.lucene.analysis.TokenStream;
+    19→import org.apache.lucene.analysis.tokenattributes.*;
+    20→import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
+    21→import org.elasticsearch.action.admin.cluster.node.info.NodesInfoMetrics;
+    22→import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
+    23→import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
+    24→import org.elasticsearch.action.admin.cluster.node.info.PluginsAndModules;
+    25→import org.elasticsearch.action.bulk.BulkRequestBuilder;
+    26→import org.elasticsearch.client.internal.Client;
+    27→import org.elasticsearch.client.internal.node.NodeClient;
+    28→import org.elasticsearch.common.logging.Loggers;
+    29→import org.elasticsearch.common.transport.TransportAddress;
+    30→import org.elasticsearch.http.HttpInfo;
+    31→import org.elasticsearch.index.query.BoolQueryBuilder;
+    32→import org.elasticsearch.index.query.QueryBuilder;
+    33→import org.elasticsearch.index.query.QueryBuilders;
+    34→import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+    35→import org.elasticsearch.plugins.PluginRuntimeInfo;
+    36→import org.elasticsearch.common.bytes.BytesArray;
+    37→import org.elasticsearch.rest.BaseRestHandler;
+    38→import org.elasticsearch.rest.RestResponse;
+    39→import org.elasticsearch.rest.RestRequest;
+    40→import org.elasticsearch.rest.RestStatus;
+    41→import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+    42→import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder.Field;
+    43→import org.elasticsearch.search.sort.SortBuilder;
+    44→import org.json.JSONObject;
+    45→import org.json.JSONTokener;
+    46→import org.json.JSONWriter;
+    47→
+    48→import java.io.*;
+    49→import java.net.HttpURLConnection;
+    50→import java.net.URL;
+    51→import java.net.URLDecoder;
+    52→import java.nio.charset.StandardCharsets;
+    53→import java.util.*;
+    54→
+    55→import static java.util.Arrays.asList;
+    56→import static java.util.Collections.unmodifiableList;
+    57→import static java.util.regex.Matcher.quoteReplacement;
+    58→import static org.elasticsearch.rest.RestRequest.Method.GET;
+    59→import static org.elasticsearch.rest.RestRequest.Method.POST;
+    60→
+    61→public class ProductNameAnalysisAction extends BaseRestHandler {
+    62→
+    63→	private static Logger logger = Loggers.getLogger(ProductNameAnalysisAction.class, "");
+    64→
+    65→	// 플러그인 내 전역저장소 설정
+    66→	private static final ContextStore contextStore = ContextStore.getStore(ProductNameDictionary.CONTEXT_STORE_KEY);
+    67→
+    68→	private static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
+    69→	private static final String BASE_URI = "/_analysis-product-name";
+    70→	private static final String ACTION_TEST = "test";
+    71→	private static final String ACTION_INFO_DICT = "info-dict";
+    72→	private static final String ACTION_FIND_DICT = "find-dict";
+    73→	private static final String ACTION_RELOAD_DICT = "reload-dict";
+    74→	private static final String ACTION_RESTORE_DICT = "restore-dict";
+    75→	private static final String ACTION_COMPILE_DICT = "compile-dict";
+    76→	private static final String ACTION_FULL_INDEX = "full-index";
+    77→	private static final String ACTION_FASTCAT_INDEX = "fastcat-index";
+    78→	private static final String ACTION_ANALYZE_TEXT = "analyze";
+    79→	private static final String ACTION_SEARCH = "search";
+    80→	private static final String ACTION_BUILD_QUERY = "build-query";
+    81→	private static final String ACTION_SYNONYM_LIST = "get-synonym-list";
+    82→	private static final String ACTION_ANALYZE_MULTI_PARAMS = "multi-analyze";
+    83→	private static final String ACTION_SEARCH_KEYWORD = "search-keyword";
+    84→	private static final String ACTION_CHECK_ENABLE = "check-dict";
+    85→
+    86→
+    87→	private static final String ES_DICTIONARY_INDEX = ".dsearch_dict";
+    88→	private static final String ES_DICT_FIELD_ID = "id";
+    89→	private static final String ES_DICT_FIELD_TYPE = "type";
+    90→	private static final String ES_DICT_FIELD_KEYWORD = "keyword";
+    91→	private static final String ES_DICT_FIELD_VALUE = "value";
+    92→	private static final String ES_INDEX_TOTALINDEX = "TOTALINDEX";
+    93→
+    94→	private static final String TAG_BR = "<br/>";
+    95→	private static final String TAG_STRONG = "<strong>${TEXT}</strong>";
+    96→	private static final String REGEX_TAG_TEXT = "[$][{]TEXT[}]";
+    97→	private static final String COMMA = ",";
+    98→	private static final String TAB = "\t";
+    99→
+   100→	private static final String ANALYZE_SET_FULL_STRING = "00_FULL_STRING_SET";
+   101→	private static final String ANALYZE_SET_STOPWORD = "01_RESTRICTED_SET";
+   102→	private static final String ANALYZE_SET_MODEL_NAME = "02_MODEL_NAME_SET";
+   103→	private static final String ANALYZE_SET_UNIT = "03_UNIT_SET";
+   104→	private static final String ANALYZE_SET_NORMAL = "04_NORMAL_SET";
+   105→	private static final String ANALYZE_SET_SYNONYM = "05_SYNONYM_SET";
+   106→	private static final String ANALYZE_SET_COMPOUND = "06_COMPOUND_SET";
+   107→	private static final String ANALYZE_SET_FINAL = "07_FINAL_SET";
+   108→
+   109→	/**
+   110→	 * 텍스트 상세 분석 결과 분류
+   111→	 */
+   112→	private static final Map<String, String> ANALYSIS_RESULT_LABELS;
+   113→	static {
+   114→		Map<String, String> map = new HashMap<>();
+   115→		map.put(ANALYZE_SET_FULL_STRING, "전체질의어");
+   116→		map.put(ANALYZE_SET_STOPWORD, "불용어");
+   117→		map.put(ANALYZE_SET_MODEL_NAME, "모델명 규칙");
+   118→		map.put(ANALYZE_SET_UNIT, "단위명 규칙");
+   119→		map.put(ANALYZE_SET_NORMAL, "형태소 분리 결과");
+   120→		map.put(ANALYZE_SET_SYNONYM, "동의어 확장");
+   121→		map.put(ANALYZE_SET_COMPOUND, "복합명사");
+   122→		map.put(ANALYZE_SET_FINAL, "최종 결과");
+   123→		ANALYSIS_RESULT_LABELS = Collections.unmodifiableMap(map);
+   124→	}
+   125→
+   126→	/**
+   127→	 * 전체색인 스레드
+   128→	 */
+   129→	private DanawaBulkTextIndexer indexingThread;
+   130→
+   131→	/**
+   132→	 * FASTCAT 임포트 스레드
+   133→	 */
+   134→	private FastcatMigrateIndexer migratingThread;
+   135→
+   136→	/**
+   137→	 * 액션등록, {action} 플레이스 홀더를 사용하여 변수로 받는다.
+   138→	 */
+   139→	@Override public List<Route> routes() {
+   140→		return unmodifiableList(asList(
+   141→			new Route(GET, BASE_URI + "/{action}"),
+   142→			new Route(POST, BASE_URI + "/{action}"),
+   143→			new Route(GET, BASE_URI + "/"),
+   144→			new Route(POST, BASE_URI + "/")));
+   145→	}
+   146→
+   147→	@Override public String getName() {
+   148→		return "rest_handler_product_name_analysis";
+   149→	}
+   150→
+   151→	/**
+   152→	 * 액션 핸들링 처리
+   153→	 */
+   154→	@Override protected RestChannelConsumer prepareRequest(RestRequest request, NodeClient client) throws IOException {
+   155→		final String action = request.param("action");
+   156→		final StringWriter buffer = new StringWriter();
+   157→		JSONWriter builder = new JSONWriter(buffer);
+   158→
+   159→		if (ACTION_TEST.equals(action)) {
+   160→			testAction(request, client, builder);
+   161→			builder.object().key("action").value(action).endObject();
+   162→		} else if (ACTION_RELOAD_DICT.equals(action)) {
+   163→			reloadDictionary();
+   164→			builder.object().key("action").value(action).endObject();
+   165→		} else if (ACTION_INFO_DICT.equals(action)) {
+   166→			builder.object().key("action").value(action);
+   167→			infoDictionary(request, client, builder);
+   168→			builder.endObject();
+   169→		} else if (ACTION_FIND_DICT.equals(action)) {
+   170→			builder.object().key("action").value(action);
+   171→			findDictionary(request, client, builder);
+   172→			builder.endObject();
+   173→		} else if (ACTION_RESTORE_DICT.equals(action)) {
+   174→			restoreDictionary(request, client);
+   175→			builder.object().key("action").value(action).endObject();
+   176→		} else if (ACTION_COMPILE_DICT.equals(action)) {
+   177→			compileDictionary(request, client);
+   178→			builder.object().key("action").value(action).endObject();
+   179→		} else if (ACTION_FULL_INDEX.equals(action)) {
+   180→			int count = bulkIndex(request, client);
+   181→			builder.object().key("action").value(action);
+   182→			if (count > 0) {
+   183→				builder.key("working").value("true").key("count").value(count);
+   184→			} else {
+   185→				builder.key("working").value("false");
+   186→			}
+   187→			builder.endObject();
+   188→		} else if (ACTION_FASTCAT_INDEX.equals(action)) {
+   189→			int count = fastcatIndex(request, client);
+   190→			builder.object().key("action").value(action);
+   191→			if (count > 0) {
+   192→				builder.key("working").value("true").key("count").value(count);
+   193→			} else {
+   194→				builder.key("working").value("false");
+   195→			}
+   196→			builder.endObject();
+   197→		} else if (ACTION_ANALYZE_TEXT.equals(action)) {
+   198→			analyzeTextAction(request, client, builder);
+   199→		} else if (ACTION_SEARCH.equals(action)) {
+   200→			search(request, client, builder);
+   201→		} else if (ACTION_BUILD_QUERY.equals(action)) {
+   202→			buildQuery(request, client, builder);
+   203→		}else if(ACTION_ANALYZE_MULTI_PARAMS.equals(action)){
+   204→			builder.object();
+   205→			analyzeMultiParamsAction(request, client, builder);
+   206→			builder.endObject();
+   207→		} else if(ACTION_SYNONYM_LIST.equals(action)){
+   208→			builder.object();
+   209→			getSynonymListAction(request, client, builder);
+   210→			builder.endObject();
+   211→		} else if (ACTION_SEARCH_KEYWORD.equals(action)) {
+   212→			makeSearchKeyword(request, client, builder);
+   213→		} else if (ACTION_CHECK_ENABLE.equals(action)) {
+   214→			builder.object().key("loaded").value(getDictionary() != null);
+   215→			builder.endObject();
+   216→		}
+   217→		return channel -> {
+   218→			channel.sendResponse(new RestResponse(RestStatus.OK, CONTENT_TYPE_JSON, new BytesArray(buffer.toString().getBytes(StandardCharsets.UTF_8))));
+   219→		};
+   220→	}
+   221→
+   222→	/**
+   223→	 * REST 파라메터를 JSONObject 로 파싱한다.
+   224→	 */
+   225→	private JSONObject parseRequestBody(RestRequest request) {
+   226→		JSONObject ret = new JSONObject();
+   227→		try {
+   228→			ret = new JSONObject(new JSONTokener(request.content().utf8ToString()));
+   229→		} catch (Exception ignore) { }
+   230→		return ret;
+   231→	}
+   232→
+   233→	/**
+   234→	 * 테스트용 액션
+   235→	 */
+   236→	public void testAction(RestRequest request, NodeClient client, JSONWriter writer) {
+   237→		logger.debug("TEST-ACTION");
+   238→	}
+   239→
+   240→	/**
+   241→	 * 각 노드에 신호 전파
+   242→	 */
+   243→	private void distribute(NodeClient client, String action, JSONObject body, boolean selfDist) {
+   244→		String localNodeId = client.getLocalNodeId();
+   245→		NodesInfoRequest infoRequest = new NodesInfoRequest();
+   246→		infoRequest.clear()
+   247→			.addMetrics(NodesInfoMetrics.Metric.JVM.metricName())
+   248→			.addMetrics(NodesInfoMetrics.Metric.OS.metricName())
+   249→			.addMetrics(NodesInfoMetrics.Metric.PROCESS.metricName())
+   250→			.addMetrics(NodesInfoMetrics.Metric.HTTP.metricName())
+   251→			.addMetrics(NodesInfoMetrics.Metric.PLUGINS.metricName())
+   252→			.addMetrics(NodesInfoMetrics.Metric.INDICES.metricName());
+   253→
+   254→		try {
+   255→			NodesInfoResponse response = client.admin().cluster().nodesInfo(infoRequest).get();
+   256→			List<NodeInfo> nodes = response.getNodes();
+   257→			for (NodeInfo node : nodes) {
+   258→				// 자기자신이 아닌경우에만 전파
+   259→				if (!selfDist && localNodeId.equals(node.getNode().getId())) {
+   260→					continue;
+   261→				}
+   262→				boolean hasPlugin = false;
+   263→				TransportAddress address = node.getInfo(HttpInfo.class).address().publishAddress();
+   264→				// 상품명분석기 플러그인을 가진 노드에만 전파
+   265→				List<PluginRuntimeInfo> plugins = node.getInfo(PluginsAndModules.class).getPluginInfos();
+   266→				for (PluginRuntimeInfo info : plugins) {
+   267→					if (hasPlugin = info.descriptor().getClassname().equals(AnalysisProductNamePlugin.class.getName())) {
+   268→						break;
+   269→					}
+   270→				}
+   271→				if (hasPlugin) {
+   272→					logger.debug("NODE: {}:{}", address.getAddress(), address.getPort());
+   273→					doRestRequest(address.getAddress(), address.getPort(), action, body);
+   274→				}
+   275→			}
+   276→		} catch (Exception e) {
+   277→			logger.error("", e);
+   278→		}
+   279→	}
+   280→
+   281→	/**
+   282→	 * 특정 노드에 REST 신호를 보낸다
+   283→	 */
+   284→	private String doRestRequest(final String address, final int port, final String action, final JSONObject body) {
+   285→		StringBuilder sb = new StringBuilder();
+   286→		HttpURLConnection con = null;
+   287→		OutputStream ostream = null;
+   288→		BufferedReader reader = null;
+   289→		try {
+   290→			String url = "http://" + address + ":" + port + BASE_URI + "/" + action;
+   291→			logger.debug("SEND REQUEST {}", url);
+   292→			con = (HttpURLConnection) new URL(url).openConnection();
+   293→			con.setRequestMethod("POST");
+   294→			con.setRequestProperty("Content-Type", "application/json");
+   295→			con.setDoOutput(true);
+   296→			ostream = con.getOutputStream();
+   297→			ostream.write(String.valueOf(body).getBytes());
+   298→			ostream.flush();
+   299→			int responseCode = con.getResponseCode();
+   300→			if (responseCode == HttpURLConnection.HTTP_CREATED) {
+   301→				logger.trace("RESPONSE:{}", responseCode);
+   302→				reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+   303→				for (String rl; (rl = reader.readLine()) != null;) {
+   304→					sb.append(rl).append("\r\n");
+   305→				}
+   306→				logger.trace("RESPONSE:{}", sb);
+   307→			}
+   308→		} catch (Exception e) {
+   309→			logger.error("", e);
+   310→		} finally {
+   311→			try { ostream.close(); } catch (Exception ignore) { }
+   312→			try { reader.close(); } catch (Exception ignore) { }
+   313→		}
+   314→		return String.valueOf(sb);
+   315→	}
+   316→
+   317→	/**
+   318→	 * 텍스트 상품명 상세분석
+   319→	 */
+   320→	private void analyzeTextAction(RestRequest request, NodeClient client, JSONWriter writer) {
+   321→		JSONObject jparam = new JSONObject();
+   322→		String index = request.param("index", ES_DICTIONARY_INDEX);
+   323→		String text = request.param("text", "");
+   324→		boolean detail = request.paramAsBoolean("detail", true);
+   325→		boolean useForQuery = request.paramAsBoolean("useForQuery", true);
+   326→		boolean useSynonym = request.paramAsBoolean("useSynonym", true);
+   327→		boolean useStopword = request.paramAsBoolean("useStopword", false);
+   328→		boolean useFullString = request.paramAsBoolean("useFullString", true);
+   329→		boolean test = false;
+   330→		if (!GET.equals(request.method())) {
+   331→			jparam = parseRequestBody(request);
+   332→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+   333→			text = jparam.optString("text", "");
+   334→			detail = jparam.optBoolean("detail", true);
+   335→			useForQuery = jparam.optBoolean("useForQuery", true);
+   336→			useSynonym = jparam.optBoolean("useSynonym", true);
+   337→			useStopword = jparam.optBoolean("useStopword", false);
+   338→			useFullString = jparam.optBoolean("useFullString", true);
+   339→			test = jparam.optBoolean("test", false);
+   340→		}
+   341→
+   342→		TokenStream stream = null;
+   343→		try {
+   344→			stream = ProductNameAnalyzerProvider.getAnalyzer(text, useForQuery, useSynonym, useStopword, useFullString, false);
+   345→			analyzeTextDetailWriteJSON(client, text, stream, index, detail, writer, useForQuery);
+   346→		} finally {
+   347→			try { stream.close(); } catch (Exception ignore) { }
+   348→		}
+   349→
+   350→		if (test) {
+   351→			distribute(client, ACTION_TEST, jparam, true);
+   352→		}
+   353→	}
+   354→
+   355→	/**
+   356→	 * 텍스트 상품명 분석
+   357→	 * 다중 파라미터 처리
+   358→	 */
+   359→	private void analyzeMultiParamsAction(RestRequest request, NodeClient client, JSONWriter writer) {
+   360→		JSONObject jparam = new JSONObject();
+   361→
+   362→		logger.debug("multi-params Action");
+   363→		// 인덱스는 고정
+   364→		String index = ES_DICTIONARY_INDEX;
+   365→
+   366→		// 검색어 확장
+   367→		boolean useForQuery = false;
+   368→		boolean useSynonym = true;
+   369→		boolean useStopword = false;
+   370→		boolean useFullString = true;
+   371→
+   372→		Map<String, String> analyzeMap = new HashMap<>();
+   373→		if (!GET.equals(request.method())) {
+   374→			// POST 처리
+   375→			jparam = parseRequestBody(request);
+   376→			for (String key : jparam.keySet()) {
+   377→				analyzeMap.put(key, jparam.optString(key, ""));
+   378→			}
+   379→		} else {
+   380→			// GET 처리
+   381→			try {
+   382→				for (String key : request.params().keySet()) {
+   383→					if (key.equals("action") || key.equals("pretty")) continue;
+   384→					analyzeMap.put(key, URLDecoder.decode(request.param(key, ""), "UTF-8"));
+   385→				}
+   386→			} catch (UnsupportedEncodingException e) {
+   387→				logger.error("UnsupportedEncodingException Catched !!! >>>> \n" + e.getMessage());
+   388→				writer.key("success").value(false);
+   389→				logger.debug("error >>> {}", e);
+   390→			}
+   391→		}
+   392→
+   393→		TokenStream stream = null;
+   394→		writer.key("result").object();
+   395→		try {
+   396→			for(String key : analyzeMap.keySet()){
+   397→				String value = analyzeMap.get(key);
+   398→				logger.debug("key : {} :::::: value : {}", key, value);
+   399→				stream = ProductNameAnalyzerProvider.getAnalyzer(value, useForQuery, useSynonym, useStopword, useFullString, false);
+   400→				List<String> list = analyzeMultiParamsText(client, value, stream, index, useForQuery);
+   401→				if(list.size() != 0){
+   402→					writer.key(key).array();
+   403→					for(String item : list){
+   404→						writer.value(item);
+   405→					}
+   406→					writer.endArray();
+   407→				}
+   408→				stream.close();
+   409→			}
+   410→		} catch (Exception ignore){
+   411→			writer.endObject();
+   412→			writer.key("success").value(false);
+   413→			logger.debug("exception >>> {}", ignore);
+   414→			logger.error("Exception Catched !!! >>>> \n" + ignore.getMessage());
+   415→		} finally {
+   416→			writer.endObject();
+   417→			writer.key("success").value(true);
+   418→		}
+   419→	}
+   420→
+   421→	/**
+   422→	 * 단방향 동의어 인지 확인
+   423→	 */
+   424→	public static boolean isOneWaySynonym(NodeClient client, String index, String word) {
+   425→		boolean ret = false;
+   426→		// 단방향 판단
+   427→		if (client != null && index != null && !"".equals(index)) {
+   428→			// 색인을 사용하는 경우
+   429→			BoolQueryBuilder query = QueryBuilders.boolQuery()
+   430→				.must(QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, ProductNameDictionary.DICT_SYNONYM.toUpperCase()))
+   431→				.must(QueryBuilders.matchQuery(ES_DICT_FIELD_KEYWORD, word)
+   432→				);
+   433→			logger.trace("Q:{}", query);
+   434→			long count = 0;
+   435→			if ((count = SearchUtil.count(client, index, query)) > 0) {
+   436→				ret = true;
+   437→			}
+   438→			logger.trace("SYNONYM:{}-{} = {}", index, word, count);
+   439→		} else {
+   440→			// 메모리 사전을 이용하는 경우
+   441→			ProductNameDictionary dictionary = getDictionary();
+   442→			SynonymDictionary synonyms = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+   443→			ret = ProductNameDictionary.isOneWaySynonym(CharVector.valueOf(word), synonyms.map());
+   444→		}
+   445→		return ret;
+   446→	}
+   447→
+   448→	/**
+   449→	 * 상품명 상세분석.
+   450→	 * analyzer 를 통해 텍스트를 분석해 출력한다.
+   451→	 * 다나와 관리모듈에 맞는 형식으로 제작
+   452→	 */
+   453→	public static void analyzeTextDetail(NodeClient client, String text, TokenStream stream, String index,
+   454→		Map<String, List<List<String>>> result, Map<String, Boolean> synonymWayMap, Map<String, List<String>> synonymMap, boolean useForQuery) {
+   455→		CharTermAttribute termAttr = stream.addAttribute(CharTermAttribute.class);
+   456→		TypeAttribute typeAttr = stream.addAttribute(TypeAttribute.class);
+   457→		ExtraTermAttribute extAttr = stream.addAttribute(ExtraTermAttribute.class);
+   458→		SynonymAttribute synAttr = stream.addAttribute(SynonymAttribute.class);
+   459→		OffsetAttribute offAttr = stream.addAttribute(OffsetAttribute.class);
+   460→		List<List<String>> wordList = null;
+   461→		List<String> words = null;
+   462→		List<String> words2 = null;
+   463→		List<CharSequence> synonyms = synAttr.getSynonyms();
+   464→		List<String> tempTermList = new ArrayList<>();
+   465→		for (String key : ANALYSIS_RESULT_LABELS.keySet()) {
+   466→			result.put(key, new ArrayList<>());
+   467→		}
+   468→
+   469→		String term = null;
+   470→		String type = null;
+   471→		String setName = null;
+   472→		String setNamePrev = null;
+   473→		int[] offset = { 0, 0 };
+   474→		int[] offsetPrev = { 0, 0 };
+   475→		boolean oneWaySynonym = false;
+   476→
+   477→		// 2개 초과의 텀에 대해 유사어 확장
+   478→		// 이전 텀, 이전 이전텀
+   479→		String prevTerm = null;
+   480→		String prePrevTerm = null;
+   481→		ProductNameDictionary dictionary = getDictionary();
+   482→		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+   483→
+   484→		try {
+   485→			stream.reset();
+   486→			while (stream.incrementToken()) {
+   487→				setNamePrev = setName;
+   488→				offsetPrev = new int[] { offset[0], offset[1] };
+   489→				term = String.valueOf(termAttr);
+   490→				type = typeAttr.type();
+   491→				offset = new int[] { offAttr.startOffset(), offAttr.endOffset() };
+   492→				logger.trace("TERM:{} / {}", term, type);
+   493→				if (!ANALYZE_SET_FULL_STRING.equals(setNamePrev) && offset[0] < offsetPrev[1]) {
+   494→					// 모델명 / 단위명 등 뒤에 나온 부속단어 (색인시)
+   495→					wordList = result.get(setNamePrev);
+   496→					if (wordList != null) {
+   497→						words = wordList.get(wordList.size() - 1);
+   498→						words.add(term);
+   499→						setName = setNamePrev;
+   500→						offset = new int[] { offsetPrev[0], offsetPrev[1] };
+   501→						setAnalyzedResult(result, term, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   502→					}
+   503→				} else if (ProductNameTokenizer.FULL_STRING.equals(type)) {
+   504→					// 전체 단어
+   505→					setName = ANALYZE_SET_FULL_STRING;
+   506→					setAnalyzedResult(result, term, ANALYZE_SET_FULL_STRING, ANALYZE_SET_FINAL);
+   507→				} else if (ProductNameTokenizer.MODEL_NAME.equals(type)) {
+   508→					// 모델명의 경우 색인시와 질의시 추출방법이 서로 다르다.
+   509→					setName = ANALYZE_SET_MODEL_NAME;
+   510→					setAnalyzedResult(result, term, ANALYZE_SET_MODEL_NAME, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   511→				} else if (ProductNameTokenizer.UNIT.equals(type)) {
+   512→					// 단위명
+   513→					setName = ANALYZE_SET_UNIT;
+   514→					setAnalyzedResult(result, term, ANALYZE_SET_UNIT, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   515→				} else if (ProductNameTokenizer.COMPOUND.equals(type)) {
+   516→					setName = ANALYZE_SET_COMPOUND;
+   517→					setAnalyzedResult(result, term, ANALYZE_SET_COMPOUND, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   518→				} else if (ProductNameTokenizer.STOPWORD.equals(type)) {
+   519→					setName = ANALYZE_SET_STOPWORD;
+   520→					setAnalyzedResult(result, term, ANALYZE_SET_STOPWORD);
+   521→				} else {
+   522→					// 일반단어
+   523→					setName = ANALYZE_SET_NORMAL;
+   524→					setAnalyzedResult(result, term, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   525→				}
+   526→
+   527→				if ((synonyms = synAttr.getSynonyms()) != null && synonyms.size() > 0) {
+   528→					wordList = result.get(ANALYZE_SET_SYNONYM);
+   529→					wordList.add(words = new ArrayList<>());
+   530→					words.add(term);
+   531→					wordList = result.get(setName);
+   532→					words2 = wordList.get(wordList.size() - 1);
+   533→					oneWaySynonym = isOneWaySynonym(client, index, term);
+   534→					synonymWayMap.put(term, oneWaySynonym);
+   535→					synonymMap.put(term, words);
+   536→					logger.trace("SYNONYM [{}] {} / {} / {}", setName, term, oneWaySynonym, synonyms);
+   537→					for (CharSequence synonym : synonyms) {
+   538→						String s = String.valueOf(synonym);
+   539→						words.add(s);
+   540→						if (!(ANALYZE_SET_NORMAL.equals(setName)
+   541→							|| ANALYZE_SET_MODEL_NAME.equals(setName))) {
+   542→							words2.add(s);
+   543→						}
+   544→						setAnalyzedResult(result, s, ANALYZE_SET_FINAL);
+   545→					}
+   546→				}
+   547→
+   548→				if (!ANALYZE_SET_FULL_STRING.equals(setName)) {
+   549→					Iterator<String> iter = extAttr.iterator();
+   550→					if (iter != null && iter.hasNext()) {
+   551→						wordList = result.get(setName);
+   552→						words = wordList.get(wordList.size() - 1);
+   553→						while (iter.hasNext()) {
+   554→							String s = iter.next();
+   555→							logger.trace("EXT [{}] {} / {} / {} / {}", setName, term, s, words, wordList);
+   556→							words.add(s);
+   557→							setAnalyzedResult(result, s, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+   558→							synonyms = synAttr.getSynonyms();
+   559→							if (synonyms != null && synonyms.size() > 0) {
+   560→								oneWaySynonym = isOneWaySynonym(client, index, s);
+   561→								synonymWayMap.put(s, oneWaySynonym);
+   562→								synonymMap.put(term, words);
+   563→								logger.trace("EXT-SYN [{}] {} / {} / {} / {} / {}", setName, term, s, oneWaySynonym, synonyms, wordList);
+   564→								setAnalyzedResult(result, s, ANALYZE_SET_SYNONYM);
+   565→								wordList = result.get(ANALYZE_SET_SYNONYM);
+   566→								List<String> list = wordList.get(wordList.size() - 1);
+   567→								for (CharSequence synonym : synonyms) {
+   568→									s = String.valueOf(synonym);
+   569→									list.add(s);
+   570→									setAnalyzedResult(result, s, ANALYZE_SET_FINAL);
+   571→								}
+   572→							}
+   573→						}
+   574→					}
+   575→				}
+   576→				if(!ProductNameTokenizer.FULL_STRING.equals(type)){
+   577→					tempTermList.add(term);
+   578→				}
+   579→			}
+   580→			if(tempTermList.size() > 1){
+   581→				for(String tempterm : tempTermList){
+   582→					//현재 단어
+   583→					setAnalyzeSynonym(synonymDict, tempterm, client, index, result, synonymWayMap, synonymMap, words, words2, wordList, setName, useForQuery);
+   584→
+   585→					//이전 텀 처리
+   586→					if(prevTerm != null){
+   587→						String combineTermTwo = prevTerm.concat(tempterm);
+   588→						setAnalyzeSynonym(synonymDict, combineTermTwo, client, index, result, synonymWayMap, synonymMap, words, words2, wordList, setName, useForQuery);
+   589→
+   590→						//이전 + 이전텀 처리
+   591→						if(prePrevTerm != null){
+   592→							String combineTermThree = prePrevTerm.concat(combineTermTwo);
+   593→							setAnalyzeSynonym(synonymDict, combineTermThree, client, index, result, synonymWayMap, synonymMap, words, words2, wordList, setName, useForQuery);
+   594→						}
+   595→					}
+   596→					prePrevTerm = prevTerm;
+   597→					prevTerm = tempterm;
+   598→				}
+   599→			}
+   600→			logger.trace("SYNONYM-WAY : {}", synonymWayMap);
+   601→		} catch (Exception e) {
+   602→			logger.error("", e);
+   603→		}
+   604→	}
+   605→	// 랭킹뷰어, 관리도구에서 사용되는 동의어 확장용 메소드
+   606→	private static void setAnalyzeSynonym(SynonymDictionary dictionary, String combineTerm, NodeClient client, String index, Map<String, List<List<String>>> result, Map<String, Boolean> synonymWayMap,
+   607→										  Map<String, List<String>> synonymMap, List<String> words, List<String> words2, List<List<String>> wordList, String setName, boolean useForQuery) {
+   608→		CharSequence[] dictData = dictionary.get(new CharVector(combineTerm));
+   609→		if(dictData != null){
+   610→			List<CharSequence> synonyms = getAnalyzeSynonym(combineTerm, useForQuery);
+   611→
+   612→			if(synonyms.size() > 0){
+   613→				wordList = result.get(ANALYZE_SET_SYNONYM);
+   614→				wordList.add(words = new ArrayList<>());
+   615→				words.add(combineTerm);
+   616→				wordList = result.get(setName);
+   617→				words2 = wordList.get(wordList.size() - 1);
+   618→
+   619→				boolean oneWaySynonym = isOneWaySynonym(client, index, combineTerm);
+   620→				synonymWayMap.put(combineTerm, oneWaySynonym);
+   621→				synonymMap.put(combineTerm, words);
+   622→				for (CharSequence synonym : synonyms) {
+   623→					String s = String.valueOf(synonym);
+   624→					words.add(s);
+   625→					if (!(ANALYZE_SET_NORMAL.equals(setName)
+   626→							|| ANALYZE_SET_MODEL_NAME.equals(setName)
+   627→							|| ANALYZE_SET_UNIT.equals(setName))) {
+   628→						words2.add(s);
+   629→					}
+   630→					if(useForQuery){
+   631→						setAnalyzedResult(result, s, ANALYZE_SET_FINAL);
+   632→					}
+   633→				}
+   634→			}
+   635→		}
+   636→	}
+   637→
+   638→	// 랭킹뷰어, 관리도구에서 사용되는 동의어 확장용 메소드
+   639→	private static List<CharSequence> getAnalyzeSynonym(String combineTerm, boolean useforQuery) {
+   640→		TokenStream analyzerStream;
+   641→		List<CharSequence> synonyms;
+   642→		List<CharSequence> result = new ArrayList<>();
+   643→
+   644→		// 동의어 확장
+   645→		try {
+   646→			analyzerStream = ProductNameAnalyzerProvider.getAnalyzer(combineTerm, true, true, true, true, false);
+   647→			SynonymAttribute synAtr = analyzerStream.addAttribute(SynonymAttribute.class);
+   648→			TypeAttribute typeAttr = analyzerStream.addAttribute(TypeAttribute.class);
+   649→
+   650→			analyzerStream.reset();
+   651→			while (analyzerStream.incrementToken()){
+   652→				if ((synonyms = synAtr.getSynonyms()) != null && synonyms.size() > 0) {
+   653→					for (CharSequence synonym : synonyms) {
+   654→						String type = typeAttr.type();
+   655→
+   656→						if (type.equals(ProductNameTokenizer.FULL_STRING) && useforQuery) {
+   657→							result.add(synonym);
+   658→						} else if(!useforQuery){
+   659→							result.add(synonym);
+   660→						}
+   661→					}
+   662→				}
+   663→			}
+   664→		} catch (Exception e){
+   665→			logger.error("", e);
+   666→		}
+   667→
+   668→		return result;
+   669→	}
+   670→
+   671→	public static void analyzeTextDetailWriteJSON(NodeClient client, String text, TokenStream stream, String index, boolean detail, JSONWriter writer, boolean useForQuery) {
+   672→		Map<String, List<List<String>>> result = new HashMap<>();
+   673→		Map<String, Boolean> synonymWayMap = new HashMap<>();
+   674→		Map<String, List<String>> synonymMap = new HashMap<>();
+   675→		List<List<String>> wordList = null;
+   676→		List<String> words = null;
+   677→		analyzeTextDetail(client, text, stream, index, result, synonymWayMap, synonymMap, useForQuery);
+   678→
+   679→		try {
+   680→			writer.object()
+   681→				.key("query").value(text)
+   682→				.key("result").array();
+   683→			if (detail) {
+   684→				for (String key : new TreeSet<String>(result.keySet())) {
+   685→					String label = ANALYSIS_RESULT_LABELS.get(key);
+   686→					wordList = result.get(key);
+   687→					logger.trace("TYPE:{} / {}", label, wordList);
+   688→					StringBuilder analyzed = new StringBuilder();
+   689→
+   690→					if (ANALYZE_SET_FULL_STRING.equals(key)) {
+   691→						if (wordList != null && wordList.size() > 0) {
+   692→							words = wordList.get(0);
+   693→							if (words != null && words.size() > 0) {
+   694→								analyzed.append(words.get(0));
+   695→							}
+   696→						}
+   697→					} else if (ANALYZE_SET_STOPWORD.equals(key)) {
+   698→						for (List<String> item : wordList) {
+   699→							if (analyzed.length() > 0) { analyzed.append(COMMA).append(" "); }
+   700→							if (item.size() > 0) {
+   701→								analyzed.append(item.get(0));
+   702→							}
+   703→						}
+   704→					} else if (ANALYZE_SET_MODEL_NAME.equals(key)) {
+   705→						for (List<String> item : wordList) {
+   706→							if (analyzed.length() > 0) { analyzed.append(TAG_BR); }
+   707→
+   708→							// 모델명규칙 풀텀 가장 뒤에 나오도록 변경
+   709→							// 2021-03-17 선지호
+   710→							String fullTermKeyword = item.get(0);
+   711→							item.remove(0);
+   712→							item.add(fullTermKeyword);
+   713→
+   714→							for (int inx = 0; inx < item.size(); inx++) {
+   715→								String w = item.get(inx);
+   716→								if (inx == 0) {
+   717→									analyzed.append(TAG_STRONG.replaceAll(REGEX_TAG_TEXT, quoteReplacement(fullTermKeyword)))
+   718→											.append(" ( ");
+   719→									analyzed.append(w);
+   720→								} else {
+   721→									if (inx > 0) { analyzed.append(", "); }
+   722→									analyzed.append(w);
+   723→								}
+   724→							}
+   725→							analyzed.append(" ) ");
+   726→						}
+   727→					} else if (ANALYZE_SET_UNIT.equals(key)) {
+   728→						for (List<String> item : wordList) {
+   729→							if (analyzed.length() > 0) { analyzed.append(TAG_BR); }
+   730→							String word = null;
+   731→							StringBuilder data = new StringBuilder();
+   732→							for (int inx = 0; inx < item.size(); inx++) {
+   733→								String w = item.get(inx);
+   734→								if (inx == 0) {
+   735→									word = w;
+   736→									analyzed.append(TAG_STRONG.replaceAll(REGEX_TAG_TEXT, quoteReplacement(w))).append(" : ");
+   737→								} else {
+   738→									if (inx > 1) { data.append(", "); }
+   739→									data.append(w);
+   740→								}
+   741→							}
+   742→							if (synonymWayMap.containsKey(word)) {
+   743→								analyzed.append(data).append(TAG_BR).append(" >>> 동의어 : ");
+   744→								data = new StringBuilder();
+   745→								words = synonymMap.get(word);
+   746→								for (int inx = 1; inx < words.size(); inx++) {
+   747→									String w = words.get(inx);
+   748→									if (inx > 1) { data.append(", "); }
+   749→									data.append(w);
+   750→								}
+   751→								analyzed.append(data);
+   752→							} else {
+   753→								analyzed.append(data);
+   754→							}
+   755→						}
+   756→					} else if (ANALYZE_SET_NORMAL.equals(key)) {
+   757→						for (List<String> item : wordList) {
+   758→							if (analyzed.length() > 0) {
+   759→								analyzed.append(COMMA).append(" ");
+   760→							}
+   761→							if (item.size() > 0) {
+   762→								analyzed.append(item.get(0));
+   763→							}
+   764→						}
+   765→					} else if (ANALYZE_SET_SYNONYM.equals(key)) {
+   766→						for (List<String> item : wordList) {
+   767→							if (analyzed.length() > 0) { analyzed.append(TAG_BR); }
+   768→							String word = null;
+   769→							StringBuilder data = new StringBuilder();
+   770→							for (int inx = 0; inx < item.size(); inx++) {
+   771→								String w = item.get(inx);
+   772→								if (inx == 0) {
+   773→									word = w;
+   774→									analyzed.append(TAG_STRONG.replaceAll(REGEX_TAG_TEXT, quoteReplacement(w))).append(" : ");
+   775→								} else {
+   776→									if (inx > 1) { data.append(", "); }
+   777→									data.append(w);
+   778→								}
+   779→							}
+   780→							if (synonymWayMap.containsKey(word) && synonymWayMap.get(word)) {
+   781→								analyzed.append(data).append(TAG_BR).append(" >>> 단방향 : ").append(data);
+   782→							} else {
+   783→								analyzed.append(data);
+   784→							}
+   785→						}
+   786→					} else if (ANALYZE_SET_COMPOUND.equals(key)) {
+   787→						for (List<String> item : wordList) {
+   788→							if (analyzed.length() > 0) { analyzed.append(TAG_BR); }
+   789→							for (int inx = 0; inx < item.size(); inx++) {
+   790→								String w = item.get(inx);
+   791→								if (inx == 0) {
+   792→									analyzed.append(TAG_STRONG.replaceAll(REGEX_TAG_TEXT, quoteReplacement(w))).append(" : ");
+   793→								} else {
+   794→									if (inx > 1) { analyzed.append(", "); }
+   795→									analyzed.append(w);
+   796→								}
+   797→							}
+   798→						}
+   799→					} else if (ANALYZE_SET_FINAL.equals(key)) {
+   800→						for (List<String> item : wordList) {
+   801→							if (analyzed.length() > 0) { analyzed.append(COMMA).append(" "); }
+   802→							if (item.size() > 0) {
+   803→								analyzed.append(item.get(0));
+   804→							}
+   805→						}
+   806→					}
+   807→					writer.object()
+   808→						.key("key").value(label)
+   809→						.key("value").value(analyzed);
+   810→					writer.endObject();
+   811→				}
+   812→			} else {
+   813→				wordList = result.get(ANALYZE_SET_FINAL);
+   814→				logger.trace("RESULT:{}", wordList);
+   815→				for (List<String> item : wordList) {
+   816→					if (item.size() > 0) {
+   817→						writer.value(item.get(0));
+   818→					}
+   819→				}
+   820→			}
+   821→			writer
+   822→				.endArray()
+   823→				.key("success").value(true)
+   824→				.endObject();
+   825→		} catch (Exception e) {
+   826→			logger.error("", e);
+   827→		}
+   828→	}
+   829→
+   830→	/**
+   831→	 * 검색어 확장 각텀의 확장된 검색어들을 만든다
+   832→	 */
+   833→	public static void expansionKeyword(String text, TokenStream stream, JSONWriter writer) {
+   834→		CharTermAttribute termAttr = stream.addAttribute(CharTermAttribute.class);
+   835→		TypeAttribute typeAttr = stream.addAttribute(TypeAttribute.class);
+   836→		ExtraTermAttribute extAttr = stream.addAttribute(ExtraTermAttribute.class);
+   837→		SynonymAttribute synAttr = stream.addAttribute(SynonymAttribute.class);
+   838→		OffsetAttribute offAttr = stream.addAttribute(OffsetAttribute.class);
+   839→
+   840→		List<Object> termWords;
+   841→		// 검색어 확장을 위한 변수
+   842→		List<Object> extraTermWords;
+   843→		ProductNameDictionary dictionary = getDictionary();
+   844→		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+   845→
+   846→		List<CharSequence> synonyms;
+   847→
+   848→		List<String> tempTermList = new ArrayList<>();
+   849→		Map<String, Object> hash = new LinkedHashMap<>();
+   850→		// 풀텀, 합성텀에 대해 결과를 저장하는 변수
+   851→		Map<String, Object> combineTermSynonym = new HashMap<>();
+   852→		// 확장어에 대해 결과를 저장하는 변수
+   853→		Map<String, Object> extensionSynonym = null;
+   854→
+   855→		int[] offset = {0, 0};
+   856→		int[] offsetPrev = {0, 0};
+   857→
+   858→		try {
+   859→			stream.reset();
+   860→			while (stream.incrementToken()) {
+   861→				offsetPrev = new int[]{offset[0], offset[1]};
+   862→				String term = String.valueOf(termAttr);
+   863→				termWords = new ArrayList<>();
+   864→				extraTermWords = new ArrayList<>();
+   865→				String type = typeAttr.type();
+   866→				offset = new int[]{offAttr.startOffset(), offAttr.endOffset()};
+   867→				logger.trace("TERM:{} / {}", term, type);
+   868→				//풀텀일 경우는 펄텀유사어 따로 처리
+   869→				if (type.equals(ProductNameTokenizer.FULL_STRING)) {
+   870→					if ((synonyms = synAttr.getSynonyms()) != null && synonyms.size() > 0) {
+   871→
+   872→						termWords = new ArrayList<>();
+   873→						ArrayList<Object> termList = divideTerm(text);
+   874→						termWords.add(termList);
+   875→
+   876→						logger.trace("FULLTERM SYNONYM {} / {} ", term, synonyms);
+   877→
+   878→						for (CharSequence synonym : synonyms) {
+   879→							String s = String.valueOf(synonym);
+   880→
+   881→							String[] synonymList = s.split(" ");
+   882→
+   883→							if(synonymList.length > 1){
+   884→								termWords.add(synonymList);
+   885→							}else{
+   886→								termWords.add(s);
+   887→							}
+   888→						}
+   889→						combineTermSynonym.put(term, termWords);
+   890→					}
+   891→				}else{
+   892→					// 유사어 확장을 위해 텀 적재
+   893→					tempTermList.add(term);
+   894→					//logger.info("{} - {}", offset, offsetPrev);
+   895→					if (offset[0] < offsetPrev[1]) {
+   896→						termWords.add(term);
+   897→						offset = new int[]{offsetPrev[0], offsetPrev[1]};
+   898→					}else{
+   899→						termWords.add(term);
+   900→					}
+   901→
+   902→					if ((synonyms = synAttr.getSynonyms()) != null && synonyms.size() > 0) {
+   903→
+   904→						logger.trace("SYNONYM {} / {} ", term, synonyms);
+   905→						for (CharSequence synonym : synonyms) {
+   906→							String s = String.valueOf(synonym);
+   907→
+   908→							String[] synonymList = s.split(" ");
+   909→
+   910→							if(synonymList.length > 1){
+   911→								termWords.add(synonymList);
+   912→							}else{
+   913→								termWords.add(s);
+   914→							}
+   915→						}
+   916→					}
+   917→
+   918→					Iterator<String> iter = extAttr.iterator();
+   919→					if (iter != null && iter.hasNext()) {
+   920→
+   921→						//termWords = new ArrayList<>();
+   922→						//확장어 원본 입력
+   923→						//extraTermWords.add(term);
+   924→						while (iter.hasNext()) {
+   925→							String s = iter.next();
+   926→							logger.trace("EXT {} / {} / {}", term, s, termWords);
+   927→							extraTermWords.add(s);
+   928→							synonyms = synAttr.getSynonyms();
+   929→							if (synonyms != null && synonyms.size() > 0) {
+   930→								extensionSynonym = new HashMap<>();
+   931→								List<String> extSynonymList = new ArrayList<>();
+   932→								//확장어의 동의어가 있을 경우 원본 확장어 리스트에서 삭제 (이후 확장어 동의어 리스트 적재)
+   933→								extraTermWords.remove(s);
+   934→
+   935→								logger.trace("EXT-SYN {} / {} / {}", term, s, synonyms);
+   936→
+   937→								//확장어 동의어가 하나 혹은 여러개일 떄 별도?
+   938→								for (CharSequence synonym : synonyms) {
+   939→									logger.trace("synonym : {}" , synonym);
+   940→									extSynonymList.add(String.valueOf(synonym));
+   941→								}
+   942→								logger.trace("synonymList : {} - {}", s, extSynonymList);
+   943→								extensionSynonym.put(s,extSynonymList);
+   944→								if(extensionSynonym.size() > 0) {
+   945→									extraTermWords.add(extensionSynonym);
+   946→								}
+   947→							}
+   948→						}
+   949→//						extraTermWords.add(extAnalyeTerm);
+   950→					}
+   951→					if (extraTermWords.size() > 0) {
+   952→						termWords.add(extraTermWords);
+   953→					}
+   954→				}
+   955→				logger.trace("term : {} - {}", term, termWords);
+   956→				
+   957→				//풀텀이 아닐 경우만. 풀텀(유사어)는 이미 fullTermHash에 적재됨
+   958→				if (termWords.size() == 0) {
+   959→					combineTermSynonym.put(term, new Object[]{term});
+   960→				} else {
+   961→					if (!type.equals(ProductNameTokenizer.FULL_STRING)) {
+   962→						hash.put(term, termWords.toArray());
+   963→					}
+   964→				}
+   965→			}
+   966→			// 띄어쓰기로 구분된 2개 이상의 텀에 대해 유사어 확장, 1개 풀텀은 위에서 따로 처리 예) 실내자전거 -> 헬스싸이클
+   967→			// combineTermSynonym
+   968→			if(tempTermList.size() > 1){
+   969→				// 이전 텀, 이전 이전텀
+   970→				String prevTerm = null;
+   971→				String prePrevTerm = null;
+   972→
+   973→				for (String term : tempTermList) {
+   974→					// 이전 텀 처리
+   975→					if (prevTerm != null) {
+   976→						String combineTermTwo = prevTerm.concat(term);
+   977→						putSynonymData(combineTermSynonym, synonymDict, combineTermTwo);
+   978→
+   979→						// 이전 이전텀 처리
+   980→						if (prePrevTerm != null) {
+   981→							String combineTermThree = prePrevTerm.concat(combineTermTwo);
+   982→							putSynonymData(combineTermSynonym, synonymDict, combineTermThree);
+   983→						}
+   984→					}
+   985→					prePrevTerm = prevTerm;
+   986→					prevTerm = term;
+   987→				}
+   988→			}
+   989→
+   990→			writer.object()
+   991→					.key("query").value(text)
+   992→					.key("result").value(hash)
+   993→					.key("synonym").value(combineTermSynonym)
+   994→					.endObject();
+   995→		} catch (Exception e) {
+   996→			logger.error("", e);
+   997→		}
+   998→	}
+   999→
+  1000→	// combineTermSynonym 최종적으로 리턴할 유사어 맵, synonymDict 유사어 사전, combineTermTwo 찾을 단어
+  1001→	private static void putSynonymData(Map<String, Object> combineTermSynonym, SynonymDictionary synonymDict, String combineTerm) {
+  1002→		CharSequence[] dictData = synonymDict.get(new CharVector(combineTerm));
+  1003→
+  1004→		// 동의어가 있을 경우
+  1005→		if(dictData != null){
+  1006→			combineTermSynonym.put(combineTerm, removeDuplicates(findSynonymTerm(combineTerm, dictData)));
+  1007→		}
+  1008→	}
+  1009→
+  1010→
+  1011→	private static ArrayList<Object> findSynonymTerm(String combineTerm, CharSequence[] dictData) {
+  1012→		ArrayList<Object> result = new ArrayList<>();
+  1013→
+  1014→		result.add(divideTerm(combineTerm));
+  1015→		for (Object v : dictData) {
+  1016→			String value = String.valueOf(v);
+  1017→			TokenStream analyzerStream = null;
+  1018→
+  1019→			// 동의어 확장
+  1020→			try {
+  1021→				analyzerStream = ProductNameAnalyzerProvider.getAnalyzer(value, true, false, false, false, false);
+  1022→				CharTermAttribute termAtr = analyzerStream.addAttribute(CharTermAttribute.class);
+  1023→				analyzerStream.reset();
+  1024→				ArrayList<Object> subResult = new ArrayList<>();
+  1025→				while (analyzerStream.incrementToken()){
+  1026→					String temp = String.valueOf(termAtr);
+  1027→					subResult.add(temp);
+  1028→				}
+  1029→				result.add(subResult);
+  1030→			} catch (Exception e){
+  1031→				logger.error("", e);
+  1032→			}
+  1033→		}
+  1034→
+  1035→		return result;
+  1036→	}
+  1037→
+  1038→	// 키워드를 형태소 단위로 분리하는 메소드
+  1039→	private static ArrayList<Object> divideTerm(String keyword) {
+  1040→		ArrayList<Object> result = new ArrayList<>();
+  1041→
+  1042→		String value = String.valueOf(keyword);
+  1043→		TokenStream analyzerStream = null;
+  1044→
+  1045→		// 동의어 확장
+  1046→		try {
+  1047→			analyzerStream = ProductNameAnalyzerProvider.getAnalyzer(value, true, false, false, false, false);
+  1048→			CharTermAttribute termAtr = analyzerStream.addAttribute(CharTermAttribute.class);
+  1049→			analyzerStream.reset();
+  1050→			while (analyzerStream.incrementToken()){
+  1051→				String temp = String.valueOf(termAtr);
+  1052→				result.add(temp);
+  1053→			}
+  1054→		} catch (Exception e){
+  1055→			logger.error("", e);
+  1056→		}
+  1057→
+  1058→		return result;
+  1059→	}
+  1060→
+  1061→	// ArrayList 중복제거
+  1062→	private static <T> ArrayList<T> removeDuplicates(ArrayList<T> list)
+  1063→	{
+  1064→		ArrayList<T> newList = new ArrayList<T>();
+  1065→
+  1066→		for (T element : list) {
+  1067→			if (!newList.contains(element)) {
+  1068→				newList.add(element);
+  1069→			}
+  1070→		}
+  1071→
+  1072→		return newList;
+  1073→	}
+  1074→
+  1075→	/**
+  1076→	 * 다중 파라미터 분석.
+  1077→	 * analyzer 를 통해 텍스트를 분석해 출력한다.
+  1078→	 * 다나와 관리모듈에 맞는 형식으로 제작
+  1079→	 */
+  1080→	public static List<String> analyzeMultiParamsText(NodeClient client, String text, TokenStream stream,  String index, Boolean useForQuery) {
+  1081→		List<String> resultList = new ArrayList<>();
+  1082→		Map<String, List<List<String>>> result = new HashMap<>();
+  1083→		Map<String, Boolean> synonymWayMap = new HashMap<>();
+  1084→		Map<String, List<String>> synonymMap = new HashMap<>();
+  1085→		List<List<String>> wordList = null;
+  1086→		analyzeTextDetail(client, text, stream, index, result, synonymWayMap, synonymMap, useForQuery);
+  1087→		try {
+  1088→			wordList = result.get(ANALYZE_SET_FINAL);
+  1089→			logger.trace("RESULT:{}", wordList);
+  1090→			for (List<String> item : wordList) {
+  1091→				if (item.size() > 0) {
+  1092→					resultList.add(item.get(0));
+  1093→				}
+  1094→			}
+  1095→		} catch (Exception e) {
+  1096→			logger.error("", e);
+  1097→		}
+  1098→		return resultList;
+  1099→	}
+  1100→
+  1101→	/**
+  1102→	 * 상세분석시 각 분류별 결과를 분류 맵핑에 입력해 준다.
+  1103→	 */
+  1104→	private static void setAnalyzedResult(Map<String, List<List<String>>> result, String term, String... types) {
+  1105→		List<List<String>> wordList = null;
+  1106→		List<String> words = null;
+  1107→		for (String type : types) {
+  1108→			wordList = result.get(type);
+  1109→			wordList.add(words = new ArrayList<>());
+  1110→			words.add(term);
+  1111→		}
+  1112→	}
+  1113→
+  1114→	/**
+  1115→	 * 상품명사전을 메모리에 재적제 시킨다
+  1116→	 */
+  1117→	private void reloadDictionary() {
+  1118→		if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+  1119→			ProductNameDictionary.reloadDictionary();
+  1120→		}
+  1121→	}
+  1122→
+  1123→	/**
+  1124→	 * 요청받은 상품명사전을 엘라스틱서치에서 읽어서 메모리로 로딩한뒤 파일로 저장한다.
+  1125→	 * (ES 색인 사용) - 변경된 부분
+  1126→	 * 그후 전체 사전을 재로딩한다.
+  1127→	 */
+  1128→	private void compileDictionary(RestRequest request, NodeClient client) {
+  1129→		JSONObject jparam = new JSONObject();
+  1130→		String index = request.param("index", ES_DICTIONARY_INDEX);
+  1131→		String type = request.param("type", null);
+  1132→		boolean exportFile = request.paramAsBoolean("exportFile", false);
+  1133→		boolean distribute = request.paramAsBoolean("distribute", false);
+  1134→		String host = request.param("host", null);
+  1135→		int port = request.paramAsInt("port", 9200);
+  1136→		String username = request.param("username", null);
+  1137→		String password = request.param("password", null);
+  1138→
+  1139→		if (!GET.equals(request.method())) {
+  1140→			/* POST */
+  1141→			jparam = parseRequestBody(request);
+  1142→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+  1143→			type = jparam.optString("type", null);
+  1144→			exportFile = jparam.optBoolean("exportFile", false);
+  1145→			distribute = jparam.optBoolean("distribute", false);
+  1146→			host = jparam.optString("host", null);
+  1147→			port = jparam.optInt("port", 9200);
+  1148→			username = jparam.optString("username", null);
+  1149→			password = jparam.optString("password", null);
+  1150→		} else {
+  1151→			/* GET */
+  1152→			jparam.put("index", index);
+  1153→			jparam.put("type", type);
+  1154→			jparam.put("exportFile", exportFile);
+  1155→			jparam.put("distribute", distribute);
+  1156→			jparam.put("distribute", distribute);
+  1157→			jparam.put("host", host);
+  1158→			jparam.put("port", port);
+  1159→			jparam.put("username", username);
+  1160→			jparam.put("password", password);
+  1161→		}
+  1162→
+  1163→		// 사전소스가 다른 클러스터의 것을 참조하고 있다면..
+  1164→		DictionarySource repo = null;
+  1165→		if (host != null && !"".equals(host)) {
+  1166→			RemoteNodeClient remoteNodeClient = new RemoteNodeClient(client.settings(), client.threadPool(), ES_DICTIONARY_INDEX, host, port, username, password);
+  1167→			repo = new DictionarySource(remoteNodeClient, index);
+  1168→		} else {
+  1169→			repo = new DictionarySource(client, index);
+  1170→		}
+  1171→
+  1172→		//type으로 요청이 들어온 사전만 컴파일 한다.
+  1173→//		ProductNameDictionary.compileDictionary(repo, type, exportFile);
+  1174→		ProductNameDictionary.compileDictionary(client, repo, type, exportFile);
+  1175→
+  1176→		//모든 사전을 다시 로딩한다.
+  1177→		ProductNameDictionary.reloadDictionary();
+  1178→
+  1179→		if (distribute) {
+  1180→			//받는 노드에서 재전파 요청을 하면 안되므로, distribute 를 false 로 보낸다.
+  1181→			jparam.put("distribute", false);
+  1182→			distribute(client, ACTION_COMPILE_DICT, jparam, false);
+  1183→		}
+  1184→
+  1185→	}
+  1186→
+  1187→	/**
+  1188→	 * 사전정보 추출
+  1189→	 */
+  1190→	private void infoDictionary(RestRequest request, NodeClient client, JSONWriter builder) {
+  1191→		JSONObject jparam = new JSONObject();
+  1192→		String index = request.param("index", ES_DICTIONARY_INDEX);
+  1193→		String host = request.param("host", null);
+  1194→		int port = request.paramAsInt("port", 9200);
+  1195→		String username = request.param("username", null);
+  1196→		String password = request.param("password", null);
+  1197→
+  1198→		if (!GET.equals(request.method())) {
+  1199→			jparam = parseRequestBody(request);
+  1200→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+  1201→			host = jparam.optString("host", null);
+  1202→			port = jparam.optInt("port", 9200);
+  1203→			username = jparam.optString("username", null);
+  1204→			password = jparam.optString("password", null);
+  1205→		}
+  1206→
+  1207→		// .dsearch_dict_apply 인덱스에서 데이터를 Map형태로 가져온다.
+  1208→		Map<String, Object> searchMap = SearchUtil.searchData(client, ".dsearch_dict_apply");
+  1209→
+  1210→
+  1211→		RemoteNodeClient remoteNodeClient = new RemoteNodeClient(client.settings(), client.threadPool(), ES_DICTIONARY_INDEX, host, port, username, password);
+  1212→
+  1213→		ProductNameDictionary productNameDictionary = getDictionary();
+  1214→		builder
+  1215→			.key("dictionary").array()
+  1216→				.object()
+  1217→				.key(ES_DICT_FIELD_TYPE).value("SYSTEM")
+  1218→				.key("class").value(TagProbDictionary.class.getSimpleName())
+  1219→				.key("count").value(productNameDictionary.size())
+  1220→				.key("label").value(productNameDictionary.label())
+  1221→				.key("seq").value(productNameDictionary.seq())
+  1222→				.key("ignoreCase").value(productNameDictionary.ignoreCase())
+  1223→				.key("tokenType").value("NONE") // system 사전은 없음.
+  1224→				.endObject();
+  1225→		Map<String, SourceDictionary<?>> dictionaryMap = productNameDictionary.getDictionaryMap();
+  1226→		Set<String> keySet = dictionaryMap.keySet();
+  1227→		for (String key : keySet) {
+  1228→			String type = key.toUpperCase();
+  1229→			SourceDictionary<?> sourceDictionary = dictionaryMap.get(key);
+  1230→			int[] info = ProductNameDictionary.getDictionaryInfo(sourceDictionary);
+  1231→			long indexCount;
+  1232→			if (host != null && !"".equals(host)) {
+  1233→				indexCount = SearchUtil.count(remoteNodeClient, index, QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, type));
+  1234→			} else {
+  1235→				indexCount = SearchUtil.count(client, index, QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, type));
+  1236→			}
+  1237→
+  1238→			// SearchMap에서 데이터를 가져와서 각 변수에 넣어준다.
+  1239→			String id = type.toLowerCase();
+  1240→			int count = 0;
+  1241→			String appliedTime = "";
+  1242→			String updatedTime = "";
+  1243→
+  1244→			if(searchMap.get(id) != null){
+  1245→				// 적용된 단어 갯수
+  1246→				count = (Integer) searchMap.get(id);
+  1247→			}
+  1248→			if(searchMap.get(id + "_appliedTime") != null){
+  1249→				// 사전이 적용된 시간
+  1250→				appliedTime = (String) searchMap.get(id + "_appliedTime");
+  1251→			}
+  1252→			if(searchMap.get(id + "_updatedTime") != null){
+  1253→				// 사전 데이터가 수정된 시간
+  1254→				updatedTime = (String) searchMap.get(id + "_updatedTime");
+  1255→			}
+  1256→
+  1257→			builder.object()
+  1258→				.key(ES_DICT_FIELD_TYPE).value(type)
+  1259→				.key("class").value(sourceDictionary.getClass().getSimpleName())
+  1260→				.key("dictType").value(sourceDictionary.type().name())
+  1261→//				.key("count").value(info[0])
+  1262→				.key("ignoreCase").value(sourceDictionary.ignoreCase())
+  1263→				.key("tokenType").value(sourceDictionary.tokenType() == null ? "NONE" : sourceDictionary.tokenType())
+  1264→				.key("label").value(sourceDictionary.label())
+  1265→				.key("seq").value(sourceDictionary.seq())
+  1266→				.key("id").value(key)
+  1267→				.key("updatedTime").value(updatedTime) // 사전에 데이터가 추가/삭제/변경 된 시간
+  1268→				.key("appliedTime").value(appliedTime) // 적용된 시간
+  1269→				.key("count").value(count) // 적용 단어 갯수
+  1270→				.key("indexCount").value(indexCount); // 작업 단어 갯수
+  1271→
+  1272→			if (info[1] != 0) {
+  1273→				builder.key("words").value(info[1]);
+  1274→			}
+  1275→			builder.endObject();
+  1276→		}
+  1277→		builder.endArray();
+  1278→	}
+  1279→
+  1280→	/**
+  1281→	 * 사전내 단어 검색
+  1282→	 */
+  1283→	private void findDictionary(RestRequest request, NodeClient client, JSONWriter builder) {
+  1284→		JSONObject jparam = new JSONObject();
+  1285→		String index = request.param("index", ES_DICTIONARY_INDEX);
+  1286→		String word = request.param("word", "");
+  1287→		if (!GET.equals(request.method())) {
+  1288→			jparam = parseRequestBody(request);
+  1289→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+  1290→			word = jparam.optString("word", "");
+  1291→		}
+  1292→
+  1293→		ProductNameDictionary productNameDictionary = getDictionary();
+  1294→		Set<String> keySet = productNameDictionary.getDictionaryMap().keySet();
+  1295→
+  1296→		builder
+  1297→			.key("result").array();
+  1298→
+  1299→		List<TagProb> tagProbs = productNameDictionary.find(CharVector.valueOf(word));
+  1300→		for (int inx = 0;tagProbs != null && inx < tagProbs.size(); inx++) {
+  1301→			TagProb tagProb = tagProbs.get(inx);
+  1302→			builder.object()
+  1303→				.key(ES_DICT_FIELD_TYPE).value("SYSTEM")
+  1304→				.key(ES_DICT_FIELD_KEYWORD).value(word)
+  1305→				.key("posTag").value(tagProb.posTag())
+  1306→				.key("prob").value(tagProb.prob())
+  1307→			.endObject();
+  1308→		}
+  1309→		for (String type : keySet) {
+  1310→			type = type.toUpperCase();
+  1311→
+  1312→			BoolQueryBuilder query = QueryBuilders.boolQuery()
+  1313→				.must(QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, type))
+  1314→				.must(QueryBuilders.boolQuery()
+  1315→					.should(QueryBuilders.matchQuery(ES_DICT_FIELD_KEYWORD, word))
+  1316→					.should(QueryBuilders.matchQuery(ES_DICT_FIELD_VALUE, word))
+  1317→				);
+  1318→			Iterator<Map<String, Object>> result = SearchUtil.search(client, index, query, null, null, 0, -1, true, null);
+  1319→			while (result.hasNext()) {
+  1320→				Map<String, Object> data = result.next();
+  1321→				CharVector keyword = CharVector.valueOf(data.get(ES_DICT_FIELD_KEYWORD));
+  1322→				CharVector value = CharVector.valueOf(data.get(ES_DICT_FIELD_VALUE));
+  1323→				CharVector id = CharVector.valueOf(data.get(ES_DICT_FIELD_ID));
+  1324→				builder.object();
+  1325→				builder.key(ES_DICT_FIELD_TYPE).value(type);
+  1326→				if (keyword != null && keyword.length() > 0) {
+  1327→					builder.key(ES_DICT_FIELD_KEYWORD).value(keyword);
+  1328→				}
+  1329→				if (value != null && value.length() > 0) {
+  1330→					builder.key(ES_DICT_FIELD_VALUE).value(value);
+  1331→				}
+  1332→				if (id != null && id.length() > 0) {
+  1333→					builder.key(ES_DICT_FIELD_ID).value(id);
+  1334→				}
+  1335→				builder.endObject();
+  1336→			}
+  1337→		}
+  1338→		builder.endArray();
+  1339→	}
+  1340→
+  1341→	/**
+  1342→	 * 컴파일된 바이너리사전 -> ES 색인으로 데이터 복원
+  1343→	 */
+  1344→	private void restoreDictionary(RestRequest request, NodeClient client) {
+  1345→		JSONObject jparam = new JSONObject();
+  1346→		String index = request.param("index", ES_DICTIONARY_INDEX);
+  1347→		if (!GET.equals(request.method())) {
+  1348→			jparam = parseRequestBody(request);
+  1349→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+  1350→		}
+  1351→
+  1352→		SearchUtil.deleteAllData(client, index);
+  1353→		DictionarySource repo = new DictionarySource(client, index);
+  1354→		ProductNameDictionary.restoreDictionary(repo, index);
+  1355→	}
+  1356→
+  1357→	/**
+  1358→	 * 다나와 상품 텍스트데이터 -> ES색인 수행
+  1359→	 */
+  1360→	private int bulkIndex(final RestRequest request, final NodeClient client) {
+  1361→		int ret = 0;
+  1362→		JSONObject jparam = new JSONObject();
+  1363→		String index = request.param("index", "");
+  1364→		String path = request.param("path", "");
+  1365→		String enc = request.param("enc", "euc-kr");
+  1366→		int flush = request.paramAsInt("flush", 50000);
+  1367→		if (!GET.equals(request.method())) {
+  1368→			jparam = parseRequestBody(request);
+  1369→			index = jparam.optString("index", "");
+  1370→			path = jparam.optString("path", "");
+  1371→			enc = jparam.optString("enc", "euc-kr");
+  1372→			flush = jparam.optInt("flush", 50000);
+  1373→		}
+  1374→
+  1375→		synchronized (this) {
+  1376→			if (indexingThread == null || !indexingThread.running()) {
+  1377→				indexingThread = new DanawaBulkTextIndexer(index, path, enc, flush, client);
+  1378→				indexingThread.start();
+  1379→			} else {
+  1380→				ret = indexingThread.count();
+  1381→			}
+  1382→		}
+  1383→		return ret;
+  1384→	}
+  1385→
+  1386→	/**
+  1387→	 * 다나와 상품 FASTCAT -> ES색인 수행
+  1388→	 */
+  1389→	private int fastcatIndex(final RestRequest request, final NodeClient client) {
+  1390→		int ret = 0;
+  1391→		JSONObject jparam = new JSONObject();
+  1392→		String url = request.param("url", "");
+  1393→		int start = request.paramAsInt("start", 1);
+  1394→		int length = request.paramAsInt("length", 1000);
+  1395→		String path = request.param("path", "");
+  1396→		String enc = request.param("enc", "euc-kr");
+  1397→		String index = request.param("index", "");
+  1398→		int flush = request.paramAsInt("flush", 50000);
+  1399→		try {
+  1400→			url = URLDecoder.decode(url, "utf-8");
+  1401→		} catch (Exception ignore) { }
+  1402→		if (!GET.equals(request.method())) {
+  1403→			jparam = parseRequestBody(request);
+  1404→			url = jparam.optString("url", "");
+  1405→			start = jparam.optInt("start", 1);
+  1406→			length = jparam.optInt("length", 1000);
+  1407→			path = jparam.optString("path", "");
+  1408→			enc = jparam.optString("enc", "euc-kr");
+  1409→			index = jparam.optString("index", "");
+  1410→			flush = jparam.optInt("flush", 50000);
+  1411→		}
+  1412→
+  1413→		synchronized (this) {
+  1414→			if (migratingThread == null || !migratingThread.running()) {
+  1415→				migratingThread = new FastcatMigrateIndexer(url, start, length, path, enc, index, flush, client);
+  1416→				migratingThread.start();
+  1417→			} else {
+  1418→				ret = migratingThread.count();
+  1419→			}
+  1420→		}
+  1421→		return ret;
+  1422→	}
+  1423→
+  1424→	/**
+  1425→	 * 상품명 분석기를 사용하여 검색 수행
+  1426→	 */
+  1427→	private void search(final RestRequest request, final NodeClient client, final JSONWriter builder) {
+  1428→		JSONObject jparam = new JSONObject();
+  1429→		String index = request.param("index", "");
+  1430→		String[] fields = request.param("fields", "").split("[,]");
+  1431→		Map<String, Float> boostMap = new HashMap<>();
+  1432→		String text = request.param("text", "");
+  1433→		String queryString = request.param("query", "");
+  1434→		String totalIndex = request.param("totalIndex", ES_INDEX_TOTALINDEX);
+  1435→		int from = request.paramAsInt("from", 0);
+  1436→		int size = request.paramAsInt("size", 20);
+  1437→		boolean showTotal = request.paramAsBoolean("showTotal", false);
+  1438→		boolean showExplain = request.paramAsBoolean("showExplain", false);
+  1439→		boolean showDetail = request.paramAsBoolean("showDetail", false);
+  1440→		boolean useScroll = request.paramAsBoolean("useScroll", false);
+  1441→		String sortStr = request.param("sort");
+  1442→		String highlightStr = request.param("highlight");
+  1443→		String analyzer = request.param("analyzer", "whitespace");
+  1444→		if (!GET.equals(request.method())) {
+  1445→			jparam = parseRequestBody(request);
+  1446→			index = jparam.optString("index", "");
+  1447→			fields = jparam.optString("fields", "").split("[,]");
+  1448→			text = jparam.optString("text", "");
+  1449→			queryString = jparam.optString("query", "");
+  1450→			totalIndex = jparam.optString("totalIndex", ES_INDEX_TOTALINDEX);
+  1451→			from = jparam.optInt("from", 0);
+  1452→			size = jparam.optInt("size", 20);
+  1453→			showTotal = jparam.optBoolean("showTotal", false);
+  1454→			showExplain = jparam.optBoolean("showExplain", false);
+  1455→			showDetail = jparam.optBoolean("showDetail", false);
+  1456→			useScroll = jparam.optBoolean("useScroll", false);
+  1457→			sortStr = jparam.optString("sort");
+  1458→			highlightStr = jparam.optString("highlight");
+  1459→			analyzer = jparam.optString("analyzer","whitespace");
+  1460→		}
+  1461→
+  1462→		for (int inx = 0; inx < fields.length; inx++) {
+  1463→			String[] item = fields[inx].split("[\\^]");
+  1464→			String field = item[0].trim();
+  1465→			if (item.length > 1) {
+  1466→				float boost = 1.0f;
+  1467→				try {
+  1468→					boost = Float.parseFloat(item[1].trim());
+  1469→				} catch (Exception ignore) { }
+  1470→				boostMap.put(field, boost);
+  1471→			}
+  1472→			fields[inx] = field;
+  1473→		}
+  1474→
+  1475→		TokenStream stream = null;
+  1476→		try {
+  1477→			logger.trace("ANALYZE TEXT : {}", text);
+  1478→			stream = ProductNameAnalyzerProvider.getAnalyzer(text, true, true, true, true, false);
+  1479→			JSONObject explain = null;
+  1480→			if (showExplain) {
+  1481→				explain = new JSONObject();
+  1482→			}
+  1483→
+  1484→			List<SortBuilder<?>> sortSet = null;
+  1485→			if (sortStr != null && !"".equals(sortStr)) {
+  1486→				logger.trace("SORT:{}", sortStr);
+  1487→				sortSet = DanawaSearchQueryBuilder.parseSortSet(sortStr);
+  1488→			}
+  1489→
+  1490→			HighlightBuilder highlight = null;
+  1491→			final List<String> views = new ArrayList<>();
+  1492→			final List<String> highlightTags = new ArrayList<>();
+  1493→			if (highlightStr != null && !"".equals(highlightStr)) {
+  1494→				logger.trace("HIGHLIGHT:{}", highlightStr);
+  1495→				highlight = DanawaSearchQueryBuilder.parseHighlight(highlightStr);
+  1496→				String[] preTags = highlight.preTags();
+  1497→				String[] postTags = highlight.postTags();
+  1498→				if (preTags.length > 0 && postTags.length > 0) {
+  1499→					highlightTags.add(preTags[0]);
+  1500→					highlightTags.add(postTags[0]);
+  1501→				}
+  1502→				for (Field field : highlight.fields()) {
+  1503→					String name = field.name();
+  1504→					logger.trace("FIELD:{}", name);
+  1505→					if (!"_all".equals(name)) {
+  1506→						views.add(name);
+  1507→					}
+  1508→				}
+  1509→			}
+  1510→
+  1511→			final List<String> highlightTerms = new ArrayList<>();
+  1512→			QueryBuilder query = DanawaSearchQueryBuilder.buildAnalyzedQuery(stream, fields, totalIndex, boostMap, views, highlightTerms, explain, analyzer);
+  1513→			if (queryString != null && !"".equals(queryString)) {
+  1514→				try {
+  1515→					QueryBuilder baseQuery = DanawaSearchQueryBuilder.parseQuery(queryString);
+  1516→					logger.trace("Q:{}", baseQuery);
+  1517→					if (baseQuery instanceof FunctionScoreQueryBuilder) {
+  1518→						QueryBuilder innerQuery = ((FunctionScoreQueryBuilder) baseQuery).query();
+  1519→						if (innerQuery instanceof BoolQueryBuilder) {
+  1520→							BoolQueryBuilder boolQuery = (BoolQueryBuilder) innerQuery;
+  1521→							boolQuery.must().clear();
+  1522→							boolQuery.must(query);
+  1523→							logger.trace("Q:{}", boolQuery);
+  1524→						}
+  1525→						query = baseQuery;
+  1526→					}
+  1527→				} catch (Exception e) { 
+  1528→					logger.error("", e);
+  1529→				}
+  1530→			}
+  1531→			logger.trace("Q:{}", query);
+  1532→			long total = -1;
+  1533→			if (showTotal) {
+  1534→				total = SearchUtil.count(client, index, query);
+  1535→			}
+  1536→
+  1537→			boolean doScroll = !useScroll ? false : from + size > 10000;
+  1538→			builder.object();
+  1539→			if (showExplain) {
+  1540→				builder.key("explain").value(explain);
+  1541→			}
+  1542→			if (showDetail) {
+  1543→				builder.key("detail").value(new JSONObject(String.valueOf(query)));
+  1544→			}
+  1545→			if (total != -1) {
+  1546→				builder.key("total").value(total);
+  1547→			}
+  1548→			builder.key("result").array();
+  1549→
+  1550→			DataModifier dataModifier = new DataModifier() {
+  1551→				@Override public void modify(Map<String, Object> map) {
+  1552→					for (String field : views) {
+  1553→						if (map.containsKey(field)) {
+  1554→							Object obj = map.get(field);
+  1555→							if (obj instanceof String) {
+  1556→								map.put(field, SearchUtil.highlightString(String.valueOf(obj), highlightTerms, highlightTags));
+  1557→							}
+  1558→						}
+  1559→					}
+  1560→				}
+  1561→			};
+  1562→			Iterator<Map<String, Object>> iter = SearchUtil.search(client, index, query, sortSet, highlight, from, size, doScroll, dataModifier);
+  1563→			while (iter != null && iter.hasNext()) {
+  1564→				Map<String, Object> map = iter.next();
+  1565→				builder.object();
+  1566→				for (String key : map.keySet()) {
+  1567→					builder.key(key).value(map.get(key));
+  1568→				}
+  1569→				builder.endObject();
+  1570→			}
+  1571→			builder.endArray();
+  1572→			builder.endObject();
+  1573→		} catch (Exception e) {
+  1574→			logger.error("", e);
+  1575→		} finally {
+  1576→			try { stream.close(); } catch (Exception ignore) { }
+  1577→		}
+  1578→	}
+  1579→
+  1580→	/**
+  1581→	 * 상품명 분석기를 사용하여 검색 질의어 생성
+  1582→	 */
+  1583→	private void buildQuery(final RestRequest request, final NodeClient client, final JSONWriter builder) {
+  1584→		JSONObject jparam = new JSONObject();
+  1585→		String[] fields = request.param("fields", "").split("[,]");
+  1586→		String totalIndex = request.param("totalIndex", ES_INDEX_TOTALINDEX);
+  1587→		String text = request.param("text", "");
+  1588→		String analyzer = request.param("analyzer", "whitespace");
+  1589→		if (!GET.equals(request.method())) {
+  1590→			jparam = parseRequestBody(request);
+  1591→			fields = jparam.optString("fields", "").split("[,]");
+  1592→			totalIndex = jparam.optString("totalIndex", ES_INDEX_TOTALINDEX);
+  1593→			text = jparam.optString("text", "");
+  1594→			analyzer = jparam.optString("analyzer", "whitespace");
+  1595→		}
+  1596→		TokenStream stream = null;
+  1597→		try {
+  1598→			logger.trace("ANALYZE TEXT : {}", text);
+  1599→			stream = ProductNameAnalyzerProvider.getAnalyzer(text, true, true, true, true, false);
+  1600→			JSONObject query = DanawaSearchQueryBuilder.buildAnalyzedJSONQuery(stream, fields, totalIndex, analyzer);
+  1601→			builder.object()
+  1602→				.key("query").value(query)
+  1603→			.endObject();
+  1604→		} catch (Exception e) {
+  1605→			logger.error("", e);
+  1606→		} finally {
+  1607→			try { stream.close(); } catch (Exception ignore) { }
+  1608→		}
+  1609→	}
+  1610→
+  1611→	private void makeSearchKeyword(RestRequest request, NodeClient client, JSONWriter writer) {
+  1612→		JSONObject jparam = new JSONObject();
+  1613→		String index = request.param("index", ES_DICTIONARY_INDEX);
+  1614→		String text = request.param("text", "");
+  1615→		boolean stopWord = request.paramAsBoolean("stopWord", true);
+  1616→		boolean synonym = request.paramAsBoolean("synonym", true);
+  1617→
+  1618→		if (!GET.equals(request.method())) {
+  1619→			jparam = parseRequestBody(request);
+  1620→			index = jparam.optString("index", ES_DICTIONARY_INDEX);
+  1621→			text = jparam.optString("text", "");
+  1622→			stopWord = jparam.optBoolean("stopWord", true);
+  1623→			synonym = jparam.optBoolean("synonym", true);
+  1624→		}
+  1625→
+  1626→		TokenStream stream = null;
+  1627→		try {
+  1628→			stream = ProductNameAnalyzerProvider.getAnalyzer(text, true, synonym, stopWord, true, false);
+  1629→			expansionKeyword(text, stream, writer);
+  1630→		} finally {
+  1631→			try { stream.close(); } catch (Exception ignore) { }
+  1632→		}
+  1633→	}
+  1634→
+  1635→	/**
+  1636→	 * 상품명사전
+  1637→	 */
+  1638→	private static ProductNameDictionary getDictionary() {
+  1639→		return contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary.class);
+  1640→	}
+  1641→
+  1642→	/**
+  1643→	 * ES 사전 색인 조회용 클래스
+  1644→	 * 사전 컴파일 등에 사용한다.
+  1645→	 */
+  1646→	public static class DictionarySource extends DictionaryRepository implements Iterator<CharSequence[]> {
+  1647→		private Client client;
+  1648→		private RemoteNodeClient remoteClient;
+  1649→		private String index;
+  1650→		private Iterator<Map<String, Object>> iterator;
+  1651→		private List<Map<String, Object>> remoteResults;
+  1652→		private int remoteIndex;
+  1653→
+  1654→		public DictionarySource(Client client, String index) {
+  1655→			this.client = client;
+  1656→			this.index = index;
+  1657→		}
+  1658→
+  1659→		public DictionarySource(RemoteNodeClient remoteClient, String index) {
+  1660→			this.remoteClient = remoteClient;
+  1661→			this.index = index;
+  1662→		}
+  1663→
+  1664→		@Override public Iterator<CharSequence[]> getSource(String type) {
+  1665→			try {
+  1666→				QueryBuilder query = QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, type.toUpperCase());
+  1667→				logger.trace("QUERY:{}", query);
+  1668→
+  1669→				if (remoteClient != null) {
+  1670→					// RemoteNodeClient를 사용한 원격 검색
+  1671→					remoteResults = new ArrayList<>();
+  1672→					remoteIndex = 0;
+  1673→					org.elasticsearch.action.search.SearchRequest searchRequest = new org.elasticsearch.action.search.SearchRequest();
+  1674→					org.elasticsearch.search.builder.SearchSourceBuilder sourceBuilder = new org.elasticsearch.search.builder.SearchSourceBuilder();
+  1675→					sourceBuilder.query(query).size(10000);
+  1676→					searchRequest.indices(index).source(sourceBuilder);
+  1677→
+  1678→					JSONObject response = remoteClient.search(searchRequest);
+  1679→					if (response != null && response.has("hits")) {
+  1680→						JSONObject hits = response.getJSONObject("hits");
+  1681→						org.json.JSONArray hitsArray = hits.getJSONArray("hits");
+  1682→						for (int i = 0; i < hitsArray.length(); i++) {
+  1683→							JSONObject hit = hitsArray.getJSONObject(i);
+  1684→							JSONObject source = hit.getJSONObject("_source");
+  1685→							Map<String, Object> map = new HashMap<>();
+  1686→							for (String key : source.keySet()) {
+  1687→								map.put(key, source.get(key));
+  1688→							}
+  1689→							remoteResults.add(map);
+  1690→						}
+  1691→					}
+  1692→				} else {
+  1693→					// 로컬 Client를 사용한 검색
+  1694→					iterator = SearchUtil.search(client, index, query, null, null, 0, -1, true, null);
+  1695→				}
+  1696→			} catch (Exception e) {
+  1697→				logger.error("", e);
+  1698→			}
+  1699→			return this;
+  1700→		}
+  1701→
+  1702→		@Override public void restore(String type, boolean ignoreCase, Set<CharSequence> wordSet) {
+  1703→			if (client == null) {
+  1704→				logger.warn("restore() is not supported for RemoteNodeClient");
+  1705→				return;
+  1706→			}
+  1707→			Map<String, Object> source = null;
+  1708→			BulkRequestBuilder builder = null;
+  1709→			try {
+  1710→				builder = client.prepareBulk();
+  1711→				int inx = 0;
+  1712→				for (CharSequence data : wordSet) {
+  1713→					String[] words = String.valueOf(data).split(TAB);
+  1714→					source = new HashMap<>();
+  1715→					source.put(ES_DICT_FIELD_TYPE, type.toUpperCase());
+  1716→					if (words.length == 1) {
+  1717→						source.put(ES_DICT_FIELD_KEYWORD, words[0]);
+  1718→					} else if (words.length == 2) {
+  1719→						if (words[0].length() > 0) {
+  1720→							source.put(ES_DICT_FIELD_KEYWORD, words[0]);
+  1721→						}
+  1722→						source.put(ES_DICT_FIELD_VALUE, words[1]);
+  1723→					} else {
+  1724→						source.put(ES_DICT_FIELD_KEYWORD, words[0]);
+  1725→						source.put(ES_DICT_FIELD_VALUE, words[1]);
+  1726→						source.put(ES_DICT_FIELD_ID, words[2]);
+  1727→					}
+  1728→					builder.add(client.prepareIndex(String.valueOf(index)).setSource(source));
+  1729→					if (inx > 0 && inx % 1000 == 0) {
+  1730→						builder.execute().actionGet();
+  1731→						builder = client.prepareBulk();
+  1732→					}
+  1733→					inx++;
+  1734→				}
+  1735→				if (inx > 0) {
+  1736→					builder.execute().actionGet();
+  1737→				}
+  1738→			} catch (Exception e) {
+  1739→				logger.error("", e);
+  1740→			}
+  1741→		}
+  1742→
+  1743→		@Override public boolean hasNext() {
+  1744→			if (remoteClient != null) {
+  1745→				return remoteResults != null && remoteIndex < remoteResults.size();
+  1746→			}
+  1747→			return iterator != null && iterator.hasNext();
+  1748→		}
+  1749→
+  1750→		@Override public CharSequence[] next() {
+  1751→			Map<String, Object> data;
+  1752→			if (remoteClient != null) {
+  1753→				data = remoteResults.get(remoteIndex++);
+  1754→			} else {
+  1755→				data = iterator.next();
+  1756→			}
+  1757→			CharSequence id = CharVector.valueOf(data.get(ES_DICT_FIELD_ID));
+  1758→			CharSequence keyword = CharVector.valueOf(data.get(ES_DICT_FIELD_KEYWORD));
+  1759→			CharSequence value = CharVector.valueOf(data.get(ES_DICT_FIELD_VALUE));
+  1760→			return new CharSequence[] { id, keyword, value };
+  1761→		}
+  1762→
+  1763→		@Override public void close() { }
+  1764→	}
+  1765→
+  1766→	private void getSynonymListAction(RestRequest request, NodeClient client, JSONWriter writer){
+  1767→		JSONObject jparam = new JSONObject();
+  1768→		String keyword = "";
+  1769→		boolean useForQuery = true;
+  1770→		boolean useSynonym = true;
+  1771→		boolean useStopword = false;
+  1772→		boolean useFullString = true;
+  1773→
+  1774→		logger.debug("get-synonym-list start");
+  1775→		if (!GET.equals(request.method())) {
+  1776→			jparam = parseRequestBody(request);
+  1777→			keyword = jparam.optString("keyword", "");
+  1778→		} else {
+  1779→			try{
+  1780→				keyword = URLDecoder.decode(request.param("keyword", ""), "UTF-8");
+  1781→			} catch (UnsupportedEncodingException e){
+  1782→				logger.error("UnsupportedEncodingException Catched !!! >>>> \n" + e.getMessage());
+  1783→				logger.debug("error >>> {}", e);
+  1784→			}
+  1785→		}
+  1786→
+  1787→		TokenStream stream = null;
+  1788→		try {
+  1789→			writer.key("query").value(keyword);
+  1790→			writer.key("result").array();
+  1791→			stream = ProductNameAnalyzerProvider.getAnalyzer(keyword, useForQuery, useSynonym, useStopword, useFullString, false);
+  1792→			getSynonymList(keyword, stream, writer);
+  1793→			writer.endArray();
+  1794→			writer.key("success").value(true);
+  1795→		} finally {
+  1796→			try {
+  1797→				stream.close();
+  1798→			} catch (Exception ignore) {
+  1799→				logger.debug("Exception >>> {}", ignore.getMessage());
+  1800→			}
+  1801→		}
+  1802→	}
+  1803→
+  1804→	/**
+  1805→	 * 동의어 리스트.
+  1806→	 */
+  1807→	public static void getSynonymList(String text, TokenStream stream, JSONWriter writer) {
+  1808→		CharTermAttribute termAttr = stream.addAttribute(CharTermAttribute.class);
+  1809→		TypeAttribute typeAttr = stream.addAttribute(TypeAttribute.class);
+  1810→		SynonymAttribute synAttr = stream.addAttribute(SynonymAttribute.class);
+  1811→		Map<String, List<List<String>>> result = new HashMap<>();
+  1812→		List<CharSequence> synonyms = synAttr.getSynonyms();
+  1813→
+  1814→		for (String key : ANALYSIS_RESULT_LABELS.keySet()) {
+  1815→			result.put(key, new ArrayList<>());
+  1816→		}
+  1817→
+  1818→		String term = null;
+  1819→		String type = null;
+  1820→		String setName = null;
+  1821→		try {
+  1822→			stream.reset();
+  1823→			while (stream.incrementToken()) {
+  1824→				term = String.valueOf(termAttr);
+  1825→				type = typeAttr.type();
+  1826→				logger.trace("TERM:{} / {}", term, type);
+  1827→				if (ProductNameTokenizer.FULL_STRING.equals(type)) {
+  1828→					// 전체 단어
+  1829→					setName = ANALYZE_SET_FULL_STRING;
+  1830→					setAnalyzedResult(result, term, ANALYZE_SET_FULL_STRING, ANALYZE_SET_FINAL);
+  1831→				} else if (ProductNameTokenizer.MODEL_NAME.equals(type)) {
+  1832→					// 모델명의 경우 색인시와 질의시 추출방법이 서로 다르다.
+  1833→					setName = ANALYZE_SET_MODEL_NAME;
+  1834→					setAnalyzedResult(result, term, ANALYZE_SET_MODEL_NAME, ANALYZE_SET_FINAL);
+  1835→				} else {
+  1836→					// 일반단어
+  1837→					setName = ANALYZE_SET_NORMAL;
+  1838→					setAnalyzedResult(result, term, ANALYZE_SET_NORMAL, ANALYZE_SET_FINAL);
+  1839→				}
+  1840→
+  1841→				if (!ANALYZE_SET_FULL_STRING.equals(setName)) {
+  1842→					if ((synonyms = synAttr.getSynonyms()) != null && synonyms.size() > 0) {
+  1843→						if (term.equals(text)) {
+  1844→							for (CharSequence synonym : synonyms) {
+  1845→								String s = String.valueOf(synonym);
+  1846→								writer.value(s);
+  1847→							}
+  1848→						}
+  1849→
+  1850→					}
+  1851→				}
+  1852→			}
+  1853→		} catch (Exception e) {
+  1854→			logger.error("", e);
+  1855→		}
+  1856→	}
+  1857→}
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

@@ -1,0 +1,828 @@
+OpenAI Codex v0.113.0 (research preview)
+--------
+workdir: /Users/admin/project/legacy/searchapi-elastic
+model: gpt-5.4
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 019cdba2-8c27-7112-9a94-19133170b9e3
+--------
+user
+이 Go 프로젝트에서 Elasticsearch 'market' 인덱스를 사용하는 API 엔드포인트를 분석해줘. 다음 파일들을 기반으로:
+
+1. router/market.go - GET /market/product 라우트 등록
+2. controller/market.go - ProductMarket 컨트롤러 (keyword 필수, method/reKeyword/subKeyword/newProd/buyWay/locale/userLevel/cate1-4/minPrice/maxPrice/userId/sort/group/status/saleType/miniShop/displayYN 파라미터)
+3. handler/market-es.go - EsProductMarket 함수 (market 인덱스 직접 쿼리, 정렬/하이라이팅/페이지네이션)
+4. manager/market/boolQueryManager.go - MarketBoolQuery (saleType 필터링, keyword 쿼리, filter 조합)
+5. manager/market/seManager.go - KeywordQuery (prodN/userId/contents 검색필드 매핑, 동의어 확장, subKeyword 제외 키워드)
+6. manager/market/ftManager-es.go - EsProductFt (newProd/buyWay/locale/userLevel/cate1-4/status/group/miniShop/display/price range 필터)
+7. manager/market/raManager-es.go - EsProductRa (날짜/가격 기반 ASC/DESC 정렬)
+8. model/market.go - MarketProduct/MarketProductEs 구조체
+
+분석 요청:
+- 전체 요청 흐름과 각 계층의 역할
+- Bool Query 구성 (must/must_not/filter) 전략
+- 비즈니스 로직 특이사항 (오픈마켓 분류, 동의어 확장, 제외 키워드 등)
+- 잠재적 성능/보안 이슈
+- 코드 품질 개선점
+deprecated: `collab` is deprecated. Use `[features].multi_agent` instead.
+  Enable it with `--enable multi_agent` or `[features].multi_agent` in config.toml. See https://developers.openai.com/codex/config-basic#feature-flags for details.
+mcp startup: no servers
+codex
+`market` 인덱스를 사용하는 요청 경로와 쿼리 조합 방식을 확인하겠습니다. 먼저 지정한 파일들을 병렬로 읽고, 라우터 → 컨트롤러 → 핸들러 → 매니저 → 모델 순서로 실제 호출 흐름과 조건 분기를 정리하겠습니다.
+Plan update
+  → Read the market-related router/controller/handler/manager/model files and extract call flow
+  • Trace bool query, filters, sorting, highlighting, and model mapping details
+  • Summarize business rules, risks, and code quality improvements with file references
+exec
+/bin/zsh -lc "sed -n '1,320p' manager/market/boolQueryManager.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,320p' handler/market-es.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,220p' router/market.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,260p' controller/market.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package router
+
+import (
+	"github.com/gin-gonic/gin"
+	
+	"svn.danawa.com/sapi/controller"
+)
+
+func (r *Router) MarketRegister(router *gin.RouterGroup) {
+	c := controller.NewController()
+
+	router.GET("/product", c.ProductMarket)
+}
+ succeeded in 0ms:
+package controller
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"svn.danawa.com/sapi/handler"
+	"svn.danawa.com/sapi/response"
+)
+
+// ProductMarket godoc
+// @Summary 장터 API
+// @Description 장터상품 '팝니다' 및 '무료로 드립니다' 의 상품명, 가격등의 데이터를 제공
+// @Tags market : 장터 API
+// @Accept json
+// @Produce json
+// @Param keyword query string true "키워드"
+// @Param method query string false "<table><thead><tr><th colspan=2>검색 키워드 방법</th></tr></thead><tbody><tr><td>제목</td><td>prodN</td></tr><tr><td>내용</td><td>contents</td></tr><tr><td>사용자 ID</td><td>userId</td></tr></tbody></table>" Enums(prodN, contents, userId) default(prodN)
+// @Param reKeyword query string false "재검색 키워드"
+ succeeded in 0ms:
+package handler
+
+import (
+	"context"
+	"encoding/json"
+	"strconv"
+	"strings"
+
+	"github.com/mitchellh/mapstructure"
+	elasticSearch "github.com/olivere/elastic/v7"
+
+	"svn.danawa.com/sapi/common/utils"
+	"svn.danawa.com/sapi/elasticConn"
+	"svn.danawa.com/sapi/manager/market"
+	"svn.danawa.com/sapi/model"
+	"svn.danawa.com/sapi/response"
+)
+
+func EsProductMarket(param map[string]string) (result response.Result, err error) {
+	//인덱스(volume)
+ succeeded in 0ms:
+package market
+
+import (
+	elasticSearch "github.com/olivere/elastic/v7"
+
+)
+
+func MarketBoolQuery(param map[string]string) *elasticSearch.BoolQuery {
+	//BoolQuery 생성
+	query := elasticSearch.NewBoolQuery()
+	
+	//bool Query 배열
+	var mustMatchQueryList []elasticSearch.Query
+	var filterTermQueryList []elasticSearch.Query
+
+	searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+
+	if len(param["saleType"]) > 0 && param["saleType"] != "P" {
+		if param["saleType"] == "O" {
+			saleTypeMatchQuery := elasticSearch.NewMatchQuery("saleType", "N")
+exec
+/bin/zsh -lc "sed -n '1,260p' model/market.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,320p' manager/market/seManager.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package market
+ succeeded in 0ms:
+package model
+
+type MarketProduct struct {
+	SEQ             int     `json:"seq"`
+	CATEGORYCODE1   int     `json:"cateC1"`
+	CATEGORYCODE2   int     `json:"cateC2"`
+	CATEGORYCODE3   int     `json:"cateC3"`
+	CATEGORYCODE4   int     `json:"cateC4"`
+	LOCALECODE1     int     `json:"localeC1"`
+	LOCALECODE2     int     `json:"localeC2"`
+	LOCALECODE3     int     `json:"localeC3"`
+	PRODUCTCODE     int     `json:"prodCode"`
+	PRODUCTNAME     string  `json:"prodName"`
+	USER_ID         string  `json:"userId"`
+	USER_NAME       string  `json:"userName"`
+	MEMBER_SEQ      int     `json:"memberSeq"`
+	PRICE           int     `json:"price"`
+	BUYWAY          string  `json:"buyWay"`
+	STOCK           int     `json:"stock"`
+	NEWPROD         string  `json:"newProd"`
+exec
+/bin/zsh -lc "sed -n '1,320p' manager/market/ftManager-es.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package market
+
+import (
+	"strings"
+	"strconv"
+	
+	elasticSearch "github.com/olivere/elastic/v7"
+)
+
+func EsProductFt(data map[string]string) []elasticSearch.Query {
+	var filterTermQueryList []elasticSearch.Query
+	
+	if len(data["newProd"]) > 0 {
+		newProdTermQuery := elasticSearch.NewTermQuery("newProd", data["newProd"])
+		filterTermQueryList = append(filterTermQueryList, newProdTermQuery)
+	}
+
+	if len(data["buyWay"]) > 0 {
+		buyWayTermQuery := elasticSearch.NewTermQuery("buyWay", data["buyWay"])
+		filterTermQueryList = append(filterTermQueryList, buyWayTermQuery)
+exec
+/bin/zsh -lc "sed -n '1,260p' manager/market/raManager-es.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package market
+
+func EsProductRa(sort []string) (raString []string) {
+	inputDate := sort[0]
+	price := sort[1]
+
+	if inputDate == "1" { // 날짜
+		if price == "1" {
+			raString = append(raString, "tInputDate")
+			raString = append(raString, "ASC")
+		} else {
+			raString = append(raString, "tInputDate")
+			raString = append(raString, "DESC")
+		}
+	} else if inputDate == "2" { // 가격
+		if price == "1" {
+			raString = append(raString, "price")
+			raString = append(raString, "ASC")
+		} else {
+			raString = append(raString, "price")
+codex
+`KeywordQuery`가 들어있는 파일은 추가 확인이 필요합니다. 방금 읽은 출력상 `package` 선언만 보여서, 실제 구현이 다른 파일로 분리됐는지 `manager/market` 디렉터리 전체를 다시 확인하겠습니다.
+exec
+/bin/zsh -lc 'wc -l manager/market/seManager.go' in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,260p' manager/market/seManager.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+       1 manager/market/seManager.go
+ succeeded in 0ms:
+package market
+exec
+/bin/zsh -lc 'rg --files manager/market' in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+manager/market/seManager-es.go
+manager/market/raManager-es.go
+manager/market/boolQueryManager.go
+manager/market/raManager.go
+manager/market/seManager.go
+manager/market/ftManager.go
+manager/market/flManager.go
+manager/market/ftManager-es.go
+exec
+/bin/zsh -lc "rg -n \"func KeywordQuery|KeywordQuery\\(\" -S ." in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+./manager/community/seManager-es.go:34:func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+./manager/community/seManager-es.go:107:func AgencyKeywordQuery(param map[string]string) elasticSearch.Query {
+./manager/game/seManager-es.go:11:func KeywordQuery(param map[string]string) elasticSearch.Query {
+./manager/community/boolQueryManager.go:16:	searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+./manager/community/boolQueryManager.go:30:		mustMatchQueryList = append(mustMatchQueryList, AgencyKeywordQuery(param))
+./manager/game/boolQueryManager.go:16:		mustMatchQueryList = append(mustMatchQueryList, KeywordQuery(param))
+./manager/market/seManager-es.go:11:func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+./manager/market/boolQueryManager.go:16:	searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+exec
+/bin/zsh -lc "sed -n '1,320p' manager/market/seManager-es.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,280p' manager/market/ftManager.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,220p' manager/market/raManager.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package market
+ succeeded in 0ms:
+package market
+
+import (
+	"strings"
+
+	elasticSearch "github.com/olivere/elastic/v7"
+
+	"svn.danawa.com/sapi/common/utils"
+)
+
+func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+
+	var searchIndex string
+	switch param["method"] {
+	case "prodN":
+		searchIndex = "productName"
+	case "userId":
+		searchIndex = "user_id"
+	case "contents":
+		searchIndex = "contents"
+ succeeded in 0ms:
+package market
+exec
+/bin/zsh -lc "sed -n '1,220p' manager/market/flManager.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package market
+codex
+핵심 쿼리 로직은 `manager/market/seManager-es.go`에 있고, 사용자 요청에 적힌 `seManager.go`는 현재 비어 있습니다. 동의어 확장과 실제 ES 검색식 생성은 공용 `utils`로 내려가므로, 그 두 함수만 추가로 읽어 쿼리 성격을 확인하겠습니다.
+exec
+/bin/zsh -lc "nl -ba manager/market/seManager-es.go | sed -n '1,260p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba manager/market/boolQueryManager.go | sed -n '1,220p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package market
+     2	
+     3	import (
+     4		"strings"
+     5	
+     6		elasticSearch "github.com/olivere/elastic/v7"
+     7	
+     8		"svn.danawa.com/sapi/common/utils"
+     9	)
+    10	
+    11	func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+    12	
+    13		var searchIndex string
+    14		switch param["method"] {
+    15		case "prodN":
+    16			searchIndex = "productName"
+    17		case "userId":
+    18			searchIndex = "user_id"
+    19		case "contents":
+    20			searchIndex = "contents"
+ succeeded in 0ms:
+     1	package market
+     2	
+     3	import (
+     4		elasticSearch "github.com/olivere/elastic/v7"
+     5	
+     6	)
+     7	
+     8	func MarketBoolQuery(param map[string]string) *elasticSearch.BoolQuery {
+     9		//BoolQuery 생성
+    10		query := elasticSearch.NewBoolQuery()
+    11		
+    12		//bool Query 배열
+    13		var mustMatchQueryList []elasticSearch.Query
+    14		var filterTermQueryList []elasticSearch.Query
+    15	
+    16		searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+    17	
+    18		if len(param["saleType"]) > 0 && param["saleType"] != "P" {
+    19			if param["saleType"] == "O" {
+    20				saleTypeMatchQuery := elasticSearch.NewMatchQuery("saleType", "N")
+exec
+/bin/zsh -lc 'rg -n "func FilteringKeyword|func PostExpansionKeyword|func GetEsSearchQuery|type ExpendList" common utils .' in /Users/admin/project/legacy/searchapi-elastic exited 2 in 0ms:
+rg: utils: No such file or directory (os error 2)
+common/utils/utils.go:173:func FilteringKeyword(keyword string) string {
+common/utils/utils.go:1036:type ExpendList struct {
+common/utils/utils.go:1085:func PostExpansionKeyword(keyword string, synonym bool, stopWord bool) (rf ExpendList) {
+common/utils/utils.go:1326:func GetEsSearchQuery(keywordTargetIndex string, keywordMap map[string][]interface{}, fullTermMap map[string][]interface{}, subKeyword string, containRsQuery bool) (elasticSearch.Query, elasticSearch.Query) {
+./common/utils/utils.go:173:func FilteringKeyword(keyword string) string {
+./common/utils/utils.go:1036:type ExpendList struct {
+./common/utils/utils.go:1085:func PostExpansionKeyword(keyword string, synonym bool, stopWord bool) (rf ExpendList) {
+./common/utils/utils.go:1326:func GetEsSearchQuery(keywordTargetIndex string, keywordMap map[string][]interface{}, fullTermMap map[string][]interface{}, subKeyword string, containRsQuery bool) (elasticSearch.Query, elasticSearch.Query) {
+exec
+/bin/zsh -lc "nl -ba handler/market-es.go | sed -n '1,320p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package handler
+     2	
+     3	import (
+     4		"context"
+     5		"encoding/json"
+     6		"strconv"
+     7		"strings"
+     8	
+     9		"github.com/mitchellh/mapstructure"
+    10		elasticSearch "github.com/olivere/elastic/v7"
+    11	
+    12		"svn.danawa.com/sapi/common/utils"
+    13		"svn.danawa.com/sapi/elasticConn"
+    14		"svn.danawa.com/sapi/manager/market"
+    15		"svn.danawa.com/sapi/model"
+    16		"svn.danawa.com/sapi/response"
+    17	)
+    18	
+    19	func EsProductMarket(param map[string]string) (result response.Result, err error) {
+    20		//인덱스(volume)
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1326,1480p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1030,1165p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '160,240p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+  1326	func GetEsSearchQuery(keywordTargetIndex string, keywordMap map[string][]interface{}, fullTermMap map[string][]interface{}, subKeyword string, containRsQuery bool) (elasticSearch.Query, elasticSearch.Query) {
+  1327	
+  1328		var result []elasticSearch.Query
+  1329		var fullTermResult []elasticSearch.Query
+  1330		var subTerm []elasticSearch.Query
+  1331		var subTermResult []elasticSearch.Query
+  1332		var subTermResultList [][]elasticSearch.Query
+  1333		var keywordSet mapset.Set
+  1334	
+  1335		if containRsQuery {
+  1336			//중복제거키워드 - RS가중치 쿼리용
+  1337			keywordSet = mapset.NewSet()
+  1338		}
+  1339	
+  1340		// 불용어처리됨 -> keywordMap이 빈 값 -> 빈 쿼리로 매치쿼리 생성
+  1341		if len(keywordMap) == 0 {
+  1342			result, keywordSet = MakeQuery(keywordTargetIndex, keywordMap, keywordSet)
+  1343		}
+  1344	
+  1345		//수정사항
+ succeeded in 0ms:
+  1030		}
+  1031	
+  1032		return result
+  1033	}
+  1034	
+  1035	// ExpendList : 확장 플러그인 구조
+  1036	type ExpendList struct {
+  1037		Query   string                   `json:"query"`
+  1038		Result  map[string][]interface{} `json:"result"`
+  1039		Synonym map[string][]interface{} `json:"synonym"`
+  1040	}
+  1041	
+  1042	// GetExpansionKeyword : 검색어로 확장된 검색어 리스트를 가져온다 (synonym:유사어, stopWord:불용어)
+  1043	func GetExpansionKeyword(keyword string, synonym bool, stopWord bool) (rf ExpendList) {
+  1044		//fmt.Println("keyword : ", keyword)
+  1045		//uri := GetURIRoundRobin(config.GetElasticAnalyzerURI())
+  1046		uri := GetURIRoundRobin(config.GetElasticURI())
+  1047		username, password := config.GetElasticUser()
+  1048	
+  1049		if len(username) > 0 && len(password) > 0 {
+ succeeded in 0ms:
+   160	
+   161		}
+   162		return floatdata
+   163	}
+   164	
+   165	func LimitKeyword(keyword string) string {
+   166		if len(keyword) > 1000 {
+   167			keyword = keyword[0:1000]
+   168		}
+   169	
+   170		return keyword
+   171	}
+   172	
+   173	func FilteringKeyword(keyword string) string {
+   174		keyword = LimitKeyword(keyword)
+   175	
+   176		keyword = html.UnescapeString(keyword)
+   177	
+   178		// replaceList := []string{":", "(", ")", "{", "}", "&", "=", ",", ";", "~"}
+   179	
+exec
+/bin/zsh -lc "nl -ba model/market.go | sed -n '1,240p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package model
+     2	
+     3	type MarketProduct struct {
+     4		SEQ             int     `json:"seq"`
+     5		CATEGORYCODE1   int     `json:"cateC1"`
+     6		CATEGORYCODE2   int     `json:"cateC2"`
+     7		CATEGORYCODE3   int     `json:"cateC3"`
+     8		CATEGORYCODE4   int     `json:"cateC4"`
+     9		LOCALECODE1     int     `json:"localeC1"`
+    10		LOCALECODE2     int     `json:"localeC2"`
+    11		LOCALECODE3     int     `json:"localeC3"`
+    12		PRODUCTCODE     int     `json:"prodCode"`
+    13		PRODUCTNAME     string  `json:"prodName"`
+    14		USER_ID         string  `json:"userId"`
+    15		USER_NAME       string  `json:"userName"`
+    16		MEMBER_SEQ      int     `json:"memberSeq"`
+    17		PRICE           int     `json:"price"`
+    18		BUYWAY          string  `json:"buyWay"`
+    19		STOCK           int     `json:"stock"`
+    20		NEWPROD         string  `json:"newProd"`
+exec
+/bin/zsh -lc "nl -ba router/market.go | sed -n '1,120p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba controller/market.go | sed -n '1,260p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package router
+     2	
+     3	import (
+     4		"github.com/gin-gonic/gin"
+     5		
+     6		"svn.danawa.com/sapi/controller"
+     7	)
+     8	
+     9	func (r *Router) MarketRegister(router *gin.RouterGroup) {
+    10		c := controller.NewController()
+    11	
+    12		router.GET("/product", c.ProductMarket)
+    13	}
+ succeeded in 0ms:
+     1	package controller
+     2	
+     3	import (
+     4		"net/http"
+     5	
+     6		"github.com/gin-gonic/gin"
+     7	
+     8		"svn.danawa.com/sapi/handler"
+     9		"svn.danawa.com/sapi/response"
+    10	)
+    11	
+    12	// ProductMarket godoc
+    13	// @Summary 장터 API
+    14	// @Description 장터상품 '팝니다' 및 '무료로 드립니다' 의 상품명, 가격등의 데이터를 제공
+    15	// @Tags market : 장터 API
+    16	// @Accept json
+    17	// @Produce json
+    18	// @Param keyword query string true "키워드"
+    19	// @Param method query string false "<table><thead><tr><th colspan=2>검색 키워드 방법</th></tr></thead><tbody><tr><td>제목</td><td>prodN</td></tr><tr><td>내용</td><td>contents</td></tr><tr><td>사용자 ID</td><td>userId</td></tr></tbody></table>" Enums(prodN, contents, userId) default(prodN)
+    20	// @Param reKeyword query string false "재검색 키워드"
+exec
+/bin/zsh -lc "nl -ba manager/market/raManager-es.go | sed -n '1,220p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba manager/market/ftManager-es.go | sed -n '1,260p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package market
+     2	
+     3	func EsProductRa(sort []string) (raString []string) {
+     4		inputDate := sort[0]
+     5		price := sort[1]
+     6	
+     7		if inputDate == "1" { // 날짜
+     8			if price == "1" {
+     9				raString = append(raString, "tInputDate")
+    10				raString = append(raString, "ASC")
+    11			} else {
+    12				raString = append(raString, "tInputDate")
+    13				raString = append(raString, "DESC")
+    14			}
+    15		} else if inputDate == "2" { // 가격
+    16			if price == "1" {
+    17				raString = append(raString, "price")
+    18				raString = append(raString, "ASC")
+    19			} else {
+    20				raString = append(raString, "price")
+ succeeded in 0ms:
+     1	package market
+     2	
+     3	import (
+     4		"strings"
+     5		"strconv"
+     6		
+     7		elasticSearch "github.com/olivere/elastic/v7"
+     8	)
+     9	
+    10	func EsProductFt(data map[string]string) []elasticSearch.Query {
+    11		var filterTermQueryList []elasticSearch.Query
+    12		
+    13		if len(data["newProd"]) > 0 {
+    14			newProdTermQuery := elasticSearch.NewTermQuery("newProd", data["newProd"])
+    15			filterTermQueryList = append(filterTermQueryList, newProdTermQuery)
+    16		}
+    17	
+    18		if len(data["buyWay"]) > 0 {
+    19			buyWayTermQuery := elasticSearch.NewTermQuery("buyWay", data["buyWay"])
+    20			filterTermQueryList = append(filterTermQueryList, buyWayTermQuery)
+codex
+쿼리 조합의 AND/OR 구조는 `utils.GetEsSearchQuery` 후반부에서 완성됩니다. 마지막으로 이 부분만 더 읽고, `filter`에 들어간 검색식이 실제로는 점수 계산 없이 동작하는지까지 확인하겠습니다.
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1475,1565p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+  1475		//본 검색식이 있을 때
+  1476		if len(result) > 0 {
+  1477			resultQuery := elasticSearch.NewBoolQuery()
+  1478			var rsQuery elastic.Query
+  1479	
+  1480			//rs 쿼리는 따로 만들어준다
+  1481			if containRsQuery {
+  1482				rsQuery = GetRsQuery(keywordSet, tempFullTermMap)
+  1483			}
+  1484	
+  1485			//풀텀 있을시엔 최상위가 OR 관계이므로 Should로 처리
+  1486			if len(fullTermResult) > 0 || len(subTermResultList) > 0 {
+  1487				if len(fullTermResult) > 0 {
+  1488					resultQuery.Should(fullTermResult...)
+  1489				}
+  1490				if len(subTermResultList) > 0 {
+  1491					for _, v := range subTermResultList {
+  1492						resultQuery.Should(elasticSearch.NewBoolQuery().Must(v...))
+  1493					}
+  1494				}
+exec
+/bin/zsh -lc "rg -n \"func MakeQuery\\(\" common/utils/utils.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+1658:func MakeQuery(keywordTargetIndex string, keywordMap map[string][]interface{}, rsKeywordSet mapset.Set) ([]elastic.Query, mapset.Set) {
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1230,1325p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+  1230							-must
+  1231								- 확장 텀(RA)
+  1232								- 확장 텀(1000)
+  1233								- bool
+  1234									-should
+  1235									   - 확장 텀(A)
+  1236									   - 확장어 동의어(에이)
+  1237								- ..
+  1238									**/
+  1239	
+  1240						if reflect.ValueOf(synonym).Kind() == reflect.Slice {
+  1241							//확장텀 bool 쿼리
+  1242							exBoolean := elasticSearch.NewBoolQuery()
+  1243							var exTermQueryList []elasticSearch.Query
+  1244	
+  1245							for _, value := range term {
+  1246								//확장어 텀
+  1247								//fmt.Println("value : ", value, " - ", reflect.ValueOf(value).Kind())
+  1248	
+  1249								//확장텀에 대한 동의어가 없을 경우
+exec
+/bin/zsh -lc "rg -n \"MarketRegister\\(|ProductMarket\\(|EsProductMarket\\(|MarketBoolQuery\\(|KeywordQuery\\(|EsProductFt\\(|EsProductRa\\(\" ." in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+./router/market.go:9:func (r *Router) MarketRegister(router *gin.RouterGroup) {
+./cmd/sapid/main.go:142:	rt.MarketRegister(e.Group("/market"))                   // 장터 라우터
+./controller/market_test.go:13:func TestProductMarket(t *testing.T) {
+./handler/market_test.go:9:func TestProductMarket(t *testing.T) {
+./handler/market_test.go:25:	if rst, err := handler.EsProductMarket(query); err != nil {
+./handler/market-es.go:19:func EsProductMarket(param map[string]string) (result response.Result, err error) {
+./handler/market-es.go:31:	query := market.MarketBoolQuery(param)
+./handler/market-es.go:38:		raString = market.EsProductRa(sort)
+./controller/market.go:46:func (c *Controller) ProductMarket(ctx *gin.Context) {
+./controller/market.go:99:	if result, err := handler.EsProductMarket(query); err != nil {
+./manager/game/seManager-es.go:11:func KeywordQuery(param map[string]string) elasticSearch.Query {
+./manager/community/seManager-es.go:34:func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+./manager/community/seManager-es.go:107:func AgencyKeywordQuery(param map[string]string) elasticSearch.Query {
+./manager/game/boolQueryManager.go:16:		mustMatchQueryList = append(mustMatchQueryList, KeywordQuery(param))
+./manager/community/boolQueryManager.go:16:	searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+./manager/community/boolQueryManager.go:30:		mustMatchQueryList = append(mustMatchQueryList, AgencyKeywordQuery(param))
+./manager/market/seManager-es.go:11:func KeywordQuery(param map[string]string) (keywordQuery elasticSearch.Query, mustNotMatchQueryList []elasticSearch.Query) {
+./manager/market/raManager-es.go:3:func EsProductRa(sort []string) (raString []string) {
+./manager/market/boolQueryManager.go:8:func MarketBoolQuery(param map[string]string) *elasticSearch.BoolQuery {
+./manager/market/boolQueryManager.go:16:	searchQuery, mustNotMatchQueryList := KeywordQuery(param)
+exec
+/bin/zsh -lc "sed -n '1,220p' handler/market_test.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,220p' controller/market_test.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+package controller_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"svn.danawa.com/sapi/controller"
+	"svn.danawa.com/sapi/response"
+)
+
+func TestProductMarket(t *testing.T) {
+	c := controller.NewController()
+	r := controller.TestRouter()
+
+	r.GET("/market/product", c.ProductMarket)
+
+	req, _ := http.NewRequest("GET", "/market/product?keyword=%ED%85%8C%EC%8A%A4%ED%8A%B8&method=prodn&reMethod=prodn&start=1&limit=1&ht=1&syn=1&group=S&saleType=N&miniShop=B&display=Y", nil)
+
+ succeeded in 0ms:
+package handler_test
+
+import (
+	"testing"
+
+	"svn.danawa.com/sapi/handler"
+)
+
+func TestProductMarket(t *testing.T) {
+	query := map[string]string{
+		"keyword":  "%ED%85%8C%EC%8A%A4%ED%8A%B8",
+		"method":   "prodn",
+		"reMethod": "prodn",
+		"start":    "1",
+		"limit":    "1",
+		"ht":       "1",
+		"syn":      "1",
+		"group":    "S",
+		"saleType": "N",
+		"miniShop": "B",
+exec
+/bin/zsh -lc "rg -n \"func GetFieldQuery\\(\" common/utils/utils.go" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1658,1785p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+1990:func GetFieldQuery(isRsScore bool, keyword string, keywordTargetIndex string, rsField []string) elasticSearch.Query {
+ succeeded in 0ms:
+  1658	func MakeQuery(keywordTargetIndex string, keywordMap map[string][]interface{}, rsKeywordSet mapset.Set) ([]elastic.Query, mapset.Set) {
+  1659	
+  1660		var result []elasticSearch.Query
+  1661		var keyList []string
+  1662	
+  1663		// 불용어처리됨 -> keywordMap이 빈 값 -> 빈 쿼리로 매치쿼리 생성
+  1664		if len(keywordMap) == 0 {
+  1665			result = append(result, elasticSearch.NewMatchQuery(keywordTargetIndex, "").Boost(0))
+  1666		}
+  1667	
+  1668		//Keyword Map에서 키 추출
+  1669		for name := range keywordMap {
+  1670			keyList = append(keyList, name)
+  1671		}
+  1672	
+  1673		for _, name := range keyList {
+  1674	
+  1675			//텀과 텀동의어를 위한 OR(Should)
+  1676			should := elasticSearch.NewBoolQuery()
+  1677			var shouldQueryList []elasticSearch.Query
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1563,1657p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+  1563	func MakeMultiMatchQuery(keywordTargetIndex []string, keywordMap map[string][]interface{}) []elastic.Query {
+  1564		var result []elasticSearch.Query
+  1565		var keyList []string
+  1566	
+  1567		//Keyword Map에서 키 추출
+  1568		for name := range keywordMap {
+  1569			keyList = append(keyList, name)
+  1570		}
+  1571	
+  1572		for _, name := range keyList {
+  1573			//fmt.Println("name : " + name)
+  1574			should := elasticSearch.NewBoolQuery()
+  1575			var shouldQueryList []elasticSearch.Query
+  1576	
+  1577			//동의어가 없을 경우 원 키워드 입력
+  1578			if len(keywordMap[name]) == 0 {
+  1579				// keywordQuery := elastic.NewMultiMatchQuery(name, keywordTargetIndex...)
+  1580				keywordQuery := elastic.NewMultiMatchQuery(name, keywordTargetIndex...).Operator("and").Analyzer("whitespace_lowercase")
+  1581				shouldQueryList = append(shouldQueryList, keywordQuery)
+  1582			} else {
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1988,2038p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '1,80p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+     1	package utils
+     2	
+     3	import (
+     4		"encoding/json"
+     5		"errors"
+     6		"fmt"
+     7		"html"
+     8		"log"
+     9		"math"
+    10		"net/http"
+    11		"net/url"
+    12		"os"
+    13		"os/exec"
+    14		"reflect"
+    15		"regexp"
+    16		"runtime"
+    17		"sort"
+    18		"strconv"
+    19		"strings"
+    20		"sync"
+ succeeded in 0ms:
+  1988	
+  1989	// GetFieldQuery rs점수 사용 여부에 따라 match, multi_match 쿼리를 반환한다.
+  1990	func GetFieldQuery(isRsScore bool, keyword string, keywordTargetIndex string, rsField []string) elasticSearch.Query {
+  1991	
+  1992		var query elasticSearch.Query
+  1993		if isRsScore {
+  1994			query = elasticSearch.NewMultiMatchQuery(keyword, rsField...).Operator("OR").TieBreaker(0)
+  1995		} else {
+  1996			query = elasticSearch.NewMatchQuery(keywordTargetIndex, keyword).Boost(0)
+  1997		}
+  1998	
+  1999		return query
+  2000	}
+  2001	
+  2002	func GetRsQuery(keywordSet mapset.Set, tempFullTermMap map[string][]interface{}) elastic.Query {
+  2003		rsField := []string{"modelWeight^300000", "maker_brandKeyword^200000", "categoryWeight^100000"}
+  2004		if keywordSet.Cardinality() > 0 {
+  2005			rsBool := elastic.NewBoolQuery()
+  2006			for keyword := range keywordSet.Iter() {
+  2007				if _, ok := tempFullTermMap[keyword.(string)]; ok {
+exec
+/bin/zsh -lc "rg -n \"func CheckIntData\\(|func WriteEsQueryDebugLog\\(\" common/utils/utils.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+141:func CheckIntData(data string) (intdata int) {
+2369:func WriteEsQueryDebugLog(index string, from string, size string, query string, fsc string, highlight string, sort string, aggs string, collapse string) {
+exec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '2369,2425p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "nl -ba common/utils/utils.go | sed -n '136,155p'" in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "sed -n '1,220p' response/response.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+  2369	func WriteEsQueryDebugLog(index string, from string, size string, query string, fsc string, highlight string, sort string, aggs string, collapse string) {
+  2370		var esQuery []string
+  2371	
+  2372		esQuery = append(esQuery, "POST "+index+"/_search ")
+  2373	
+  2374		esQuery = append(esQuery, "{"+query)
+  2375	
+  2376		if len(fsc) > 0 {
+  2377			esQuery = append(esQuery, fsc)
+  2378		}
+  2379	
+  2380		if len(highlight) > 0 {
+  2381			esQuery = append(esQuery, highlight)
+  2382		}
+  2383	
+  2384		if len(sort) > 0 {
+  2385			esQuery = append(esQuery, sort)
+  2386		}
+  2387	
+  2388		if len(aggs) > 0 {
+ succeeded in 0ms:
+   136		}
+   137	
+   138		return seParmList
+   139	}
+   140	
+   141	func CheckIntData(data string) (intdata int) {
+   142		if len(data) > 0 {
+   143			var err = errors.New("")
+   144	
+   145			intdata, err = strconv.Atoi(data)
+   146	
+   147			if err != nil {
+   148				Logger.Error(err, data)
+   149			}
+   150		}
+   151	
+   152		return
+   153	}
+   154	
+   155	func CheckFloatData(data string) float64 {
+ succeeded in 0ms:
+package response
+
+// Response API Response값
+type Response struct {
+	Desc   string `json:"desc"  example:"null"`
+	Status int    `json:"status" example:"200"`
+	Result `json:"result,omitempty" example:"null"`
+}
+
+type SearchListBundle struct {
+	SearchSource  interface{} `json:"searchSource,omitempty"`
+	BundleProduct interface{} `json:"bundleProduct,omitempty"`
+	BundleCount   interface{} `json:"bundleCount,omitempty"`
+	Explain       interface{} `json:"explain,omitempty"`
+}
+
+// Result 검색엔진 결과값
+type Result struct {
+	Keyword string `json:"keyword"`
+	Exist   *bool  `json:"exist,omitempty"`
+exec
+/bin/zsh -lc 'rg -n "type Result struct|type Response struct" response -S' in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+response/response.go:4:type Response struct {
+response/response.go:18:type Result struct {
+exec
+/bin/zsh -lc "nl -ba cmd/sapid/main.go | sed -n '136,146p'" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+   136		// 라우터 등록
+   137		rt.KeywordRegister(e.Group("/keyword"))                 // 키워드 라우터
+   138		rt.LmaRegister(e.Group("/lma"))                         // 로그분석기 라우터
+   139		rt.AnalysisRegister(e.Group("/analysis"))               // 분석기 라우터
+   140		rt.OpenAPIRegister(e.Group("/openapi"))                 // 외부 라우터
+   141		rt.ShopdnwRegister(e.Group("/shopdnw"))                 // 샵다나와 라우터
+   142		rt.MarketRegister(e.Group("/market"))                   // 장터 라우터
+   143		rt.ShoppingPlanRegister(e.Group("/plan"))               // 쇼핑기획전 라우터
+   144		rt.GameRegister(e.Group("/gameRelease"))                // 게임 출시일 라우터
+   145		rt.CoummunityRegister(e.Group("/community"))            // 커뮤니티 라우터
+   146		rt.DealerRegister(e.Group("/dealer"))                   // 딜러/적립몰 라우터
+exec
+/bin/zsh -lc "rg -n 'highlightYN|synonymYN|miniShop|displayYN|saleType' controller/market.go handler/market-es.go manager/market/*.go" in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+controller/market.go:39:// @Param highlightYN  query string false "<table><thead><tr><th colspan=2>하이라이팅 적용여부</th></tr></thead><tbody><tr><td>Y</td><td>적용</td></tr><tr><td>N</td><td>미적용</td></tr></tbody></table>" Enums(Y,N) default(Y)
+controller/market.go:40:// @Param synonymYN query string false "<table><thead><tr><th colspan=2>키워드 검색 동의어 사용 유무</th></tr></thead><tbody><tr><td>동의어 사용</td><td>Y</td></tr><tr><td>동의어 미사용</td><td>N</td></tr></tbody></table>" Enums(Y,N) default(Y)
+controller/market.go:41:// @Param saleType query string false "<table><thead><tr><th colspan=2>오픈마켓 구분</th></tr></thead><tbody><tr><td>다나와 일반 상품 검색</td><td>N</td></tr><tr><td>전체 중고 상품 검색 (G,I,A,S,N)</td><td>P</td></tr><tr><td>오픈마켓 상품 검색 (G,I,A,S)</td><td>O</td></tr><tr><td>지마켓 상품 검색</td><td>G</td></tr><tr><td>인터파크 상품 검색</td><td>I</td></tr><tr><td>옥션 상품 검색</td><td>A</td></tr><tr><td>11번가 상품 검색</td><td>S</td></tr>" Enums(N,P,O,G,I,A,S) default(N)
+controller/market.go:42:// @Param miniShop query string false "미니샵노출여부" Enums(B,M) default(B)
+controller/market.go:43:// @Param displayYN query string false "<table><thead><tr><th colspan=2>상품출력여부</th></tr></thead><tbody><tr><td>Y</td><td>출력</td></tr><tr><td>N</td><td>미출력</td></tr></tbody></table>" Enums(Y,N) default(Y)
+controller/market.go:89:	query["highlight"] = ctx.DefaultQuery("highlightYN", "Y")
+controller/market.go:90:	query["syn"] = ctx.DefaultQuery("synonymYN", "Y")
+controller/market.go:92:	query["saleType"] = ctx.DefaultQuery("saleType", "N")
+controller/market.go:93:	query["miniShop"] = ctx.DefaultQuery("miniShop", "B")
+controller/market.go:94:	query["display"] = ctx.DefaultQuery("displayYN", "Y")
+handler/market-es.go:174:		"saleType", "linkProductCode", "linkProductUrl"}
+manager/market/ftManager-es.go:64:	if len(data["miniShop"]) > 0 {
+manager/market/ftManager-es.go:65:		miniShopTermQuery := elasticSearch.NewTermQuery("bMiniShop", data["miniShop"])
+manager/market/ftManager-es.go:66:		filterTermQueryList = append(filterTermQueryList, miniShopTermQuery)	
+manager/market/boolQueryManager.go:18:	if len(param["saleType"]) > 0 && param["saleType"] != "P" {
+manager/market/boolQueryManager.go:19:		if param["saleType"] == "O" {
+manager/market/boolQueryManager.go:20:			saleTypeMatchQuery := elasticSearch.NewMatchQuery("saleType", "N")
+manager/market/boolQueryManager.go:21:			mustNotMatchQueryList = append(mustNotMatchQueryList, saleTypeMatchQuery)
+manager/market/boolQueryManager.go:23:			saleTypeTermQuery := elasticSearch.NewTermQuery("saleType", param["saleType"])
+manager/market/boolQueryManager.go:24:			filterTermQueryList = append(filterTermQueryList, saleTypeTermQuery)
+exec
+/bin/zsh -lc "rg -n 'reMethod' ." in /Users/admin/project/legacy/searchapi-elasticexec
+/bin/zsh -lc "rg -n 'param\\[\"userId\"\\]|data\\[\"userId\"\\]|query\\[\"userId\"\\]' ." in /Users/admin/project/legacy/searchapi-elastic succeeded in 0ms:
+./handler/market_test.go:13:		"reMethod": "prodn",
+./controller/market_test.go:19:	req, _ := http.NewRequest("GET", "/market/product?keyword=%ED%85%8C%EC%8A%A4%ED%8A%B8&method=prodn&reMethod=prodn&start=1&limit=1&ht=1&syn=1&group=S&saleType=N&miniShop=B&display=Y", nil)
+./controller/market.go:22:// @Param reMethod query string false "<table><thead><tr><th colspan=2>재검색 키워드 방법</th></tr></thead><tbody><tr><td>제목</td><td>prodN</td></tr><tr><td>내용</td><td>contents</td></tr><tr><td>사용자 ID</td><td>userId</td></tr></tbody></table>" Enums(prodN, contents, userId) default(prodN)
+./controller/market.go:67:		query["reMethod"] = ctx.DefaultQuery("reMethod", "prodN")
+./docs/swagger.yaml:1958:        name: reMethod
+./docs/docs.go:1857:                        "name": "reMethod",
+./docs/swagger.json:1844:                        "name": "reMethod",
+ succeeded in 0ms:
+./controller/lma.go:77:	query["userId"] = ctx.DefaultQuery("userId", "guest")          // 사용자 아이디
+./handler/lma.go:74:		UserId:       param["userId"],
+./handler/logMining.go:47:		UserId:       data["userId"],                       // id
+./handler/lma_test.go:75:	query["userId"] = "guest"
+./controller/product.go:1337:	query["userId"] = ctx.DefaultQuery("userId", "guest")
+./controller/market.go:83:	query["userId"] = ctx.Query("userId")
+./controller/product-es.go:385:	query["userId"] = ctx.DefaultQuery("userId", "guest")

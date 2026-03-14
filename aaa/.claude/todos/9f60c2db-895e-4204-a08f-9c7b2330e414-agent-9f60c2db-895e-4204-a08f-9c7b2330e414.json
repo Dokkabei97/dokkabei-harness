@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Elasticsearch-Spark 동기화 시스템 아키텍처 검토 (백엔드 관점)",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Elasticsearch-Spark 동기화 시스템 아키텍처 검토 (데이터 플랫폼 관점)",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "검토 결과를 통합하여 report.md 작성",
+    "status": "completed",
+    "id": "3"
+  }
+]

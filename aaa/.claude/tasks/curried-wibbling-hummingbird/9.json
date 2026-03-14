@@ -1,0 +1,11 @@
+{
+  "id": "9",
+  "subject": "kotlin-expert",
+  "description": "당신은 Kotlin 전문가입니다. Java→Kotlin 마이그레이션된 코드를 성능 관점에서 철저히 리뷰하고 리팩토링해주세요.\n\n프로젝트 경로: /Users/admin/project",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

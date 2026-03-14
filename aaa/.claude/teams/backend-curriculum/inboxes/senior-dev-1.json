@@ -1,0 +1,15 @@
+[
+  {
+    "from": "senior-dev-1",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"6\",\"subject\":\"성능 최적화 체크리스트 커리큘럼 섹션 작성\",\"description\":\"perf-reviewer 에이전트의 9가지 카테고리(Object Creation & Memory, Loops & Algorithms, I/O & Network, Serialization, Concurrency, Collections, Caching, Logging & Exceptions, Elasticsearch/Search)를 기반으로 성능 최적화 커리큘럼 섹션을 작성한다. Kotlin/Spring 환경에 특화된 성능 안티패턴과 최적화 전략을 포함한다.\",\"assignedBy\":\"senior-dev-1\",\"timestamp\":\"2026-02-15T15:28:27.029Z\"}",
+    "timestamp": "2026-02-15T15:28:27.029Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"shutdown_request\",\"requestId\":\"shutdown-1771170197062@senior-dev-1\",\"from\":\"team-lead\",\"reason\":\"모든 커리큘럼 작성이 완료되었습니다. 수고하셨습니다.\",\"timestamp\":\"2026-02-15T15:43:17.062Z\"}",
+    "timestamp": "2026-02-15T15:43:17.062Z",
+    "read": true
+  }
+]

@@ -1,0 +1,34 @@
+package api
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// ParseResponse unmarshals a JSON response into the given target.
+func ParseResponse(data json.RawMessage, target interface{}) error {
+	if err := json.Unmarshal(data, target); err != nil {
+		return fmt.Errorf("parsing response: %w", err)
+	}
+	return nil
+}
+
+// ParsePaginatedResponse parses a paginated response, returning items and pagination info.
+func ParsePaginatedResponse(data json.RawMessage, items interface{}) (*PaginatedResponse, error) {
+	var page PaginatedResponse
+	if err := json.Unmarshal(data, &page); err != nil {
+		// Try direct array parse (some endpoints return arrays directly)
+		if err2 := json.Unmarshal(data, items); err2 == nil {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("parsing paginated response: %w", err)
+	}
+
+	if page.Results != nil {
+		if err := json.Unmarshal(page.Results, items); err != nil {
+			return nil, fmt.Errorf("parsing results: %w", err)
+		}
+	}
+
+	return &page, nil
+}

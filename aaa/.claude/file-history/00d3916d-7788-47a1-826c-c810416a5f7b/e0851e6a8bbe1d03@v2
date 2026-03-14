@@ -1,0 +1,94 @@
+package cmd
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+
+	"github.com/plane-cli/plane-cli/cmd/activity"
+	"github.com/plane-cli/plane-cli/cmd/comment"
+	"github.com/plane-cli/plane-cli/cmd/cycle"
+	"github.com/plane-cli/plane-cli/cmd/issue"
+	"github.com/plane-cli/plane-cli/cmd/label"
+	"github.com/plane-cli/plane-cli/cmd/link"
+	"github.com/plane-cli/plane-cli/cmd/member"
+	"github.com/plane-cli/plane-cli/cmd/module"
+	"github.com/plane-cli/plane-cli/cmd/project"
+	"github.com/plane-cli/plane-cli/cmd/state"
+	"github.com/plane-cli/plane-cli/cmd/user"
+	"github.com/plane-cli/plane-cli/internal/cmdutil"
+	"github.com/plane-cli/plane-cli/internal/config"
+	"github.com/plane-cli/plane-cli/internal/output"
+)
+
+var (
+	cfgFile   string
+	workspace string
+	projectID string
+	format    string
+	quiet     bool
+	debug     bool
+	baseURL   string
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "plane",
+	Short: "CLI for Plane project management",
+	Long:  "A lightweight CLI tool for interacting with your Plane instance.",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		output.Quiet = quiet
+	},
+	SilenceUsage:  true,
+	SilenceErrors: true,
+}
+
+func init() {
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Config file (default: ~/.config/plane-cli/config.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&workspace, "workspace", "w", "", "Workspace slug")
+	rootCmd.PersistentFlags().StringVarP(&projectID, "project", "p", "", "Project ID")
+	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "", "Output format: json, table")
+	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Suppress non-error output")
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enable debug logging")
+	rootCmd.PersistentFlags().StringVar(&baseURL, "base-url", "", "API base URL override")
+}
+
+// Execute runs the root command.
+func Execute() error {
+	// Load config
+	cfg, err := config.Load(cfgFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: %v\n", err)
+		cfg = config.Defaults()
+	}
+
+	// Apply base-url override
+	if baseURL != "" {
+		cfg.BaseURL = baseURL
+	}
+
+	// Create factory
+	f := cmdutil.NewFactory(cfg, workspace, projectID, format, debug)
+
+	// Register subcommands
+	rootCmd.AddCommand(newConfigCmd())
+	rootCmd.AddCommand(newVersionCmd())
+	rootCmd.AddCommand(newCompletionCmd())
+	rootCmd.AddCommand(user.NewCmd(f))
+	rootCmd.AddCommand(project.NewCmd(f))
+	rootCmd.AddCommand(issue.NewCmd(f))
+	rootCmd.AddCommand(state.NewCmd(f))
+	rootCmd.AddCommand(label.NewCmd(f))
+	rootCmd.AddCommand(member.NewCmd(f))
+	rootCmd.AddCommand(cycle.NewCmd(f))
+	rootCmd.AddCommand(module.NewCmd(f))
+	rootCmd.AddCommand(comment.NewCmd(f))
+	rootCmd.AddCommand(link.NewCmd(f))
+	rootCmd.AddCommand(activity.NewCmd(f))
+
+	if err := rootCmd.Execute(); err != nil {
+		cmdutil.CheckErr(err)
+		return err
+	}
+	return nil
+}

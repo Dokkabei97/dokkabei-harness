@@ -1,0 +1,103 @@
+include:
+  - project: 'consumer-commerce-dev/search/searchops'
+    ref: master
+    file: templates/ci/jvm-ci.yml
+  - project: 'consumer-commerce-dev/search/searchops'
+    ref: master
+    file: templates/ci/docker-ci.yml
+  - project: 'consumer-commerce-dev/search/searchops'
+    ref: master
+    file: templates/deploy/manifest-update.yml
+  - project: 'consumer-commerce-dev/search/searchops'
+    ref: master
+    file: templates/mr-check.yml
+
+# 공통 조건(룰) 정의
+.search_rule: &search_rule
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /search/'
+    changes:
+      - bootstrap/search-bootstrap/**/*
+      - framework/search-framework/**/*
+      - application/**/*
+      - domain/**/*
+      - shared/**/*
+    when: always
+  - when: never
+
+.search_deploy_rules: &search_deploy_rules
+  - if: $CI_COMMIT_TAG
+    changes:
+      - bootstrap/search-bootstrap/**/*
+      - framework/search-framework/**/*
+      - application/**/*
+      - domain/**/*
+      - shared/**/*
+    variables:
+      IMAGE_TAG: $CI_COMMIT_TAG
+    when: manual
+  - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "release/*")'
+    changes:
+      - bootstrap/search-bootstrap/**/*
+      - framework/search-framework/**/*
+      - application/**/*
+      - domain/**/*
+      - shared/**/*
+    variables:
+      IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+    when: manual
+
+# Job 정의
+
+# 빌드 Job
+search_build_job:
+  stage: build
+  extends: .jvm_build
+  variables:
+    SERVICE_NAME: $SERVICE_NAME_SEARCH
+    GRADLE_PATH: $GRADLE_PATH_SEARCH
+  rules: *search_rule
+
+# 테스트 Job
+
+search_test_job:
+  stage: test
+  extends: .jvm_test
+  needs:
+    - job: search_build_job
+  variables:
+    SERVICE_NAME: $SERVICE_NAME_SEARCH
+    GRADLE_PATH: $GRADLE_PATH_SEARCH
+  rules: *search_rule
+
+search_mr_approve_check_job:
+  stage: check
+  extends: .check_approval
+  needs:
+    - job: search_test_job
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_LABELS =~ /search/'
+      changes:
+        - bootstrap/search-bootstrap/**/*
+        - framework/search-framework/**/*
+        - application/**/*
+        - domain/**/*
+        - shared/**/*
+      when: manual
+
+# 도커 이미지 빌드 및 푸시 Job
+search_docker_image_build_push_job:
+  stage: docker_build_push
+  extends: .build_image_push
+  variables:
+    SERVICE_NAME: $SERVICE_NAME_SEARCH
+    DOCKER_FILE_PATH: $DOCKER_FILE_PATH_SEARCH
+  rules: *search_deploy_rules
+
+# 배포 Job 커밋 브랜치에 따라서 배포 환경을 결정
+search_deploy_job:
+  stage: deploy
+  extends: .manifest_update_push
+  variables:
+    SERVICE_NAME: $SERVICE_NAME_SEARCH
+    MANIFEST_FILE: $MANIFEST_FILE_SEARCH
+  rules: *search_deploy_rules

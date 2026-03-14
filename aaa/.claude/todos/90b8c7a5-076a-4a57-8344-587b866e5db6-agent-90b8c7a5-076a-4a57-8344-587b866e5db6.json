@@ -1,0 +1,98 @@
+[
+  {
+    "content": "aioredis 최신 문서 조사 및 베스트 프랙티스 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Redis DB 분리 설정 (DB 0: Darae 캐싱, DB 1: ppuri 브로드캐스트)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Redis 연결 풀링 및 성능 최적화 구현",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "backend-developer 에이전트로 아키텍처 리뷰",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "hexagonal-code-reviewer로 코드 품질 검토",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Docker Compose 통합 설정 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "모니터링 및 로깅 강화",
+    "status": "pending",
+    "priority": "low",
+    "id": "7"
+  },
+  {
+    "content": "통합 테스트 및 검증",
+    "status": "pending",
+    "priority": "low",
+    "id": "8"
+  },
+  {
+    "content": "coredis 의존성 제거 및 공유 Redis 패키지 적용",
+    "status": "completed",
+    "priority": "high",
+    "id": "9"
+  },
+  {
+    "content": "Valkey 공식 문서 조사 및 클라이언트 라이브러리 분석",
+    "status": "completed",
+    "priority": "high",
+    "id": "10"
+  },
+  {
+    "content": "Redis 클라이언트에서 Valkey 클라이언트로 마이그레이션 계획 수립",
+    "status": "completed",
+    "priority": "high",
+    "id": "11"
+  },
+  {
+    "content": "공유 패키지를 Valkey 호환으로 변경",
+    "status": "completed",
+    "priority": "high",
+    "id": "12"
+  },
+  {
+    "content": "Docker Compose에서 Redis를 Valkey로 교체",
+    "status": "pending",
+    "priority": "high",
+    "id": "13"
+  },
+  {
+    "content": "Valkey 마이그레이션 후 통합 테스트",
+    "status": "pending",
+    "priority": "medium",
+    "id": "14"
+  },
+  {
+    "content": "APScheduler 의존성 제거 후 스케줄러 관련 코드 제거",
+    "status": "completed",
+    "priority": "high",
+    "id": "15"
+  },
+  {
+    "content": "Pub/Sub 기반 사전 동기화 로직으로 전환",
+    "status": "completed",
+    "priority": "high",
+    "id": "16"
+  }
+]

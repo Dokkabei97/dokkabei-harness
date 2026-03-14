@@ -1,0 +1,46 @@
+{
+  "session_id": "29149844-e740-49c9-9a52-6eb04b663793",
+  "project_path": "/Users/admin/Documents/Obsidian Vault",
+  "start_time": "2026-02-16T03:45:07.000Z",
+  "duration_minutes": 42,
+  "user_message_count": 5,
+  "assistant_message_count": 16,
+  "tool_counts": {
+    "Glob": 5,
+    "Read": 3,
+    "Bash": 1
+  },
+  "languages": {
+    "Markdown": 3
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 26,
+  "output_tokens": 360,
+  "first_prompt": "/obsidian backend-tech3.md 해당 커리큘럼에 해당하는 학습자료를 작성해줘",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    12,
+    12,
+    12,
+    13,
+    13
+  ],
+  "user_message_timestamps": [
+    "2026-02-16T03:45:07.038Z",
+    "2026-02-16T03:45:06.996Z",
+    "2026-02-16T03:45:07.038Z",
+    "2026-02-16T04:26:17.528Z",
+    "2026-02-16T04:26:17.528Z"
+  ]
+}

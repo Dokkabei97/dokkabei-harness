@@ -1,0 +1,39 @@
+{
+  "session_id": "deab422a-9445-45fa-b2b5-dbc38746bf43",
+  "project_path": "/Users/admin/project/admin-tools",
+  "start_time": "2026-03-10T05:15:38.229Z",
+  "duration_minutes": 13,
+  "user_message_count": 3,
+  "assistant_message_count": 21,
+  "tool_counts": {
+    "Agent": 5,
+    "Bash": 10
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 31,
+  "output_tokens": 3636,
+  "first_prompt": "@search-admin-ui/ 에 있는 코드들 기능과 컴포넌트들을 @shopping-frontend/ 로 옮겨야 하는데 어떻게 코드를 합치는게 좋을지 한버 팀을 구성해서 검토해줘",
+  "user_interruptions": 1,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    14,
+    14,
+    14
+  ],
+  "user_message_timestamps": [
+    "2026-03-10T05:18:04.645Z",
+    "2026-03-10T05:18:07.626Z",
+    "2026-03-10T05:18:16.470Z"
+  ]
+}

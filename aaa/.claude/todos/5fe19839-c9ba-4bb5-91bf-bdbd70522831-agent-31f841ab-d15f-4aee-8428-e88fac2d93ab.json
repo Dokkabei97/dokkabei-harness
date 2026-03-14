@@ -1,0 +1,37 @@
+[
+  {
+    "content": "OpenTelemetry 기본 구성 및 의존성 분석 - SDK 버전, OTLP 익스포터, 리소스 속성 검토",
+    "status": "completed",
+    "id": "otel-analysis-1"
+  },
+  {
+    "content": "Tracing 구성 상세 분석 - Tracer Provider, Span 생성, 컨텍스트 전파 검토",
+    "status": "completed",
+    "id": "otel-analysis-2"
+  },
+  {
+    "content": "Metrics 구성 분석 - Meter Provider, 메트릭 타입, 커스텀 메트릭 검토",
+    "status": "completed",
+    "id": "otel-analysis-3"
+  },
+  {
+    "content": "Logging 구성 분석 - LoggerProvider, 구조화 로깅, 트레이스 상관관계 검토",
+    "status": "completed",
+    "id": "otel-analysis-4"
+  },
+  {
+    "content": "서비스 맵 생성 요구사항 분석 - 서비스 이름 일관성, 의존성 추적, 엔드포인트 레이블링",
+    "status": "completed",
+    "id": "otel-analysis-5"
+  },
+  {
+    "content": "문제점 식별 및 개선사항 제시 - 누락된 계측, 성능 오버헤드, 샘플링 전략",
+    "status": "completed",
+    "id": "otel-analysis-6"
+  },
+  {
+    "content": "최종 보고서 작성 및 개선 로드맵 제시",
+    "status": "completed",
+    "id": "otel-analysis-7"
+  }
+]

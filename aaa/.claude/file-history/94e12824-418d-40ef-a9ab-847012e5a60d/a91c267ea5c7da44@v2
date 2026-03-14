@@ -1,0 +1,17 @@
+package models
+
+import "time"
+
+// Timestamps contains common timestamp fields.
+type Timestamps struct {
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// UserRef is a lightweight user reference used in many responses.
+type UserRef struct {
+	ID          string `json:"id"`
+	DisplayName string `json:"display_name"`
+	Email       string `json:"email"`
+	Avatar      string `json:"avatar,omitempty"`
+}

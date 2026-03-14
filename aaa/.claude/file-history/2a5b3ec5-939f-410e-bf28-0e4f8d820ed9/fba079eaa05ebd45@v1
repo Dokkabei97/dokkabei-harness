@@ -1,0 +1,54 @@
+image:
+  pullPolicy: Always
+  tag: "1.0211.73"
+
+nameOverride: "dev-cmn-search-api"
+fullnameOverride: "dev-cmn-search-api"
+otelServiceName: "development.dev-search.dev-cmn-search-api"
+
+envFrom:
+  # 공통 ConfigMap 참조
+  - configMapRef:
+      name: dev-cmn-search-config
+  # 서비스 특화 ConfigMap 참조
+  - configMapRef:
+      name: dev-cmn-search-api-config
+  # secret 참조
+  - secretRef:
+      name: "dev-cmn-search-credentials"
+
+# 서비스 특화 ConfigMap 설정
+config:
+  profile: dev
+  index:
+    adminCatalog: catalogs
+    adminProduct: products
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: dev-cmn-search-api.danuricorp.com
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8080
+  tls: [ ]
+
+resources:
+  limits:
+    memory: 2Gi
+    cpu: 1
+  requests:
+    memory: 1Gi
+    cpu: 1
+
+replicaCount: 2
+
+autoscaling:
+  enabled: false
+
+podAnnotations:
+  grafana.danuricorp.com/app: development.dev-search.dev-cmn-search-api
+  prometheus.io/interval: 30s

@@ -1,0 +1,2926 @@
+diff --git a/.dockerignore b/.dockerignore
+new file mode 100644
+index 0000000..153bf6b
+--- /dev/null
++++ b/.dockerignore
+@@ -0,0 +1,44 @@
++# Git
++.git
++.gitignore
++
++# Gradle 빌드 산출물 (멀티 스테이지에서 새로 빌드하므로 불필요)
++build/
++.gradle
++.kotlin
++
++# IDE
++.idea
++.vscode
++*.iws
++*.iml
++*.ipr
++out/
++
++# CI/CD
++.github
++.gitlab
++
++# 도구
++.claude
++.serena
++claudedocs
++
++# Docker
++.dockerignore
++**/Dockerfile
++
++# OS
++.DS_Store
++
++# 로컬 오버라이드 설정
++**/application-override.yml
++**/override.properties
++
++# 기타
++docker-compose.yml
++AGENTS.md
++CLAUDE.md
++README.md
++readme
++tools
+\ No newline at end of file
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index f1aae81..3e93141 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -40,14 +40,33 @@ stages:
+   - prepare
+   - test
+   - build
++  - image_tag
+   - docker_build_push
+   - manifest_deploy
++  - chart_update
+ 
+ include:
++  # 서비스별 파이프라인 (기존 인라인 방식)
+   - local: "bootstrap/search-api/.gitlab/.gitlab-ci.yml"
+   - local: "bootstrap/dynamic-indexer/.gitlab/.gitlab-ci.yml"
++  # 서비스별 파이프라인 (searchops 방식)
++  - local: "bootstrap/legacy-sync/.gitlab/.gitlab-ci.yml"
++  # 기존 인라인 헬퍼 (search-api, dynamic-indexer용)
+   - local: ".gitlab/ImageTagScript.gitlab-ci.yml"
+   - local: ".gitlab/Common.gitlab-ci.yml"
+   - local: ".gitlab/GradleBuild.gitlab-ci.yml"
+   - local: ".gitlab/DockerBuild.gitlab-ci.yml"
+-  - local: ".gitlab/ManifestPush.gitlab-ci.yml"
+\ No newline at end of file
++  - local: ".gitlab/ManifestPush.gitlab-ci.yml"
++  # searchops 공유 템플릿 (legacy-sync용)
++  - project: 'consumer-commerce-dev/search/searchops'
++    ref: main
++    file: templates/ci/jvm-ci.yml
++  - project: 'consumer-commerce-dev/search/searchops'
++    ref: main
++    file: templates/deploy/image-tag-ci.yml
++  - project: 'consumer-commerce-dev/search/searchops'
++    ref: main
++    file: templates/deploy/docker-ci.yml
++  - project: 'consumer-commerce-dev/search/searchops'
++    ref: main
++    file: templates/deploy/helm-update.yml
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt
+new file mode 100644
+index 0000000..543f361
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt
+@@ -0,0 +1,7 @@
++package com.cowave.search.application.index.dto
++
++data class LinkedProductRequest(
++    val shopProductCode: String,
++    val shopCode: String,
++    val prodKind: String = "LINK",
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt
+new file mode 100644
+index 0000000..71883b7
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt
+@@ -0,0 +1,6 @@
++package com.cowave.search.application.index.dto
++
++data class UnlinkedProductDeleteRequest(
++    val shopCode: String,
++    val shopProductCode: String,
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt
+new file mode 100644
+index 0000000..a8672e3
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt
+@@ -0,0 +1,66 @@
++package com.cowave.search.application.index.dto
++
++import com.fasterxml.jackson.annotation.JsonProperty
++
++data class UnlinkedProductRequest(
++    val shopProductCode: String,
++    val shopCode: String,
++    val productName: String,
++    val stockYN: String,
++    val couponDownloadYN: String,
++    val brandCertification: String,
++    @JsonProperty("event_info")
++    val eventInfo: String,
++    val differentialPostYN: String,
++    val mobilePrice: Long,
++    val cmpnyCateCode: Long,
++    @JsonProperty("seller_id")
++    val sellerId: String,
++    val productImageUrl: String,
++    val addDescription: String,
++    val shopGift: String,
++    val modifyDate: String,
++    val categoryCode1: Int,
++    val categoryCode2: Int,
++    val categoryCode3: Int,
++    val categoryCode4: Int,
++    val brand: String,
++    val importYN: String,
++    val totalOrderPrice: Long,
++    val condition: String,
++    @JsonProperty("promotion_info")
++    val promotionInfo: String,
++    val dataStat: String,
++    val orderDate: String,
++    val installationFeeYN: String,
++    @JsonProperty("shipping_info")
++    val shippingInfo: String,
++    val bestGoodsSort: String,
++    val promotionPrice: Long,
++    val isbn: String,
++    val model: String,
++    @JsonProperty("mobile_url")
++    val mobileUrl: String,
++    val differentialPost: String,
++    val adultYN: String,
++    val point: Int,
++    val groupSeq: Long,
++    val pcPrice: Long,
++    @JsonProperty("vender_id")
++    val venderId: String,
++    val nointerest: String,
++    val promotionName: String,
++    val quickTime: Int,
++    val makeDate: String,
++    val registerDate: String,
++    val promotionType: Int,
++    val memberPrice: Long,
++    val productMaker: String,
++    val orderCount: Int,
++    val deliveryPrice: Int,
++    val shopCoupon: String,
++    val linkUrl: String,
++    val barcode: String,
++    val reviewCount: Int,
++    val shipping: Int,
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt
+new file mode 100644
+index 0000000..ae1b925
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt
+@@ -0,0 +1,208 @@
++package com.cowave.search.application.index.mapper
++
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.domain.index.dto.ChangedData
++import com.cowave.search.domain.index.dto.LegacyProductData
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.mall.MallProjection
++import java.time.Instant
++import java.time.ZoneId
++import java.time.format.DateTimeFormatter
++
++object LegacySyncMapper {
++    private val dateFormatter =
++        DateTimeFormatter
++            .ofPattern("yyyy-MM-dd HH:mm:ss")
++            .withZone(ZoneId.of("Asia/Seoul"))
++
++    fun convertToLinkedRequest(
++        data: LegacyProductData,
++        mall: MallProjection,
++    ): LinkedProductRequest =
++        LinkedProductRequest(
++            shopProductCode = data.mallProductId,
++            shopCode = mall.mallIdDanawa ?: "",
++            prodKind = "LINK",
++        )
++
++    fun convertToUnlinkedRequest(
++        data: LegacyProductData,
++        category: CategoryProjection,
++        mall: MallProjection,
++    ): UnlinkedProductRequest {
++        val firstPromo = data.promotions?.firstOrNull()
++        return UnlinkedProductRequest(
++            shopProductCode = data.mallProductId,
++            shopCode = mall.mallIdDanawa ?: "",
++            productName = data.name,
++            stockYN = data.hasStock.convertToYN(),
++            couponDownloadYN = (data.benefit?.hasCouponDownload ?: false).convertToYN(),
++            brandCertification = data.isBrandCertification.convertToYOrEmpty(),
++            eventInfo = data.eventInfo ?: "",
++            differentialPostYN = (data.delivery?.hasShippingGrade ?: false).convertToYN(),
++            mobilePrice = data.price?.mobile ?: 0L,
++            cmpnyCateCode = data.mallCategoryId ?: 0L,
++            sellerId = data.sellerId ?: "",
++            productImageUrl = data.imageUrl ?: "",
++            addDescription = data.additionalInfo ?: "",
++            shopGift = data.benefit?.gift ?: "",
++            modifyDate = data.updatedAt.formatDate(),
++            categoryCode1 = category.categoryId1,
++            categoryCode2 = category.categoryId2 ?: 0,
++            categoryCode3 = category.categoryId3 ?: 0,
++            categoryCode4 = category.categoryId4 ?: 0,
++            brand = data.mallBrandName ?: "",
++            importYN = (data.isImportProduct ?: false).convertToYN(),
++            totalOrderPrice = 0L,
++            condition = "",
++            promotionInfo = "",
++            dataStat = mapDataStat(data.productStatus),
++            orderDate = "",
++            installationFeeYN = (data.hasInstallationCosts ?: false).convertToYN(),
++            shippingInfo = data.delivery?.info ?: "",
++            bestGoodsSort = "",
++            promotionPrice = firstPromo?.price ?: 0L,
++            isbn = data.isbn ?: "",
++            model = data.manufactureDefineNumber ?: "",
++            mobileUrl = data.linkUrl?.mobile ?: "",
++            differentialPost = data.delivery?.shippingGradeInfo ?: "",
++            adultYN = (data.isAdultRequired ?: false).convertToYOrEmpty(),
++            point = data.benefit?.point ?: 0,
++            groupSeq = data.mallProductCompositedId?.toLongOrNull() ?: 0L,
++            pcPrice = data.price?.pc ?: 0L,
++            venderId = data.vendorId ?: "",
++            nointerest = data.benefit?.interestFree ?: "",
++            promotionName = firstPromo?.name ?: "",
++            quickTime = data.delivery?.fastDeliveryTime ?: 0,
++            makeDate = data.createdAt?.let { dateFormatter.format(it) } ?: "",
++            registerDate = data.collectedAt.formatDate(),
++            promotionType = firstPromo?.type ?: 0,
++            memberPrice = data.price?.membershipPrice ?: 0L,
++            productMaker = data.mallManufacturerName ?: "",
++            orderCount = 0,
++            deliveryPrice = data.delivery?.shipping ?: 0,
++            shopCoupon = data.benefit?.coupon ?: "",
++            linkUrl = data.linkUrl?.pc ?: "",
++            barcode = data.barcode ?: "",
++            reviewCount = data.reviewCount ?: 0,
++            shipping = data.delivery?.shipping ?: 0,
++        )
++    }
++
++    fun convertToUnlinkedDeleteRequest(
++        data: LegacyProductData,
++        mall: MallProjection,
++    ): UnlinkedProductDeleteRequest =
++        UnlinkedProductDeleteRequest(
++            shopCode = mall.mallIdDanawa ?: "",
++            shopProductCode = data.mallProductId,
++        )
++
++    private fun Boolean.convertToYN(): String = if (this) "Y" else "N"
++
++    private fun Boolean.convertToYOrEmpty(): String = if (this) "Y" else ""
++
++    private fun Instant.formatDate(): String = dateFormatter.format(this)
++
++    fun convertToChangedLegacyData(changedData: List<ChangedData<Product>>): List<ChangedData<LegacyProductData>> =
++        changedData.map { changed ->
++            ChangedData(
++                id = changed.id,
++                op = changed.op,
++                beforeData = changed.beforeData?.convertToLegacyProduct(),
++                afterData = changed.afterData?.convertToLegacyProduct(),
++                partition = changed.partition,
++                offset = changed.offset,
++            )
++        }
++
++    private fun Product.convertToLegacyProduct(): LegacyProductData {
++        val danawaChannel = channelDatas?.get("DANAWA")
++        return LegacyProductData(
++            id = `id$1`.toString(),
++            name = name,
++            shopId = mallId,
++            mallProductId = mallProductId,
++            mallProductCompositedId = mallProductCompositedId,
++            categoryId = categoryId ?: 0,
++            mallCategory = mallCategory,
++            mallCategoryId = mallCategoryId,
++            mallBrandName = mallBrandName,
++            brandId = brandId,
++            mallManufacturerName = mallManufacturerName,
++            manufacturerId = manufacturerId,
++            manufactureDefineNumber = manufactureDefineNumber,
++            imageUrl = imageUrl,
++            hasStock = hasStock ?: false,
++            productStatus = collectedStatus ?: "ACTIVE",
++            isCatalogMatch = catalogMatchings?.any { it.source != "NONE" } ?: false,
++            isUsedProduct = isUsedProduct ?: false,
++            isRefurbished = isRefurbished ?: false,
++            isImportProduct = isImportProduct,
++            hasInstallationCosts = hasInstallationCosts,
++            barcode = barcode,
++            sellerId = sellerId,
++            reviewCount = reviewCount,
++            vendorId = vendorId,
++            additionalInfo = additionalInfo,
++            collectedAt = collectedAt ?: Instant.now(),
++            updatedAt = updatedAt ?: Instant.now(),
++            createdAt = createdAt,
++            linkUrl =
++                danawaChannel?.url?.let {
++                    LegacyProductData.LegacyUrl(pc = it.pc, mobile = it.mobile)
++                },
++            price =
++                danawaChannel?.price?.let {
++                    LegacyProductData.LegacyPrice(
++                        pc = it.pc,
++                        mobile = it.mobile,
++                        membershipPrice = it.membershipPrice,
++                    )
++                },
++            delivery =
++                delivery?.let {
++                    LegacyProductData.LegacyDelivery(
++                        shipping = it.shipping,
++                        originalShipping = it.originalShipping,
++                        isConditionalShipping = it.isConditionalShipping,
++                        hasShippingGrade = it.hasShippingGrade,
++                        shippingGradeInfo = it.shippingGradeInfo,
++                        info = it.info,
++                        fastDeliveryTime = it.fastDeliveryTime,
++                    )
++                },
++            isbn = isbn,
++            isAdultRequired = isAdultRequired,
++            isBrandCertification = brandAlliance != null,
++            benefit =
++                danawaChannel?.benefit?.let {
++                    LegacyProductData.LegacyBenefit(
++                        point = it.point,
++                        coupon = it.coupon,
++                        interestFree = it.interestFree,
++                        gift = it.gift,
++                        hasCouponDownload = it.hasCouponDownload,
++                    )
++                },
++            promotions =
++                danawaChannel?.promotions?.map {
++                    LegacyProductData.LegacyPromotion(
++                        type = it.type,
++                        name = it.name,
++                        price = it.price,
++                    )
++                },
++            eventInfo = danawaChannel?.eventInfo,
++        )
++    }
++
++    private fun mapDataStat(status: String): String =
++        when (status) {
++            "ACTIVE" -> "N"
++            else -> "Y"
++        }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt
+new file mode 100644
+index 0000000..a1789cf
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacyReserveSyncRepository.kt
+@@ -0,0 +1,20 @@
++package com.cowave.search.application.index.repository
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.domain.index.enums.Operation
++
++interface LegacyReserveSyncRepository {
++    suspend fun pushLinkedProducts(
++        products: List<LinkedProductRequest>,
++        operation: Operation,
++    )
++
++    suspend fun pushUnlinkedProducts(
++        products: List<UnlinkedProductRequest>,
++        operation: Operation,
++    )
++
++    suspend fun pushUnlinkedProductDeletes(products: List<UnlinkedProductDeleteRequest>)
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt
+index 58078e1..a142cd3 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt
+@@ -7,6 +7,7 @@ import com.cowave.search.domain.index.policy.CatalogEvaluator
+ import com.cowave.search.domain.index.policy.CatalogFilter
+ import com.cowave.search.domain.index.policy.CatalogMergeStrategy
+ import com.cowave.shared.domain.dto.IndexResult
++import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+ import org.springframework.stereotype.Service
+ 
+ @Service
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt
+new file mode 100644
+index 0000000..0aa3ae1
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacyReserveSyncApplicationService.kt
+@@ -0,0 +1,123 @@
++package com.cowave.search.application.index.service
++
++import com.cowave.search.application.index.dto.DependencyId
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.application.index.mapper.LegacySyncMapper
++import com.cowave.search.application.index.repository.LegacyReserveSyncRepository
++import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
++import com.cowave.search.domain.index.dto.ChangedData
++import com.cowave.search.domain.index.dto.LegacyProductData
++import com.cowave.search.domain.index.enums.Operation
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.shared.utils.logger
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.async
++import kotlinx.coroutines.awaitAll
++import kotlinx.coroutines.runBlocking
++import kotlinx.coroutines.supervisorScope
++import org.springframework.stereotype.Service
++
++@Service
++class LegacyReserveSyncApplicationService(
++    private val legacyReserveSyncRepository: LegacyReserveSyncRepository,
++    private val cachedProxyApplicationService: CachedProxyApplicationService,
++) {
++    private val logger by logger()
++
++    fun syncToLegacy(changedData: List<ChangedData<LegacyProductData>>) {
++        if (changedData.isEmpty()) return
++
++        val dependencyId = getDependencyId(changedData)
++        val dependency = cachedProxyApplicationService.fetchDependencies(dependencyId)
++
++        runBlocking(Dispatchers.IO) {
++            // push 태스크 수집 → supervisorScope로 병렬 실행 (개별 실패 격리)
++            val pushTasks = buildPushTasks(changedData, dependency.categories, dependency.malls)
++
++            if (pushTasks.isNotEmpty()) {
++                supervisorScope {
++                    pushTasks
++                        .map { task ->
++                            async {
++                                runCatching { task() }
++                                    .onFailure { ex -> logger.error(ex) { "Legacy push 실패" } }
++                            }
++                        }.awaitAll()
++                }
++            }
++        }
++    }
++
++    private fun buildPushTasks(
++        changedData: List<ChangedData<LegacyProductData>>,
++        categories: Map<Int, CategoryProjection>,
++        malls: Map<Int, MallProjection>,
++    ): List<suspend () -> Unit> {
++        val pushTasks = mutableListOf<suspend () -> Unit>()
++        val grouped = changedData.groupBy { it.op }
++
++        grouped.forEach { (op, items) ->
++            val linked = mutableListOf<LinkedProductRequest>()
++            val unlinked = mutableListOf<UnlinkedProductRequest>()
++            val unlinkedDeletes = mutableListOf<UnlinkedProductDeleteRequest>()
++
++            items.forEach items@{ item ->
++                val data = if (op == Operation.DELETE) item.beforeData else item.afterData
++                if (data == null) {
++                    logger.warn { "Legacy sync skipped: no data for product id=${item.id}, op=$op" }
++                    return@items
++                }
++
++                when {
++                    data.isCatalogMatch -> {
++                        linked.add(LegacySyncMapper.convertToLinkedRequest(data, malls.getValue(data.shopId)))
++                    }
++
++                    op == Operation.DELETE -> {
++                        unlinkedDeletes.add(LegacySyncMapper.convertToUnlinkedDeleteRequest(data, malls.getValue(data.shopId)))
++                    }
++
++                    else -> {
++                        unlinked.add(
++                            LegacySyncMapper.convertToUnlinkedRequest(
++                                data,
++                                categories.getValue(data.categoryId),
++                                malls.getValue(data.shopId),
++                            )
++                        )
++                    }
++                }
++            }
++
++            if (linked.isNotEmpty()) pushTasks.add { legacyReserveSyncRepository.pushLinkedProducts(linked, op) }
++            if (unlinked.isNotEmpty()) pushTasks.add { legacyReserveSyncRepository.pushUnlinkedProducts(unlinked, op) }
++            if (unlinkedDeletes.isNotEmpty()) {
++                pushTasks.add {
++                    legacyReserveSyncRepository.pushUnlinkedProductDeletes(
++                        unlinkedDeletes,
++                    )
++                }
++            }
++        }
++
++        return pushTasks
++    }
++
++    fun getDependencyId(documents: List<ChangedData<LegacyProductData>>): DependencyId {
++        val categoryIds: MutableList<Int> = mutableListOf()
++        val mallIds: MutableList<Int> = mutableListOf()
++
++        documents.forEach {
++            it.afterData?.categoryId?.run { categoryIds.add(this) }
++            it.afterData?.shopId?.run { mallIds.add(this) }
++        }
++
++        return DependencyId(
++            categoryIds = categoryIds.distinct().toSet(),
++            mallIds = mallIds.distinct().toSet(),
++        )
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
+index 1d2a5cb..f97845e 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
+@@ -7,7 +7,7 @@ import com.cowave.search.domain.index.policy.ProductEvaluator
+ import com.cowave.search.domain.index.policy.ProductFilter
+ import com.cowave.search.domain.index.policy.ProductMergeStrategy
+ import com.cowave.shared.domain.dto.IndexResult
+-import com.cowave.shared.utils.logger
++import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+ import org.springframework.stereotype.Service
+ 
+ @Service
+@@ -15,8 +15,6 @@ class ProductIndexApplicationService(
+     private val productIndexRepository: ProductIndexRepository,
+     private val productAssembleService: ProductAssembleService,
+ ) {
+-    private val logger by logger()
+-
+     fun indexProducts(changedData: List<ChangedData<Product>>): IndexResult {
+         val indexDocuments =
+             changedData
+diff --git a/bootstrap/legacy-sync/.gitlab/.gitlab-ci.yml b/bootstrap/legacy-sync/.gitlab/.gitlab-ci.yml
+new file mode 100644
+index 0000000..a12171c
+--- /dev/null
++++ b/bootstrap/legacy-sync/.gitlab/.gitlab-ci.yml
+@@ -0,0 +1,65 @@
++# legacy-sync 의존성 changes 목록
++.legacy_sync_changes: &legacy_sync_changes
++  - .gitlab-ci.yml
++  - bootstrap/legacy-sync/**/*
++  - shared/**/*
++  - domain/cdc/**/*
++  - domain/index/**/*
++  - domain/proxy/**/*
++  - application/index/**/*
++  - inbound-adapter/legacy/**/*
++  - outbound-adapter/proxy/**/*
++  - outbound-adapter/legacy/**/*
++  - outbound/client/legacy-api/**/*
++  - outbound/client/proxy-api/**/*
++  - outbound/repository/cache/**/*
++
++# MR → 테스트 (코드 검증)
++.mr_rules: &mr_rules
++  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
++    changes: *legacy_sync_changes
++
++# Push → 배포 (main/develop)
++.deploy_rules: &deploy_rules
++  - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
++    changes: *legacy_sync_changes
++
++# ── Test ──
++legacy_sync_test:
++  extends: .jvm_common
++  stage: test
++  script:
++    - ./gradlew :bootstrap:legacy-sync:clean :bootstrap:legacy-sync:test
++  rules: *mr_rules
++
++# ── Image Tag ──
++legacy_sync_image_tag:
++  extends: .image_tag
++  stage: image_tag
++  needs: []
++  rules: *deploy_rules
++
++# ── Docker Build & Push ──
++legacy_sync_docker_build_push:
++  extends: .build_image_push
++  stage: docker_build_push
++  variables:
++    SERVICE_NAME: legacy-sync
++    DOCKER_FILE_PATH: bootstrap/legacy-sync/Dockerfile
++  needs:
++    - job: legacy_sync_image_tag
++      artifacts: true
++  allow_failure: false
++  rules: *deploy_rules
++
++# ── Chart Update ──
++legacy_sync_chart_update:
++  extends: .helm_update_push
++  stage: chart_update
++  variables:
++    SERVICE_NAME: legacy-sync
++  needs:
++    - job: legacy_sync_docker_build_push
++    - job: legacy_sync_image_tag
++      artifacts: true
++  rules: *deploy_rules
+diff --git a/bootstrap/legacy-sync/AGENTS.md b/bootstrap/legacy-sync/AGENTS.md
+new file mode 100644
+index 0000000..24dd788
+--- /dev/null
++++ b/bootstrap/legacy-sync/AGENTS.md
+@@ -0,0 +1 @@
++[CLAUDE.md](./CLAUDE.md)
+\ No newline at end of file
+diff --git a/bootstrap/legacy-sync/CLAUDE.md b/bootstrap/legacy-sync/CLAUDE.md
+new file mode 100644
+index 0000000..bbe76b1
+--- /dev/null
++++ b/bootstrap/legacy-sync/CLAUDE.md
+@@ -0,0 +1,204 @@
++# CLAUDE.md
++
++This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
++
++## 서비스 개요
++
++**legacy-sync**는 Kafka CDC 상품 이벤트를 소비하여 레거시 백엔드 시스템에 HTTP API로 동기화하는 Spring Boot 서비스이다. dynamic-indexer가 Elasticsearch에 색인하는 것과 달리, legacy-sync는 상품 데이터를 **연동상품(PDM)**과 **비연동상품(TCMPNY_LINK)** 두 경로로 분류하여 레거시 API의 `/pushQueue.json` 엔드포인트에 전송한다.
++
++## Commands
++
++```bash
++# 빌드
++./gradlew :bootstrap:legacy-sync:build
++
++# 로컬 실행
++./gradlew :bootstrap:legacy-sync:bootRun --args='--spring.profiles.active=local'
++
++# 의존 모듈별 테스트
++./gradlew :domain:index:test
++./gradlew :application:index:test
++./gradlew :outbound-adapter:legacy:test
++./gradlew :inbound-adapter:legacy:test
++
++# 단일 테스트 클래스 실행
++./gradlew :outbound-adapter:legacy:test --tests "com.cowave.search.outbound_adapter.legacy.LegacySyncRepositoryImplTest"
++
++# 코드 포맷팅 (커밋 전 필수)
++./gradlew ktlintFormat
++
++# 로컬 인프라 (ES, Kafka, Valkey, Schema Registry 등)
++docker compose up -d
++```
++
++## 의존 모듈 맵
++
++```
++bootstrap/legacy-sync               ← DI 조립, Spring Boot 진입점
++├── shared                           ← 공통 유틸, 예외, 응답 DTO
++├── domain:cdc                       ← Avro 스키마 + 생성 클래스 (Product CDC)
++├── domain:index                     ← ChangedData, MergeStrategy, Operation
++├── domain:proxy                     ← Category, Mall 프록시 도메인
++├── application:index                ← LegacyReserveSyncApplicationService, Repository 인터페이스
++├── inbound-adapter:legacy           ← Kafka Listener, CDC 이벤트 소비 + 매핑
++├── outbound-adapter:legacy          ← LegacyReserveSyncRepository 구현 (HTTP 클라이언트 래핑)
++├── outbound-adapter:proxy           ← 프록시 API (HTTP/GraphQL) 어댑터
++├── outbound:client:legacy-api       ← WebFlux 기반 레거시 API 클라이언트
++├── outbound:client:proxy-api        ← 프록시 API 클라이언트
++└── outbound:repository:cache        ← Valkey 캐시 (Category, Mall 캐싱)
++```
++
++## 데이터 플로우
++
++```
++Kafka (Product CDC 토픽, Avro)
++    │
++    ▼
++LegacyReserveSyncListener (배치 소비)
++    │  filter: categoryId > 0
++    │  map: Avro → ChangedData<Product>
++    ▼
++ProductMergeStrategy.merge()
++    │  같은 ID 이벤트 병합 (offset 순 정렬 → fold)
++    ▼
++LegacySyncMapper.convertToChangedLegacyData()
++    │  Product → LegacyProductData 변환
++    │  DANAWA 채널 데이터 추출 (price, url, benefit, promotion)
++    ▼
++LegacyReserveSyncApplicationService.syncToLegacy()
++    │
++    ├─ getDependencyId() → categoryIds, mallIds 추출
++    ├─ CachedProxyApplicationService.fetchDependencies() → 캐시에서 조회
++    │
++    └─ buildPushTasks() → Operation별 그룹화 후 상품 분류:
++        │
++        ├─ isCatalogMatch == true  →  LinkedProductRequest    → pushQueue("PDM", POST/PUT/DELETE)
++        ├─ op == DELETE            →  UnlinkedDeleteRequest   → pushQueue("TCMPNY_LINK", DELETE)
++        └─ else (CREATE/UPDATE)    →  UnlinkedProductRequest  → pushQueue("TCMPNY_LINK", POST/PUT)
++                                                                    │
++                                                                    ▼
++                                                            Legacy API
++                                                     /pushQueue.json?service={service}
++```
++
++## 핵심 설계
++
++### 상품 분류 전략
++
++| 조건 | 분류 | 대상 서비스 | HTTP 메서드 |
++|------|------|------------|------------|
++| `isCatalogMatch == true` | 연동상품 | PDM | POST/PUT/DELETE |
++| `isCatalogMatch == false` + DELETE | 비연동 삭제 | TCMPNY_LINK | DELETE |
++| `isCatalogMatch == false` + CREATE/UPDATE | 비연동상품 | TCMPNY_LINK | POST/PUT |
++
++카탈로그 매칭 판정: `catalogMatchings?.any { it.source != "NONE" }`
++
++### 조건부 활성화
++
++`@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true")`로 Bean이 등록된다. `application.yml`에서 `index.enabled: false`, `dynamic-indexer.enabled: false`를 설정하여 다른 서비스 컴포넌트와 충돌을 방지한다.
++
++### 비동기 실행 & 장애 격리
++
++- Kafka 리스너는 blocking, 내부 HTTP 호출은 `runBlocking(Dispatchers.IO)` + `supervisorScope`
++- `supervisorScope` 내에서 pushTask별 `async` 실행 → 하나의 실패가 다른 push를 차단하지 않음
++- 리스너 레벨 예외 시 Kafka ACK 미수행 → `DefaultErrorHandler`가 1초 간격 무한 재시도
++
++### 의존성 캐싱
++
++Category, Mall 데이터는 `CachedProxyApplicationService`를 통해 Valkey 캐시에서 조회한다. 배치 내 모든 상품의 고유 ID를 추출하여 한 번에 조회하므로 네트워크 호출을 최소화한다. TTL은 600초(10분).
++
++## Kafka 컨슈머 설정
++
++| 항목 | 값 |
++|------|-----|
++| 토픽 | `cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1` (dynamic-indexer와 동일) |
++| Group ID | `cmn-search-team-group-legacy-sync` (별도 컨슈머 그룹) |
++| Concurrency | 3 |
++| AckMode | `MANUAL_IMMEDIATE` |
++| 에러 핸들링 | `DefaultErrorHandler` (1초 간격, 무한 재시도) |
++| Serializer | Avro (KafkaAvroDeserializer) |
++
++프로퍼티 바인딩: `LegacyReserveSyncConsumerProperties` (`@ConfigurationProperties(prefix = "legacy-sync-consumer")`)
++
++## Legacy API 클라이언트
++
++- **엔드포인트**: `/pushQueue.json?service={PDM|TCMPNY_LINK}`
++- **WebFlux 기반**: `WebClient` + Reactor Netty, 코루틴 `awaitSingle()`
++- **커넥션 풀**: max 50, timeout 500ms (connect + response)
++- **프로퍼티**: `LegacyApiClientProperties` (`@ConfigurationProperties(prefix = "client.legacy-api")`)
++
++## OutputPort 구조
++
++```
++application/index/repository/LegacyReserveSyncRepository.kt   ← 인터페이스 (OutputPort)
++outbound-adapter/legacy/LegacyReserveSyncRepositoryImpl.kt     ← 구현체 (HTTP 클라이언트 래핑)
++```
++
++세 가지 suspend 메서드:
++- `pushLinkedProducts(products, operation)` → PDM 서비스
++- `pushUnlinkedProducts(products, operation)` → TCMPNY_LINK 서비스
++- `pushUnlinkedProductDeletes(products)` → TCMPNY_LINK DELETE
++
++## scanBasePackages
++
++```kotlin
++scanBasePackages = [
++    "com.cowave.shared",
++    "com.cowave.search.inbound_adapter.legacy",
++    "com.cowave.search.domain.index",
++    "com.cowave.search.domain.proxy",
++    "com.cowave.search.application.index",
++    "com.cowave.search.outbound_adapter.legacy",
++    "com.cowave.search.outbound_adapter.proxy",
++    "com.cowave.search.infrastructure.valkey",
++    "com.cowave.search.repository.cache",
++    "com.cowave.search.client.legacy_api",
++    "com.cowave.search.client.proxy_api",
++]
++```
++
++> Gradle 모듈명은 하이픈(`inbound-adapter`)이지만, Kotlin 패키지명은 **언더스코어**(`inbound_adapter`)를 사용한다.
++
++## dynamic-indexer와의 차이
++
++| 구분 | dynamic-indexer | legacy-sync |
++|------|-----------------|-------------|
++| 데이터 싱크 | Elasticsearch (bulk API) | Legacy HTTP API (/pushQueue.json) |
++| 처리 대상 | Catalog + Product CDC | Product CDC만 |
++| 상품 분류 | 단일 인덱스 | 연동(PDM) / 비연동(TCMPNY_LINK) |
++| HTTP 메서드 | ES bulk (PUT/POST) | 명시적 POST/PUT/DELETE |
++| 타임아웃 | bulk 크기에 따라 가변 | 500ms 고정 |
++| offset 관리 | ConsumerCallbackManager (seek/rewind) | 단순 manual ACK |
++
++## 설정 구조
++
++```
++application.yml              ← 기본 설정 (legacy-sync.enabled: true)
++├── application-outbound.yml ← 자동 import: Kafka, Legacy API, Proxy API, Valkey
++application-local.yml        ← local 프로필: local.properties import
++├── local.properties         ← 환경변수 값 정의 (git 관리됨)
++application-override.yml     ← 개인별 오버라이드 (.gitignore 대상)
++├── override.properties      ← 개인별 환경변수 (.gitignore 대상)
++```
++
++## 핵심 파일 빠른 참조
++
++| 역할 | 파일 경로 |
++|------|----------|
++| 부트스트랩 진입점 | `bootstrap/legacy-sync/.../LegacySyncApplication.kt` |
++| Kafka 컨슈머 설정 | `inbound-adapter/legacy/.../config/LegacyReserveSyncKafkaConfig.kt` |
++| 컨슈머 프로퍼티 | `inbound-adapter/legacy/.../config/LegacyReserveSyncConsumerProperties.kt` |
++| 컨테이너 팩토리 | `inbound-adapter/legacy/.../config/LegacyReserveSyncContainerFactory.kt` |
++| Kafka 리스너 | `inbound-adapter/legacy/.../listener/LegacyReserveSyncListener.kt` |
++| CDC 매퍼 | `inbound-adapter/legacy/.../mapper/ChangeDataMapper.kt` |
++| 앱 서비스 | `application/index/.../service/LegacyReserveSyncApplicationService.kt` |
++| 레거시 DTO 매퍼 | `application/index/.../mapper/LegacySyncMapper.kt` |
++| 레거시 도메인 모델 | `application/index/.../dto/LegacyProductData.kt` |
++| 요청 DTO | `application/index/.../dto/LinkedProductRequest.kt`, `UnlinkedProductRequest.kt` |
++| OutputPort 인터페이스 | `application/index/.../repository/LegacyReserveSyncRepository.kt` |
++| OutputPort 구현체 | `outbound-adapter/legacy/.../LegacyReserveSyncRepositoryImpl.kt` |
++| HTTP 클라이언트 | `outbound/client/legacy-api/.../LegacyApiClient.kt` |
++| 클라이언트 설정 | `outbound/client/legacy-api/.../LegacyApiClientConfig.kt` |
++| 기본 설정 | `bootstrap/legacy-sync/.../resources/application.yml` |
++| 외부 연결 설정 | `bootstrap/legacy-sync/.../resources/application-outbound.yml` |
++| 로컬 환경변수 | `bootstrap/legacy-sync/.../resources/local.properties` |
+diff --git a/bootstrap/legacy-sync/Dockerfile b/bootstrap/legacy-sync/Dockerfile
+new file mode 100644
+index 0000000..9b7cf2f
+--- /dev/null
++++ b/bootstrap/legacy-sync/Dockerfile
+@@ -0,0 +1,28 @@
++FROM eclipse-temurin:21-jdk-alpine AS builder
++
++WORKDIR /app
++
++COPY . .
++RUN chmod +x gradlew \
++    && ./gradlew :bootstrap:legacy-sync:bootJar --no-daemon
++
++# 공식 문서 패턴: 파일명을 application.jar로 통일 후 추출
++RUN cp build/bootstrap/legacy-sync/libs/bootstrap-legacy-sync.jar application.jar \
++    && java -Djarmode=tools -jar application.jar extract --layers --destination extracted
++
++FROM eclipse-temurin:21-jre-alpine AS runner
++
++WORKDIR /apps
++
++# OpenTelemetry agent
++ARG OTEL_AGENT_VERSION=2.24.0
++ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_AGENT_VERSION}/opentelemetry-javaagent.jar /apps/otel-javaagent.jar
++COPY otel-config.yaml /apps/otel-config.yaml
++
++# Spring Boot 레이어드 복사 (변경 빈도 낮은 순)
++COPY --from=builder /app/extracted/dependencies/ ./
++COPY --from=builder /app/extracted/spring-boot-loader/ ./
++COPY --from=builder /app/extracted/snapshot-dependencies/ ./
++COPY --from=builder /app/extracted/application/ ./
++
++ENTRYPOINT ["java", "-jar", "application.jar"]
+diff --git a/bootstrap/legacy-sync/build.gradle.kts b/bootstrap/legacy-sync/build.gradle.kts
+new file mode 100644
+index 0000000..79c5e78
+--- /dev/null
++++ b/bootstrap/legacy-sync/build.gradle.kts
+@@ -0,0 +1,26 @@
++plugins {
++    id("org.springframework.boot")
++}
++
++dependencies {
++    implementation(project(":shared"))
++    implementation(project(":domain:cdc"))
++    implementation(project(":domain:index"))
++    implementation(project(":domain:proxy"))
++    implementation(project(":application:index"))
++    implementation(project(":inbound-adapter:legacy"))
++    implementation(project(":outbound-adapter:proxy"))
++    implementation(project(":outbound-adapter:legacy"))
++    implementation(project(":outbound:client:legacy-api"))
++    implementation(project(":outbound:client:proxy-api"))
++    implementation(project(":outbound:repository:cache"))
++
++    implementation("org.springframework.boot:spring-boot-starter-actuator")
++    implementation("io.micrometer:micrometer-registry-prometheus")
++}
++
++tasks {
++    bootJar {
++        enabled = true
++    }
++}
+diff --git a/bootstrap/legacy-sync/src/main/kotlin/com/cowave/search/bootstrap/LegacySyncApplication.kt b/bootstrap/legacy-sync/src/main/kotlin/com/cowave/search/bootstrap/LegacySyncApplication.kt
+new file mode 100644
+index 0000000..0f2c1c9
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/kotlin/com/cowave/search/bootstrap/LegacySyncApplication.kt
+@@ -0,0 +1,29 @@
++package com.cowave.search.bootstrap
++
++import org.springframework.boot.autoconfigure.SpringBootApplication
++import org.springframework.boot.context.properties.ConfigurationPropertiesScan
++import org.springframework.boot.runApplication
++
++fun main(args: Array<String>) {
++    runApplication<LegacySyncApplication>(*args)
++}
++
++@ConfigurationPropertiesScan(
++    basePackages = ["com.cowave.search"],
++)
++@SpringBootApplication(
++    scanBasePackages = [
++        "com.cowave.shared",
++        "com.cowave.search.inbound_adapter.legacy",
++        "com.cowave.search.domain.index",
++        "com.cowave.search.domain.proxy",
++        "com.cowave.search.application.index",
++        "com.cowave.search.outbound_adapter.legacy",
++        "com.cowave.search.outbound_adapter.proxy",
++        "com.cowave.search.infrastructure.valkey",
++        "com.cowave.search.repository.cache",
++        "com.cowave.search.client.legacy_api",
++        "com.cowave.search.client.proxy_api",
++    ],
++)
++class LegacySyncApplication
+diff --git a/bootstrap/legacy-sync/src/main/resources/application-local.yml b/bootstrap/legacy-sync/src/main/resources/application-local.yml
+new file mode 100644
+index 0000000..00d7eaf
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/resources/application-local.yml
+@@ -0,0 +1,4 @@
++spring:
++  config:
++    import:
++      - "classpath:local.properties"
+diff --git a/bootstrap/legacy-sync/src/main/resources/application-observability.yml b/bootstrap/legacy-sync/src/main/resources/application-observability.yml
+new file mode 100644
+index 0000000..03ff8df
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/resources/application-observability.yml
+@@ -0,0 +1,23 @@
++management:
++  server:
++    port: 8081
++  endpoints:
++    web:
++      exposure:
++        include: health,metrics,prometheus
++  endpoint:
++    health:
++      show-details: always
++    metrics:
++      access: read_only
++  metrics:
++    distribution:
++      percentiles-histogram:
++        http.server.requests: true
++      slo:
++        http.server.requests: 50ms,100ms,200ms,500ms,1s,2s
++    tags:
++      application: ${OTEL_SERVICE_NAME}
++  health:
++    elasticsearch:
++      enabled: false
+diff --git a/bootstrap/legacy-sync/src/main/resources/application-outbound.yml b/bootstrap/legacy-sync/src/main/resources/application-outbound.yml
+new file mode 100644
+index 0000000..7298120
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/resources/application-outbound.yml
+@@ -0,0 +1,35 @@
++legacy-sync-consumer:
++  product-cdc:
++    enabled: ${KAFKA_CDC_PRODUCT_ENABLED:false}
++    bootstrap-servers: ${KAFKA_LEGACY_SYNC_PRODUCT_SERVER}
++    topic: ${KAFKA_LEGACY_SYNC_PRODUCT_TOPIC}
++    group-id: ${KAFKA_LEGACY_SYNC_PRODUCT_GROUP_ID}
++    concurrency: ${KAFKA_LEGACY_SYNC_PRODUCT_CONCURRENCY}
++    properties:
++      auto-offset-reset: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_AUTO_OFFSET_RESET}
++      enable-auto-commit: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_ENABLE_AUTO_COMMIT}
++      max-poll-records: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_MAX_POLL_RECORDS}
++      fetch-max-wait-ms: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MAX_WAIT_MS}
++      fetch-min-size: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MIN_SIZE}
++      session-timeout-ms: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SESSION_TIMEOUT_MS}
++      schema-registry-url: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SCHEMA_REGISTRY_URL}
++      specific-avro-reader: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SPECIFIC_AVRO_READER}
++      heartbeat-interval-ms: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_HEARTBEAT_INTERVAL_MS}
++      security-protocol: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SECURITY_PROTOCOL}
++      sasl-mechanism: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SASL_MECHANISM}
++      sasl-jaas-config: ${KAFKA_LEGACY_SYNC_PRODUCT_PROP_SASL_JAAS_CONFIG}
++
++client:
++  legacy-api:
++    baseUrl: ${LEGACY_API_BASEURL}
++    timeout: ${LEGACY_API_TIMEOUT:500}
++  proxy-api:
++    baseUrl: ${PROXY_API_BASEURL}
++    username: ${PROXY_API_USERNAME}
++    password: ${PROXY_API_PASSWORD}
++
++valkey:
++  backend:
++    hosts: ${VALKEY_BACKEND_HOST}
++    password: ${VALKEY_BACKEND_PASSWORD}
++    database: ${VALKEY_BACKEND_DATABASE}
+diff --git a/bootstrap/legacy-sync/src/main/resources/application.yml b/bootstrap/legacy-sync/src/main/resources/application.yml
+new file mode 100644
+index 0000000..a5e6f35
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/resources/application.yml
+@@ -0,0 +1,20 @@
++spring:
++  application:
++    name: legacy-sync
++  config:
++    import:
++      - "classpath:application-outbound.yml"
++      - "classpath:application-observability.yml"
++
++server:
++  port: 8080
++
++local-cache:
++  mall:
++    ttl-seconds: 600
++  category:
++    ttl-seconds: 600
++
++logging:
++  pattern:
++    console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%X{trace_id:-}] %-5level %logger{36} - %msg%n"
+diff --git a/bootstrap/legacy-sync/src/main/resources/local.properties b/bootstrap/legacy-sync/src/main/resources/local.properties
+new file mode 100644
+index 0000000..b132162
+--- /dev/null
++++ b/bootstrap/legacy-sync/src/main/resources/local.properties
+@@ -0,0 +1,25 @@
++KAFKA_LEGACY_SYNC_PRODUCT_SERVER=localhost:9092
++KAFKA_LEGACY_SYNC_PRODUCT_TOPIC=cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1
++KAFKA_LEGACY_SYNC_PRODUCT_GROUP_ID=cmn-search-team-group-legacy-sync
++KAFKA_LEGACY_SYNC_PRODUCT_CONCURRENCY=3
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_AUTO_OFFSET_RESET=earliest
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_ENABLE_AUTO_COMMIT=false
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_MAX_POLL_RECORDS=100
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MAX_WAIT_MS=5000
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MIN_SIZE=1024768
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_SESSION_TIMEOUT_MS=30000
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_SCHEMA_REGISTRY_URL=http://localhost:8081
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_SPECIFIC_AVRO_READER=true
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_HEARTBEAT_INTERVAL_MS=10000
++KAFKA_LEGACY_SYNC_PRODUCT_PROP_SECURITY_PROTOCOL=PLAINTEXT
++
++LEGACY_API_BASEURL=http://119.205.208.36:8080
++LEGACY_API_TIMEOUT=500
++
++PROXY_API_BASEURL=dev-shopping-internal.danuricorp.com/graphql
++PROXY_API_USERNAME=admin
++PROXY_API_PASSWORD=Uqd}}e0?3]v@zaV?MKa>,YxK4K-
++
++VALKEY_BACKEND_HOST=localhost:6379,localhost:6380,localhost:6381
++VALKEY_BACKEND_PASSWORD=
++VALKEY_BACKEND_DATABASE=0
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 4589825..b8671d7 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -64,6 +64,7 @@ allSubProjects {
+             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
+             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$coroutineVersion")
+             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutineVersion")
++            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$coroutineVersion")
+ 
+             dependency("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.4") // 1.2.x latest
+             dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+diff --git a/docker-compose.yml b/docker-compose.yml
+index bd2a16b..edc9f8a 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -78,6 +78,7 @@ services:
+   valkey-node-1:
+     image: valkey/valkey:9.0.1
+     container_name: valkey-node-1
++    network_mode: host
+     command: >
+       valkey-server
+       --cluster-enabled yes
+@@ -85,70 +86,52 @@ services:
+       --cluster-node-timeout 5000
+       --appendonly yes
+       --port 6379
+-    ports:
+-      - "6379:6379"
+-      - "16379:16379"
+     volumes:
+       - valkey-node-1-data:/data
+-    networks:
+-      - valkey-cluster
+ 
+   valkey-node-2:
+     image: valkey/valkey:9.0.1
+     container_name: valkey-node-2
++    network_mode: host
+     command: >
+       valkey-server
+       --cluster-enabled yes
+       --cluster-config-file nodes.conf
+       --cluster-node-timeout 5000
+       --appendonly yes
+-      --port 6379
+-    ports:
+-      - "6380:6379"
+-      - "16380:16379"
++      --port 6380
+     volumes:
+       - valkey-node-2-data:/data
+-    networks:
+-      - valkey-cluster
+ 
+   valkey-node-3:
+     image: valkey/valkey:9.0.1
+     container_name: valkey-node-3
++    network_mode: host
+     command: >
+       valkey-server
+       --cluster-enabled yes
+       --cluster-config-file nodes.conf
+       --cluster-node-timeout 5000
+       --appendonly yes
+-      --port 6379
+-    ports:
+-      - "6381:6379"
+-      - "16381:16379"
++      --port 6381
+     volumes:
+       - valkey-node-3-data:/data
+-    networks:
+-      - valkey-cluster
+ 
+   valkey-cluster-init:
+     image: valkey/valkey:9.0.1
+     container_name: valkey-cluster-init
++    network_mode: host
+     depends_on:
+       - valkey-node-1
+       - valkey-node-2
+       - valkey-node-3
+     command: >
+-      sh -c "sleep 10 && 
+-      valkey-cli --cluster create 
+-      valkey-node-1:6379 
+-      valkey-node-2:6379 
+-      valkey-node-3:6379 
++      sh -c "sleep 10 &&
++      valkey-cli --cluster create
++      127.0.0.1:6379
++      127.0.0.1:6380
++      127.0.0.1:6381
+       --cluster-replicas 0 --cluster-yes"
+-    networks:
+-      - valkey-cluster
+-
+-networks:
+-  valkey-cluster:
+-    driver: bridge
+ 
+ volumes:
+   es-data:
+diff --git a/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt b/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt
+new file mode 100644
+index 0000000..b70b5d8
+--- /dev/null
++++ b/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt
+@@ -0,0 +1,79 @@
++package com.cowave.search.domain.index.dto
++
++import java.time.Instant
++
++data class LegacyProductData(
++    override val id: String,
++    override val name: String,
++    val shopId: Int,
++    val mallProductId: String,
++    val mallProductCompositedId: String?,
++    val categoryId: Int,
++    val mallCategory: String?,
++    val mallCategoryId: Long?,
++    val mallBrandName: String?,
++    val brandId: Long?,
++    val mallManufacturerName: String?,
++    val manufacturerId: Long?,
++    val manufactureDefineNumber: String?,
++    val imageUrl: String?,
++    val hasStock: Boolean,
++    val productStatus: String,
++    val isCatalogMatch: Boolean,
++    val isUsedProduct: Boolean,
++    val isRefurbished: Boolean,
++    val isImportProduct: Boolean?,
++    val hasInstallationCosts: Boolean?,
++    val barcode: String?,
++    val sellerId: String?,
++    val reviewCount: Int?,
++    val vendorId: String?,
++    val additionalInfo: String?,
++    val collectedAt: Instant,
++    val updatedAt: Instant,
++    val createdAt: Instant?,
++    val linkUrl: LegacyUrl?,
++    val price: LegacyPrice?,
++    val delivery: LegacyDelivery?,
++    val isbn: String?,
++    val isAdultRequired: Boolean?,
++    val isBrandCertification: Boolean,
++    val benefit: LegacyBenefit?,
++    val promotions: List<LegacyPromotion>?,
++    val eventInfo: String?,
++) : ChangedDocument {
++    data class LegacyUrl(
++        val pc: String?,
++        val mobile: String?,
++    )
++
++    data class LegacyPrice(
++        val pc: Long?,
++        val mobile: Long?,
++        val membershipPrice: Long?,
++    )
++
++    data class LegacyDelivery(
++        val shipping: Int?,
++        val originalShipping: Int?,
++        val isConditionalShipping: Boolean?,
++        val hasShippingGrade: Boolean?,
++        val shippingGradeInfo: String?,
++        val info: String?,
++        val fastDeliveryTime: Int?,
++    )
++
++    data class LegacyBenefit(
++        val point: Int?,
++        val coupon: String?,
++        val interestFree: String?,
++        val gift: String?,
++        val hasCouponDownload: Boolean?,
++    )
++
++    data class LegacyPromotion(
++        val type: Int?,
++        val name: String?,
++        val price: Long?,
++    )
++}
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/ConsumerCallbackManager.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/ConsumerCallbackManager.kt
+index a7f27cc..8044773 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/ConsumerCallbackManager.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/ConsumerCallbackManager.kt
+@@ -22,15 +22,19 @@ class ConsumerCallbackManager {
+      * ConsumerGroupOffsetInfo를 받아서 일괄 처리
+      */
+     fun requestToSeek(offsetSnapshot: ConsumerGroupOffsetSnapshot) {
+-        logger.info { "[ConsumerManager] Start to set offset. " +
++        logger.info {
++            "[ConsumerManager] Start to set offset. " +
+                 "groupId=[${offsetSnapshot.groupId}], topic=[${offsetSnapshot.topic}], " +
+-                "partition count=[${offsetSnapshot.partitions.count()}]" }
++                "partition count=[${offsetSnapshot.partitions.count()}]"
++        }
+ 
+         if (lock.tryLock()) {
+             try {
+                 // offset seek 대상인 topic의 컨슈머를 찾음
+-                val targets = consumerCallbacks.values.filter { it.topic == offsetSnapshot.topic }
+-                    .associateBy { it.uniqueKey }
++                val targets =
++                    consumerCallbacks.values
++                        .filter { it.topic == offsetSnapshot.topic }
++                        .associateBy { it.uniqueKey }
+ 
+                 if (targets.isEmpty()) {
+                     logger.info { "[ConsumerManager] This listener does not have any consumer callback." }
+@@ -38,31 +42,38 @@ class ConsumerCallbackManager {
+                 }
+ 
+                 offsetSnapshot.partitions.forEach { partitionSnapshot ->
+-                    val key = ConsumerCallback.getUniqueKey(
+-                        groupId = offsetSnapshot.groupId,
+-                        topic = offsetSnapshot.topic,
+-                        partition = partitionSnapshot.partition,
+-                    )
++                    val key =
++                        ConsumerCallback.Companion.getUniqueKey(
++                            groupId = offsetSnapshot.groupId,
++                            topic = offsetSnapshot.topic,
++                            partition = partitionSnapshot.partition,
++                        )
+ 
+                     if (targets.containsKey(key)) {
+                         val consumerCallback = targets[key]!!
+                         consumerCallback.setSeek(partitionSnapshot.currentOffset)
+ 
+-                        logger.info { "[ConsumerManager] Offset has been set. " +
++                        logger.info {
++                            "[ConsumerManager] Offset has been set. " +
+                                 "groupId=[${consumerCallback.groupId}], topic=[${consumerCallback.topic}], " +
+-                                "partition=[${consumerCallback.partition}], offset=[${partitionSnapshot.currentOffset}]" }
++                                "partition=[${consumerCallback.partition}], offset=[${partitionSnapshot.currentOffset}]"
++                        }
+                     }
+                 }
+             } catch (e: Exception) {
+                 logger.error(e) { "[ConsumerManager] Offset seek error: ${e.message}" }
+             } finally {
+                 lock.unlock()
+-                logger.info { "[ConsumerManager] Finished to set offset. " +
+-                        "groupId=[${offsetSnapshot.groupId}], topic=[${offsetSnapshot.topic}]" }
++                logger.info {
++                    "[ConsumerManager] Finished to set offset. " +
++                        "groupId=[${offsetSnapshot.groupId}], topic=[${offsetSnapshot.topic}]"
++                }
+             }
+         } else {
+-            logger.info { "[ConsumerManager] Skipped to set offset because of lock. " +
+-                    "groupId=[${offsetSnapshot.groupId}], topic=[${offsetSnapshot.topic}]" }
++            logger.info {
++                "[ConsumerManager] Skipped to set offset because of lock. " +
++                    "groupId=[${offsetSnapshot.groupId}], topic=[${offsetSnapshot.topic}]"
++            }
+         }
+     }
+ 
+@@ -71,7 +82,7 @@ class ConsumerCallbackManager {
+         topic: String,
+         partition: Int,
+     ): ConsumerCallback {
+-        val key = ConsumerCallback.getUniqueKey(groupId, topic, partition)
++        val key = ConsumerCallback.Companion.getUniqueKey(groupId, topic, partition)
+         return consumerCallbacks[key] ?: throw NoSuchElementException("No consumer callback found for key: $key")
+     }
+ 
+@@ -86,12 +97,16 @@ class ConsumerCallbackManager {
+         val consumerCallback = ConsumerCallback(groupId, topic, partition, callback)
+ 
+         if (consumerCallbacks.contains(consumerCallback.uniqueKey)) {
+-            logger.warn { "[ConsumerManager] Consumer is already registered with ConsumerManager. " +
+-                    "groupId=[$groupId], topic=[$topic], partition=[$partition]" }
++            logger.warn {
++                "[ConsumerManager] Consumer is already registered with ConsumerManager. " +
++                    "groupId=[$groupId], topic=[$topic], partition=[$partition]"
++            }
+         } else {
+             consumerCallbacks[consumerCallback.uniqueKey] = consumerCallback
+-            logger.info { "[ConsumerManager] Consumer registered with ConsumerManager. " +
+-                    "groupId=[$groupId], topic=[$topic], partition=[$partition]" }
++            logger.info {
++                "[ConsumerManager] Consumer registered with ConsumerManager. " +
++                    "groupId=[$groupId], topic=[$topic], partition=[$partition]"
++            }
+         }
+     }
+ 
+@@ -100,10 +115,12 @@ class ConsumerCallbackManager {
+         topic: String,
+         partition: Int,
+     ) {
+-        val key = ConsumerCallback.getUniqueKey(groupId, topic, partition)
++        val key = ConsumerCallback.Companion.getUniqueKey(groupId, topic, partition)
+         consumerCallbacks.remove(key)
+ 
+-        logger.info { "[ConsumerManager] Consumer revoked from ConsumerManager. " +
+-                "groupId=[$groupId], topic=[$topic], partition=[$partition]" }
++        logger.info {
++            "[ConsumerManager] Consumer revoked from ConsumerManager. " +
++                "groupId=[$groupId], topic=[$topic], partition=[$partition]"
++        }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexContainerFactory.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexContainerFactory.kt
+index 0c58b2a..b2093cf 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexContainerFactory.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexContainerFactory.kt
+@@ -1,7 +1,6 @@
+ package com.cowave.search.inbound_adapter.dynamic_indexer.handler.config
+ 
+ import com.cowave.search.domain.index.dto.ChangedDocument
+-import com.cowave.search.inbound_adapter.dynamic_indexer.handler.config.DynamicIndexerProperties.DynamicIndexConsumer
+ import com.cowave.search.inbound_adapter.dynamic_indexer.handler.dto.CdcEvent
+ import com.cowave.search.inbound_adapter.dynamic_indexer.handler.dto.ConsumerGroupOffsetSnapshot
+ import com.fasterxml.jackson.core.type.TypeReference
+@@ -16,7 +15,12 @@ import org.apache.kafka.common.IsolationLevel
+ import org.apache.kafka.common.serialization.StringDeserializer
+ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
+ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+-import org.springframework.kafka.listener.*
++import org.springframework.kafka.listener.AcknowledgingMessageListener
++import org.springframework.kafka.listener.BatchAcknowledgingConsumerAwareMessageListener
++import org.springframework.kafka.listener.BatchAcknowledgingMessageListener
++import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
++import org.springframework.kafka.listener.ContainerProperties
++import org.springframework.kafka.listener.DefaultErrorHandler
+ import org.springframework.kafka.support.serializer.JsonDeserializer
+ import org.springframework.util.backoff.FixedBackOff
+ import org.springframework.util.backoff.FixedBackOff.UNLIMITED_ATTEMPTS
+@@ -24,7 +28,7 @@ import java.util.*
+ 
+ object DynamicIndexContainerFactory {
+     fun createCdcContainer(
+-        dynamicIndexConsumer: DynamicIndexConsumer,
++        dynamicIndexConsumer: DynamicIndexerProperties.DynamicIndexConsumer,
+         listener: BatchAcknowledgingConsumerAwareMessageListener<SpecificRecord, SpecificRecord>,
+     ): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
+         val containerFactory =
+@@ -49,7 +53,7 @@ object DynamicIndexContainerFactory {
+     }
+ 
+     fun <T : ChangedDocument> createCdcContainer(
+-        dynamicIndexConsumer: DynamicIndexConsumer,
++        dynamicIndexConsumer: DynamicIndexerProperties.DynamicIndexConsumer,
+         typeRef: TypeReference<CdcEvent<T>>,
+         listener: BatchAcknowledgingMessageListener<String, CdcEvent<T>>,
+     ): ConcurrentMessageListenerContainer<String, CdcEvent<T>> {
+@@ -89,7 +93,7 @@ object DynamicIndexContainerFactory {
+     }
+ 
+     fun createAdminContainer(
+-        dynamicIndexAdminConsumer: DynamicIndexConsumer,
++        dynamicIndexAdminConsumer: DynamicIndexerProperties.DynamicIndexConsumer,
+         listener: AcknowledgingMessageListener<String, ConsumerGroupOffsetSnapshot>,
+     ): ConcurrentMessageListenerContainer<String, ConsumerGroupOffsetSnapshot> {
+         val containerFactory =
+@@ -115,7 +119,7 @@ object DynamicIndexContainerFactory {
+         }
+     }
+ 
+-    private fun getKafkaConsumerProperties(dynamicIndexConsumer: DynamicIndexConsumer): Map<String, Any> =
++    private fun getKafkaConsumerProperties(dynamicIndexConsumer: DynamicIndexerProperties.DynamicIndexConsumer): Map<String, Any> =
+         mutableMapOf(
+             ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to dynamicIndexConsumer.bootstrapServers,
+             ConsumerConfig.ISOLATION_LEVEL_CONFIG to IsolationLevel.READ_COMMITTED.toString().lowercase(),
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexerProperties.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexerProperties.kt
+index 4d55f7e..c00b467 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexerProperties.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/config/DynamicIndexerProperties.kt
+@@ -35,4 +35,4 @@ data class DynamicIndexerProperties(
+             val specificAvroReader: String? = null,
+         )
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerCallback.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerCallback.kt
+index 815eeeb..9aa6608 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerCallback.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerCallback.kt
+@@ -23,6 +23,10 @@ data class ConsumerCallback(
+     }
+ 
+     companion object {
+-        fun getUniqueKey(groupId: String, topic: String, partition: Int): String = "$groupId-$topic-$partition"
++        fun getUniqueKey(
++            groupId: String,
++            topic: String,
++            partition: Int,
++        ): String = "$groupId-$topic-$partition"
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerGroupOffsetSnapshot.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerGroupOffsetSnapshot.kt
+index f854911..3e169bc 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerGroupOffsetSnapshot.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/ConsumerGroupOffsetSnapshot.kt
+@@ -10,7 +10,6 @@ data class ConsumerGroupOffsetSnapshot(
+     val timestamp: String? = null,
+     val totalLag: Long? = null,
+ ) {
+-
+     /**
+      * Kafka 파티션 정보
+      */
+@@ -21,4 +20,3 @@ data class ConsumerGroupOffsetSnapshot(
+         val lag: Long? = null,
+     )
+ }
+-
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/SeekRequest.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/SeekRequest.kt
+index 8a1b42c..e3237e4 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/SeekRequest.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/dto/SeekRequest.kt
+@@ -5,4 +5,4 @@ data class SeekRequest(
+     val topic: String,
+     val partition: Int,
+     val offset: Long,
+-)
+\ No newline at end of file
++)
+diff --git a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/listener/FlinkCdcBatchListener.kt b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/listener/FlinkCdcBatchListener.kt
+index e1a6f1c..d3c2685 100644
+--- a/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/listener/FlinkCdcBatchListener.kt
++++ b/inbound-adapter/dynamic-indexer/src/main/kotlin/com/cowave/search/inbound_adapter/dynamic_indexer/handler/listener/FlinkCdcBatchListener.kt
+@@ -7,10 +7,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
+ import org.apache.kafka.clients.consumer.OffsetAndMetadata
+ import org.apache.kafka.common.TopicPartition
+ import org.springframework.kafka.listener.ConsumerSeekAware
+-import kotlin.collections.component1
+-import kotlin.collections.component2
+-import kotlin.collections.forEach
+-import kotlin.getValue
+ 
+ abstract class FlinkCdcBatchListener(
+     val groupId: String,
+@@ -20,6 +16,7 @@ abstract class FlinkCdcBatchListener(
+ 
+     interface ConsumerManager<K, V> {
+         fun records(): List<ConsumerRecord<K, V>>
++
+         fun commit()
+     }
+ 
+@@ -27,48 +24,50 @@ abstract class FlinkCdcBatchListener(
+         data: List<ConsumerRecord<K, V>>,
+         consumer: Consumer<*, *>,
+         skipPredicate: (V) -> Boolean = { false },
+-    ): ConsumerManager<K, V> = object : ConsumerManager<K, V> {
+-        private val logger by logger()
+-        private val offsetMap: MutableMap<TopicPartition, Long> = mutableMapOf()
+-        private val seekMap: MutableMap<TopicPartition, Long> = mutableMapOf()
+-        private val refinedData: MutableList<ConsumerRecord<K, V>> = mutableListOf()
+-
+-        init {
+-            logger.info { "CommitManager created. data size: ${data.size}" }
+-
+-            data.groupBy { TopicPartition(it.topic(), it.partition()) }
+-                .forEach { (tp, records) ->
+-                    val refined: MutableList<ConsumerRecord<K, V>> = mutableListOf()
+-
+-                    if (skipPredicate(records.last().value())) {
+-                        seekMap[tp] = records.last().offset()
+-                        refined.addAll(records.dropLast(1))
+-                    } else {
+-                        refined.addAll(records)
++    ): ConsumerManager<K, V> =
++        object : ConsumerManager<K, V> {
++            private val logger by logger()
++            private val offsetMap: MutableMap<TopicPartition, Long> = mutableMapOf()
++            private val seekMap: MutableMap<TopicPartition, Long> = mutableMapOf()
++            private val refinedData: MutableList<ConsumerRecord<K, V>> = mutableListOf()
++
++            init {
++                logger.info { "CommitManager created. data size: ${data.size}" }
++
++                data
++                    .groupBy { TopicPartition(it.topic(), it.partition()) }
++                    .forEach { (tp, records) ->
++                        val refined: MutableList<ConsumerRecord<K, V>> = mutableListOf()
++
++                        if (skipPredicate(records.last().value())) {
++                            seekMap[tp] = records.last().offset()
++                            refined.addAll(records.dropLast(1))
++                        } else {
++                            refined.addAll(records)
++                        }
++
++                        offsetMap[tp] = refined.last().offset()
++                        refinedData.addAll(refined)
+                     }
++            }
+ 
+-                    offsetMap[tp] = refined.last().offset()
+-                    refinedData.addAll(refined)
+-                }
+-        }
+-
+-        override fun records(): List<ConsumerRecord<K, V>> = refinedData.toList()
++            override fun records(): List<ConsumerRecord<K, V>> = refinedData.toList()
+ 
+-        override fun commit() {
+-            if (offsetMap.isEmpty()) {
+-                logger.warn { "No offset to commit" }
+-            }
++            override fun commit() {
++                if (offsetMap.isEmpty()) {
++                    logger.warn { "No offset to commit" }
++                }
+ 
+-            offsetMap.forEach { (tp, offset) ->
+-                consumer.commitSync(mapOf(tp to OffsetAndMetadata(offset)))
+-            }
++                offsetMap.forEach { (tp, offset) ->
++                    consumer.commitSync(mapOf(tp to OffsetAndMetadata(offset)))
++                }
+ 
+-            seekMap.forEach { (tp, offset) ->
+-                val cbm = consumerCallbackManager.getConsumerCallback(groupId, tp.topic(), tp.partition())
+-                cbm.callback.seek(tp.topic(), tp.partition(), offset)
++                seekMap.forEach { (tp, offset) ->
++                    val cbm = consumerCallbackManager.getConsumerCallback(groupId, tp.topic(), tp.partition())
++                    cbm.callback.seek(tp.topic(), tp.partition(), offset)
++                }
+             }
+         }
+-    }
+ 
+     override fun registerSeekCallback(callback: ConsumerSeekAware.ConsumerSeekCallback) {
+         // Do nothing
+@@ -99,12 +98,13 @@ abstract class FlinkCdcBatchListener(
+     }
+ 
+     protected fun rewindIfNeeded() {
+-        consumerCallbackManager.getAllConsumerCallbacks()
++        consumerCallbackManager
++            .getAllConsumerCallbacks()
+             .forEach { c ->
+                 if (c.shouldSeek) {
+                     logger.info {
+                         "[Consumer] Try to seek offset. " +
+-                                "groupId=[${c.groupId}], topic=[${c.topic}], partition=[${c.partition}], offset=[${c.offset}]"
++                            "groupId=[${c.groupId}], topic=[${c.topic}], partition=[${c.partition}], offset=[${c.offset}]"
+                     }
+                     c.callback.seek(c.topic, c.partition, c.offset)
+                     c.reset()
+@@ -120,10 +120,10 @@ abstract class FlinkCdcBatchListener(
+         if (c.shouldSeek) {
+             logger.info {
+                 "[Consumer] Try to seek offset. " +
+-                        "groupId=[$groupId], topic=[$topic], partition=[$partition], offset=[${c.offset}]"
++                    "groupId=[$groupId], topic=[$topic], partition=[$partition], offset=[${c.offset}]"
+             }
+             c.callback.seek(topic, partition, c.offset)
+             c.reset()
+         }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/inbound-adapter/legacy/build.gradle.kts b/inbound-adapter/legacy/build.gradle.kts
+new file mode 100644
+index 0000000..6c01c06
+--- /dev/null
++++ b/inbound-adapter/legacy/build.gradle.kts
+@@ -0,0 +1,15 @@
++dependencies {
++    implementation(project(":domain:cdc"))
++    implementation(project(":domain:index"))
++    implementation(project(":application:index"))
++    implementation(project(":shared"))
++
++    implementation("org.springframework.boot:spring-boot-starter")
++    implementation("org.springframework.kafka:spring-kafka")
++    implementation("io.github.oshai:kotlin-logging-jvm")
++    implementation("org.jetbrains.kotlin:kotlin-reflect")
++    implementation("com.fasterxml.jackson.core:jackson-databind")
++    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
++    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
++    implementation("io.confluent:kafka-avro-serializer")
++}
+diff --git a/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt
+new file mode 100644
+index 0000000..f93872f
+--- /dev/null
++++ b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConfig.kt
+@@ -0,0 +1,29 @@
++package com.cowave.search.inbound_adapter.legacy.config
++
++import com.cowave.search.application.index.service.LegacyReserveSyncApplicationService
++import com.cowave.search.inbound_adapter.legacy.listener.LegacyReserveSyncListener
++import org.apache.avro.specific.SpecificRecord
++import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
++import org.springframework.context.annotation.Bean
++import org.springframework.context.annotation.Configuration
++import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
++
++@Configuration
++@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true", matchIfMissing = true)
++class LegacyReserveSyncConfig(
++    private val legacyReserveSyncConsumerProperties: LegacyReserveSyncConsumerProperties,
++    private val legacyReserveSyncApplicationService: LegacyReserveSyncApplicationService,
++) {
++    @ConditionalOnProperty(prefix = "legacy-sync-consumer.product-cdc", name = ["enabled"], havingValue = "true", matchIfMissing = false)
++    @Bean
++    fun legacyReserveSyncKafkaListenerContainer(): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
++        val listener =
++            LegacyReserveSyncListener(
++                legacyReserveSyncApplicationService = legacyReserveSyncApplicationService,
++            )
++        return LegacyReserveSyncContainerFactory.createCdcContainer(
++            dynamicIndexConsumer = legacyReserveSyncConsumerProperties.productCdc,
++            listener = listener,
++        )
++    }
++}
+diff --git a/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt
+new file mode 100644
+index 0000000..5f14a4d
+--- /dev/null
++++ b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncConsumerProperties.kt
+@@ -0,0 +1,33 @@
++package com.cowave.search.inbound_adapter.legacy.config
++
++import org.springframework.boot.context.properties.ConfigurationProperties
++
++@ConfigurationProperties(prefix = "legacy-sync-consumer")
++data class LegacyReserveSyncConsumerProperties(
++    val productCdc: DynamicIndexConsumer,
++) {
++    data class DynamicIndexConsumer(
++        val enabled: Boolean = false,
++        val bootstrapServers: String,
++        val topic: String,
++        val groupId: String,
++        val concurrency: Int = 1,
++        val idleEventInterval: Long = 100L, // ms
++        val properties: ConsumerProperties,
++    ) {
++        data class ConsumerProperties(
++            val autoOffsetReset: String = "latest",
++            val enableAutoCommit: Boolean = false,
++            val maxPollRecords: Int = 1000,
++            val fetchMaxWaitMs: Int = 5000, // ms
++            val fetchMinSize: Int = 1024768, // byte
++            val sessionTimeoutMs: Int = 30000,
++            val heartbeatIntervalMs: Int = 10000,
++            val securityProtocol: String? = null,
++            val saslMechanism: String? = null,
++            val saslJaasConfig: String? = null,
++            val schemaRegistryUrl: String? = null,
++            val specificAvroReader: String? = null,
++        )
++    }
++}
+diff --git a/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt
+new file mode 100644
+index 0000000..801ed36
+--- /dev/null
++++ b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/config/LegacyReserveSyncContainerFactory.kt
+@@ -0,0 +1,68 @@
++package com.cowave.search.inbound_adapter.legacy.config
++
++import io.confluent.kafka.serializers.KafkaAvroDeserializer
++import org.apache.avro.specific.SpecificRecord
++import org.apache.kafka.clients.consumer.ConsumerConfig
++import org.apache.kafka.common.IsolationLevel
++import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
++import org.springframework.kafka.core.DefaultKafkaConsumerFactory
++import org.springframework.kafka.listener.BatchAcknowledgingConsumerAwareMessageListener
++import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
++import org.springframework.kafka.listener.ContainerProperties
++import org.springframework.kafka.listener.DefaultErrorHandler
++import org.springframework.util.backoff.FixedBackOff
++import org.springframework.util.backoff.FixedBackOff.UNLIMITED_ATTEMPTS
++
++object LegacyReserveSyncContainerFactory {
++    fun createCdcContainer(
++        dynamicIndexConsumer: LegacyReserveSyncConsumerProperties.DynamicIndexConsumer,
++        listener: BatchAcknowledgingConsumerAwareMessageListener<SpecificRecord, SpecificRecord>,
++    ): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
++        val containerFactory =
++            ConcurrentKafkaListenerContainerFactory<SpecificRecord, SpecificRecord>().apply {
++                setConcurrency(dynamicIndexConsumer.concurrency)
++                isBatchListener = true
++                containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
++                containerProperties.groupId = dynamicIndexConsumer.groupId
++                containerProperties.idleEventInterval = dynamicIndexConsumer.idleEventInterval
++                consumerFactory =
++                    DefaultKafkaConsumerFactory(
++                        getKafkaConsumerProperties(dynamicIndexConsumer),
++                        KafkaAvroDeserializer(),
++                        KafkaAvroDeserializer(),
++                    )
++                setCommonErrorHandler(getDefaultErrorHandler())
++            }
++
++        return containerFactory.createContainer(dynamicIndexConsumer.topic).apply {
++            setupMessageListener(listener)
++        }
++    }
++
++    private fun getKafkaConsumerProperties(dynamicIndexConsumer: LegacyReserveSyncConsumerProperties.DynamicIndexConsumer): Map<String, Any> =
++        mutableMapOf(
++            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to dynamicIndexConsumer.bootstrapServers,
++            ConsumerConfig.ISOLATION_LEVEL_CONFIG to IsolationLevel.READ_COMMITTED.toString().lowercase(),
++            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to dynamicIndexConsumer.properties.autoOffsetReset,
++            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to dynamicIndexConsumer.properties.enableAutoCommit,
++            ConsumerConfig.MAX_POLL_RECORDS_CONFIG to dynamicIndexConsumer.properties.maxPollRecords,
++            ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG to dynamicIndexConsumer.properties.fetchMaxWaitMs,
++            ConsumerConfig.FETCH_MIN_BYTES_CONFIG to dynamicIndexConsumer.properties.fetchMinSize,
++//            "spring.json.trusted.packages" to "*",
++//            "spring.json.use.type.headers" to false,
++        ).apply {
++            dynamicIndexConsumer.properties.schemaRegistryUrl?.let { put("schema.registry.url", it) }
++            dynamicIndexConsumer.properties.specificAvroReader?.let { put("specific.avro.reader", it) }
++            dynamicIndexConsumer.properties.securityProtocol?.let { put("security.protocol", it) }
++            dynamicIndexConsumer.properties.saslMechanism?.let { put("sasl.mechanism", it) }
++            dynamicIndexConsumer.properties.saslJaasConfig?.let { put("sasl.jaas.config", it) }
++        }.toMap()
++
++    private fun getDefaultErrorHandler(): DefaultErrorHandler =
++        DefaultErrorHandler(
++            { _, _ -> },
++            FixedBackOff(1000L, UNLIMITED_ATTEMPTS),
++        ).apply {
++            isAckAfterHandle = false
++        }
++}
+diff --git a/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt
+new file mode 100644
+index 0000000..f10dba1
+--- /dev/null
++++ b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/listener/LegacyReserveSyncListener.kt
+@@ -0,0 +1,50 @@
++package com.cowave.search.inbound_adapter.legacy.listener
++
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.ProductCdcEnvelope
++import com.cowave.search.application.index.mapper.LegacySyncMapper
++import com.cowave.search.application.index.service.LegacyReserveSyncApplicationService
++import com.cowave.search.domain.index.policy.ProductMergeStrategy
++import com.cowave.search.inbound_adapter.legacy.mapper.toChangedProductData
++import com.cowave.shared.utils.logger
++import org.apache.avro.specific.SpecificRecord
++import org.apache.kafka.clients.consumer.Consumer
++import org.apache.kafka.clients.consumer.ConsumerRecord
++import org.springframework.kafka.listener.BatchAcknowledgingConsumerAwareMessageListener
++import org.springframework.kafka.support.Acknowledgment
++
++class LegacyReserveSyncListener(
++    private val legacyReserveSyncApplicationService: LegacyReserveSyncApplicationService,
++) : BatchAcknowledgingConsumerAwareMessageListener<SpecificRecord, SpecificRecord> {
++    private val logger by logger()
++
++    override fun onMessage(
++        data: List<ConsumerRecord<SpecificRecord, SpecificRecord>>,
++        acknowledgment: Acknowledgment?,
++        consumer: Consumer<*, *>,
++    ) {
++        runCatching {
++            val changedDocuments =
++                data.mapNotNull { record ->
++                    val envelope = record.value() as ProductCdcEnvelope
++                    val product = envelope.after ?: envelope.before
++
++                    if (product == null) {
++                        logger.info { "[Legacy Reserve Sync] Reserve Sync skipped because envelope is null" }
++                        null
++                    } else if (product.categoryId == null || product.categoryId == 0) {
++                        logger.info { "[Legacy Reserve Sync] Reserve Sync skipped because categoryId is empty" }
++                        null
++                    } else {
++                        record.toChangedProductData()
++                    }
++                }
++
++            val mergedDocuments = ProductMergeStrategy.merge(changedDocuments)
++            legacyReserveSyncApplicationService.syncToLegacy(LegacySyncMapper.convertToChangedLegacyData(mergedDocuments))
++        }.onSuccess {
++            acknowledgment?.acknowledge()
++        }.onFailure { ex ->
++            logger.error(ex) { "Failed to sync products to legacy" }
++        }.getOrThrow()
++    }
++}
+diff --git a/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/mapper/ChangeDataMapper.kt b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/mapper/ChangeDataMapper.kt
+new file mode 100644
+index 0000000..3c556b5
+--- /dev/null
++++ b/inbound-adapter/legacy/src/main/kotlin/com/cowave/search/inbound_adapter/legacy/mapper/ChangeDataMapper.kt
+@@ -0,0 +1,48 @@
++package com.cowave.search.inbound_adapter.legacy.mapper
++
++import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.Catalog
++import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.CatalogCdcEnvelope
++import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.CatalogCdcKey
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.ProductCdcEnvelope
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.ProductCdcKey
++import com.cowave.search.domain.index.dto.ChangedData
++import com.cowave.search.domain.index.enums.Operation
++import org.apache.avro.specific.SpecificRecord
++import org.apache.kafka.clients.consumer.ConsumerRecord
++
++fun ConsumerRecord<SpecificRecord, SpecificRecord>.toChangedCatalogData(): ChangedData<Catalog> {
++    val key = this.key() as CatalogCdcKey
++    val value = this.value() as CatalogCdcEnvelope
++
++    return ChangedData(
++        id = (key.`id$1` ?: (value.after?.`id$1` ?: value.before?.`id$1`!!)).toString(),
++        op = convertOp(value.op),
++        beforeData = value.before,
++        afterData = value.after,
++        partition = this.partition(),
++        offset = this.offset(),
++    )
++}
++
++fun ConsumerRecord<SpecificRecord, SpecificRecord>.toChangedProductData(): ChangedData<Product> {
++    val key = this.key() as ProductCdcKey
++    val value = this.value() as ProductCdcEnvelope
++
++    return ChangedData(
++        id = (key.`id$1` ?: value.after?.`id$1` ?: value.before?.`id$1`!!).toString(),
++        op = convertOp(value.op),
++        beforeData = value.before,
++        afterData = value.after,
++        partition = this.partition(),
++        offset = this.offset(),
++    )
++}
++
++private fun convertOp(value: String): Operation =
++    when (value) {
++        "c" -> Operation.CREATE
++        "u" -> Operation.UPDATE
++        "d" -> Operation.DELETE
++        else -> throw IllegalArgumentException("Unknown operation type.")
++    }
+diff --git a/outbound-adapter/legacy/build.gradle.kts b/outbound-adapter/legacy/build.gradle.kts
+new file mode 100644
+index 0000000..813e724
+--- /dev/null
++++ b/outbound-adapter/legacy/build.gradle.kts
+@@ -0,0 +1,13 @@
++dependencies {
++    implementation(project(":shared"))
++    implementation(project(":domain:index"))
++    implementation(project(":application:index"))
++    implementation(project(":outbound:client:legacy-api"))
++    implementation("org.springframework.boot:spring-boot-starter-webflux")
++    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
++
++    testImplementation("org.springframework.boot:spring-boot-starter-test")
++    testImplementation("io.kotest:kotest-runner-junit5-jvm")
++    testImplementation("io.kotest:kotest-assertions-core-jvm")
++    testImplementation("io.mockk:mockk:1.13.13")
++}
+diff --git a/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt b/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt
+new file mode 100644
+index 0000000..52f313a
+--- /dev/null
++++ b/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacyReserveSyncRepositoryImpl.kt
+@@ -0,0 +1,46 @@
++package com.cowave.search.outbound_adapter.legacy
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.application.index.repository.LegacyReserveSyncRepository
++import com.cowave.search.client.legacy_api.LegacyApiClient
++import com.cowave.search.domain.index.enums.Operation
++import com.cowave.shared.utils.logger
++import org.springframework.http.HttpMethod
++import org.springframework.stereotype.Component
++
++@Component
++class LegacyReserveSyncRepositoryImpl(
++    private val legacyApiClient: LegacyApiClient,
++) : LegacyReserveSyncRepository {
++    private val logger by logger()
++
++    override suspend fun pushLinkedProducts(
++        products: List<LinkedProductRequest>,
++        operation: Operation,
++    ) {
++        logger.info { "레거시 연동상품 동기화 요청 [operation=$operation, count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "PDM", method = operation.toHttpMethod(), body = products)
++    }
++
++    override suspend fun pushUnlinkedProducts(
++        products: List<UnlinkedProductRequest>,
++        operation: Operation,
++    ) {
++        logger.info { "레거시 비연동상품 동기화 요청 [operation=$operation, count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "TCMPNY_LINK", method = operation.toHttpMethod(), body = products)
++    }
++
++    override suspend fun pushUnlinkedProductDeletes(products: List<UnlinkedProductDeleteRequest>) {
++        logger.info { "레거시 비연동상품 삭제 동기화 요청 [count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "TCMPNY_LINK", method = HttpMethod.DELETE, body = products)
++    }
++
++    private fun Operation.toHttpMethod(): HttpMethod =
++        when (this) {
++            Operation.CREATE -> HttpMethod.POST
++            Operation.UPDATE -> HttpMethod.PUT
++            Operation.DELETE -> HttpMethod.DELETE
++        }
++}
+diff --git a/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt b/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt
+new file mode 100644
+index 0000000..febe322
+--- /dev/null
++++ b/outbound-adapter/legacy/src/test/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImplTest.kt
+@@ -0,0 +1,100 @@
++package com.cowave.search.outbound_adapter.legacy
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.client.legacy_api.LegacyApiClient
++import com.cowave.search.domain.index.enums.Operation
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import io.mockk.coEvery
++import io.mockk.coVerify
++import io.mockk.mockk
++import io.mockk.slot
++import org.springframework.http.HttpMethod
++
++class LegacySyncRepositoryImplTest :
++    FunSpec({
++
++        val legacyApiClient = mockk<LegacyApiClient>()
++        val repository = LegacyReserveSyncRepositoryImpl(legacyApiClient)
++
++        beforeEach {
++            coEvery { legacyApiClient.pushQueue(any(), any(), any()) } returns Unit
++        }
++
++        context("pushLinkedProducts") {
++            val products =
++                listOf(
++                    LinkedProductRequest(shopProductCode = "P001", shopCode = "S001"),
++                )
++
++            test("CREATE 연동상품 동기화 - POST로 호출한다") {
++                val serviceSlot = slot<String>()
++                val methodSlot = slot<HttpMethod>()
++
++                coEvery {
++                    legacyApiClient.pushQueue(capture(serviceSlot), capture(methodSlot), any())
++                } returns Unit
++
++                repository.pushLinkedProducts(products, Operation.CREATE)
++
++                serviceSlot.captured shouldBe "PDM"
++                methodSlot.captured shouldBe HttpMethod.POST
++                coVerify(exactly = 1) { legacyApiClient.pushQueue("PDM", HttpMethod.POST, products) }
++            }
++
++            test("UPDATE 연동상품 동기화 - PUT으로 호출한다") {
++                val methodSlot = slot<HttpMethod>()
++
++                coEvery {
++                    legacyApiClient.pushQueue(any(), capture(methodSlot), any())
++                } returns Unit
++
++                repository.pushLinkedProducts(products, Operation.UPDATE)
++
++                methodSlot.captured shouldBe HttpMethod.PUT
++                coVerify(exactly = 1) { legacyApiClient.pushQueue("PDM", HttpMethod.PUT, products) }
++            }
++
++            test("DELETE 연동상품 동기화 - DELETE로 호출한다") {
++                val methodSlot = slot<HttpMethod>()
++
++                coEvery {
++                    legacyApiClient.pushQueue(any(), capture(methodSlot), any())
++                } returns Unit
++
++                repository.pushLinkedProducts(products, Operation.DELETE)
++
++                methodSlot.captured shouldBe HttpMethod.DELETE
++                coVerify(exactly = 1) { legacyApiClient.pushQueue("PDM", HttpMethod.DELETE, products) }
++            }
++        }
++
++        context("pushUnlinkedProducts") {
++            // TODO(human): 비연동상품 테스트 데이터와 3가지 Operation 테스트 케이스를 구현하세요
++        }
++
++        context("pushUnlinkedProductDeletes") {
++            val products =
++                listOf(
++                    UnlinkedProductDeleteRequest(shopCode = "S001", shopProductCode = "P001"),
++                )
++
++            test("비연동상품 삭제 동기화 - DELETE로 호출한다") {
++                val serviceSlot = slot<String>()
++                val methodSlot = slot<HttpMethod>()
++
++                coEvery {
++                    legacyApiClient.pushQueue(capture(serviceSlot), capture(methodSlot), any())
++                } returns Unit
++
++                repository.pushUnlinkedProductDeletes(products)
++
++                serviceSlot.captured shouldBe "TCMPNY_LINK"
++                methodSlot.captured shouldBe HttpMethod.DELETE
++                coVerify(exactly = 1) {
++                    legacyApiClient.pushQueue("TCMPNY_LINK", HttpMethod.DELETE, products)
++                }
++            }
++        }
++    })
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
+index 0b4b486..e7dd882 100644
+--- a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
+@@ -13,10 +13,10 @@ class ManufacturerProxyReaderImpl(
+         val query =
+             """
+             query GetManufacturers(${'$'}ids: [Long!]) { # 스키마에 Long!으로 되어 있으니 타입을 맞춥니다.
+-                manufacturers(input: { 
+-                    byManufacturer: { 
+-                        ids: ${'$'}ids 
+-                    } 
++                manufacturers(input: {
++                    byManufacturer: {
++                        ids: ${'$'}ids
++                    }
+                 }) {
+                     items {
+                         id
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandProxyReaderImplTest.kt
+similarity index 100%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandProxyReaderImplTest.kt
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryProxyReaderImplTest.kt
+similarity index 100%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryProxyReaderImplTest.kt
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerProxyReaderImplTest.kt
+similarity index 100%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerProxyReaderImplTest.kt
+diff --git a/outbound/client/legacy-api/build.gradle.kts b/outbound/client/legacy-api/build.gradle.kts
+new file mode 100644
+index 0000000..02656f9
+--- /dev/null
++++ b/outbound/client/legacy-api/build.gradle.kts
+@@ -0,0 +1,11 @@
++dependencies {
++    implementation(project(":shared"))
++    implementation("org.springframework.boot:spring-boot-starter-webflux")
++    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
++
++    testImplementation("org.springframework.boot:spring-boot-starter-test")
++    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
++    testImplementation("io.kotest:kotest-runner-junit5-jvm")
++    testImplementation("io.kotest:kotest-assertions-core-jvm")
++    testImplementation("io.kotest.extensions:kotest-extensions-spring")
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt
+new file mode 100644
+index 0000000..8ec5b61
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt
+@@ -0,0 +1,38 @@
++package com.cowave.search.client.legacy_api
++
++import com.cowave.shared.utils.logger
++import kotlinx.coroutines.reactor.awaitSingle
++import org.springframework.beans.factory.annotation.Qualifier
++import org.springframework.http.HttpMethod
++import org.springframework.http.MediaType
++import org.springframework.stereotype.Component
++import org.springframework.web.reactive.function.client.WebClient
++import org.springframework.web.reactive.function.client.bodyToMono
++
++@Component
++class LegacyApiClient(
++    @param:Qualifier("LegacyWebClient")
++    private val client: WebClient,
++) {
++    private val logger by logger()
++
++    suspend fun pushQueue(
++        service: String,
++        method: HttpMethod,
++        body: Any,
++    ) {
++        try {
++            client
++                .method(method)
++                .uri("/pushQueue.json?service={service}", service)
++                .contentType(MediaType.APPLICATION_JSON)
++                .bodyValue(body)
++                .retrieve()
++                .bodyToMono<String>()
++                .awaitSingle()
++        } catch (ex: Exception) {
++            logger.error { "Legacy API pushQueue 호출 실패 [service=$service]: $ex" }
++            throw ex
++        }
++    }
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt
+new file mode 100644
+index 0000000..4ead444
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt
+@@ -0,0 +1,37 @@
++package com.cowave.search.client.legacy_api
++
++import io.netty.channel.ChannelOption
++import org.springframework.context.annotation.Bean
++import org.springframework.context.annotation.Configuration
++import org.springframework.http.client.reactive.ReactorClientHttpConnector
++import org.springframework.web.reactive.function.client.WebClient
++import reactor.netty.http.client.HttpClient
++import reactor.netty.resources.ConnectionProvider
++import java.time.Duration
++
++@Configuration
++class LegacyApiClientConfig(
++    private val prop: LegacyApiClientProperties,
++) {
++    @Bean("LegacyWebClient")
++    fun legacyWebClient(): WebClient {
++        val connectionProvider =
++            ConnectionProvider
++                .builder("legacy-api")
++                .maxConnections(50)
++                .pendingAcquireTimeout(Duration.ofMillis(prop.timeout))
++                .build()
++
++        val httpClient =
++            HttpClient
++                .create(connectionProvider)
++                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, prop.timeout.toInt())
++                .responseTimeout(Duration.ofMillis(prop.timeout))
++
++        return WebClient
++            .builder()
++            .baseUrl(prop.baseUrl)
++            .clientConnector(ReactorClientHttpConnector(httpClient))
++            .build()
++    }
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt
+new file mode 100644
+index 0000000..71b8370
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt
+@@ -0,0 +1,9 @@
++package com.cowave.search.client.legacy_api
++
++import org.springframework.boot.context.properties.ConfigurationProperties
++
++@ConfigurationProperties(prefix = "client.legacy-api")
++data class LegacyApiClientProperties(
++    val baseUrl: String,
++    val timeout: Long = 500,
++)
+diff --git a/outbound/client/legacy-api/src/test/kotlin/com/cowave/search/client/legacy_api/LegacyApiTest.kt b/outbound/client/legacy-api/src/test/kotlin/com/cowave/search/client/legacy_api/LegacyApiTest.kt
+new file mode 100644
+index 0000000..94117cd
+--- /dev/null
++++ b/outbound/client/legacy-api/src/test/kotlin/com/cowave/search/client/legacy_api/LegacyApiTest.kt
+@@ -0,0 +1,140 @@
++package com.cowave.search.client.legacy_api
++
++import io.kotest.assertions.throwables.shouldNotThrowAny
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.extensions.spring.SpringExtension
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++import org.springframework.http.HttpMethod
++
++@SpringBootTest(
++    classes = [
++        LegacyApiClientConfig::class,
++        LegacyApiClient::class,
++    ],
++)
++@EnableConfigurationProperties(
++    LegacyApiClientProperties::class,
++)
++class LegacyApiTest(
++    private val legacyApiClient: LegacyApiClient,
++) : FunSpec({
++        extensions(SpringExtension)
++
++        val linkedProductBody =
++            listOf(
++                mapOf(
++                    "shopProductCode" to "TEST_PRODUCT_001",
++                    "shopCode" to "TEST_SHOP",
++                    "prodKind" to "LINK",
++                ),
++            )
++
++        val unlinkedProductBody =
++            listOf(
++                mapOf(
++                    "shopProductCode" to "TEST_PRODUCT_001",
++                    "shopCode" to "TEST_SHOP",
++                    "productName" to "테스트 상품",
++                    "stockYN" to "Y",
++                    "couponDownloadYN" to "N",
++                    "brandCertification" to "",
++                    "event_info" to "",
++                    "differentialPostYN" to "N",
++                    "mobilePrice" to 10000L,
++                    "cmpnyCateCode" to 0L,
++                    "seller_id" to "test_seller",
++                    "productImageUrl" to "",
++                    "addDescription" to "",
++                    "shopGift" to "",
++                    "modifyDate" to "20240101",
++                    "categoryCode1" to 0,
++                    "categoryCode2" to 0,
++                    "categoryCode3" to 0,
++                    "categoryCode4" to 0,
++                    "brand" to "",
++                    "importYN" to "N",
++                    "totalOrderPrice" to 0L,
++                    "condition" to "",
++                    "promotion_info" to "",
++                    "dataStat" to "",
++                    "orderDate" to "",
++                    "installationFeeYN" to "N",
++                    "shipping_info" to "",
++                    "bestGoodsSort" to "",
++                    "promotionPrice" to 0L,
++                    "isbn" to "",
++                    "model" to "",
++                    "mobile_url" to "",
++                    "differentialPost" to "",
++                    "adultYN" to "N",
++                    "point" to 0,
++                    "groupSeq" to 0L,
++                    "pcPrice" to 10000L,
++                    "vender_id" to "",
++                    "nointerest" to "",
++                    "promotionName" to "",
++                    "quickTime" to 0,
++                    "makeDate" to "",
++                    "registerDate" to "",
++                    "promotionType" to 0,
++                    "memberPrice" to 0L,
++                    "productMaker" to "",
++                    "orderCount" to 0,
++                    "deliveryPrice" to 0,
++                    "shopCoupon" to "",
++                    "linkUrl" to "",
++                    "barcode" to "",
++                    "reviewCount" to 0,
++                    "shipping" to 0,
++                ),
++            )
++
++        val unlinkedProductDeleteBody =
++            listOf(
++                mapOf(
++                    "shopCode" to "TEST_SHOP",
++                    "shopProductCode" to "TEST_PRODUCT_001",
++                ),
++            )
++
++        context("PDM - 매칭상품") {
++            test("CREATE - POST로 매칭상품을 생성한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("PDM", HttpMethod.POST, linkedProductBody)
++                }
++            }
++
++            test("UPDATE - PUT으로 매칭상품을 수정한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("PDM", HttpMethod.PUT, linkedProductBody)
++                }
++            }
++
++            test("DELETE - DELETE로 매칭상품을 삭제한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("PDM", HttpMethod.DELETE, linkedProductBody)
++                }
++            }
++        }
++
++        context("TCMPNY_LINK - 미매칭상품") {
++            test("CREATE - POST로 비매칭상품을 생성한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("TCMPNY_LINK", HttpMethod.POST, unlinkedProductBody)
++                }
++            }
++
++            test("UPDATE - PUT으로 미매칭상품을 수정한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("TCMPNY_LINK", HttpMethod.PUT, unlinkedProductBody)
++                }
++            }
++
++            test("DELETE - DELETE로 미매칭상품을 삭제한다") {
++                shouldNotThrowAny {
++                    legacyApiClient.pushQueue("TCMPNY_LINK", HttpMethod.DELETE, unlinkedProductDeleteBody)
++                }
++            }
++        }
++    })
+diff --git a/outbound/client/legacy-api/src/test/resources/application.properties b/outbound/client/legacy-api/src/test/resources/application.properties
+new file mode 100644
+index 0000000..abb8cdf
+--- /dev/null
++++ b/outbound/client/legacy-api/src/test/resources/application.properties
+@@ -0,0 +1,2 @@
++client.legacy-api.base-url=http://119.205.208.36:8080
++client.legacy-api.timeout=500
+\ No newline at end of file
+diff --git a/outbound/repository/cache/build.gradle.kts b/outbound/repository/cache/build.gradle.kts
+index 7015509..8b303a0 100644
+--- a/outbound/repository/cache/build.gradle.kts
++++ b/outbound/repository/cache/build.gradle.kts
+@@ -14,4 +14,5 @@ dependencies {
+     testImplementation("io.kotest:kotest-runner-junit5-jvm")
+     testImplementation("io.kotest:kotest-assertions-core-jvm")
+     testImplementation("io.kotest.extensions:kotest-extensions-spring")
++    testImplementation("io.mockk:mockk:1.13.13")
+ }
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..52bb80d
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt
+@@ -0,0 +1,81 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.infrastructure.valkey.ValkeyConfig
++import com.cowave.search.infrastructure.valkey.ValkeyProperties
++import com.cowave.search.repository.cache.entity.BrandValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        BrandValkeyRepository::class,
++    ]
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class BrandValkeyRepositoryTest(
++    private val repository: BrandValkeyRepository,
++) : FunSpec({
++
++    fun dummyBrands() = listOf(
++        BrandValkeyEntity(id = 1L, name = "나이키"),
++        BrandValkeyEntity(id = 2L, name = "아디다스"),
++        BrandValkeyEntity(id = 3L, name = "뉴발란스"),
++    )
++
++    test("기본적인 multi get, multi set 테스트") {
++        val brands = dummyBrands()
++        repository.putAll(brands)
++
++        val result = repository.getAll(listOf(1L, 2L, 3L))
++
++        result.size shouldBe 3
++        result[0]?.id shouldBe 1L
++        result[0]?.name shouldBe "나이키"
++        result[1]?.id shouldBe 2L
++        result[1]?.name shouldBe "아디다스"
++        result[2]?.id shouldBe 3L
++        result[2]?.name shouldBe "뉴발란스"
++    }
++
++    test("존재하지 않는 키 조회 시 null 반환") {
++        val result = repository.getAll(listOf(99999L))
++
++        result.size shouldBe 1
++        result[0] shouldBe null
++    }
++
++    test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++        repository.putAll(listOf(BrandValkeyEntity(id = 10L, name = "푸마")))
++
++        val result = repository.getAll(listOf(10L, 88888L))
++
++        result.size shouldBe 2
++        result[0]?.id shouldBe 10L
++        result[0]?.name shouldBe "푸마"
++        result[1] shouldBe null
++    }
++
++    test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++        repository.putAll(listOf(BrandValkeyEntity(id = 20L, name = "오리지널")))
++        repository.putAll(listOf(BrandValkeyEntity(id = 20L, name = "수정됨")))
++
++        val result = repository.getAll(listOf(20L))
++
++        result[0]?.name shouldBe "수정됨"
++    }
++
++    test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++        repository.putAll(emptyList())
++        val result = repository.getAll(emptyList())
++
++        result shouldBe emptyList()
++    }
++})
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..9f98a98
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt
+@@ -0,0 +1,110 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.infrastructure.valkey.ValkeyConfig
++import com.cowave.search.infrastructure.valkey.ValkeyProperties
++import com.cowave.search.repository.cache.entity.CategoryValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        CategoryValkeyRepository::class,
++    ],
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class CategoryValkeyRepositoryTest(
++    private val repository: CategoryValkeyRepository,
++) : FunSpec({
++
++        fun dummyCategories() =
++            listOf(
++                CategoryValkeyEntity(id = 1, name = "패션", depth = 1, idPath = "1", namePath = "패션", status = "ACTIVE"),
++                CategoryValkeyEntity(id = 2, name = "남성의류", depth = 2, idPath = "1|2", namePath = "패션>남성의류", status = "ACTIVE"),
++                CategoryValkeyEntity(id = 3, name = "여성의류", depth = 2, idPath = "1|3", namePath = "패션>여성의류", status = "INACTIVE"),
++            )
++
++        test("기본적인 multi get, multi set 테스트") {
++            val categories = dummyCategories()
++            repository.putAll(categories)
++
++            val result = repository.getAll(listOf(1, 2, 3))
++
++            result.size shouldBe 3
++            result[0]?.id shouldBe 1
++            result[0]?.name shouldBe "패션"
++            result[1]?.id shouldBe 2
++            result[2]?.id shouldBe 3
++        }
++
++        test("존재하지 않는 키 조회 시 null 반환") {
++            val result = repository.getAll(listOf(99999))
++
++            result.size shouldBe 1
++            result[0] shouldBe null
++        }
++
++        test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++            repository.putAll(
++                listOf(
++                    CategoryValkeyEntity(id = 10, name = "전자기기", depth = 1, idPath = "10", namePath = "전자기기", status = "ACTIVE"),
++                ),
++            )
++
++            val result = repository.getAll(listOf(10, 88888))
++
++            result.size shouldBe 2
++            result[0]?.id shouldBe 10
++            result[0]?.name shouldBe "전자기기"
++            result[1] shouldBe null
++        }
++
++        test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++            repository.putAll(listOf(CategoryValkeyEntity(1, name = "옷", 1, "0", "옷", "ACTIVE")))
++            repository.putAll(listOf(CategoryValkeyEntity(1, name = "남성성인의류", 2, "1|2", "옷>남성성인의류", "ACTIVE")))
++
++            val result = repository.getAll(listOf(1))
++
++            result[0]?.name shouldBe "남성성인의류"
++            result[0]?.idPath shouldBe "1|2"
++            result[0]?.namePath shouldBe "옷>남성성인의류"
++        }
++
++        test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++            repository.putAll(emptyList())
++            val result = repository.getAll(emptyList())
++
++            result shouldBe emptyList()
++        }
++
++        test("전체 필드 직렬화/역직렬화 - 6개 필드 모두 정확히 저장/복원되는지 확인") {
++            val category =
++                CategoryValkeyEntity(
++                    id = 100,
++                    name = "스포츠",
++                    depth = 3,
++                    idPath = "1|5|100",
++                    namePath = "패션>스포츠웨어>스포츠",
++                    status = "ACTIVE",
++                )
++            repository.putAll(listOf(category))
++
++            val result = repository.getAll(listOf(100))
++
++            result.size shouldBe 1
++            val restored = result[0]!!
++            restored.id shouldBe 100
++            restored.name shouldBe "스포츠"
++            restored.depth shouldBe 3
++            restored.idPath shouldBe "1|5|100"
++            restored.namePath shouldBe "패션>스포츠웨어>스포츠"
++            restored.status shouldBe "ACTIVE"
++        }
++    })
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt
+new file mode 100644
+index 0000000..d803415
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt
+@@ -0,0 +1,113 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.MallValkeyEntity
++import com.cowave.shared.serialization.defaultJson
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import io.mockk.every
++import io.mockk.mockk
++import io.mockk.slot
++import io.mockk.verify
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.data.redis.core.ValueOperations
++
++class MallValkeyRepositoryUnitTest : FunSpec({
++
++    val redisTemplate = mockk<RedisTemplate<String, String>>()
++    val valueOps = mockk<ValueOperations<String, String>>(relaxed = true)
++    val repository = MallValkeyRepository(redisTemplate)
++
++    beforeEach {
++        every { redisTemplate.opsForValue() } returns valueOps
++    }
++
++    test("getAllByIds - Valkey에 존재하는 몰을 조회하면 엔티티 리스트를 반환한다") {
++        val mall1 = MallValkeyEntity(mallId = 1, mallCode = "M001")
++        val mall2 = MallValkeyEntity(mallId = 2, mallCode = "M002", mallIdDanawa = "D002")
++
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall1),
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall2),
++        )
++
++        val result = repository.getAll(listOf(1, 2))
++
++        result.size shouldBe 2
++        result[0]?.mallId shouldBe 1
++        result[0]?.mallCode shouldBe "M001"
++        result[1]?.mallId shouldBe 2
++        result[1]?.mallIdDanawa shouldBe "D002"
++    }
++
++    test("getAllByIds - Valkey에 존재하지 않는 키는 null로 반환한다") {
++        val mall = MallValkeyEntity(mallId = 1, mallCode = "M001")
++
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall),
++            null,
++        )
++
++        val result = repository.getAll(listOf(1, 999))
++
++        result.size shouldBe 2
++        result[0]?.mallId shouldBe 1
++        result[1] shouldBe null
++    }
++
++    test("getAllByIds - 빈 리스트를 조회하면 빈 결과를 반환한다") {
++        every { valueOps.multiGet(any<Collection<String>>()) } returns emptyList()
++
++        val result = repository.getAll(emptyList())
++
++        result shouldBe emptyList()
++    }
++
++    test("setAll - 엔티티 리스트를 Valkey에 저장한다") {
++        val mall1 = MallValkeyEntity(mallId = 1, mallCode = "M001")
++        val mall2 = MallValkeyEntity(mallId = 2, mallCode = "M002")
++        val capturedMap = slot<Map<String, String>>()
++
++        every { valueOps.multiSet(capture(capturedMap)) } returns Unit
++
++        repository.putAll(listOf(mall1, mall2))
++
++        verify { valueOps.multiSet(any()) }
++        capturedMap.captured.size shouldBe 2
++        capturedMap.captured.keys.any { it.contains("mall") && it.endsWith(":1") } shouldBe true
++        capturedMap.captured.keys.any { it.contains("mall") && it.endsWith(":2") } shouldBe true
++    }
++
++    test("setAll - nullable 필드가 포함된 JSON이 올바르게 직렬화된다") {
++        val mall = MallValkeyEntity(
++            mallId = 42,
++            mallCode = "M042",
++            mallIdDanawa = null,
++            mallIdEnuri = 123,
++            mallUseYnDanawa = null,
++            mallUseYnEnuri = "Y",
++        )
++        val capturedMap = slot<Map<String, String>>()
++
++        every { valueOps.multiSet(capture(capturedMap)) } returns Unit
++
++        repository.putAll(listOf(mall))
++
++        val storedJson = capturedMap.captured.values.first()
++        val deserialized = defaultJson.decodeFromString(MallValkeyEntity.serializer(), storedJson)
++        deserialized.mallId shouldBe 42
++        deserialized.mallCode shouldBe "M042"
++        deserialized.mallIdDanawa shouldBe null
++        deserialized.mallIdEnuri shouldBe 123
++        deserialized.mallUseYnDanawa shouldBe null
++        deserialized.mallUseYnEnuri shouldBe "Y"
++    }
++
++    test("getKey - 올바른 키 포맷을 생성한다") {
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(null)
++
++        repository.getAll(listOf(123))
++
++        val expectedKeys = listOf("commerce-search.search-api.cache.mall:123")
++        verify { valueOps.multiGet(expectedKeys) }
++    }
++})
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..f066102
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt
+@@ -0,0 +1,81 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.infrastructure.valkey.ValkeyConfig
++import com.cowave.search.infrastructure.valkey.ValkeyProperties
++import com.cowave.search.repository.cache.entity.ManufacturerValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        ManufacturerValkeyRepository::class,
++    ]
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class ManufacturerValkeyRepositoryTest(
++    private val repository: ManufacturerValkeyRepository,
++) : FunSpec({
++
++    fun dummyManufacturers() = listOf(
++        ManufacturerValkeyEntity(id = 1L, name = "삼성전자"),
++        ManufacturerValkeyEntity(id = 2L, name = "LG전자"),
++        ManufacturerValkeyEntity(id = 3L, name = "애플"),
++    )
++
++    test("기본적인 multi get, multi set 테스트") {
++        val manufacturers = dummyManufacturers()
++        repository.putAll(manufacturers)
++
++        val result = repository.getAll(listOf(1L, 2L, 3L))
++
++        result.size shouldBe 3
++        result[0]?.id shouldBe 1L
++        result[0]?.name shouldBe "삼성전자"
++        result[1]?.id shouldBe 2L
++        result[1]?.name shouldBe "LG전자"
++        result[2]?.id shouldBe 3L
++        result[2]?.name shouldBe "애플"
++    }
++
++    test("존재하지 않는 키 조회 시 null 반환") {
++        val result = repository.getAll(listOf(99999L))
++
++        result.size shouldBe 1
++        result[0] shouldBe null
++    }
++
++    test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 10L, name = "소니")))
++
++        val result = repository.getAll(listOf(10L, 88888L))
++
++        result.size shouldBe 2
++        result[0]?.id shouldBe 10L
++        result[0]?.name shouldBe "소니"
++        result[1] shouldBe null
++    }
++
++    test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 20L, name = "오리지널")))
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 20L, name = "수정됨")))
++
++        val result = repository.getAll(listOf(20L))
++
++        result[0]?.name shouldBe "수정됨"
++    }
++
++    test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++        repository.putAll(emptyList())
++        val result = repository.getAll(emptyList())
++
++        result shouldBe emptyList()
++    }
++})
+diff --git a/proto b/proto
+deleted file mode 160000
+index fb00f7d..0000000
+--- a/proto
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit fb00f7d4ab7b328c768362287e78a380ba7841bf
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt
+index b82e909..6493c58 100644
+--- a/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt
+@@ -6,28 +6,32 @@ class DefaultLocalCache<ID : Any, V : Any>(
+     val cache: Cache<String, V>,
+     val keyPrefix: String,
+ ) : LocalCache<ID, V> {
+-
+-    override fun get(id: ID): V? =
+-        cache.getIfPresent(id.toKey())
++    override fun get(id: ID): V? = cache.getIfPresent(id.toKey())
+ 
+     override fun getAll(ids: Collection<ID>): Map<ID, V?> {
+-        val values = cache.getAllPresent(ids.toKeys())
+-
+-        return ids.associateWith { id -> values[id.toKey()] }
++        val values: List<V?> =
++            ids
++                .map { id -> id.toKey() }
++                .map { key -> cache.getIfPresent(key) }
++
++        return ids.zip(values).associate {
++            it.first to it.second
++        }
+     }
+ 
+-    override fun put(id: ID, value: V) {
++    override fun put(
++        id: ID,
++        value: V,
++    ) {
+         cache.put(id.toKey(), value)
+     }
+ 
+     override fun putAll(values: Map<ID, V>) {
+         values
+-            .map {it.key.toKey() to it.value }
++            .map { it.key.toKey() to it.value }
+             .toMap()
+             .let { cache.putAll(it) }
+     }
+ 
+     private fun ID.toKey(): String = "$keyPrefix:$this"
+-
+-    private fun Collection<ID>.toKeys(): List<String> = this.map { id -> id.toKey() }
+ }

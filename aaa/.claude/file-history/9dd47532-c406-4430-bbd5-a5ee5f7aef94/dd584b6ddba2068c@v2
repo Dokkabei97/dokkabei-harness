@@ -1,0 +1,37 @@
+import type { AgentConfig, AgentId, ExecutionOptions } from "./types.js";
+import { BaseAgent } from "./base-agent.js";
+import type { SpawnOptions } from "../orchestrator/executor.js";
+
+export class GeminiAgent extends BaseAgent {
+	readonly id: AgentId = "gemini";
+	readonly displayName = "Gemini CLI";
+	readonly cliCommand = "gemini";
+
+	constructor(config: AgentConfig) {
+		super(config);
+	}
+
+	protected buildSpawnOptions(options: ExecutionOptions, model: string): SpawnOptions {
+		const args = ["-p", options.prompt, "-m", model, "--output-format", "json"];
+
+		return {
+			command: this.cliCommand,
+			args,
+			timeout: options.timeout,
+			cwd: options.cwd,
+			stdin: options.context,
+		};
+	}
+
+	protected override parseOutput(stdout: string, stderr: string): string {
+		try {
+			const parsed = JSON.parse(stdout);
+			if (parsed.response) return parsed.response;
+			if (parsed.text) return parsed.text;
+			if (typeof parsed === "string") return parsed;
+			return JSON.stringify(parsed, null, 2);
+		} catch {
+			return stdout.trim() || stderr.trim();
+		}
+	}
+}

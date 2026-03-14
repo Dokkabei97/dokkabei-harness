@@ -1,0 +1,27 @@
+package models
+
+// Intake represents an intake item (external issue submission).
+type Intake struct {
+	ID        string                 `json:"id"`
+	Name      string                 `json:"name"`
+	Source    string                 `json:"source,omitempty"`
+	Status    string                 `json:"status,omitempty"`
+	Extra     map[string]interface{} `json:"extra,omitempty"`
+	Project   string                 `json:"project"`
+	Workspace string                 `json:"workspace"`
+	Timestamps
+}
+
+// CreateIntakeRequest is the request body for creating an intake.
+type CreateIntakeRequest struct {
+	Name   string                 `json:"name"`
+	Source string                 `json:"source,omitempty"`
+	Extra  map[string]interface{} `json:"extra,omitempty"`
+}
+
+// UpdateIntakeRequest is the request body for updating an intake.
+type UpdateIntakeRequest struct {
+	Name   *string                `json:"name,omitempty"`
+	Status *string                `json:"status,omitempty"`
+	Extra  map[string]interface{} `json:"extra,omitempty"`
+}

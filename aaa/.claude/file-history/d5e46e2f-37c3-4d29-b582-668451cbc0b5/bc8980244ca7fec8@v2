@@ -1,0 +1,167 @@
+# 이미지 URL 마이그레이션 - 2단계 캐싱 설계
+
+## Context
+
+기존 이미지 URL은 productCode로부터 결정론적으로 경로를 계산했으나(`GetProductImageURLOriginal`), 새 시스템에서는 파일명이 UUID로 변경되어 proxy API를 통해 조회해야 한다. ~3천만 카탈로그 건수와 검색 API의 높은 QPS를 고려하여, L1(로컬 go-cache) + L2(ES 인덱스) 2단계 캐싱 전략을 적용한다.
+
+**변경 범위**: `GetProductImageURLOriginal`만 (카탈로그 이미지, prodType "1"). Option mark URL, PC shop URL은 제외.
+
+---
+
+## 캐시 조회 흐름
+
+```
+productCode 요청
+  → L1: go-cache (in-memory)
+      HIT → 즉시 반환
+      MISS →
+        → L2: ES "image-url-cache" 인덱스 (Main 클러스터)
+            HIT → L1에 승격, 반환
+            MISS →
+              → Proxy API 배치 호출
+                  SUCCESS → L2 저장, L1 저장, 반환
+                  FAILURE → 레거시 URL 반환 + WARN 로그
+```
+
+---
+
+## 1. L1 캐시 (로컬 in-memory)
+
+- **라이브러리**: `github.com/patrickmn/go-cache` (이미 의존성 존재, `cache/cache.go`에서 사용 중)
+- **TTL**: 24시간 (이미지 URL은 거의 변경되지 않음)
+- **Cleanup 주기**: 30분
+- **적재 방식**: Lazy loading (조회 시 적재)
+- **메모리 추정**: 활성 상품 ~100만~200만건 × ~288byte ≈ 300MB~600MB (허용 범위)
+
+## 2. L2 캐시 (ES 인덱스)
+
+- **클러스터**: Main (`EsClient`) - 상품 데이터와 같은 클러스터로 네트워크 홉 최소화
+- **인덱스명**: `image-url-cache`
+- **Document ID**: productCode (직접 `_id` 사용)
+- **매핑**:
+  ```json
+  {
+    "mappings": {
+      "properties": {
+        "imageUrl": { "type": "keyword", "index": false },
+        "updatedAt": { "type": "date" }
+      }
+    },
+    "settings": {
+      "number_of_shards": 3,
+      "number_of_replicas": 1
+    }
+  }
+  ```
+- **조회**: `_mget` API로 배치 조회 (검색 결과 1건당 40개 내외 상품)
+- **저장**: Bulk API로 배치 저장
+
+## 3. Proxy API 연동
+
+- **형식**: `POST {baseURL}/api/images` body: `{"productCodes": ["123","456"]}`
+- **응답**: `[{"productCode":"123","imageUrl":"https://..."}]`
+- **HTTP 클라이언트**: `resty` (기존 의존성)
+- **타임아웃**: 200ms
+- **배치 전략**: 검색 결과의 L1 miss 상품코드를 모아서 L2 `_mget` 1회 → 나머지 miss를 proxy API 1회
+
+## 4. Circuit Breaker (간단 구현)
+
+- `sync/atomic` 기반, 외부 의존성 없음
+- 연속 실패 5회 → circuit open (30초)
+- 30초 후 half-open → 1건 프로브 → 성공 시 close
+- Circuit open 시 즉시 fallback (레거시 URL + WARN 로그)
+
+## 5. Fallback 전략
+
+- Cache miss + proxy 실패 시: **기존 `GetProductImageURLOriginal` 결과 반환 + WARN 로그**
+- 이미 이관된 이미지는 404가 될 수 있지만, 클라이언트 측 no-image 처리에 의존
+- Fallback URL은 캐시에 저장하지 않음 (다음 요청 시 재시도)
+
+---
+
+## 구현 파일 목록
+
+### 신규 생성 파일
+
+| 파일 | 역할 |
+|------|------|
+| `common/imagecache/imagecache.go` | 핵심 캐시 로직: Init, GetProductImageURL, GetProductImageURLBatch, L1/L2 lookup |
+| `common/imagecache/circuit_breaker.go` | Circuit breaker (atomic 기반) |
+| `common/imagecache/proxy_client.go` | Proxy API HTTP 클라이언트 (resty) |
+| `common/imagecache/warmup.go` | 관리 API용 캐시 워밍 로직 |
+
+### 수정 파일
+
+| 파일 | 변경 내용 |
+|------|----------|
+| `handler/product-es.go` (L412, L464) | `utils.GetProductImageURLOriginal` → `imagecache.GetProductImageURL` |
+| `handler/rankingViewer-es.go` (L354, L401) | 동일 교체 |
+| `handler/estimate-es.go` (L448) | 동일 교체 |
+| `handler/openapi-es.go` (L104, L246) | 동일 교체 |
+| `cmd/sapid/main.go` (L217 이후) | `imagecache.Init(elasticConn.EsClient, config.GetImageProxyURL())` 추가 |
+| `common/config/config.go` | `GetImageProxyURL()`, `GetImageCacheTTL()` 등 설정 함수 추가 |
+| `config/config.yml` | 환경별 `imageProxyURL` 설정 추가 |
+| `router/managements.go` | `/managements/warm-image-cache`, `/managements/image-cache-stats` 엔드포인트 추가 |
+
+---
+
+## 핵심 함수 시그니처
+
+```go
+// common/imagecache/imagecache.go
+package imagecache
+
+func Init(esClient *elastic.Client, proxyBaseURL string)
+func GetProductImageURL(productCode string) string          // 단건 (L1→L2→proxy→fallback)
+func GetProductImageURLBatch(productCodes []string) map[string]string  // 배치
+func GetCacheStats() map[string]interface{}                 // 모니터링용
+
+// common/imagecache/proxy_client.go
+type ProxyClient struct { ... }
+func NewProxyClient(baseURL string, timeout time.Duration) *ProxyClient
+func (c *ProxyClient) FetchImageURLs(productCodes []string) (map[string]string, error)
+
+// common/imagecache/circuit_breaker.go
+type CircuitBreaker struct { ... }
+func NewCircuitBreaker(threshold int, timeout time.Duration) *CircuitBreaker
+func (cb *CircuitBreaker) Allow() bool
+func (cb *CircuitBreaker) RecordSuccess()
+func (cb *CircuitBreaker) RecordFailure()
+```
+
+---
+
+## 환경변수 추가
+
+| 변수명 | 설명 | 기본값 |
+|--------|------|--------|
+| `IMAGE_PROXY_URL` | Proxy API base URL | (필수) |
+| `IMAGE_CACHE_TTL` | L1 캐시 TTL (시간 단위) | `24` |
+| `IMAGE_CACHE_ES_INDEX` | L2 ES 인덱스명 | `image-url-cache` |
+| `IMAGE_CACHE_WARM_YN` | 기동 시 L2→L1 워밍 여부 | `N` |
+
+---
+
+## 구현 순서
+
+1. **proxy_client.go** - Proxy API HTTP 클라이언트 (resty)
+2. **circuit_breaker.go** - Circuit breaker
+3. **imagecache.go** - L1(go-cache) + L2(ES _mget/_bulk) + proxy 통합
+4. **config 추가** - 환경변수/YAML 설정
+5. **main.go 초기화** - `imagecache.Init()` 호출
+6. **warmup.go** - 관리 API용 워밍/통계
+7. **router 추가** - 관리 엔드포인트
+8. **handler 교체** - 7개 callsite에서 함수 교체 (기계적 변경)
+
+---
+
+## 검증 방법
+
+1. **단위 테스트**: `imagecache` 패키지의 L1/L2/proxy/fallback 각 경로 테스트
+2. **통합 테스트**: `go test -run TestImageCache ./common/imagecache/`
+3. **수동 검증**:
+   - 서비스 기동 후 `/product/search` 호출 → 응답의 `productImageURL` 필드에 새 URL 확인
+   - ES에서 `GET /image-url-cache/_count`로 캐시 적재 확인
+   - `/managements/image-cache-stats`로 hit/miss 비율 확인
+4. **Fallback 검증**: `IMAGE_PROXY_URL`을 잘못된 값으로 설정 → 레거시 URL로 fallback 되는지 확인
+5. **부하 검증**: 기존 검색 응답 시간과 비교하여 L1 hit 시 성능 저하 없음 확인

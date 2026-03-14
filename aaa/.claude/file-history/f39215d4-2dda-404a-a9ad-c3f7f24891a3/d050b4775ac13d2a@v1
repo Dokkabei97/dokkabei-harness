@@ -1,0 +1,124 @@
+---
+title: "5-5 멀티모달 검색"
+aliases:
+  - "5-5 멀티모달 검색"
+  - "Multimodal Search"
+tags:
+  - llm-rag
+  - phase5
+  - multimodal
+  - clip
+  - milvus
+created: ""
+updated: ""
+phase: 5
+status: "todo"
+difficulty: 고급
+---
+
+> [!summary]
+> CLIP 기반 멀티모달 임베딩은 텍스트와 이미지를 동일한 벡터 공간에 매핑해 검색을 확장한다.  
+> 텍스트→이미지 검색, 이미지→유사 상품 검색, GPT-4o 멀티모달 요약까지 연결하면 검색 결과의 타입 다양성과 전환 비용을 줄일 수 있다.
+
+## 관련 노트
+- [[5-1 AI Overview 검색 요약 아키텍처]]
+- [[Milvus 운영 가이드]]
+- [[이미지 검색 파이프라인]]
+- [[5-8 로컬 LLM 서빙 프로덕션 적용]]
+- [[임베딩 파이프라인]]
+- [[멀티모달 RAG]]
+
+## 개념
+- CLIP(Contrastive Language-Image Pretraining)은 이미지와 텍스트를 동일 임베딩 공간에 배치한다.
+- 텍스트 쿼리를 임베딩해 이미지 데이터베이스에서 유사 벡터를 찾으면 텍스트로도 이미지 검색이 가능하다.
+- 이미지 쿼리를 임베딩해 상품/기획안/문서 이미지 중 유사 항목을 찾아 추천할 수 있다.
+- Milvus는 동일 컬렉션에 `text_embedding` `image_embedding`을 함께 저장하거나, `media_type` 필드로 구분해 같이 검색한다.
+- 멀티모달 검색의 핵심은 `동일한 거리 기준` 및 `재랭크 모델` 연동이다.
+- GPT-4o 멀티모달 요약은 검색 결과를 텍스트·이미지 혼합 문맥으로 해석해 `이미지 인사이트`를 추가한다.
+- OCR/메타데이터 기반 보강을 하면 작은 텍스트가 있는 이미지에서도 검색 정확도가 높다.
+- 사용자 인터페이스는 `썸네일`, `confidence`, `임베딩 거리`, `텍스트 설명`을 함께 보여주면 신뢰도 판단이 쉬워진다.
+- 텍스트 쿼리에서 노이즈가 큰 이미지 후보를 배제하려면 `image quality score`와 `caption score` 필터를 붙인다.
+- 이미지 검색은 개인정보 포함 이미지 노출 위험이 있으므로 모자이크, 승인 정책이 필요하다.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart LR
+  A["텍스트 질의 또는 이미지 업로드"] --> B["전처리"]
+  B --> C["CLIP 임베딩"]
+  C --> D{"미디어 타입"}
+  D -->|text| E["Milvus Vector Search (text/image mixed)"]
+  D -->|image| F["Milvus Vector Search (image/text mixed)"]
+  E --> G["Top-N 후보"]
+  F --> G
+  G --> H["Rerank + 필터"]
+  H --> I["이미지 캡션 생성"]
+  I --> J["GPT-4o 멀티모달 요약"]
+  J --> K["출처 + 썸네일 UI"]
+```
+
+## Python 코드
+```python
+import numpy as np
+from pymilvus import Collection
+# pip install torch torchvision transformers pymilvus
+
+class MultiModalSearcher:
+    def __init__(self, collection: Collection, model):
+        self.collection = collection
+        self.model = model
+
+    def encode_text(self, text: str):
+        # model.encode_text(text) => (1, D)
+        return np.random.rand(1, 512).astype("float32")
+
+    def encode_image(self, image_bytes: bytes):
+        # model.encode_image(image_bytes) => (1, D)
+        return np.random.rand(1, 512).astype("float32")
+
+    def search(self, query, media: str = "text", top_k: int = 10):
+        if media == "text":
+            emb = self.encode_text(query)
+        else:
+            emb = self.encode_image(query)
+        res = self.collection.search(
+            data=emb.tolist(),
+            anns_field="embedding",
+            param={"metric_type": "COSINE", "params": {"nprobe": 16}},
+            limit=top_k,
+            output_fields=["doc_id", "media", "caption", "url"]
+        )
+        return [
+            {
+                "id": hit.id,
+                "score": hit.score,
+                "meta": hit.entity.get("media"),
+                "caption": hit.entity.get("caption"),
+                "url": hit.entity.get("url"),
+            }
+            for hit in res[0]
+        ]
+
+# usage
+# searcher = MultiModalSearcher(collection, model)
+# result = searcher.search("흰색 무선 헤드셋", media="text", top_k=5)
+```
+
+## 표
+| 구성요소 | 구현 포인트 | 장단점 |
+|---|---|---|
+| CLIP | 텍스트/이미지 통합 공간 | 강력한 크로스모달 매칭 |
+| Milvus | 대규모 ANN 검색 | 운영 튜닝 필요 |
+| OCR | 이미지 텍스트 추출 | 이미지 품질 의존 |
+| GPT-4o 멀티모달 요약 | 이미지 맥락 통합 | 비용 증가 |
+
+## 실습 체크리스트
+- [ ] CLIP 텍스트 인덱스와 이미지 인덱스를 동일 차원(D)으로 맞춘다.
+- [ ] 후보 검색 시 media_type 필터를 명시한다.
+- [ ] 이미지 전처리에서 해상도, 밝기, 노이즈를 정규화한다.
+- [ ] 썸네일 누락 시 fallback 텍스트를 준비한다.
+- [ ] 시각 정보와 텍스트 근거를 연결해 citation을 남긴다.
+- [ ] GPT-4o 호출 전 이미지 token 수를 제한한다.
+- [ ] 유사도 임계값을 도메인별로 분리한다.
+- [ ] 민감 이미지에 대한 자동 블러링 정책을 둔다.
+- [ ] 검색 인덱스 재빌드 주기를 운영 정책으로 정한다.
+- [ ] 멀티모달 쿼리 정확도 실험셋을 구성한다.

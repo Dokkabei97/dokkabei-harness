@@ -1,0 +1,8 @@
+2026-02-20T06:49:35.665Z [DEBUG] Failed to check enabledPlatforms: TypeError: undefined is not an object (evaluating 'mK.join')
+2026-02-20T06:49:35.679Z [DEBUG] [render] initLayout starting
+2026-02-20T06:49:35.681Z [DEBUG] [render] initLayout complete
+2026-02-20T06:49:35.716Z [ERROR] Config file corrupted, resetting to defaults: JSON Parse error: Unable to parse JSON string
+2026-02-20T06:49:35.717Z [ERROR] Corrupted config backed up to: /Users/admin/.claude/backups/.claude.json.corrupted.1771570175717
+2026-02-20T06:49:35.738Z [DEBUG] [keybindings] KeybindingSetup initialized with 103 bindings, 0 warnings
+2026-02-20T06:49:35.747Z [DEBUG] [keybindings] Skipping file watcher - user customization disabled
+2026-02-20T06:49:35.747Z [DEBUG] [render] first ink render: 221ms since process start

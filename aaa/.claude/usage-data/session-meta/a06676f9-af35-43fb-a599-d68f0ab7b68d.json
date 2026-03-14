@@ -1,0 +1,34 @@
+{
+  "session_id": "a06676f9-af35-43fb-a599-d68f0ab7b68d",
+  "project_path": "/Users/admin/mkp/aa-mcp",
+  "start_time": "2026-02-16T13:11:08.098Z",
+  "duration_minutes": 24,
+  "user_message_count": 1,
+  "assistant_message_count": 9,
+  "tool_counts": {
+    "Task": 3
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 27,
+  "output_tokens": 81,
+  "first_prompt": "claude code, codex, gemini cli, copilot cli등 여러 에이전트들을 headless로 실행하는 mcp 서버를 만들꺼야  레퍼런스는 https://github.com/dante01yoon/codex-mcp-bridge, https://github.com/Aykahshi/copilot-mcp-tool 이 두 레포를 잡을꺼야   내…",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    22
+  ],
+  "user_message_timestamps": [
+    "2026-02-16T13:30:32.383Z"
+  ]
+}

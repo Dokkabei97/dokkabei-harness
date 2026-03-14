@@ -1,0 +1,61 @@
+---
+description: "GitLab CI/CD 파이프라인, Docker 빌드, GitOps 배포"
+globs: ["**/.gitlab/**", "**/.gitlab-ci.yml", "**/Dockerfile", "**/docker-compose.yml"]
+---
+
+## CI/CD
+
+### 파이프라인 구조
+
+GitLab CI, 5단계: `prepare → test → build → docker_build_push → manifest_deploy`
+
+| Stage | 이미지 | 설명 |
+|-------|--------|------|
+| prepare | docker:27.4.0 | 환경변수 초기화 |
+| test | eclipse-temurin:21-jdk-jammy | 모듈별 테스트 |
+| build | eclipse-temurin:21-jdk-jammy | bootJar 빌드 |
+| docker_build_push | docker:27.4.0 | Harbor 이미지 푸시 |
+| manifest_deploy | docker:27.4.0 | GitOps manifest 업데이트 |
+
+### CI 설정 파일
+
+- **루트**: `.gitlab-ci.yml` — 글로벌 stage 정의
+- **search-api**: `bootstrap/search-api/.gitlab/.gitlab-ci.yml`
+- **dynamic-indexer**: `bootstrap/dynamic-indexer/.gitlab/.gitlab-ci.yml`
+- **공통 템플릿**: `.gitlab/Common.gitlab-ci.yml`, `GradleBuild.gitlab-ci.yml`, `DockerBuild.gitlab-ci.yml`, `ManifestPush.gitlab-ci.yml`, `ImageTagScript.gitlab-ci.yml`
+
+### 트리거 조건
+
+- MR/Push: `develop` 또는 `main` + 변경 감지(changes)
+- 수동: `$FORCE_BUILD_TARGET` (`all` 또는 `bootstrap/{service}`)
+- search-api docker_build_push: **수동 승인 필요**
+- dynamic-indexer docker_build_push: **자동**
+- manifest_deploy: `main` 브랜치에서만 실행
+
+### 변경 감지 대상
+
+**search-api:**
+```
+bootstrap/search-api, shared, proto, domain/{search,keyword}, application/search,
+inbound-adapter/search-api, outbound-adapter/{keyword,search},
+outbound/client/keyword-analyzer, outbound/repository/{cache,elasticsearch/*}
+```
+
+**dynamic-indexer:**
+```
+bootstrap/dynamic-indexer, shared, proto, domain/{index,keyword}, application/search,
+inbound-adapter/dynamic-indexer, outbound-adapter/{keyword,index},
+outbound/repository/elasticsearch/*
+```
+
+### 빌드 아티팩트
+
+- 경로: `build/$PROJECT_PATH/libs/` (1주일 유효)
+- Manifest: `apps/next-search/{service}/values/values-{env}.yaml`
+- Avro 스키마 다운로드: CI에서 스킵 (커밋된 `.avsc` 사용)
+
+### Docker
+
+- Dockerfile 위치: `bootstrap/{search-api,dynamic-indexer}/Dockerfile`
+- 로컬 인프라: `docker-compose.yml`
+  - ES 9200, Kibana 5601, Kafka 9092, Schema Registry 8081, Kafka UI 8080, Valkey 6379-6381

@@ -1,0 +1,136 @@
+---
+title: "3-6 ES-Milvus 하이브리드 RAG 아키텍처"
+aliases:
+  - ES Milvus Hybrid RAG
+  - ES+Milvus Architecture
+tags:
+  - llm-rag
+  - phase3
+  - hybrid-architecture
+  - es-milvus
+created: ""
+updated: ""
+phase: "3-6"
+status: "todo"
+difficulty: "고급"
+---
+
+> [!summary]
+> ES와 Milvus의 역할을 분리하면 검색 정확도와 운영 신뢰성을 동시에 확보할 수 있다.  
+> ES는 키워드/필터/하이라이팅을 담당하고, Milvus는 의미적 유사성과 유사문서 탐색을 담당한다.  
+> RRF를 이용해 두 검색군을 통합하고, 가중치를 동적으로 조정하면 도메인별 성능을 안정화할 수 있다.
+
+## 관련 노트
+[[3-2 Advanced RAG]]
+[[3-5 Milvus 벡터 스토어 실전 연동]]
+[[3-7 Retrieval 품질 개선 기법]]
+[[3-8 RAG 평가 프레임워크]]
+[[검색 엔진 하이브리드]]
+
+## 개념 설명
+ES는 텍스트 필터링, boolean 조건, 하이라이팅, 고정 키워드 매칭에서 탁월하다.  
+Milvus는 문서 임베딩 기반 의미 검색과 유사문서 탐색에 유리하다.  
+두 엔진을 분리할수록 장단점이 보완된다.
+
+`ES → Milvus → Re-ranking → LLM` 패턴은 다음과 같다.  
+ES에서 먼저 후보를 줄여 보안/도메인 필터링한다.  
+Milvus에서 의미 검색을 수행해 후보 다양성을 확보한다.  
+Re-ranking에서 교집합/가중 합산 후 상위로 정렬한다.
+
+### 역할 분담
+ES는 structured query, tenant 필터, 기간 조건, 하이라이팅을 처리한다.  
+Milvus는 오타·동의어·의미 유사도를 통해 추가 후보를 가져온다.  
+두 검색 결과를 같은 점수 체계로 정규화해야 한다.
+
+### RRF(Reciprocal Rank Fusion)
+RRF는 각 검색 소스의 rank를 기반해 점수를 합성한다.  
+`score = Σ 1 / (k + rank_i)` 형태로 동작한다.  
+랭크 기반이라 점수 스케일이 다른 source를 안정적으로 합치기 쉽다.
+
+### 가중치 동적 조정
+쿼리 타입, 질의 길이, user intent에 따라 ES 점수와 Milvus 점수를 가중 조정한다.  
+짧은 키워드 질의는 ES 가중치 상향.  
+긴 설명 질의는 Milvus 가중치 상향.
+
+### 동적 가중치 예시 규칙
+`q_len < 8`일 때 `w_es = 0.7, w_dense = 0.3`.  
+`q_len >= 20`일 때 `w_es = 0.3, w_dense = 0.7`.  
+의도 tag가 정책/조문이면 ES 가중치 보정.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart LR
+    Q[Query] --> R1[ES Retrieval]
+    Q --> R2[Milvus Retrieval]
+    R1 --> N1[Normalize ES score]
+    R2 --> N2[Normalize Milvus score]
+    N1 --> F[RRF Merge]
+    N2 --> F
+    F --> G[Dynamic Weight Layer]
+    G --> H[Re-ranking (Cross-Encoder)]
+    H --> I[LLM Generation]
+    I --> J[Verified Answer]
+```
+
+## Python 코드 예제 (RRF 병합 + 동적 가중치)
+```python
+import math
+from collections import defaultdict
+
+def rrf_fuse(ranked_lists, k=60, w_es=0.5, w_dense=0.5):
+    agg = defaultdict(float)
+    source_map = {"es": w_es, "dense": w_dense}
+    for source, docs in ranked_lists.items():
+        for rank, d in enumerate(docs, start=1):
+            key = (d["id"], d["text"])
+            agg[key] += source_map[source] * (1.0 / (k + rank))
+    sorted_items = sorted(agg.items(), key=lambda x: x[1], reverse=True)
+    return sorted_items
+
+def choose_weights(query: str):
+    q_len = len(query.split())
+    if q_len <= 6:
+        return 0.7, 0.3
+    if q_len >= 20:
+        return 0.3, 0.7
+    return 0.5, 0.5
+
+query = "OAuth 토큰 갱신 정책"
+es_hits = [{"id": "d1", "text": "ES snippet", "score": 0.91},
+           {"id": "d2", "text": "ES snippet2", "score": 0.83}]
+dense_hits = [{"id": "d2", "text": "Dense snippet", "score": 0.78},
+             {"id": "d3", "text": "Dense snippet2", "score": 0.76}]
+
+w_es, w_dense = choose_weights(query)
+fused = rrf_fuse({"es": es_hits, "dense": dense_hits}, k=60, w_es=w_es, w_dense=w_dense)
+for (docid, _), score in list(fused)[:3]:
+    print(docid, score)
+```
+
+## 표: 하이브리드 아키텍처 비교
+|구성|ES 비중|Milvus 비중|특징|위험요소|
+|---|---|---|---|---|
+|ES 단독|100|0|높은 정합도, 키워드 강점|의미 탐색 약함|
+|Milvus 단독|0|100|의미 유사도 강함|키워드 필터/보안 필터 부족|
+|하이브리드 동등|50|50|균형|가중치 튜닝 필요|
+|동적 하이브리드|변동|변동|질의별 최적화|복잡한 규칙 관리|
+
+## 실습 체크리스트
+- [ ] ES 검색엔진과 Milvus 컬렉션 동기화 주기 정의
+- [ ] 질의별 라우팅 규칙과 가중치 함수 코드화
+- [ ] rank 기반 RRF 스코어 함수 단위 테스트
+- [ ] 같은 query로 3개 가중치 버전을 A/B 실행
+- [ ] ES 하이라이트 결과를 context 근거로 노출
+- [ ] dense 검색 후보를 ES 필터로 추가 제한
+- [ ] rerank를 넣었을 때 latency 증가폭 측정
+- [ ] RRF k값(30/60/100) 민감도 측정
+- [ ] 낮은 confidence일 때 fallback 전략(ES-only/Milvus-only) 구성
+- [ ] 멀티 tenant에서 점수 편향 체크
+- [ ] 실패 질의 로그 저장(공통 키: query_hash)
+- [ ] 감사 추적 로그에 source, rank, 가중치 기록
+- [ ] 3-8에서 A/B 결과로 동적 가중치 정책 업데이트
+
+## 실무 팁
+ES와 Milvus를 완전 동기화하려 하지 말고, `query-time fusion` 전략으로 시작한다.  
+문서 수가 적을 때는 하이브리드보다 동적 정합 규칙이 충분히 효과적이다.  
+RRF 파라미터보다 중요한 것은 소스별 정확도 캘리브레이션이다.

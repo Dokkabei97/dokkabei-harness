@@ -1,0 +1,243 @@
+# Agents-utils
+
+사내 AI 코딩 에이전트(Claude Code)에서 공통으로 사용하는 에이전트, 커맨드, 스킬, 훅, MCP/LSP 서버 설정을 모아둔 플러그인 저장소입니다.
+
+---
+
+## Quick Start
+
+```bash
+# 1. 플러그인 설치
+claude plugin install --plugin-dir /path/to/agent-utils
+
+# 2. claude/ 디렉토리 수동 적용 (아래 '사용자 설정 적용' 섹션 참고)
+
+# 3. Claude Code 재시작
+```
+
+---
+
+## 사전 요구사항
+
+| 도구 | 용도 | 설치 방법 |
+|------|------|-----------|
+| `claude` | Claude Code CLI | [공식 문서](https://docs.anthropic.com/en/docs/claude-code) 참고 |
+| `node` | hooks 스크립트 실행 | `brew install node` |
+| `uvx` | MCP 서버 실행 | `pip install uv` |
+
+LSP 서버 (`.lsp.json`으로 자동 구성되며, 바이너리는 별도 설치 필요):
+
+| LSP 서버 | 언어 | 설치 방법 |
+|----------|------|-----------|
+| `typescript-language-server` | TypeScript/JavaScript | `npm install -g typescript-language-server typescript` |
+| `kotlin-language-server` | Kotlin | [GitHub Releases](https://github.com/fwcd/kotlin-language-server/releases) |
+| `jdtls` | Java | [Eclipse JDT.LS](https://github.com/eclipse-jdtls/eclipse.jdt.ls) |
+| `pyright-langserver` | Python | `pip install pyright` 또는 `npm install -g pyright` |
+| `gopls` | Go | `go install golang.org/x/tools/gopls@latest` |
+
+---
+
+## 환경변수 설정
+
+MCP 서버 연동에 필요한 API 키를 발급받아 환경변수로 등록해야 합니다.
+
+| 환경변수 | 설명 | API 키 발급 방법 |
+|----------|------|------------------|
+| `PLANE_API_KEY` | Plane 이슈 트래커 연동 | [https://project.cowave.kr](https://project.cowave.kr) → 프로필 → API 토큰 |
+| `OUTLINE_API_KEY` | Outline 위키 연동 | [https://cowave.wiki.cowave.kr](https://cowave.wiki.cowave.kr) → 설정 → API 토큰 |
+| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | Grafana 모니터링 연동 | [http://grafana.danuricorp.com](http://grafana.danuricorp.com) → Administration → Service Accounts |
+
+`~/.zshrc` 또는 `~/.bashrc`에 추가:
+
+```bash
+export PLANE_API_KEY="your-plane-api-key"
+export OUTLINE_API_KEY="your-outline-api-key"
+export GRAFANA_SERVICE_ACCOUNT_TOKEN="your-grafana-token"
+```
+
+---
+
+## 사용자 설정 적용
+
+`claude/` 디렉토리에는 플러그인이 자동으로 처리하지 않는 사용자 레벨 설정이 포함되어 있습니다. 수동으로 `~/.claude/`에 복사해주세요.
+
+```bash
+# output-styles 디렉토리 복사
+cp -r claude/output-styles ~/.claude/
+
+# statusline 스크립트 복사
+cp claude/statusline-command.sh ~/.claude/
+chmod +x ~/.claude/statusline-command.sh
+
+# CLAUDE.md 복사 (기존 파일이 있다면 내용 확인 후 병합)
+cp claude/CLAUDE.md ~/.claude/
+```
+
+`~/.claude/settings.json`에 statusLine 설정이 없다면 추가:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  }
+}
+```
+
+> 이미 `~/.claude/settings.json`에 다른 설정이 있다면 `statusLine` 키만 추가하세요.
+
+---
+
+## 설치되는 내용
+
+### Agents (4개)
+
+| 에이전트 | 설명 |
+|---------|------|
+| `arch-reviewer` | 아키텍처 리뷰 전문가 — 6단계 분석 (매크로 구조 → 의존성 → 패키지 명명 → 데이터 모델링 → MSA → 개발자 의도) |
+| `perf-reviewer` | 성능 리뷰 전문가 — 9개 카테고리 성능 안티패턴 탐지 |
+| `e2e-runner` | E2E 테스트 실행기 — Vercel Agent Browser 또는 Playwright |
+| `tdd-guide` | TDD 워크플로우 가이드 — Red → Green → Refactor, 80%+ 커버리지 |
+
+### Commands (9개)
+
+| 커맨드 | 설명 |
+|--------|------|
+| `/analyze` | 코드 품질·보안·성능 종합 분석 (`--with gemini/copilot/codex` 지원) |
+| `/arch-review` | 아키텍처 적합성 리뷰 |
+| `/perf-review` | 성능 안티패턴 탐지 |
+| `/e2e` | E2E 테스트 생성 및 실행 |
+| `/tdd` | TDD 워크플로우 실행 |
+| `/create-flow` | 플러그인 컴포넌트 스캐폴딩 |
+| `/verify-flow` | 플러그인 컴포넌트 검증 |
+| `/handoff` | 세션 컨텍스트 전달 (HANDOFF.md) |
+| `/obsidian` | 기술 학습 노트 생성 (7종 템플릿) |
+
+### Skills (15개)
+
+| 카테고리 | 스킬 |
+|----------|------|
+| 이슈·워크플로우 | `issue-tracker`, `post-merge` |
+| 문서·지식 관리 | `document-lastest`, `sync-claude-md`, `obsidian-tech-note`, `claude-md-inverted-index` |
+| 코드 리뷰 | `arch-review-guide`, `perf-review-guide` |
+| TDD·테스트 | `tdd-workflow` |
+| DB·플랫폼 | `mongodb-best-practices`, `elasticsearch-best-practices`, `supabase-postgres-best-practices` |
+| 플러그인 개발 | `flow-scaffolding`, `flow-validation` |
+
+### MCP Servers (3개)
+
+| 서버 | 연동 서비스 |
+|------|------------|
+| `plane` | Plane 이슈 트래커 — 이슈 CRUD, 사이클·모듈·마일스톤 관리 |
+| `outline` | Outline 위키 — 문서 검색/생성/수정 (삭제 비활성화) |
+| `grafana` | Grafana — 대시보드·메트릭 조회, 알림·인시던트·OnCall 연동 |
+
+### LSP Servers (5개)
+
+`.lsp.json`으로 자동 구성됩니다. 바이너리만 별도 설치하면 코드 인텔리전스가 활성화됩니다.
+
+| 언어 | LSP 서버 |
+|------|----------|
+| TypeScript/JavaScript | `typescript-language-server` |
+| Kotlin | `kotlin-language-server` |
+| Java | `jdtls` |
+| Python | `pyright-langserver` |
+| Go | `gopls` |
+
+### Hooks (15개)
+
+| 분류 | 주요 훅 |
+|------|---------|
+| PreToolUse (4개) | dev server tmux 강제, 장시간 명령 tmux 권고, git push 확인, 불필요 문서 차단 |
+| PostToolUse (11개) | PR/MR URL 로깅, JS/TS·Kotlin 자동 포맷팅, 타입/컴파일 검사, 디버그 코드 경고 |
+
+### Output Styles (1개)
+
+| 스타일 | 설명 |
+|--------|------|
+| `learning-plus` | 보일러플레이트 자동 완성 + 핵심 로직 Learn by Doing + Insight 제공 |
+
+---
+
+## 저장소 구조
+
+```text
+├── .claude-plugin/
+│   ├── plugin.json             # 플러그인 메타데이터
+│   └── marketplace.json        # 마켓플레이스 메타데이터
+├── .mcp.json                   # MCP 서버 설정
+├── .lsp.json                   # LSP 서버 설정
+├── agents/                     # 에이전트 (4개)
+├── commands/                   # 커맨드 (9개)
+├── skills/                     # 스킬 (15개)
+├── hooks/                      # 훅 설정
+│   └── hooks.json
+└── claude/                     # 사용자 설정 (수동 적용)
+    ├── CLAUDE.md               # 글로벌 지시사항 (Gemini/Copilot/Codex 연동)
+    ├── settings.json           # statusLine 설정
+    ├── statusline-command.sh   # 상태 표시줄 스크립트
+    └── output-styles/
+        └── learning-plus.md    # 학습 중심 출력 스타일
+```
+
+---
+
+## 지원 언어 & 프레임워크
+
+| 언어 | 자동 포맷팅 | 컴파일/타입 검사 | 디버그 코드 감지 | 테스트 프레임워크 |
+|------|------------|-----------------|-----------------|-----------------|
+| TypeScript/JavaScript | Prettier | `tsc --noEmit` | `console.log` 경고 | Jest, Vitest, Playwright |
+| Kotlin | ktlintFormat | `compileKotlin` | `println()` 경고 | Kotest, MockK, Spring Boot Test |
+| Python | - | `py_compile` | `print()` 경고 | pytest |
+
+---
+
+## 업데이트
+
+플러그인을 최신 버전으로 업데이트하려면:
+
+```bash
+claude plugin update cowave-devtools@cowave-plugins
+```
+
+---
+
+## 트러블슈팅
+
+### MCP 서버가 연결되지 않음
+
+```bash
+# 환경변수 확인
+echo $PLANE_API_KEY
+echo $OUTLINE_API_KEY
+echo $GRAFANA_SERVICE_ACCOUNT_TOKEN
+
+# uvx 설치 확인
+uvx --version
+```
+
+### LSP가 동작하지 않음
+
+`/plugin` 탭에서 Errors를 확인하세요. `Executable not found in $PATH` 에러가 나면 해당 LSP 바이너리를 설치해야 합니다.
+
+```bash
+# 예: TypeScript LSP
+npm install -g typescript-language-server typescript
+```
+
+### hooks가 동작하지 않음
+
+```bash
+# node 설치 확인
+which node && node --version
+
+# 설치되지 않았다면
+brew install node
+```
+
+### 플러그인이 로드되지 않음
+
+```bash
+# 디버그 모드로 확인
+claude --debug
+```

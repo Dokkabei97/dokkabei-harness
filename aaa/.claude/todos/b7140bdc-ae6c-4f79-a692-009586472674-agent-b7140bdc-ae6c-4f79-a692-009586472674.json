@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Remove DictionaryDiffRepository class and related infrastructure",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Remove diff-related methods from DictionaryService",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Simplify DictionarySyncService by removing checksum-based logic",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Update dependency injection and imports",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Clean up API endpoints and remove unused diff-related endpoints",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

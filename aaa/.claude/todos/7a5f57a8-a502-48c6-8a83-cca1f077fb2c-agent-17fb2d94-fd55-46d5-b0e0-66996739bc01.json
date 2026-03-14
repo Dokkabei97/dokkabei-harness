@@ -1,0 +1,74 @@
+[
+  {
+    "content": "Analyze current dictionary synchronization service and workflow",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Examine dictionary preprocessing logic and file creation points",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Search for existing Darae API integration code",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Identify configuration for Darae API endpoints",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "Design API call integration points in sync workflow",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "Add httpx dependency to ppuri service",
+    "status": "pending",
+    "priority": "high",
+    "id": "6"
+  },
+  {
+    "content": "Add Darae service configuration to ppuri constants",
+    "status": "pending",
+    "priority": "high",
+    "id": "7"
+  },
+  {
+    "content": "Create Darae API client service for dictionary loading",
+    "status": "pending",
+    "priority": "high",
+    "id": "8"
+  },
+  {
+    "content": "Integrate API call into dictionary sync service after file creation",
+    "status": "pending",
+    "priority": "high",
+    "id": "9"
+  },
+  {
+    "content": "Add comprehensive error handling and logging",
+    "status": "pending",
+    "priority": "medium",
+    "id": "10"
+  },
+  {
+    "content": "Add retry mechanism for API failures",
+    "status": "pending",
+    "priority": "medium",
+    "id": "11"
+  },
+  {
+    "content": "Update OpenTelemetry metrics to track API calls",
+    "status": "pending",
+    "priority": "low",
+    "id": "12"
+  }
+]

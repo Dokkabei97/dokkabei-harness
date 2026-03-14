@@ -1,0 +1,146 @@
+---
+title: "2-8 Custom Chain 작성"
+aliases:
+  - "2-8 Runnable 조합"
+  - "Custom LCEL Chain"
+tags:
+  - llm-rag
+  - phase2
+  - chain
+  - custom-runnable
+  - debugging
+created: ""
+updated: ""
+phase: "phase2"
+status: "todo"
+difficulty: "고급"
+---
+
+# 2-8 Custom Chain 작성
+
+> [!summary]
+> 기본 chain 조합만으로는 모든 요구를 충족하기 어렵다. `RunnablePassthrough`, `RunnableParallel`, `RunnableLambda`, `RunnableBranch`를 조합해 검색 요약 체인을 직접 설계하고, `set_debug(True)` 및 LangSmith로 추적 가능한 디버깅 체계를 갖춘다.
+
+## 관련 노트
+- [[2-1 LangChain 아키텍처와 LCEL]]
+- [[2-4 Document Loaders]]
+- [[2-5 Text Splitters]]
+- [[2-6 Retriever 패턴]]
+- [[2-7 Output Parsers와 Structured Output]]
+
+## 개념 설명
+### RunnablePassthrough
+- 입력을 그대로 전달하면서 병렬 분기에서 공통 키를 재사용
+- 전처리 후 원본도 남겨두고 후처리 결과도 유지하는 데 유리
+
+### RunnableParallel
+- 여러 연산을 병렬 실행
+- 요약, 키워드, QA draft를 병렬 계산 후 merge
+
+### RunnableLambda
+- 사용자 정의 함수 래핑
+- 동적 필드 주입/유효성 검사/라우팅 전처리에 사용
+
+### RunnableBranch
+- 조건별 분기 처리를 런타임에 수행
+- 질의 길이나 도메인별로 서로 다른 체인을 선택
+
+### 검색 요약 체인 예시 설계
+- 질문 수신
+- 검색(고정 k)
+- 병렬: raw 요약 + 핵심 키워드 + 위험도 추출
+- 조건 분기: 요약 길이가 짧으면 추출 쿼리 추가
+- 최종 출력을 구조화
+
+## Mermaid 다이어그램
+```mermaid
+flowchart TD
+  Q[Input] --> P[RunnablePassthrough]
+  P --> B[Retriever]
+  B --> C[RunnableParallel]
+  C -->|summary| S[Summary Lambda]
+  C -->|keywords| K[Keyword Lambda]
+  C -->|risk| R[Risk Classifier]
+  S --> D[RunnableBranch]
+  K --> D
+  R --> D
+  D --> OUT[Final Parser]
+  OUT --> E[Response]
+```
+
+## Python 코드 예제
+```python
+from langchain_core.runnables import (
+    RunnablePassthrough,
+    RunnableParallel,
+    RunnableLambda,
+    RunnableBranch,
+)
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain.retrievers import ParentDocumentRetriever
+from langchain_community.vectorstores import FAISS
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+def summarize(docs):
+    text = "'"\\n\".join(d.page_content for d in docs)
+    prompt = ChatPromptTemplate.from_template(\"다음 문서를 3문장으로 요약해줘:\\n{text}\")
+    return (prompt | llm | StrOutputParser()).invoke({\"text\": text})
+
+def extract_keywords(text: str):
+    if not text:
+        return []
+    return [w for w in text.replace(\"\\n\", \" \").split(\" \") if len(w) > 2][:8]
+
+def route_by_length(input_dict):
+    q = input_dict[\"question\"]
+    return \"short\" if len(q) < 40 else \"long\"
+
+vector = FAISS.from_texts([\"임베딩 문서\"], OpenAIEmbeddings())
+retriever = vector.as_retriever(search_kwargs={\"k\": 4})
+
+parallel = RunnableParallel(
+    docs=lambda x: retriever.invoke(x[\"question\"]),
+    question=RunnablePassthrough(),
+)
+
+chain = parallel | RunnableLambda(lambda x: {
+    \"question\": x[\"question\"],
+    \"summary\": summarize(x[\"docs\"]),
+    \"keywords\": extract_keywords(\" \".join(d.page_content for d in x[\"docs\"])),
+    \"n_docs\": len(x[\"docs\"]),
+})
+
+branch = RunnableBranch(
+    (lambda x: x[\"n_docs\"] == 0, RunnableLambda(lambda x: {**x, \"summary\": \"문서 없음\"})),
+    RunnableLambda(lambda x: x)
+)
+
+final_prompt = ChatPromptTemplate.from_template(
+    \"질문: {question}\\n요약: {summary}\\n키워드: {keywords}\\n\"
+)
+
+full_chain = chain | branch | final_prompt | llm | StrOutputParser()
+full_chain.debug = True
+
+result = full_chain.invoke({\"question\": \"문서 검색 성능을 높이려면 어떻게 해야 하나요?\"})
+print(result)
+
+# LangSmith 트레이싱
+# os.environ['LANGCHAIN_TRACING_V2'] = 'true'
+# os.environ['LANGCHAIN_PROJECT'] = 'phase2-custom-chain'
+"'```
+
+## 실습 체크리스트
+- [ ] 체인 노드별 입출력 스키마를 주석으로 기록
+- [ ] 병렬 분기 수를 최소화하고 꼭 필요한 항목만 병렬화
+- [ ] RunnableBranch 조건식에 허용되지 않은 키가 들어오지 않게 방어
+- [ ] 디버깅 시 `set_debug(True)`와 trace id를 함께 확인
+- [ ] 실패 케이스(검색 0건, 파싱 실패)를 명시적으로 처리
+- [ ] LangSmith project/리전별 분리로 실험 히스토리 추적
+- [ ] 배포 전 각 노드 실행 시간을 로그로 남김
+- [ ] 체인 변경 시 출력 스키마 계약 테스트 작성
+- [ ] chain object를 재사용 가능한 모듈로 구성
+- [ ] 새 모델 버전 교체 후 chain compatibility test 실행

@@ -1,0 +1,1182 @@
+     1→package com.danawa.fastcatx.indexer;
+     2→
+     3→import com.danawa.fastcatx.indexer.entity.Job;
+     4→import com.danawa.fastcatx.indexer.ingester.*;
+     5→import com.danawa.fastcatx.indexer.model.JdbcMetaData;
+     6→import com.danawa.fastcatx.indexer.poc.TokenizeApiClient;
+     7→import com.danawa.fastcatx.indexer.poc.TokenizingIngester;
+     8→//import com.danawa.fastcatx.indexer.preProcess.VmFirstMakeDatePreProcess;
+     9→import com.danawa.fastcatx.indexer.preProcess.DatabaseConnector;
+    10→import com.danawa.fastcatx.indexer.preProcess.DatabaseQueryHelper;
+    11→import com.danawa.fastcatx.indexer.preProcess.DynamicCategoryPreProcess;
+    12→import com.danawa.fastcatx.indexer.preProcess.PreProcess;
+    13→import com.github.fracpete.processoutput4j.output.CollectingProcessOutput;
+    14→import com.github.fracpete.rsync4j.RSync;
+    15→import com.google.gson.*;
+    16→import org.slf4j.Logger;
+    17→import org.slf4j.LoggerFactory;
+    18→import org.springframework.http.*;
+    19→import org.springframework.web.client.RestTemplate;
+    20→
+    21→import java.io.*;
+    22→import java.nio.file.Files;
+    23→import java.nio.file.Paths;
+    24→import java.sql.Connection;
+    25→import java.util.*;
+    26→import java.util.concurrent.*;
+    27→
+    28→import static com.danawa.fastcatx.indexer.preProcess.DynamicCategoryPreProcess.*;
+    29→
+    30→public class IndexJobRunner implements Runnable {
+    31→    private static Logger logger = LoggerFactory.getLogger(IndexJobRunner.class);
+    32→
+    33→    public enum STATUS {READY, RUNNING, SUCCESS, ERROR, STOP}
+    34→
+    35→    private Job job;
+    36→    private IndexService service;
+    37→    private Ingester ingester;
+    38→
+    39→    private final RestTemplate restTemplate = new RestTemplate(Utils.getRequestFactory());
+    40→    private final Gson gson = new Gson();
+    41→
+    42→    private boolean autoDynamic;
+    43→    private String autoDynamicIndex;
+    44→    private List<String> autoDynamicQueueNames;
+    45→    private String autoDynamicCheckUrl;
+    46→    private String autoDynamicQueueIndexUrl;
+    47→    private int autoDynamicQueueIndexConsumeCount = 1;
+    48→    private boolean preProcess;
+    49→    private boolean afterProcess;
+    50→    private String afterProcessingUrl;
+    51→
+    52→    boolean enableRemoteCmd;
+    53→    String remoteCmdUrl;
+    54→    private boolean isCreatedIndex;
+    55→
+    56→    public IndexJobRunner(Job job) {
+    57→        this.job = job;
+    58→        job.setStatus(STATUS.READY.name());
+    59→        job.setStartTime(System.currentTimeMillis() / 1000);
+    60→        service = null;
+    61→        ingester = null;
+    62→    }
+    63→
+    64→    public String getDirectoryAllFiles(String path) {
+    65→        StringBuffer sb = new StringBuffer();
+    66→
+    67→        try {
+    68→            if (Files.isDirectory(Paths.get(path))) {
+    69→                logger.info("{} is directory !", path);
+    70→                Files.walk(Paths.get(path))
+    71→                        .filter(Files::isRegularFile)
+    72→                        .forEach(item -> {
+    73→                            if (sb.length() == 0) {
+    74→                                sb.append(item.toString());
+    75→                            } else {
+    76→                                sb.append("," + item.toString());
+    77→                            }
+    78→                        });
+    79→            } else {
+    80→                logger.info("{} is regularFile !", path);
+    81→                sb.append(path);
+    82→            }
+    83→        } catch (IOException e) {
+    84→            e.printStackTrace();
+    85→        }
+    86→
+    87→        return sb.toString();
+    88→    }
+    89→
+    90→    @Override
+    91→    public void run() {
+    92→        try {
+    93→            job.setStatus(STATUS.RUNNING.name());
+    94→            Map<String, Object> payload = job.getRequest();
+    95→            logger.debug("{}", gson.toJson(payload));
+    96→
+    97→            // 전처리 컬렉션인지 체크
+    98→            preProcess = (Boolean) payload.getOrDefault("preProcess", false);
+    99→            // 전처리 컬렉션 일때
+   100→            if (preProcess) {
+   101→                // 전처리시 동적색인 ON/OFF 처리
+   102→                autoDynamic = (Boolean) payload.getOrDefault("autoDynamic", false);
+   103→                if (autoDynamic) {
+   104→                    disableAutoDynamic(payload);
+   105→                }
+   106→                PreProcess process = new PreProcess.EmptyPreProcess();
+   107→                process.starter(job);
+   108→                return;
+   109→            }
+   110→
+   111→            logger.info("Started Indexing Job Runner");
+   112→            // 공통
+   113→            // ES 호스트
+   114→            String host = (String) payload.get("host");
+   115→            // ES 포트
+   116→            Integer port = (Integer) payload.get("port");
+   117→            String esUsername = null; // ES 유저
+   118→            String esPassword = null; // ES 패스워드
+   119→            if (payload.get("esUsername") != null && payload.get("esPassword") != null) {
+   120→                esUsername = (String) payload.get("esUsername");
+   121→                esPassword = (String) payload.get("esPassword");
+   122→            }
+   123→
+   124→            // http, https
+   125→            String scheme = (String) payload.get("scheme");
+   126→            // 색인이름.
+   127→            String index = (String) payload.get("index");
+   128→            // 소스타입: ndjson, csv, jdbc 등..
+   129→            String type = (String) payload.get("type");
+   130→            // index가 존재하면 색인전에 지우는지 여부. indexTemplate 이 없다면 맵핑과 셋팅은 모두 사라질수 있다.
+   131→            Boolean reset = (Boolean) payload.getOrDefault("reset", true);
+   132→            // 필터 클래스 이름. 패키지명까지 포함해야 한다. 예) com.danawa.fastcatx.filter.MockFilter
+   133→            String filterClassName = (String) payload.get("filterClass");
+   134→            // ES bulk API 사용시 벌크갯수.
+   135→            Integer bulkSize = (Integer) payload.get("bulkSize");
+   136→            Integer threadSize = (Integer) payload.getOrDefault("threadSize", 1);
+   137→            String pipeLine = (String) payload.getOrDefault("pipeLine", "");
+   138→            Boolean checkData = (Boolean) payload.getOrDefault("checkData", false);
+   139→
+   140→            Map<String, Object> indexSettings;
+   141→            try {
+   142→                indexSettings = (Map<String, Object>) payload.get("_indexingSettings");
+   143→                if (indexSettings == null) {
+   144→                    throw new ClassCastException();
+   145→                }
+   146→            } catch (ClassCastException e) {
+   147→                indexSettings = new HashMap<>();
+   148→            }
+   149→            logger.debug("index: {}", index);
+   150→            /**
+   151→             * file기반 인제스터 설정
+   152→             */
+   153→            //파일 경로.
+   154→            String path = (String) payload.get("path");
+   155→            // 파일 인코딩. utf-8, cp949 등..
+   156→            String encoding = (String) payload.get("encoding");
+   157→            // 테스트용도로 데이터 갯수를 제한하고 싶을때 수치.
+   158→            Integer limitSize = (Integer) payload.getOrDefault("limitSize", 0);
+   159→
+   160→            // 자동으로 동적색인 on/off
+   161→            autoDynamic = (Boolean) payload.getOrDefault("autoDynamic", false);
+   162→
+   163→            afterProcess = (Boolean) payload.getOrDefault("enableAfterProccessing", false);
+   164→            afterProcessingUrl = (String) payload.getOrDefault("afterProccessingUrl", "");
+   165→
+   166→            if (autoDynamic) {
+   167→                //                    자동으로 동적색인 필수 파라미터
+   168→                disableAutoDynamic(payload);
+   169→            }
+   170→
+   171→            boolean dryRun = (Boolean) payload.getOrDefault("dryRun", false); // rsync 스킵 여부
+   172→            if (dryRun) {
+   173→                int r = (int) Math.abs((Math.random() * 999999) % 120) * 1000;
+   174→                Thread.sleep(r);
+   175→                job.setStatus(STATUS.SUCCESS.name());
+   176→                logger.info("[DRY_RUN] index: {} procedure Type {}. Index Success", index, type);
+   177→                return;
+   178→            }
+   179→
+   180→            if (type.equals("ndjson")) {
+   181→                ingester = new NDJsonIngester(path, encoding, 1000, limitSize);
+   182→            } else if (type.equals("csv")) {
+   183→                ingester = new CSVIngester(path, encoding, 1000, limitSize);
+   184→            } else if (type.equals("file")) {
+   185→                String headerText = (String) payload.get("headerText");
+   186→                String delimiter = (String) payload.get("delimiter");
+   187→                ingester = new DelimiterFileIngester(path, encoding, 1000, limitSize, headerText, delimiter);
+   188→            } else if (type.equals("konan")) {
+   189→                ingester = new KonanIngester(path, encoding, 1000, limitSize);
+   190→            } else if (type.equals("jdbc")) {
+   191→                String dataSQL = (String) payload.get("dataSQL");
+   192→                Integer fetchSize = (Integer) payload.get("fetchSize");
+   193→                Integer maxRows = (Integer) payload.getOrDefault("maxRows", 0);
+   194→                Boolean useBlobFile = (Boolean) payload.getOrDefault("useBlobFile", false);
+   195→                if (payload.get("_jdbc") != null) {
+   196→                    Map<String, Object> jdbcMap = (Map<String, Object>) payload.get("_jdbc");
+   197→
+   198→                    int sqlCount = 2;
+   199→                    ArrayList<String> sqlList = new ArrayList<String>();
+   200→
+   201→                    String driverClassName = (String) jdbcMap.get("driverClassName");
+   202→                    String url = (String) jdbcMap.get("url");
+   203→                    String user = (String) jdbcMap.get("user");
+   204→                    String password = (String) jdbcMap.get("password");
+   205→
+   206→                    sqlList.add(dataSQL);
+   207→                    //dataSQL2,3.... 있을 경우
+   208→                    while (payload.get("dataSQL" + String.valueOf(sqlCount)) != null) {
+   209→                        sqlList.add((String) payload.get("dataSQL" + String.valueOf(sqlCount)));
+   210→                        sqlCount++;
+   211→                    }
+   212→
+   213→                    if (checkData) {
+   214→                        String tables = (String) payload.get("tables");
+   215→                        String[] tableList = tables.split(",");
+   216→                        try (DatabaseConnector databaseConnector = new DatabaseConnector()) {
+   217→                            databaseConnector.addConn(driverClassName, url, user, password);
+   218→
+   219→                            try (Connection connection = databaseConnector.getConnAlti()) {
+   220→                                DatabaseQueryHelper queryHelper = new DatabaseQueryHelper();
+   221→
+   222→                                for (String table : tableList) {
+   223→                                    int count = queryHelper.getRowCount(connection, table);
+   224→                                    if (count == 0) {
+   225→                                        job.setStatus(STATUS.ERROR.name());
+   226→                                        logger.error("{} 테이블에 데이터가 없습니다, 전체 색인을 종료합니다.", table);
+   227→                                    }
+   228→                                }
+   229→                            }
+   230→                        }
+   231→                    }
+   232→
+   233→                    ingester = new JDBCIngester(driverClassName, url, user, password, bulkSize, fetchSize, maxRows, useBlobFile, sqlList);
+   234→                } else {
+   235→                    throw new IllegalArgumentException("jdbc argument");
+   236→                }
+   237→            } else if (type.equals("multipleJdbc")) {
+   238→                String dataSQL = (String) payload.get("dataSQL"); // 주 색인쿼리
+   239→                String dataSubSQL = (String) payload.get("dataSubSQL"); // 서브 색인 쿼리
+   240→
+   241→                Integer fetchSize = (Integer) payload.get("fetchSize");
+   242→                Integer maxRows = (Integer) payload.getOrDefault("maxRows", 0);
+   243→                Boolean useBlobFile = (Boolean) payload.getOrDefault("useBlobFile", false);
+   244→
+   245→                String subSqlwhereclauseData = (String) payload.getOrDefault("subSqlwhereclauseData", "");
+   246→
+   247→                if (payload.get("_jdbc") != null) {
+   248→                    Map<String, Object> jdbcMap = (Map<String, Object>) payload.get("_jdbc");
+   249→                    Map<String, JdbcMetaData> jdbcMetaDataMap = new HashMap<>();
+   250→                    Map<String, ArrayList<String>> sqlQueryMap = new HashMap<>();
+   251→
+   252→                    // 메인 Query 및  JDBC 메타데이터 정보 저장
+   253→                    int sqlCount = 2;
+   254→                    ArrayList<String> sqlList = new ArrayList<String>();
+   255→
+   256→                    String driverClassName = (String) jdbcMap.get("driverClassName");
+   257→                    String url = (String) jdbcMap.get("url");
+   258→                    String user = (String) jdbcMap.get("user");
+   259→                    String password = (String) jdbcMap.get("password");
+   260→                    sqlList.add(dataSQL);
+   261→                    //dataSQL2,3.... 있을 경우
+   262→                    while (payload.get("dataSQL" + sqlCount) != null) {
+   263→                        sqlList.add((String) payload.get("dataSQL" + sqlCount));
+   264→                        sqlCount++;
+   265→                    }
+   266→
+   267→                    JdbcMetaData mainMetaData = new JdbcMetaData();
+   268→                    mainMetaData.setDriverClassName(driverClassName);
+   269→                    mainMetaData.setUrl(url);
+   270→                    mainMetaData.setUser(user);
+   271→                    mainMetaData.setPassword(password);
+   272→
+   273→                    jdbcMetaDataMap.put("mainJDBC", mainMetaData);
+   274→
+   275→                    logger.info("mainSqlList COUNT : {}", sqlList.size());
+   276→
+   277→                    sqlQueryMap.put("mainSqlList", sqlList);
+   278→
+   279→
+   280→                    if ((boolean) payload.get("isMultipleJDBC")) { // 사용 유무
+   281→                        ArrayList<String> subSqlList = new ArrayList<String>();
+   282→                        // 서브 Query 및  JDBC 메타데이터 정보 저장
+   283→                        driverClassName = (String) payload.get("subDriverClassName");
+   284→                        url = (String) payload.get("subUrl");
+   285→                        user = (String) payload.get("subUser");
+   286→                        password = (String) payload.get("subPassword");
+   287→
+   288→                        subSqlList.add(dataSubSQL);
+   289→
+   290→                        logger.info("subSqlList COUNT : {}", subSqlList.size());
+   291→                        sqlQueryMap.put("subSqlList", subSqlList);
+   292→
+   293→                        JdbcMetaData subMetaData = new JdbcMetaData();
+   294→                        subMetaData.setDriverClassName(driverClassName);
+   295→                        subMetaData.setUrl(url);
+   296→                        subMetaData.setUser(user);
+   297→                        subMetaData.setPassword(password);
+   298→
+   299→                        jdbcMetaDataMap.put("subJDBC", subMetaData);
+   300→                    }
+   301→
+   302→                    ingester = new MultipleJDBCIngester(jdbcMetaDataMap, bulkSize, fetchSize, maxRows, useBlobFile, sqlQueryMap, subSqlwhereclauseData);
+   303→                } else {
+   304→                    throw new IllegalArgumentException("jdbc argument");
+   305→                }
+   306→            } else if (type.equals("multipleDumpFile")) {
+   307→                // 다중 색인
+   308→                new MultipleDumpFile().index(job, host, port, esUsername, esPassword, scheme, index, reset, filterClassName, bulkSize, threadSize, pipeLine, indexSettings, payload);
+   309→                return;
+   310→            } else if (type.equals("poc")) {
+   311→                // POC 색인 - jdbc와 동일한 ES 색인 방식 + 형태소분석기 API 연동
+   312→                // JDBCIngester를 TokenizingIngester로 래핑하여 청크 단위 tokenizeAPI 호출
+   313→                String dataSQL = (String) payload.get("dataSQL");
+   314→                Integer fetchSize = (Integer) payload.get("fetchSize");
+   315→                Integer maxRows = (Integer) payload.getOrDefault("maxRows", 0);
+   316→                Boolean useBlobFile = (Boolean) payload.getOrDefault("useBlobFile", false);
+   317→
+   318→                if (payload.get("_jdbc") != null) {
+   319→                    Map<String, Object> jdbcMap = (Map<String, Object>) payload.get("_jdbc");
+   320→
+   321→                    int sqlCount = 2;
+   322→                    ArrayList<String> sqlList = new ArrayList<String>();
+   323→
+   324→                    String driverClassName = (String) jdbcMap.get("driverClassName");
+   325→                    String url = (String) jdbcMap.get("url");
+   326→                    String user = (String) jdbcMap.get("user");
+   327→                    String password = (String) jdbcMap.get("password");
+   328→
+   329→                    sqlList.add(dataSQL);
+   330→                    while (payload.get("dataSQL" + String.valueOf(sqlCount)) != null) {
+   331→                        sqlList.add((String) payload.get("dataSQL" + String.valueOf(sqlCount)));
+   332→                        sqlCount++;
+   333→                    }
+   334→
+   335→                    // JDBCIngester 생성 (jdbc 타입과 동일)
+   336→                    JDBCIngester jdbcIngester = new JDBCIngester(driverClassName, url, user, password, bulkSize, fetchSize, maxRows, useBlobFile, sqlList);
+   337→
+   338→                    // TokenizingIngester 설정
+   339→                    String tokenizeApiUrl = (String) payload.get("tokenizeApiUrl");
+   340→                    Integer chunkSize = (Integer) payload.getOrDefault("chunkSize", 500);
+   341→                    Integer tokenizeApiMaxRetries = (Integer) payload.getOrDefault("tokenizeApiMaxRetries", 3);
+   342→                    Long tokenizeApiRetryDelayMs = ((Number) payload.getOrDefault("tokenizeApiRetryDelayMs", 1000L)).longValue();
+   343→                    String productCodeField = (String) payload.getOrDefault("productCodeField", "productCode");
+   344→                    // 병렬 처리 설정
+   345→                    Integer tokenizeApiParallelism = (Integer) payload.getOrDefault("tokenizeApiParallelism", 4);  // API 호출 스레드 풀 크기
+   346→                    Integer parallelChunks = (Integer) payload.getOrDefault("parallelChunks", 4);  // 동시 처리 청크 수
+   347→
+   348→                    // SQL → API 요청 필드 매핑 (productName → name, productMaker → manufacturer, productBrand → brand)
+   349→                    Map<String, String> fieldMappings = new LinkedHashMap<>();
+   350→                    fieldMappings.put("productName", "name");
+   351→                    fieldMappings.put("productMaker", "manufacturer");
+   352→                    fieldMappings.put("productBrand", "brand");
+   353→
+   354→                    // API 응답 → ES 저장 필드 매핑 (name → productNameSearchField, etc.)
+   355→                    Map<String, String> resultFieldMappings = new LinkedHashMap<>();
+   356→                    resultFieldMappings.put("name", "productNameSearchField");
+   357→                    resultFieldMappings.put("manufacturer", "productMakerSearchField");
+   358→                    resultFieldMappings.put("brand", "productBrandSearchField");
+   359→
+   360→                    // TokenizeApiClient 생성 (병렬 처리 스레드 풀 포함)
+   361→                    TokenizeApiClient apiClient = new TokenizeApiClient(tokenizeApiUrl, tokenizeApiMaxRetries, tokenizeApiRetryDelayMs, tokenizeApiParallelism);
+   362→
+   363→                    // TokenizingIngester로 JDBCIngester 래핑 (병렬 청크 처리 포함)
+   364→                    ingester = new TokenizingIngester(jdbcIngester, apiClient, chunkSize, parallelChunks, productCodeField, fieldMappings, resultFieldMappings);
+   365→
+   366→                    logger.info("POC Indexer: tokenizeApiUrl={}, chunkSize={}, parallelChunks={}, parallelism={}, productCodeField={}, fieldMappings={}, resultFieldMappings={}",
+   367→                            tokenizeApiUrl, chunkSize, parallelChunks, tokenizeApiParallelism, productCodeField, fieldMappings.keySet(), resultFieldMappings.values());
+   368→                } else {
+   369→                    throw new IllegalArgumentException("poc type requires _jdbc argument");
+   370→                }
+   371→                // jdbc와 동일하게 IndexService.indexParallel() 사용 (아래 코드로 fall-through)
+   372→            } else if (type.equals("procedure")) {
+   373→
+   374→                //프로시저 호출에 필요한 정보
+   375→                String driverClassName = (String) payload.get("driverClassName");
+   376→                String url = (String) payload.get("url");
+   377→                String user = (String) payload.get("user");
+   378→                String password = (String) payload.get("password");
+   379→                String procedureName = (String) payload.getOrDefault("procedureName", "PRSEARCHPRODUCT"); //PRSEARCHPRODUCT
+   380→                Integer groupSeq = null;
+   381→                if (payload.get("groupSeq") != null) {
+   382→                    try {
+   383→                        groupSeq = (Integer) payload.get("groupSeq");
+   384→                    } catch (Exception e) {
+   385→                        groupSeq = Integer.parseInt((String) payload.get("groupSeq"));
+   386→                    }
+   387→                }
+   388→                String dumpFormat = (String) payload.get("dumpFormat"); //ndjson, konan
+   389→                String rsyncPath = (String) payload.get("rsyncPath"); //rsync - Full Path
+   390→                String rsyncIp = (String) payload.get("rsyncIp"); // rsync IP
+   391→                String bwlimit = (String) payload.getOrDefault("bwlimit", "0"); // rsync 전송속도 - 1024 = 1m/s
+   392→                boolean procedureSkip = (Boolean) payload.getOrDefault("procedureSkip", false); // 프로시저 스킵 여부
+   393→                boolean rsyncSkip = (Boolean) payload.getOrDefault("rsyncSkip", false); // rsync 스킵 여부
+   394→
+   395→                //프로시져
+   396→                CallProcedure procedure = new CallProcedure(driverClassName, url, user, password, procedureName, groupSeq, path);
+   397→                //RSNYC
+   398→                RsyncCopy rsyncCopy = new RsyncCopy(rsyncIp, rsyncPath, path, bwlimit, groupSeq);
+   399→
+   400→                boolean execProdure = false;
+   401→                boolean rsyncStarted = false;
+   402→                //덤프파일 이름
+   403→                String dumpFileName = "prodExt_" + groupSeq;
+   404→
+   405→                //SKIP 여부에 따라 프로시저 호출
+   406→                if (procedureSkip == false) {
+   407→                    execProdure = procedure.callSearchProcedure();
+   408→                }
+   409→
+   410→                //프로시저 결과 True, R 스킵X or 프로시저 스킵 and rsync 스킵X
+   411→                if ((execProdure && rsyncSkip == false) || (procedureSkip && rsyncSkip == false)) {
+   412→                    rsyncCopy.start();
+   413→                    Thread.sleep(3000);
+   414→                    rsyncStarted = rsyncCopy.copyAsync();
+   415→                }
+   416→                logger.info("rsyncStarted : {}", rsyncStarted);
+   417→                int fileCount = 0;
+   418→                if (rsyncStarted || rsyncSkip) {
+   419→
+   420→                    if (rsyncSkip) {
+   421→                        logger.info("rsyncSkip : {}", rsyncSkip);
+   422→
+   423→                        long count = 0;
+   424→                        if (Files.isDirectory(Paths.get(path))) {
+   425→                            count = Files.walk(Paths.get(path)).filter(Files::isRegularFile).count();
+   426→                        } else if (Files.isRegularFile(Paths.get(path))) {
+   427→                            count = 1;
+   428→                        }
+   429→
+   430→                        if (count == 0) {
+   431→                            throw new FileNotFoundException("파일을 찾을 수 없습니다. (filepath: " + path + "/)");
+   432→                        }
+   433→                    } else {
+   434→                        //파일이 있는지 1초마다 확인
+   435→                        while (!Utils.checkFile(path, dumpFileName)) {
+   436→                            if (fileCount == 10) break;
+   437→                            Thread.sleep(1000);
+   438→                            fileCount++;
+   439→                            logger.info("{} 파일 확인 count: {} / 10", dumpFileName, fileCount);
+   440→                        }
+   441→
+   442→                        if (fileCount == 10) {
+   443→                            throw new FileNotFoundException("rsync 된 파일을 찾을 수 없습니다. (filepath: " + path + "/" + dumpFileName + ")");
+   444→                        }
+   445→                    }
+   446→                    //GroupSeq당 하나의 덤프파일이므로 경로+파일이름으로 인제스터 생성
+   447→                    //                    path += "/"+dumpFileName;
+   448→                    logger.info("file Path - Name  : {} - {}", path, dumpFileName);
+   449→                    ingester = new ProcedureIngester(path, dumpFormat, encoding, 1000, limitSize);
+   450→                }
+   451→            } else if (type.equals("procedure-link")) {
+   452→
+   453→                //프로시저 호출에 필요한 정보
+   454→                String driverClassName = (String) payload.get("driverClassName");
+   455→                String url = (String) payload.get("url");
+   456→                String user = (String) payload.get("user");
+   457→                String password = (String) payload.get("password");
+   458→                String procedureName = (String) payload.getOrDefault("procedureName", "PRLINKPRODUCT"); //PRSEARCHPRODUCT
+   459→                String groupSeqs = (String) payload.get("groupSeqs");
+   460→                String dumpFormat = (String) payload.get("dumpFormat"); //ndjson, konan
+   461→                String rsyncPath = (String) payload.get("rsyncPath"); //rsync - Full Path
+   462→                String rsyncIp = (String) payload.get("rsyncIp"); // rsync IP
+   463→                String bwlimit = (String) payload.getOrDefault("bwlimit", "0"); // rsync 전송속도 - 1024 = 1m/s
+   464→                boolean procedureSkip = (Boolean) payload.getOrDefault("procedureSkip", false); // 프로시저 스킵 여부
+   465→                boolean rsyncSkip = (Boolean) payload.getOrDefault("rsyncSkip", false); // rsync 스킵 여부
+   466→                String procedureThreads = (String) payload.getOrDefault("procedureThreads", "4"); // rsync 스킵 여부
+   467→                //            원격 호출 사용 여부 (패스트캣 임시로직)
+   468→                enableRemoteCmd = (boolean) payload.getOrDefault("enableRemoteCmd", false);
+   469→                //            원격 호출 URL (패스트캣 임시로직)
+   470→                remoteCmdUrl = (String) payload.getOrDefault("remoteCmdUrl", "");
+   471→
+   472→                // 오피스es 링크상품 전체색인 전파
+   473→                boolean enableOfficeIndexingJob = (Boolean) payload.getOrDefault("enableOfficeIndexingJob", false);
+   474→                String officeFullIndexUrl = (String) payload.getOrDefault("officeFullIndexUrl", "");
+   475→
+   476→                String secondProcedureName = (String) payload.getOrDefault("secondProcedureName", "PRLINKPRODUCT2");
+   477→                String jsonPath = (String) payload.get("jsonPath");
+   478→                String jsonPath2 = (String) payload.get("jsonPath2");
+   479→                String[] groupSeqLists = groupSeqs.split(",");
+   480→                String validCategoryCount = (String) payload.get("validCategoryCount");
+   481→                String thirdProcedureName = (String) payload.getOrDefault("thirdProcedureName", "PRLINKPRODUCT3");
+   482→
+   483→                Gson gson = new Gson();
+   484→
+   485→                List<DynamicCategory> dc = new ArrayList<>();
+   486→                try (FileReader fileReader = new FileReader(jsonPath)) {
+   487→                    dc = Arrays.asList(gson.fromJson(fileReader, DynamicCategory[].class));
+   488→                } catch (Exception e) {
+   489→                    logger.error("file reader error", e);
+   490→                }
+   491→
+   492→                Map<Integer, List<DynamicCategory>> dcm = new HashMap<>();
+   493→                try (Reader reader = new FileReader(jsonPath2)) {
+   494→                    JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+   495→
+   496→                    for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+   497→                        int parentCategoryId = Integer.parseInt(entry.getKey());
+   498→                        JsonObject categoryData = entry.getValue().getAsJsonObject();
+   499→                        int groupSeq = categoryData.get("groupSeq").getAsInt();
+   500→                        JsonArray categoryCodeArray = categoryData.getAsJsonArray("categoryCode");
+   501→
+   502→                        List<Integer> childCategories = new ArrayList<>();
+   503→                        for (JsonElement childCategory : categoryCodeArray) {
+   504→                            childCategories.add(childCategory.getAsInt());
+   505→                        }
+   506→
+   507→                        DynamicCategory dynamicCategory = DynamicCategory.create(groupSeq, childCategories);
+   508→                        dcm.computeIfAbsent(parentCategoryId, k -> new ArrayList<>()).add(dynamicCategory);
+   509→                    }
+   510→                } catch (IOException e) {
+   511→                    logger.error("Error reading or parsing JSON file", e);
+   512→                }
+   513→
+   514→                // 다이나믹 카테고리 파일 검증
+   515→                validDynamicCategory(dc, validCategoryCount);
+   516→
+   517→                // 1. groupSeqLists 수 만큼 프로시저 호출
+   518→                // 2. 체크
+   519→                // 3. 다 끝나면 rsync
+   520→                StringBuffer sb = new StringBuffer();
+   521→                Map<String, Boolean> procedureMap = new HashMap<>();
+   522→                Map<Integer, Boolean> secondProcedureMap = new HashMap<>();
+   523→                Map<Integer, Boolean> thirdProcedureMap = new HashMap<>();
+   524→
+   525→                if (enableRemoteCmd) {
+   526→                    remoteCmd("CLOSE", 10);
+   527→                }
+   528→
+   529→                if (procedureSkip == false) {
+   530→                    logger.info("Call Procedure");
+   531→                    ExecutorService threadPool = Executors.newFixedThreadPool(Integer.parseInt(procedureThreads));
+   532→
+   533→                    List threadsResults = new ArrayList<Future<Object>>();
+   534→                    for (String groupSeq : groupSeqLists) {
+   535→                        Integer groupSeqNumber = Integer.parseInt(groupSeq);
+   536→                        Callable callable = new Callable() {
+   537→                            @Override
+   538→                            public Object call() throws Exception {
+   539→                                String path = (String) payload.get("path");
+   540→                                logger.info("driverClassName: {}, url: {}, user: {}, password: {}, procedureName: {}, groupSeqNumber: {}, path: {}", driverClassName, url, user, password, procedureName, groupSeqNumber, path);
+   541→                                CallProcedure procedure = new CallProcedure(driverClassName, url, user, password, procedureName, groupSeqNumber, path, true);
+   542→                                Map<String, Object> result = new HashMap<>();
+   543→                                result.put("groupSeq", groupSeq);
+   544→                                result.put("result", procedure.callSearchProcedure());
+   545→                                return result;
+   546→                            }
+   547→                        };
+   548→
+   549→                        Future<Object> future = threadPool.submit(callable);
+   550→                        threadsResults.add(future);
+   551→                    }
+   552→
+   553→                    for (Object f : threadsResults) {
+   554→                        Future<Object> future = (Future<Object>) f;
+   555→                        Map<String, Object> execProdure = (Map<String, Object>) future.get();
+   556→                        procedureMap.put((String) execProdure.get("groupSeq"), (Boolean) execProdure.get("result"));
+   557→                        logger.info("{} execProdure: {}", (String) execProdure.get("groupSeq"), (Boolean) execProdure.get("result"));
+   558→                    }
+   559→
+   560→                    for (int i = 0; i < dc.size(); i++) {
+   561→                        List threadsResults2 = new ArrayList<Future<Object>>();
+   562→
+   563→                        for (Integer category : dc.get(i).getCategoryCode()) {
+   564→                            Integer secondGroupSeqNum = dc.get(i).getGroupSeq();
+   565→                            Callable callable = new Callable() {
+   566→                                @Override
+   567→                                public Object call() throws Exception {
+   568→                                    String path = (String) payload.get("path");
+   569→                                    logger.info("driverClassName: {}, url: {}, user: {}, password: {}, procedureName: {}, groupSeqNum: {}, categoryCode: {}, path: {}", driverClassName, url, user, password, secondProcedureName, secondGroupSeqNum, category, path);
+   570→                                    CallProcedure procedure = new CallProcedure(driverClassName, url, user, password, secondProcedureName, secondGroupSeqNum, category, path);
+   571→                                    Map<String, Object> result2 = new HashMap<>();
+   572→                                    result2.put("categoryCode", category);
+   573→                                    result2.put("result", procedure.callSearchProcedure2());
+   574→                                    return result2;
+   575→                                }
+   576→                            };
+   577→
+   578→                            Future<Object> future = threadPool.submit(callable);
+   579→                            threadsResults2.add(future);
+   580→                        }
+   581→
+   582→                        for (Object f : threadsResults2) {
+   583→                            Future<Object> future = (Future<Object>) f;
+   584→                            Map<String, Object> execProcedure = (Map<String, Object>) future.get();
+   585→                            secondProcedureMap.put((Integer) execProcedure.get("categoryCode"), (Boolean) execProcedure.get("result"));
+   586→                            logger.info("{}_{} execProdure: {}", dc.get(i).getGroupSeq(), execProcedure.get("categoryCode"), (Boolean) execProcedure.get("result"));
+   587→                        }
+   588→                    }
+   589→////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   590→//////////////////////////////////////////////////////////////// 프로시져3에 맞게 수정 후 해당 주석 삭제 //////////////////////////////////////////////////////////////////
+   591→///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   592→
+   593→                    List threadsResults3 = new ArrayList<Future<Object>>();
+   594→
+   595→                    for (Integer groupSeq : dcm.keySet()) {
+   596→                        List<DynamicCategory> dynamicCategories = dcm.get(groupSeq);
+   597→                        for (DynamicCategory dynamicCategory : dynamicCategories) {
+   598→                            Integer categoryCode = dynamicCategory.getGroupSeq();
+   599→                            List<Integer> subCategoryCodes = dynamicCategory.getCategoryCode();
+   600→                            logger.info("sub category 확인 {}:", subCategoryCodes);
+   601→                            for (Integer subCategoryCode : subCategoryCodes) {
+   602→                                Callable callable = new Callable() {
+   603→                                    @Override
+   604→                                    public Object call() throws Exception {
+   605→                                        String path = (String) payload.get("path");
+   606→                                        logger.info("driverClassName: {}, url: {}, user: {}, password: {}, procedureName: {}, groupSeqNum: {}, categoryCode: {}, subCategoryCode: {}, path: {}", driverClassName, url, user, password, thirdProcedureName, groupSeq, categoryCode, subCategoryCode, path);
+   607→                                        CallProcedure procedure = new CallProcedure(driverClassName, url, user, password, thirdProcedureName, groupSeq, categoryCode, subCategoryCode, path);
+   608→                                        Map<String, Object> result2 = new HashMap<>();
+   609→                                        result2.put("categoryCode", categoryCode);
+   610→                                        result2.put("subCategoryCode", subCategoryCode);
+   611→                                        result2.put("result", procedure.callSearchProcedure3());
+   612→                                        return result2;
+   613→                                    }
+   614→                                };
+   615→                                Future<Object> future = threadPool.submit(callable);
+   616→                                threadsResults3.add(future);
+   617→                            }
+   618→                        }
+   619→                    }
+   620→
+   621→                    for (Object f : threadsResults3) {
+   622→                        // 변경 필요
+   623→                        Future<Object> future = (Future<Object>) f;
+   624→                        Map<String, Object> execProcedure = (Map<String, Object>) future.get();
+   625→                        thirdProcedureMap.put((Integer) execProcedure.get("categoryCode"), (Boolean) execProcedure.get("result"));
+   626→                        logger.info("{}_{}_{} execProdure: {}", execProcedure.get("categoryCode"), execProcedure.get("subCategoryCode"), (Boolean) execProcedure.get("result"));
+   627→                    }
+   628→
+   629→////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   630→
+   631→                    threadPool.shutdown();
+   632→                }
+   633→
+   634→//                프로시저 -> multiThread
+   635→//                rsync ->  singleThread -> 1개 씩
+   636→                if (enableRemoteCmd) {
+   637→                    remoteCmd("INDEX", 10);
+   638→                }
+   639→
+   640→                if (enableOfficeIndexingJob) {
+   641→                    officeLinkIndexing(officeFullIndexUrl, groupSeqs);
+   642→                }
+   643→
+   644→                if (rsyncSkip == false) {
+   645→                    ExecutorService threadPool = Executors.newFixedThreadPool(Integer.parseInt(procedureThreads));
+   646→                    List threadsResults4 = new ArrayList<Future<Object>>();
+   647→                    List threadsResults5 = new ArrayList<Future<Object>>();
+   648→                    List threadsResults6 = new ArrayList<Future<Object>>();
+   649→
+   650→                    // 폴더 생성
+   651→                    logger.info("path={}", path);
+   652→                    File file = new File(path);
+   653→                    if (!file.exists()) {
+   654→                        boolean result = file.mkdir();
+   655→                        if (result) {
+   656→                            logger.info("{} mkdir!!", path);
+   657→                        } else {
+   658→                            logger.info("{} mkdir failed..", path);
+   659→                        }
+   660→                    }
+   661→
+   662→                    for (String groupSeq : groupSeqLists) {
+   663→                        Integer groupSeqNumber = Integer.parseInt(groupSeq);
+   664→
+   665→                        Callable callable = new Callable() {
+   666→                            @Override
+   667→                            public Object call() throws Exception {
+   668→                                String path = (String) payload.get("path");
+   669→                                String dumpFileName = "linkExt_" + groupSeq;
+   670→
+   671→                                //덤프파일 이름
+   672→                                File file = new File(path + "/" + dumpFileName);
+   673→                                logger.info("fila path: {}", path + "/" + dumpFileName);
+   674→
+   675→                                if (file.exists()) {
+   676→                                    logger.info("기존 파일 삭제 : {}", file);
+   677→                                    file.delete();
+   678→                                } else {
+   679→                                    logger.info("기존 파일을 찾을수 없음: {}", file);
+   680→                                }
+   681→
+   682→                                boolean execProdure = false;
+   683→                                boolean rsyncStarted = false;
+   684→                                //SKIP 여부에 따라 프로시저 호출
+   685→                                if (procedureSkip == false) {
+   686→                                    execProdure = procedureMap.get(groupSeq);
+   687→                                }
+   688→
+   689→                                RSync rsync = new RSync()
+   690→                                        .source(rsyncIp + "::" + rsyncPath + "/linkExt_" + groupSeqNumber)
+   691→                                        .destination(path)
+   692→                                        .recursive(true)
+   693→                                        .archive(true)
+   694→                                        .compress(true)
+   695→                                        .bwlimit(bwlimit)
+   696→                                        .inplace(true);
+   697→
+   698→                                //프로시저 결과 True, R 스킵X or 프로시저 스킵 and rsync 스킵X
+   699→                                if ((execProdure && rsyncSkip == false) || (procedureSkip && rsyncSkip == false)) {
+   700→                                    CollectingProcessOutput output = rsync.execute();
+   701→                                    if (output.getExitCode() > 0) {
+   702→                                        logger.error("{}", output.getStdErr());
+   703→                                    }
+   704→                                }
+   705→                                logger.info("rsyncStarted : {}", rsyncStarted);
+   706→
+   707→                                if (rsyncStarted || rsyncSkip) {
+   708→                                    if (rsyncSkip) {
+   709→                                        logger.info("rsyncSkip : {}", rsyncSkip);
+   710→                                    }
+   711→                                }
+   712→                                String filepath = path + "/" + dumpFileName;
+   713→
+   714→                                if (!rsyncSkip) {
+   715→                                    //파일이 있는지 1초마다 확인
+   716→                                    int fileCount = 0;
+   717→                                    while (!Utils.checkFile(path, dumpFileName)) {
+   718→                                        if (fileCount == 10) break; // 무한루프 회피
+   719→                                        Thread.sleep(1000);
+   720→                                        fileCount++;
+   721→                                        logger.info("{} 파일 확인 count: {} / 10", dumpFileName, fileCount);
+   722→                                    }
+   723→
+   724→                                    if (fileCount == 10) {
+   725→                                        throw new FileNotFoundException("rsync 된 파일을 찾을 수 없습니다. (filepath: " + path + "/" + dumpFileName + ")");
+   726→                                    }
+   727→                                }
+   728→                                return filepath;
+   729→                            }
+   730→                        };
+   731→                        Future<Object> future = threadPool.submit(callable);
+   732→                        threadsResults4.add(future);
+   733→                    }
+   734→
+   735→                    for (Object f : threadsResults4) {
+   736→                        Future<Object> future = (Future<Object>) f;
+   737→                        String filepath = (String) future.get();
+   738→                        logger.info("filepath: {}", filepath);
+   739→                        sb.append(filepath + ",");
+   740→                    }
+   741→
+   742→                    for (int i = 0; i < dc.size(); i++) {
+   743→                        int rsyncSecondProcedureGroupSeq = dc.get(i).getGroupSeq();
+   744→                        for (Integer categoryCode : dc.get(i).getCategoryCode()) {
+   745→                            Callable callable = new Callable() {
+   746→                                @Override
+   747→                                public Object call() throws Exception {
+   748→                                    String path = (String) payload.get("path");
+   749→                                    String dumpFileName = "linkExt_" + rsyncSecondProcedureGroupSeq + "_" + categoryCode;
+   750→
+   751→                                    //덤프파일 이름
+   752→                                    File file = new File(path + "/" + dumpFileName);
+   753→                                    logger.info("fila path: {}", path + "/" + dumpFileName);
+   754→
+   755→                                    if (file.exists()) {
+   756→                                        logger.info("기존 파일 삭제 : {}", file);
+   757→                                        file.delete();
+   758→                                    } else {
+   759→                                        logger.info("기존 파일을 찾을수 없음: {}", file);
+   760→                                    }
+   761→
+   762→                                    boolean execProdure = false;
+   763→                                    boolean rsyncStarted = false;
+   764→                                    //SKIP 여부에 따라 프로시저 호출
+   765→                                    if (procedureSkip == false) {
+   766→                                        execProdure = secondProcedureMap.get(categoryCode);
+   767→                                    }
+   768→
+   769→                                    RSync rsync = new RSync()
+   770→                                            .source(rsyncIp + "::" + rsyncPath + "/linkExt_" + rsyncSecondProcedureGroupSeq + "_" + categoryCode)
+   771→                                            .destination(path)
+   772→                                            .recursive(true)
+   773→                                            .archive(true)
+   774→                                            .compress(true)
+   775→                                            .bwlimit(bwlimit)
+   776→                                            .inplace(true);
+   777→
+   778→                                    //프로시저 결과 True, R 스킵X or 프로시저 스킵 and rsync 스킵X
+   779→                                    if ((execProdure && rsyncSkip == false) || (procedureSkip && rsyncSkip == false)) {
+   780→                                        CollectingProcessOutput output = rsync.execute();
+   781→                                        if (output.getExitCode() > 0) {
+   782→                                            logger.error("{}", output.getStdErr());
+   783→                                        }
+   784→                                    }
+   785→                                    logger.info("rsyncStarted : {}", rsyncStarted);
+   786→
+   787→                                    if (rsyncStarted || rsyncSkip) {
+   788→                                        if (rsyncSkip) {
+   789→                                            logger.info("rsyncSkip : {}", rsyncSkip);
+   790→                                        }
+   791→                                    }
+   792→                                    String filepath = path + "/" + dumpFileName;
+   793→
+   794→                                    if (!rsyncSkip) {
+   795→                                        //파일이 있는지 1초마다 확인
+   796→                                        int fileCount = 0;
+   797→                                        while (!Utils.checkFile(path, dumpFileName)) {
+   798→                                            if (fileCount == 10) break; // 무한루프 회피
+   799→                                            Thread.sleep(1000);
+   800→                                            fileCount++;
+   801→                                            logger.info("{} 파일 확인 count: {} / 10", dumpFileName, fileCount);
+   802→                                        }
+   803→
+   804→                                        if (fileCount == 10) {
+   805→                                            throw new FileNotFoundException("rsync 된 파일을 찾을 수 없습니다. (filepath: " + path + "/" + dumpFileName + ")");
+   806→                                        }
+   807→                                    }
+   808→                                    return filepath;
+   809→                                }
+   810→                            };
+   811→                            Future<Object> future = threadPool.submit(callable);
+   812→                            threadsResults5.add(future);
+   813→                        }
+   814→                    }
+   815→
+   816→                    for (Object f : threadsResults5) {
+   817→                        Future<Object> future = (Future<Object>) f;
+   818→                        String filepath = (String) future.get();
+   819→                        logger.info("filepath: {}", filepath);
+   820→                        sb.append(filepath + ",");
+   821→                    }
+   822→
+   823→////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   824→//////////////////////////////////////////////////////////////// 프로시져3에 맞게 수정 후 해당 주석 삭제 //////////////////////////////////////////////////////////////////
+   825→///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   826→                    for (Integer groupSeq : dcm.keySet()) {
+   827→                        List<DynamicCategory> dynamicCategories = dcm.get(groupSeq);
+   828→                        for (DynamicCategory dynamicCategory : dynamicCategories) {
+   829→                            Integer categoryCode = dynamicCategory.getGroupSeq();
+   830→                            List<Integer> subCategoryCodes = dynamicCategory.getCategoryCode();
+   831→                            for (Integer subCategoryCode : subCategoryCodes) {
+   832→                                Callable callable = new Callable() {
+   833→                                    @Override
+   834→                                    public Object call() throws Exception {
+   835→                                        String path = (String) payload.get("path");
+   836→                                        String dumpFileName = "linkExt_" + groupSeq + "_" + categoryCode + "_" + subCategoryCode;
+   837→
+   838→                                        //덤프파일 이름
+   839→                                        File file = new File(path + "/" + dumpFileName);
+   840→                                        logger.info("fila path: {}", path + "/" + dumpFileName);
+   841→
+   842→                                        if (file.exists()) {
+   843→                                            logger.info("기존 파일 삭제 : {}", file);
+   844→                                            file.delete();
+   845→                                        } else {
+   846→                                            logger.info("기존 파일을 찾을수 없음: {}", file);
+   847→                                        }
+   848→
+   849→                                        boolean execProdure = false;
+   850→                                        boolean rsyncStarted = false;
+   851→                                        //SKIP 여부에 따라 프로시저 호출
+   852→                                        if (procedureSkip == false) {
+   853→                                            execProdure = thirdProcedureMap.get(categoryCode);
+   854→                                        }
+   855→                                        //                                logger.info("execProdure : {}",execProdure);
+   856→                                        RSync rsync = new RSync()
+   857→                                                .source(rsyncIp + "::" + rsyncPath + "/linkExt_" + groupSeq + "_" + categoryCode + "_" + subCategoryCode)
+   858→                                                .destination(path)
+   859→                                                .recursive(true)
+   860→                                                .archive(true)
+   861→                                                .compress(true)
+   862→                                                .bwlimit(bwlimit)
+   863→                                                .inplace(true);
+   864→
+   865→                                        //프로시저 결과 True, R 스킵X or 프로시저 스킵 and rsync 스킵X
+   866→                                        if ((execProdure && rsyncSkip == false) || (procedureSkip && rsyncSkip == false)) {
+   867→                                            CollectingProcessOutput output = rsync.execute();
+   868→                                            if (output.getExitCode() > 0) {
+   869→                                                logger.error("{}", output.getStdErr());
+   870→                                            }
+   871→                                        }
+   872→                                        logger.info("rsyncStarted : {}", rsyncStarted);
+   873→
+   874→                                        if (rsyncStarted || rsyncSkip) {
+   875→                                            if (rsyncSkip) {
+   876→                                                logger.info("rsyncSkip : {}", rsyncSkip);
+   877→                                            }
+   878→                                        }
+   879→                                        String filepath = path + "/" + dumpFileName;
+   880→
+   881→                                        if (!rsyncSkip) {
+   882→                                            //파일이 있는지 1초마다 확인
+   883→                                            int fileCount = 0;
+   884→                                            while (!Utils.checkFile(path, dumpFileName)) {
+   885→                                                if (fileCount == 10) break; // 무한루프 회피
+   886→                                                Thread.sleep(1000);
+   887→                                                fileCount++;
+   888→                                                logger.info("{} 파일 확인 count: {} / 10", dumpFileName, fileCount);
+   889→                                            }
+   890→
+   891→                                            if (fileCount == 10) {
+   892→                                                throw new FileNotFoundException("rsync 된 파일을 찾을 수 없습니다. (filepath: " + path + "/" + dumpFileName + ")");
+   893→                                            }
+   894→                                        }
+   895→                                        return filepath;
+   896→                                    }
+   897→                                };
+   898→                                Future<Object> future = threadPool.submit(callable);
+   899→                                threadsResults6.add(future);
+   900→                            }
+   901→                            // subCategoryCode 추출 필요
+   902→
+   903→                        }
+   904→                    }
+   905→
+   906→
+   907→                    for (Object f : threadsResults6) {
+   908→                        Future<Object> future = (Future<Object>) f;
+   909→                        String filepath = (String) future.get();
+   910→                        logger.info("filepath: {}", filepath);
+   911→                        sb.append(filepath + ",");
+   912→                    }
+   913→///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   914→
+   915→                    threadPool.shutdown();
+   916→                } else {
+   917→                    sb.append(path);
+   918→                    //                    for(String groupSeq : groupSeqLists){
+   919→                    //                        String filepath = (String) payload.get("path");
+   920→                    //                        String dumpFileName = "linkExt_"+groupSeq;
+   921→                    //                        sb.append(filepath + "/" + dumpFileName + ",");
+   922→                    //                    }
+   923→                }
+   924→
+   925→                if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ',') {
+   926→                    sb.deleteCharAt(sb.length() - 1);
+   927→                }
+   928→
+   929→                ingester = new ProcedureLinkIngester(sb.toString(), dumpFormat, encoding, 1000, limitSize);
+   930→            }
+   931→
+   932→            Ingester finalIngester = ingester;
+   933→
+   934→            Filter filter = (Filter) Utils.newInstance(filterClassName);
+   935→
+   936→            if (job != null && job.getStopSignal() != null && job.getStopSignal()) {
+   937→                logger.info("[STOP SIGNAL] type: procedure");
+   938→                throw new StopSignalException();
+   939→            }
+   940→            //            service = new IndexService(host, port, scheme);
+   941→            service = new IndexService(host, port, scheme, esUsername, esPassword);
+   942→            // 인덱스를 초기화하고 0건부터 색인이라면.
+   943→            if (reset) {
+   944→                isCreatedIndex = service.retryUntilCreatingIndex(index, indexSettings, 30);
+   945→
+   946→                if (isCreatedIndex) {
+   947→                    logger.info("Index Created Success!! index: {}", index);
+   948→                } else {
+   949→                    logger.info("Index ReCreated Fail... index: {}", index);
+   950→                }
+   951→            }
+   952→
+   953→            if (type.equals("reindex")) {
+   954→                service.reindex(payload, index, job);
+   955→            } else {
+   956→                if (!finalIngester.hasNext()) {
+   957→                    job.setStatus(STATUS.ERROR.name());
+   958→                    logger.info("ingester 데이터 유무 : {} -> 전체 색인을 종료합니다.", false);
+   959→                    logger.error("ingester 데이터 유무 : {} -> 전체 색인을 종료합니다.", false);
+   960→                    throw new Exception();
+   961→                }
+   962→                // reindex가 아닌 경우 기존 로직과 동일
+   963→                if (threadSize > 1) {
+   964→                    service.indexParallel(finalIngester, index, bulkSize, filter, threadSize, job, pipeLine);
+   965→                } else {
+   966→                    service.index(finalIngester, index, bulkSize, filter, job, pipeLine);
+   967→                }
+   968→            }
+   969→
+   970→            job.setStatus(STATUS.SUCCESS.name());
+   971→        } catch (StopSignalException e) {
+   972→            job.setStatus(STATUS.STOP.name());
+   973→        } catch (FileNotFoundException e) {
+   974→            job.setStatus(STATUS.STOP.name());
+   975→            job.setError(e.getMessage());
+   976→            logger.error("error .... ", e);
+   977→        } catch (Exception e) {
+   978→            job.setStatus(STATUS.ERROR.name());
+   979→            job.setError(e.getMessage());
+   980→            logger.error("error .... ", e);
+   981→        } finally {
+   982→            job.setEndTime(System.currentTimeMillis() / 1000);
+   983→            if (autoDynamic) {
+   984→                new Thread(() -> {
+   985→                    int r = 20;
+   986→                    logger.info("create success check thread");
+   987→                    while (true) {
+   988→                        try {
+   989→//                            색인 취소 체크. 또는 전처리시 동적색인 ON
+   990→                            if ((job != null && job.getStopSignal() != null && job.getStopSignal())
+   991→                                    || (job != null && preProcess)) {
+   992→                                logger.info(job != null && job.getStopSignal() != null && job.getStopSignal() ? "STOP SIGNAL" : "PREPROCESS DONE");
+   993→                                logger.info("인덱스 교체 대기... 10s");
+   994→                                Thread.sleep(10 * 1000);
+   995→                                enableAutoDynamic();
+   996→                                if (afterProcess) {
+   997→                                    afterProcessing(afterProcessingUrl);
+   998→                                }
+   999→                                break;
+  1000→                            }
+  1001→//                            색인 완료 여부 체크
+  1002→                            logger.info("상태 체크 URL: {}", autoDynamicCheckUrl);
+  1003→                            ResponseEntity<String> searchCheckResponse = restTemplate.exchange(autoDynamicCheckUrl,
+  1004→                                    HttpMethod.GET,
+  1005→                                    new HttpEntity(new HashMap<String, Object>()),
+  1006→                                    String.class
+  1007→                            );
+  1008→                            String status = null;
+  1009→                            try {
+  1010→                                Map<String, Object> body = gson.fromJson(searchCheckResponse.getBody(), Map.class);
+  1011→                                Map<String, Object> info = gson.fromJson(gson.toJson(body.get("info")), Map.class);
+  1012→                                status = String.valueOf(info.get("status"));
+  1013→                            } catch (Exception ignore) {
+  1014→                            }
+  1015→//                            색인이 완료라면 동적색인 ON
+  1016→                            if ("SUCCESS".equalsIgnoreCase(status) || "NOT_STARTED".equalsIgnoreCase(status)) {
+  1017→                                logger.info("인덱스 교체 대기... 10s");
+  1018→                                Thread.sleep(10 * 1000);
+  1019→                                enableAutoDynamic();
+  1020→                                logger.info("[{}] autoDynamic >>> Open <<<", autoDynamicIndex);
+  1021→                                if (afterProcess) {
+  1022→                                    afterProcessing(afterProcessingUrl);
+  1023→                                }
+  1024→                                break;
+  1025→                            }
+  1026→                            r--;
+  1027→                            if (r == 0) {
+  1028→                                logger.warn("max retry!!!!");
+  1029→                                break;
+  1030→                            }
+  1031→                            Thread.sleep(60 * 1000);
+  1032→                        } catch (Exception e) {
+  1033→                            logger.error("", e);
+  1034→                            r--;
+  1035→                            if (r == 0) {
+  1036→                                logger.warn("max retry!!!!");
+  1037→                                break;
+  1038→                            } else {
+  1039→                                try {
+  1040→                                    Thread.sleep(1000);
+  1041→                                } catch (InterruptedException ignore) {
+  1042→                                }
+  1043→                            }
+  1044→                        }
+  1045→                    }
+  1046→                    logger.info("success check Thread terminate");
+  1047→                }).start();
+  1048→            }
+  1049→
+  1050→        }
+  1051→    }
+  1052→
+  1053→    public void updateQueueIndexerConsume(boolean dryRun, String queueIndexerUrl, String queueName, int consumeCount) {
+  1054→        Map<String, Object> body = new HashMap<>();
+  1055→        body.put("queue", queueName);
+  1056→        body.put("size", consumeCount);
+  1057→        logger.info("QueueIndexUrl: {}, queue: {}, count: {}", queueIndexerUrl, queueName, consumeCount);
+  1058→        if (!dryRun) {
+  1059→            ResponseEntity<String> response = restTemplate.exchange(queueIndexerUrl,
+  1060→                    HttpMethod.PUT,
+  1061→                    new HttpEntity(body),
+  1062→                    String.class
+  1063→            );
+  1064→            logger.info("edit Consume Response: {}", response);
+  1065→        } else {
+  1066→            logger.info("[DRY_RUN] queue indexer request skip");
+  1067→        }
+  1068→    }
+  1069→
+  1070→    // 동적색인 ON
+  1071→    public void enableAutoDynamic() throws InterruptedException {
+  1072→        if (autoDynamicQueueIndexUrl.split(",").length != 1) {
+  1073→            // 멀티 MQ
+  1074→            for (int i = 0; i < autoDynamicQueueIndexUrl.split(",").length; i++) {
+  1075→                String queueIndexUrl = autoDynamicQueueIndexUrl.split(",")[i];
+  1076→                String queueName = autoDynamicQueueNames.get(i);
+  1077→                updateQueueIndexerConsume(false, queueIndexUrl, queueName, autoDynamicQueueIndexConsumeCount);
+  1078→                Thread.sleep(1000);
+  1079→            }
+  1080→        } else {
+  1081→            // 싱글 MQ
+  1082→            for (String autoDynamicQueueName : autoDynamicQueueNames) {
+  1083→                updateQueueIndexerConsume(false, autoDynamicQueueIndexUrl, autoDynamicQueueName, autoDynamicQueueIndexConsumeCount);
+  1084→                Thread.sleep(1000);
+  1085→            }
+  1086→        }
+  1087→    }
+  1088→
+  1089→    // 동적색인 OFF
+  1090→    public void disableAutoDynamic(Map<String, Object> payload) throws InterruptedException {
+  1091→        autoDynamicQueueNames = Arrays.asList(((String) payload.getOrDefault("autoDynamicQueueNames", "")).split(","));
+  1092→        autoDynamicCheckUrl = (String) payload.getOrDefault("autoDynamicCheckUrl", "");
+  1093→        autoDynamicQueueIndexUrl = (String) payload.getOrDefault("autoDynamicQueueIndexUrl", "");
+  1094→        try {
+  1095→            autoDynamicQueueIndexConsumeCount = (int) payload.getOrDefault("autoDynamicQueueIndexConsumeCount", 1);
+  1096→        } catch (Exception ignore) {
+  1097→            autoDynamicQueueIndexConsumeCount = Integer.parseInt((String) payload.getOrDefault("autoDynamicQueueIndexConsumeCount", "1"));
+  1098→        }
+  1099→        // 큐 이름이 여러개 일 경우.
+  1100→        if (autoDynamicQueueIndexUrl.split(",").length != 1) {
+  1101→            // 멀티 MQ
+  1102→            for (int i = 0; i < autoDynamicQueueIndexUrl.split(",").length; i++) {
+  1103→                String queueIndexUrl = autoDynamicQueueIndexUrl.split(",")[i];
+  1104→                String queueName = autoDynamicQueueNames.get(i);
+  1105→                updateQueueIndexerConsume(false, queueIndexUrl, queueName, 0);
+  1106→                Thread.sleep(1000);
+  1107→            }
+  1108→        } else {
+  1109→            // 싱글 MQ
+  1110→            for (String autoDynamicQueueName : autoDynamicQueueNames) {
+  1111→                updateQueueIndexerConsume(false, autoDynamicQueueIndexUrl, autoDynamicQueueName, 0);
+  1112→                Thread.sleep(1000);
+  1113→            }
+  1114→        }
+  1115→        logger.info("[{}] autoDynamic >>> Close <<<", autoDynamicQueueNames);
+  1116→    }
+  1117→
+  1118→    //      FIXME 20210618 김준우 - 패스트캣 운영에서 제외대면 remoteCmd 제거 예정 (임시 기능 )
+  1119→    private void remoteCmd(String action, int retry) {
+  1120→        String url = String.format("%s?action=%s", remoteCmdUrl, action);
+  1121→        logger.info("REMOTE-CMD isCall: {}, URL: {}", enableRemoteCmd, url);
+  1122→        if (!enableRemoteCmd) {
+  1123→            return;
+  1124→        }
+  1125→        try {
+  1126→            HttpHeaders headers = new HttpHeaders();
+  1127→            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+  1128→            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+  1129→            logger.info("REMOTE-CMD Action: {} response status code: {}", action, responseEntity.getStatusCodeValue());
+  1130→        } catch (Exception e) {
+  1131→            logger.error("", e);
+  1132→            Utils.sleep(3000);
+  1133→            remoteCmd(action, retry - 1);
+  1134→        }
+  1135→    }
+  1136→
+  1137→    private void officeLinkIndexing(String url, String groupSeqStr) {
+  1138→        logger.info("office-link indexing start");
+  1139→        url += "&action=all";
+  1140→        url += "&groupSeq=" + groupSeqStr;
+  1141→        try {
+  1142→            logger.info("office-link indexing start - {}", url);
+  1143→            restTemplate.exchange(url, HttpMethod.GET, new HttpEntity(new HashMap<>()), String.class);
+  1144→        } catch (Exception e) {
+  1145→            logger.error("", e);
+  1146→        }
+  1147→    }
+  1148→
+  1149→    private void afterProcessing(String url) {
+  1150→        logger.info("afterProcessing start");
+  1151→        url += "&action=all";
+  1152→        try {
+  1153→            logger.info("afterProcessing start - {}", url);
+  1154→            restTemplate.exchange(url, HttpMethod.GET, new HttpEntity(new HashMap<>()), String.class);
+  1155→        } catch (Exception e) {
+  1156→            logger.error("", e);
+  1157→        }
+  1158→    }
+  1159→
+  1160→    private void validDynamicCategory(List<DynamicCategory> dc, String validCategoryCount) {
+  1161→        String[] splitValidCount = validCategoryCount.split(",");
+  1162→        int groupSeqCount = Integer.parseInt(splitValidCount[0]);
+  1163→
+  1164→        // 그룹 시퀀스 갯수 검증
+  1165→        if (dc.size() != groupSeqCount) {
+  1166→            logger.info("그룹 시퀀스 수치 일치 X - 색인 작업 중단");
+  1167→            job.setStatus(STATUS.STOP.name());
+  1168→        }
+  1169→
+  1170→        // 카테고리 갯수 검증
+  1171→        // 2024.07.29 자식 카테고리 말고 부모 카테고리만 사이즈 비교
+  1172→        for (int i = 0; i < dc.size(); i++) {
+  1173→            if (dc.get(i).getCategoryCode().size() > Integer.parseInt(splitValidCount[i + 1])) {
+  1174→                logger.info("카테고리 증가 카테고리 확인 필요 | 카테고리 수: {}", dc.get(i).getCategoryCode().size());
+  1175→            } else if (dc.get(i).getCategoryCode().size() < Integer.parseInt(splitValidCount[i + 1])) {
+  1176→                logger.info("카데고리 수치 감소 - 색인 작업 중단 | 카테고리 수: {}", dc.get(i).getCategoryCode().size());
+  1177→                job.setStatus(STATUS.STOP.name());
+  1178→            }
+  1179→        }
+  1180→    }
+  1181→
+  1182→}

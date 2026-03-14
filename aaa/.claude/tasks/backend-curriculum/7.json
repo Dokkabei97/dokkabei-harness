@@ -1,0 +1,17 @@
+{
+  "id": "7",
+  "subject": "최종 커리큘럼 파일 통합 및 작성",
+  "description": "모든 팀원의 결과물을 통합하여 backend-tech1.md, backend-tech2.md 등의 최종 파일로 작성한다. 기존 curriculum_final.md의 내용을 포함하면서 확장된 내용을 체계적으로 구성한다.",
+  "activeForm": "최종 커리큘럼 파일 통합 작성 중",
+  "owner": "team-lead",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ]
+}

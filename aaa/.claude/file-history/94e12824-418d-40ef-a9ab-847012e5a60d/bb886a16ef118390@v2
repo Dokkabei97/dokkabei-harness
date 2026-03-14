@@ -1,0 +1,38 @@
+package output
+
+import (
+	"fmt"
+	"os"
+)
+
+// Quiet controls whether non-error output is suppressed.
+var Quiet bool
+
+// Print writes to stdout unless quiet mode is active.
+func Print(format string, args ...interface{}) {
+	if !Quiet {
+		fmt.Fprintf(os.Stdout, format, args...)
+	}
+}
+
+// Println writes a line to stdout unless quiet mode is active.
+func Println(args ...interface{}) {
+	if !Quiet {
+		fmt.Fprintln(os.Stdout, args...)
+	}
+}
+
+// Error writes to stderr (always shown, even in quiet mode).
+func Error(format string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, args...)
+}
+
+// Errorln writes a line to stderr.
+func Errorln(args ...interface{}) {
+	fmt.Fprintln(os.Stderr, args...)
+}
+
+// PrintID prints just an ID (useful for quiet mode after create/update).
+func PrintID(id string) {
+	fmt.Println(id)
+}

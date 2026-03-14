@@ -1,0 +1,12 @@
+{
+  "id": "2",
+  "subject": "형태소분석 패턴/공백 처리 이슈 분석",
+  "description": "형태소분석기의 문자열 패턴 처리, 공백 처리, 정규식 처리에서 Kotlin 마이그레이션 시 문제가 될 수 있는 코드를 철저히 분석합니다.\n\n핵심 분석 대상:\n1. SpaceDictionary.java: DELIMITER(\"\\\\s\"), ptn(ASCII 패턴) - 공백 구분자 처리 로직\n2. product/rule/ 디렉토리 전체 (RuleOne~RuleFive, Rule, Entry, RuleEntry):\n   - 각 Rule의 문자열 파싱/매칭 로직\n   - 정규식 패턴 사용\n   - char 배열 직접 조작\n3. product/ 디렉토리 핵심 파일:\n   - ProductNameParsingRule.java: 상품명 파싱 규칙\n   - ProductNameTokenizer.java: 토크나이저 로직\n   - ProductNameAnalysisFilter.java: 분석 필터\n   - AnalyzerOption.java: 옵션 설정\n\n분석 포인트:\n- Java String.split()과 Kotlin String.split()의 동작 차이 (정규식 vs 리터럴)\n- trim() vs Kotlin의 trim/trimEnd/trimStart 차이\n- char 타입 비교 (Java primitive char vs Kotlin Char)\n- CharVector 커스텀 CharSequence의 동작 호환성\n- Pattern/Matcher vs Kotlin Regex 변환 시 주의점\n- 배열 인덱스 접근과 범위 체크\n- ignoreCase 처리의 일관성\n\n결과물: 잠재적 이슈 목록 (파일명, 라인 번호, 이슈 설명, 권장 해결방안)",
+  "activeForm": "형태소분석 패턴/공백 처리 이슈 분석 중",
+  "owner": "morphology-expert",
+  "status": "completed",
+  "blocks": [
+    "4"
+  ],
+  "blockedBy": []
+}

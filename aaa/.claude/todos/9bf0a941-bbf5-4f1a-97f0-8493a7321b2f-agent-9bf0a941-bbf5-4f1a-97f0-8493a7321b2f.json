@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Analyze current tokenization API response structure",
+    "status": "in_progress",
+    "activeForm": "Analyzing current tokenization API response structure"
+  },
+  {
+    "content": "Design new response format with token-synonym mapping",
+    "status": "pending",
+    "activeForm": "Designing new response format with token-synonym mapping"
+  },
+  {
+    "content": "Plan API modification strategy with search-morphology-expert",
+    "status": "pending",
+    "activeForm": "Planning API modification strategy with search-morphology-expert"
+  }
+]

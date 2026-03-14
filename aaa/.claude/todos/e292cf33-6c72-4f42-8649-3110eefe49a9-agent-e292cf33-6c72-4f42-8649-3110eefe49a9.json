@@ -1,0 +1,32 @@
+[
+  {
+    "content": "APScheduler 의존성 확인 및 추가",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "사전별 스케줄 설정 구조 설계",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "diff 체크 및 동기화 로직 구현",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "스케줄러 서비스 구현",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "메인 앱에 스케줄러 통합",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

@@ -1,0 +1,277 @@
+---
+title: "4-1 LangGraph 핵심 개념"
+aliases:
+  - "4-1 LangGraph 핵심 개념"
+  - "LangGraph 핵심 개념"
+tags: [llm-rag, phase4, langgraph, core]
+created: ""
+updated: ""
+phase: phase4
+status: "todo"
+difficulty: "중급"
+---
+
+> [!summary]
+> LangGraph는 노드와 엣지, 그리고 상태(State)로 실행 흐름을 모델링한다.
+> LCEL에서 다루기 어려운 분기/루프를 명시적으로 구성할 수 있다.
+> 기본 입력은 `START`, 종료는 `END`로 표현한다.
+> `SearchState`를 중심으로 검색, 요약, 재검색 판단을 연결하는 것이 핵심 패턴이다.
+> 상태 계약(`TypedDict` 또는 `Pydantic`)이 워크플로우 품질을 결정한다.
+> 체크포인트를 붙이면 실행 중단 지점에서 이어가기와 재현이 쉬워진다.
+
+## 관련 노트
+- [[4-2 LangGraph vs LangChain Chain]]
+- [[4-3 검색 워크플로우 그래프 설계]]
+- [[4-6 서브그래프와 상태 관리]]
+
+## 개념 설명
+- LangGraph는 그래프 기반 실행 엔진이다.
+- 노드는 하나의 계산 단위로 동작한다.
+- 엣지는 노드 간 제어 흐름이다.
+- 상태는 노드 간 입력·출력의 공통 메모리다.
+- Graph는 상태를 읽고 쓰는 노드의 모음이다.
+- StateGraph는 상태 타입을 통해 규격을 강제한다.
+- `START`는 시작 포인트다.
+- `END`는 종료 포인트다.
+- `Conditional Edge`는 상태값을 보고 경로를 분기한다.
+- 동일 노드가 여러 번 실행되어 루프를 구성할 수 있다.
+- 루프는 검색 보강, 리라이트, 피드백 패턴에서 자주 사용된다.
+- LCEL보다 제어 흐름이 더 투명하다.
+- LCEL은 순차 흐름이 강하고 분기/반복 확장 비용이 커진다.
+- LangGraph는 상태 기반 디버깅이 쉽다.
+- 상태는 함수 시그니처의 실험보다 예측 가능한 동작을 만든다.
+- 노드 간 계약이 선명하면 테스트가 쉬워진다.
+- 상태가 너무 크면 직렬 처리 비용이 커질 수 있다.
+- 상태가 너무 작으면 의사결정 컨텍스트가 사라진다.
+- 검색 워크플로우에서는 최소 상태 + 보조 상태 패턴이 유용하다.
+- 예: 핵심 요약용 상태, 후보 검색 결과용 상태로 분리.
+- 조건부 경로를 늘리기 전에 상태 필드 설계를 선행한다.
+- 경로 추적은 운영 중 문제 재현의 기본이다.
+- 노드 이름은 동사형으로 쓰는 것이 가독성 측면에서 좋다.
+- `analyze_query`, `evaluate`, `search`, `summarize`와 같이 일관되게 짓는다.
+- 엣지 라벨은 의미 있는 흐름 이름으로 표기한다.
+- `StateGraph`의 컴파일은 실행 직전 검증 단계다.
+- `TypedDict`는 가볍고 타입 명시가 빠르다.
+- `Pydantic`은 검증이 강하고 default/factory를 쓰기 좋다.
+- `SearchState`는 검색 RAG에서 공통 템플릿으로 자주 쓰인다.
+- `query`, `rewritten_query`, `search_results`, `summary`, `sources`, `needs_more_search`가 기본 골격이다.
+- `sources`는 나중에 출처 검증과 인용 처리에 필수다.
+- `needs_more_search`는 루프 제어 신호다.
+- `summary`는 최종 응답 품질 판단의 중간 산출이다.
+- `rewritten_query`는 검색 엔진 특성에 맞춘 정제문이다.
+- 노드 구현은 최대한 순수 함수로 유지한다.
+- 순수 함수는 테스트 가능성이 높고 재사용성이 높다.
+- 상태를 반환하지 않으면 변경이 누락될 수 있다.
+- 노드 내부에서 너무 많은 로직을 넣지 않는다.
+- 재사용 노드는 도메인별로 분리한다.
+- 노드 하나에서 모든 일을 처리하면 유지보수가 어렵다.
+- 엣지를 세밀하게 나누면 경로 제어가 명확해진다.
+- 서브그래프와 결합하면 중규모 프로젝트에서 모듈화된다.
+- 체크포인트 설정은 운영 필수 항목이다.
+- 체크포인트 없이는 재시도 시 맥락 손실이 일어난다.
+- 중간 상태를 남기면 사람 검증(HITL)에 유리하다.
+- 상태 키 오타가 가장 흔한 오류 원인이다.
+- 키 명명 규칙을 팀 표준으로 고정한다.
+- `query`와 `rewritten_query`를 동일한 타입으로 두어도 된다.
+- 하지만 의미를 분리해야 디버깅이 쉬워진다.
+- `search_results`는 문자열/문서 객체 중 하나로 통일해야 한다.
+- 섞어쓰면 merge/summarize 단계에서 복잡도가 급증한다.
+- 상태 레이어에서 타입 고정은 운영 안정성이다.
+- 실무에서는 검색 단계에서 `limit`, `timeout`, `top_k` 같은 제어도 넣는다.
+- 상태가 바뀌면 테스트 케이스도 함께 업데이트한다.
+- `StateGraph`에서 오류가 난다면 연결되지 않은 노드부터 먼저 본다.
+- `graph.add_edge` 방향이 반대일 때 silent bug가 생길 수 있다.
+- 조건부 엣지 함수에서 예외를 던지면 전체 그래프가 중단된다.
+- 상태 기반 분기는 branch 함수의 가독성을 중요시한다.
+- 분기 판별 결과를 enum으로 관리하면 분기 버그를 줄인다.
+- 노드/엣지 수가 늘면 문서화가 필수다.
+- 작은 단위 상태로 단계별 캡슐화를 유지한다.
+- 상태 업데이트는 덮어쓰기인지 누적인지 명확히 정의한다.
+- 누적이면 `Annotated` + reducer를 고려한다.
+- 루프에서 상태 폭증을 방지하려면 sliding window 전략이 필요하다.
+- `needs_more_search`가 장시간 True면 프롬프트 한계가 있는지 본다.
+- `END`에 다다르기 위한 조건은 명시적으로 작성한다.
+- 종료 지점이 애매하면 호출자가 영원히 대기한다.
+- LangGraph는 제어 흐름을 코드로 남기므로 팀 커뮤니케이션이 쉬워진다.
+- 이 노트는 기반 지식을 정리한다.
+- 다음 노트에서 LCEL과 비교해 설계 기준을 정리한다.
+
+## SearchState 예시 (TypedDict/Pydantic)
+### TypedDict
+```python
+from typing import List, Optional
+from typing_extensions import TypedDict
+
+
+class SearchState(TypedDict, total=False):
+    query: str
+    rewritten_query: str
+    search_results: List[str]
+    summary: str
+    sources: List[str]
+    needs_more_search: bool
+```
+
+### Pydantic
+```python
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+
+class SearchStateModel(BaseModel):
+    query: str
+    rewritten_query: Optional[str] = None
+    search_results: List[str] = Field(default_factory=list)
+    summary: str = ""
+    sources: List[str] = Field(default_factory=list)
+    needs_more_search: bool = False
+```
+
+## Mermaid 다이어그램
+```mermaid
+flowchart TD
+    START([START]) --> analyze_query
+    analyze_query --> search_node
+    search_node --> evaluate_node
+    evaluate_node -->|enough| summarize_node
+    evaluate_node -->|not enough| rewrite_node
+    rewrite_node --> search_node
+    summarize_node --> END([END])
+```
+
+## 코드 예제
+```python
+from typing import List
+from typing_extensions import TypedDict
+from langgraph.graph import StateGraph, START, END
+
+
+class SearchState(TypedDict, total=False):
+    query: str
+    rewritten_query: str
+    search_results: List[str]
+    summary: str
+    sources: List[str]
+    needs_more_search: bool
+
+
+def analyze_query(state: SearchState) -> SearchState:
+    raw = state.get("query", "").strip()
+    if not raw:
+        return {"rewritten_query": "", "needs_more_search": True}
+    normalized = raw.replace("  ", " ")
+    if normalized and normalized[-1] != "?":
+        normalized = normalized + "?"
+    return {"rewritten_query": normalized}
+
+
+def search_node(state: SearchState) -> SearchState:
+    q = state.get("rewritten_query") or state.get("query", "")
+    if not q:
+        return {
+            "search_results": [],
+            "sources": [],
+            "needs_more_search": True,
+        }
+    results = [
+        f"doc[{i}] {q}",
+        f"kb[{i}] {q}",
+    ]
+    return {
+        "search_results": results,
+        "sources": ["document-db", "knowledge-base"],
+        "needs_more_search": False,
+    }
+
+
+def evaluate_results(state: SearchState) -> SearchState:
+    results = state.get("search_results", [])
+    if len(results) >= 2:
+        return {
+            "needs_more_search": False,
+            "summary": "적절한 양의 근거를 확보함",
+        }
+    return {
+        "needs_more_search": True,
+        "summary": "검색 부족",
+    }
+
+
+def rewrite_query(state: SearchState) -> SearchState:
+    q = state.get("rewritten_query", "") or state.get("query", "")
+    return {
+        "rewritten_query": q + " 최신 문서 포함",
+        "needs_more_search": False,
+    }
+
+
+def summarize(state: SearchState) -> SearchState:
+    return {
+        "summary": f"요약 완료: {state.get('query', '')}",
+        "needs_more_search": False,
+    }
+
+
+def route(state: SearchState) -> str:
+    if state.get("needs_more_search"):
+        if state.get("search_results"):
+            return "rewrite_query"
+        return "END"
+    return "summarize"
+
+
+graph = StateGraph(SearchState)
+graph.add_node("analyze_query", analyze_query)
+graph.add_node("search_node", search_node)
+graph.add_node("evaluate_node", evaluate_results)
+graph.add_node("rewrite_node", rewrite_query)
+graph.add_node("summarize", summarize)
+
+graph.add_edge(START, "analyze_query")
+graph.add_edge("analyze_query", "search_node")
+graph.add_edge("search_node", "evaluate_node")
+graph.add_conditional_edges(
+    "evaluate_node",
+    route,
+    {
+        "rewrite_query": "rewrite_node",
+        "summarize": "summarize",
+        "END": END,
+    },
+)
+graph.add_edge("rewrite_node", "search_node")
+graph.add_edge("summarize", END)
+
+app = graph.compile()
+
+
+inputs = {"query": "LangGraph 핵심 개념을 간단히 정리해줘"}
+for chunk in app.stream(inputs, stream_mode="updates"):
+    print(chunk)
+```
+
+## LangGraph 구성요소 정리표
+| 구성요소 | 역할 | 작성 포인트 |
+| --- | --- | --- |
+| StateGraph | 상태 기반 실행 정의 | 상태 스키마를 먼저 정해두고 노드를 붙인다 |
+| Node | 상태를 받아 다음 상태를 반환 | 입력/출력 타입이 명확해야 한다 |
+| Edge | 실행 경로 연결 | 분기/순차/종료를 모두 표현 |
+| Conditional Edge | 상태 조건 분기 | 판단 함수는 side-effect 없이 작성 |
+| START | 시작 엔트리 | 최초 노드로 연결 |
+| END | 종료 노드 | 모든 조건에서 종료 가능성 확보 |
+| Checkpoint | 중간상태 저장 | 재시작과 디버깅 안정성 강화 |
+
+## 실습 체크리스트
+- [ ] `SearchState`에 요구 필드 6개를 선언한다.
+- [ ] `total=False` 동작과 기본 동작의 차이를 확인한다.
+- [ ] 상태 키 오탈자 테스트를 5개 케이스로 수행한다.
+- [ ] `START`에서 `analyze_query` 경로를 먼저 동작시켜 본다.
+- [ ] `Conditional Edge`가 `needs_more_search`를 기준으로 분기하는지 확인한다.
+- [ ] `rewrite_query`가 결과가 부족할 때만 실행되는지 본다.
+- [ ] `summarize`는 최소 한 번만 실행되도록 보장한다.
+- [ ] `END` 진입 경로를 최소 2개로 테스트한다.
+- [ ] 체크포인트 없이 장시간 실행을 하지 않도록 경고한다.
+- [ ] `requery` 반복이 무한 루프로 가지 않도록 조건을 고정한다.
+- [ ] 다음 노트의 비교표용으로 LCEL 샘플도 작성한다.
+
+---NOTES_SEPARATOR---

@@ -1,0 +1,26 @@
+[
+  {
+    "content": "Analyze the new Valkey pub/sub implementation in ppuri",
+    "status": "completed",
+    "priority": "high",
+    "id": "analyze-pubsub"
+  },
+  {
+    "content": "Identify existing dictionary diff-related logic and collections",
+    "status": "completed",
+    "priority": "high",
+    "id": "identify-diff-logic"
+  },
+  {
+    "content": "Determine if diff-related functionality is redundant with pub/sub",
+    "status": "completed",
+    "priority": "high",
+    "id": "determine-redundancy"
+  },
+  {
+    "content": "Identify specific code that can be safely removed",
+    "status": "completed",
+    "priority": "medium",
+    "id": "identify-removable-code"
+  }
+]

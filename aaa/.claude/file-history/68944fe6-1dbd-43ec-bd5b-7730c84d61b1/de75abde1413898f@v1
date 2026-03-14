@@ -1,0 +1,7 @@
+package com.cowave.search.application.index.dto
+
+data class LinkedProductRequest(
+    val shopProductCode: String,
+    val shopCode: String,
+    val prodKind: String = "LINK",
+)

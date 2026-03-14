@@ -1,0 +1,17 @@
+{
+  "underlying_goal": "Research and plan how to integrate and automate Claude Code, Slack, Plane, and Outline tools used at their company",
+  "goal_categories": {
+    "research_and_analysis": 1
+  },
+  "outcome": "fully_achieved",
+  "user_satisfaction_counts": {
+    "likely_satisfied": 1
+  },
+  "claude_helpfulness": "very_helpful",
+  "session_type": "single_task",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "good_explanations",
+  "brief_summary": "User asked for a team-based investigation into integrating Claude Code, Slack, Plane, and Outline; Claude dispatched 5 parallel research agents and delivered a comprehensive integration architecture report.",
+  "session_id": "87cbf22b-b0e9-450f-a3bb-9ebc9ee36fb0"
+}

@@ -1,0 +1,315 @@
+const REVIEW_ITEMS = [
+  { no: 1, term: "생성형AI", pos: "NNG", posStyle: "normal", confidence: 94.2, status: "pending", date: "2023-10-25 14:20", isNew: true },
+  { no: 2, term: "프롬프트", pos: "NNG", posStyle: "normal", confidence: 88.5, status: "pending", date: "2023-10-25 14:20", isNew: false },
+  { no: 3, term: "릵릵", pos: "UNK", posStyle: "unknown", confidence: 12.1, status: "rejected", date: "2023-10-25 14:21", isNew: false },
+  { no: 4, term: "할루시네이션", pos: "NNG", posStyle: "normal", confidence: 76.4, status: "pending", date: "2023-10-25 14:22", isNew: false },
+  { no: 5, term: "테스트123", pos: "NNG", posStyle: "unknown", confidence: 25.0, status: "rejected", date: "2023-10-25 14:25", isNew: false },
+];
+
+export default function AiDictReviewPage() {
+  return (
+    <main className="flex-1 overflow-y-auto bg-[#f5f6f8] p-8">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-2xl font-bold text-gray-900">AI 사전 관리</h2>
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider">
+              Review Mode
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">
+            AI에 의해 자동 생성된 단어를 검토합니다. 승인된 단어는 사용자
+            사전으로 이동됩니다.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-all">
+            <span className="material-symbols-outlined text-[18px]">
+              history
+            </span>
+            검토 이력
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-4 mb-6">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex-1 min-w-[300px] relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">
+                search
+              </span>
+              <input
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder="검색어 입력..."
+                type="text"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <select className="text-sm border-gray-200 rounded-lg bg-gray-50 py-2 focus:ring-blue-500">
+                <option>상태 전체</option>
+                <option>대기중 (Pending)</option>
+                <option>거부됨 (Rejected)</option>
+              </select>
+              <select className="text-sm border-gray-200 rounded-lg bg-gray-50 py-2 focus:ring-blue-500">
+                <option>품사 전체</option>
+                <option>명사 (NNG)</option>
+                <option>고유명사 (NNP)</option>
+              </select>
+              <button className="px-6 py-2 bg-gray-800 text-white rounded-lg text-sm font-bold hover:bg-gray-900 transition-colors">
+                검색
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between bg-blue-50/50 border border-blue-100 px-4 py-3 rounded-xl">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-blue-800">
+              선택된 단어: <span className="font-bold underline">3</span>건
+            </span>
+            <div className="h-4 w-px bg-blue-200"></div>
+            <button className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm transition-all">
+              <span className="material-symbols-outlined text-[18px]">
+                check_circle
+              </span>
+              선택 승인
+            </button>
+            <button className="flex items-center gap-1.5 px-4 py-1.5 bg-white border border-red-200 text-red-600 rounded-lg text-sm font-bold hover:bg-red-50 shadow-sm transition-all">
+              <span className="material-symbols-outlined text-[18px]">
+                cancel
+              </span>
+              선택 거부
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span className="material-symbols-outlined text-[14px]">info</span>
+            승인 시 &apos;사용자 사전&apos;으로 즉시 배포됩니다.
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0">
+          <div className="flex items-center gap-4">
+            <h3 className="font-bold text-gray-800">
+              Review Batch #202410-01
+            </h3>
+            <span className="text-xs text-gray-400 font-normal">
+              총 48건의 대기 중인 단어
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">페이지 당 행 수:</span>
+            <select className="text-xs border-gray-200 rounded bg-transparent py-1">
+              <option>20</option>
+              <option>50</option>
+            </select>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-4 py-3 w-[50px] text-center">
+                  <input
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    type="checkbox"
+                  />
+                </th>
+                <th className="px-4 py-3 font-semibold text-gray-500 w-[70px]">
+                  No.
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500">
+                  단어 (Term)
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500 w-[120px]">
+                  품사 (POS)
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500 w-[120px]">
+                  AI 신뢰도
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500 w-[120px] text-center">
+                  상태
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500 w-[180px]">
+                  추출 일시
+                </th>
+                <th className="px-6 py-3 font-semibold text-gray-500 text-center w-[150px]">
+                  관리
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {REVIEW_ITEMS.map((item) => {
+                const isRejected = item.status === "rejected";
+                const confidenceColor =
+                  item.confidence >= 70 ? "bg-green-500" : "bg-red-400";
+
+                return (
+                  <tr
+                    key={item.no}
+                    className={`transition-colors group ${
+                      isRejected
+                        ? "bg-red-50/10 hover:bg-red-50/20"
+                        : "hover:bg-blue-50/30"
+                    }`}
+                  >
+                    <td className="px-4 py-4 text-center">
+                      {isRejected ? (
+                        <input
+                          className="rounded border-gray-200 text-gray-300 bg-gray-50"
+                          disabled
+                          type="checkbox"
+                        />
+                      ) : (
+                        <input
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          defaultChecked
+                          type="checkbox"
+                        />
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-gray-400 font-mono">
+                      {item.no}
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.isNew ? (
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-gray-800">
+                            {item.term}
+                          </span>
+                          <span className="text-[10px] px-1 bg-yellow-100 text-yellow-700 rounded font-bold">
+                            NEW
+                          </span>
+                        </div>
+                      ) : (
+                        <span
+                          className={`font-bold ${isRejected ? "text-gray-400 line-through" : "text-gray-800"}`}
+                        >
+                          {item.term}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                          item.posStyle === "unknown"
+                            ? "bg-gray-50 text-gray-400 border border-gray-100"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {item.pos}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`${confidenceColor} h-full`}
+                            style={{ width: `${item.confidence}%` }}
+                          ></div>
+                        </div>
+                        <span
+                          className={`text-[11px] font-mono ${isRejected ? "text-gray-400" : "text-gray-500"}`}
+                        >
+                          {item.confidence}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {isRejected ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-500 border border-red-100">
+                          Rejected
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-100">
+                          Pending
+                        </span>
+                      )}
+                    </td>
+                    <td
+                      className={`px-6 py-4 text-[13px] ${isRejected ? "text-gray-400" : "text-gray-500"}`}
+                    >
+                      {item.date}
+                    </td>
+                    <td className="px-6 py-4">
+                      {isRejected ? (
+                        <div className="text-center">
+                          <button className="text-[11px] text-gray-400 hover:text-blue-600 font-medium underline underline-offset-4">
+                            복구하기
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                            title="승인"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">
+                              check
+                            </span>
+                          </button>
+                          <button
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                            title="거부"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">
+                              close
+                            </span>
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+          <span className="text-xs text-gray-500">
+            1-20 / 48 건 표시 중 (대기/거부 포함)
+          </span>
+          <div className="flex items-center gap-1">
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-400 hover:text-gray-700">
+              <span className="material-symbols-outlined text-[18px]">
+                keyboard_double_arrow_left
+              </span>
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-400 hover:text-gray-700">
+              <span className="material-symbols-outlined text-[18px]">
+                chevron_left
+              </span>
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded bg-blue-600 text-white text-xs font-bold shadow-sm">
+              1
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-600 text-xs hover:bg-gray-50">
+              2
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-600 text-xs hover:bg-gray-50">
+              3
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-400 hover:text-gray-700">
+              <span className="material-symbols-outlined text-[18px]">
+                chevron_right
+              </span>
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-400 hover:text-gray-700">
+              <span className="material-symbols-outlined text-[18px]">
+                keyboard_double_arrow_right
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 text-center pb-8">
+        <p className="text-xs text-gray-400">
+          &copy; 2024 통합관리자. AI Dictionary Review Workstation.
+        </p>
+      </div>
+    </main>
+  );
+}

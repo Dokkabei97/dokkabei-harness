@@ -1,0 +1,94 @@
+     1→import {
+     2→  SET_DASHBOARD_INDICES_INFO,
+     3→  SET_INDEX_ALIAS,
+     4→  SET_INDEX_RESULT,
+     5→  SET_INDEX_STATUS,
+     6→  SET_RUNNING_INDEX
+     7→} from "../constants";
+     8→import Client from '~/Client'
+     9→
+    10→const client = new Client()
+    11→
+    12→export const setIndexResultActions = key => dispatch => client.call({
+    13→uri: `/history`,
+    14→method: 'POST',
+    15→data: {
+    16→  "jobType": "FULL_INDEX",
+    17→  "from" : 0,
+    18→  "size" : 100
+    19→}})
+    20→.then(response => dispatch({ type: SET_INDEX_RESULT, payload: response.data }))
+    21→.catch(err => console.error(err))
+    22→
+    23→// export const setIndexResultActions = key => dispatch => client.call({
+    24→//   uri: `/elasticsearch/.dsearch_index_history/_search`,
+    25→//   method: 'post',
+    26→//   data: {
+    27→//     "query": {
+    28→//       "bool": {
+    29→//         "minimum_should_match": 1,
+    30→//         "should": [
+    31→//           {
+    32→//             "term": {
+    33→//               "jobType": "FULL_INDEX"
+    34→//             }
+    35→//           },
+    36→//           {
+    37→//             "term": {
+    38→//               "jobType.keyword": "FULL_INDEX"
+    39→//             }
+    40→//           }
+    41→//         ]
+    42→//       }
+    43→//     },
+    44→//     "sort": [
+    45→//       {
+    46→//         "endTime": {
+    47→//           "order": "desc"
+    48→//         }
+    49→//       }
+    50→//     ],
+    51→//     "size" : 100
+    52→//   }
+    53→// })
+    54→//   .then(response => dispatch({ type: SET_INDEX_RESULT, payload: response.data }))
+    55→//   .catch(err => console.error(err))
+    56→
+    57→export const setIndexStatusActions = key => dispatch => client.call({ uri: `/elasticsearch/_cat/indices?format=json` })
+    58→.then(response => dispatch({ type: SET_INDEX_STATUS, payload: response.data }))
+    59→.catch(err => console.error(err))
+    60→
+    61→
+    62→export const setIndexAliasActions = key => dispatch => client.call({ uri: `/elasticsearch/_cat/aliases?format=json` })
+    63→.then(response => dispatch({ type: SET_INDEX_ALIAS, payload: response.data }))
+    64→.catch(err => console.error(err))
+    65→
+    66→export const setRunningIndexActions = key => dispatch => client.call({ uri: `/dashboard/indexing` })
+    67→.then(response => dispatch({ type: SET_RUNNING_INDEX, payload: response.data }) )
+    68→.catch(err => console.error(err))
+    69→
+    70→export const setIndicesActions = () => dispatch =>
+    71→client.call({
+    72→  uri: `/elasticsearch/_cat/indices`,
+    73→  params: {
+    74→    format: "json",
+    75→  }
+    76→})
+    77→  .then(response => {
+    78→    let indexList = []
+    79→    response.data.forEach(element => {
+    80→      if(!element.index.startsWith(".")){
+    81→        indexList.push(element);
+    82→      }
+    83→    });
+    84→    dispatch({ type: SET_DASHBOARD_INDICES_INFO, payload: indexList })
+    85→    // dispatch({ type: SET_DASHBOARD_INDICES_INFO, payload: response.data })
+    86→  })
+    87→  .catch(error => console.error(error))
+    88→
+    89→
+    90→export const setRunningPropagateIndexActions = (index) => dispatch => client.call({ uri: `/elasticsearch/${index}/_recovery?format=json&filter_path=**.shards.index.size.percent` })
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

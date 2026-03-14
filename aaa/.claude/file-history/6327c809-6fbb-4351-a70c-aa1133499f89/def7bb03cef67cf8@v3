@@ -1,0 +1,603 @@
+#!/bin/bash
+# kubectl delete 안전 검사 래퍼 스크립트
+# 매니페스트 파일 내 위험 리소스를 사전 감지하고 경고합니다.
+#
+# 사용법:
+#   scripts/safe-kubectl-delete.sh [옵션] <파일 또는 디렉토리>
+#
+# 옵션:
+#   --dry-run              검사만 수행 (실제 삭제 안 함)
+#   --force                MEDIUM 이하 확인 생략 (CRITICAL/HIGH는 항상 확인)
+#   --context <context>    kubectl context 지정
+#   -n, --namespace <ns>   kubectl namespace 지정
+#   -h, --help             도움말 출력
+
+set -euo pipefail
+
+# ── 상수 ──────────────────────────────────────────────────────
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+CRITICAL_KINDS="Namespace PersistentVolumeClaim PersistentVolume CustomResourceDefinition Elasticsearch PerconaServerMongoDB StatefulSet"
+HIGH_KINDS="ClusterRole ClusterRoleBinding ValidatingWebhookConfiguration MutatingWebhookConfiguration ServiceAccount StorageClass"
+MEDIUM_KINDS="Deployment Service ConfigMap Secret Ingress HTTPRoute Gateway VirtualService HorizontalPodAutoscaler DaemonSet"
+
+# ── 유틸 함수 ────────────────────────────────────────────────
+
+print_error() {
+    echo -e "${RED}[오류]${NC} $1" >&2
+}
+
+print_warning() {
+    echo -e "${YELLOW}[경고]${NC} $1"
+}
+
+print_info() {
+    echo -e "${BLUE}[정보]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[완료]${NC} $1"
+}
+
+usage() {
+    cat <<'USAGE'
+사용법: safe-kubectl-delete.sh [옵션] <파일 또는 디렉토리>
+
+kubectl delete -f 실행 전 매니페스트 내 위험 리소스를 감지하고 경고합니다.
+
+옵션:
+  --dry-run              검사만 수행 (실제 삭제 안 함)
+  --force                MEDIUM 이하 확인 생략 (CRITICAL/HIGH는 항상 확인)
+  --context <context>    kubectl context 지정
+  -n, --namespace <ns>   kubectl namespace 지정
+  -h, --help             도움말 출력
+
+예시:
+  safe-kubectl-delete.sh manifest.yaml
+  safe-kubectl-delete.sh --dry-run ./infra/pvc-shared/
+  safe-kubectl-delete.sh --context dev-cluster -n dev-search secret.yaml
+USAGE
+}
+
+# ── 핵심 함수 ────────────────────────────────────────────────
+
+# classify_severity(kind) → CRITICAL/HIGH/MEDIUM/LOW
+classify_severity() {
+    local kind="$1"
+
+    for k in $CRITICAL_KINDS; do
+        if [ "$kind" = "$k" ]; then
+            echo "CRITICAL"
+            return
+        fi
+    done
+
+    for k in $HIGH_KINDS; do
+        if [ "$kind" = "$k" ]; then
+            echo "HIGH"
+            return
+        fi
+    done
+
+    for k in $MEDIUM_KINDS; do
+        if [ "$kind" = "$k" ]; then
+            echo "MEDIUM"
+            return
+        fi
+    done
+
+    echo "LOW"
+}
+
+# severity_to_number(severity) → 수치 (정렬/비교용)
+severity_to_number() {
+    case "$1" in
+        CRITICAL) echo 4 ;;
+        HIGH)     echo 3 ;;
+        MEDIUM)   echo 2 ;;
+        LOW)      echo 1 ;;
+        *)        echo 0 ;;
+    esac
+}
+
+# severity_color(severity) → 색상 코드
+severity_color() {
+    case "$1" in
+        CRITICAL) echo "$RED" ;;
+        HIGH)     echo "$YELLOW" ;;
+        MEDIUM)   echo "$BLUE" ;;
+        *)        echo "$NC" ;;
+    esac
+}
+
+# has_helm_templates(file) → 0: 있음, 1: 없음
+has_helm_templates() {
+    grep -q '{{' "$1" 2>/dev/null
+}
+
+# parse_kinds_from_file(file) → "kind|name|namespace" 행 출력
+# Primary: kubectl dry-run + jq
+parse_kinds_from_file() {
+    local file="$1"
+    local kubectl_args=""
+
+    if [ -n "$OPT_CONTEXT" ]; then
+        kubectl_args="$kubectl_args --context $OPT_CONTEXT"
+    fi
+    if [ -n "$OPT_NAMESPACE" ]; then
+        kubectl_args="$kubectl_args -n $OPT_NAMESPACE"
+    fi
+
+    # Helm 템플릿 감지 시 바로 폴백
+    if has_helm_templates "$file"; then
+        print_warning "Helm 템플릿 감지 ({{ }}) → awk 폴백 파싱: $(basename "$file")" >&2
+        parse_kinds_fallback "$file"
+        return
+    fi
+
+    # kubectl dry-run 시도
+    local json_output
+    if json_output=$(kubectl apply --dry-run=client -o json $kubectl_args -f "$file" 2>/dev/null); then
+        echo "$json_output" | jq -r '
+            if .kind == "List" then
+                .items[] | "\(.kind)|\(.metadata.name // "-")|\(.metadata.namespace // "-")"
+            else
+                "\(.kind)|\(.metadata.name // "-")|\(.metadata.namespace // "-")"
+            end
+        ' 2>/dev/null
+    else
+        print_warning "kubectl 파싱 실패 → awk 폴백 파싱: $(basename "$file")" >&2
+        parse_kinds_fallback "$file"
+    fi
+}
+
+# parse_kinds_fallback(file) → awk 기반 폴백 파싱
+parse_kinds_fallback() {
+    local file="$1"
+
+    awk '
+    /^---/ { kind=""; name=""; ns="-" }
+    /^kind:/ {
+        gsub(/^kind:[ \t]*/, "")
+        gsub(/[ \t\r]*$/, "")
+        # Helm 템플릿 제거
+        gsub(/\{\{[^}]*\}\}/, "")
+        gsub(/["'"'"']/, "")
+        kind=$0
+    }
+    /^[ \t]+name:/ && !seen_name {
+        gsub(/^[ \t]+name:[ \t]*/, "")
+        gsub(/[ \t\r]*$/, "")
+        # Helm 템플릿 → (템플릿) 표시
+        if ($0 ~ /\{\{/) {
+            gsub(/.*/, "(템플릿)")
+        }
+        gsub(/["'"'"']/, "")
+        name=$0
+        seen_name=1
+    }
+    /^[ \t]+namespace:/ {
+        gsub(/^[ \t]+namespace:[ \t]*/, "")
+        gsub(/[ \t\r]*$/, "")
+        if ($0 ~ /\{\{/) {
+            gsub(/.*/, "(템플릿)")
+        }
+        gsub(/["'"'"']/, "")
+        ns=$0
+    }
+    /^---/ || (kind != "" && name != "") {
+        if (kind != "" && name != "") {
+            print kind "|" name "|" ns
+            kind=""; name=""; ns="-"; seen_name=0
+        }
+    }
+    END {
+        if (kind != "" && name != "") {
+            print kind "|" name "|" ns
+        }
+    }
+    ' "$file"
+}
+
+# get_critical_warning(kind, name) → 종류별 한글 위험 설명
+get_critical_warning() {
+    local kind="$1"
+    local name="$2"
+
+    case "$kind" in
+        Namespace)
+            echo "Namespace '${name}' 삭제 시 해당 네임스페이스 내 모든 리소스가 삭제됩니다."
+            ;;
+        PersistentVolumeClaim)
+            echo "PVC '${name}' 삭제 시 연결된 데이터가 영구적으로 손실될 수 있습니다."
+            ;;
+        PersistentVolume)
+            echo "PV '${name}' 삭제 시 스토리지 데이터가 영구적으로 손실될 수 있습니다."
+            ;;
+        CustomResourceDefinition)
+            echo "CRD '${name}' 삭제 시 해당 CRD로 생성된 모든 커스텀 리소스가 삭제됩니다."
+            ;;
+        Elasticsearch)
+            echo "Elasticsearch '${name}' 삭제 시 검색 인덱스 데이터가 손실됩니다."
+            ;;
+        PerconaServerMongoDB)
+            echo "MongoDB '${name}' 삭제 시 데이터베이스 전체가 손실됩니다."
+            ;;
+        StatefulSet)
+            echo "StatefulSet '${name}' 삭제 시 상태 저장 Pod가 모두 종료됩니다."
+            ;;
+    esac
+}
+
+# get_high_warning(kind, name) → HIGH 등급 경고 설명
+get_high_warning() {
+    local kind="$1"
+    local name="$2"
+
+    case "$kind" in
+        ClusterRole|ClusterRoleBinding)
+            echo "${kind} '${name}' 삭제 시 클러스터 전체 권한 설정에 영향을 줍니다."
+            ;;
+        ValidatingWebhookConfiguration|MutatingWebhookConfiguration)
+            echo "${kind} '${name}' 삭제 시 API 서버의 요청 검증/변환이 비활성화됩니다."
+            ;;
+        ServiceAccount)
+            echo "ServiceAccount '${name}' 삭제 시 해당 SA를 사용하는 Pod가 권한을 잃습니다."
+            ;;
+        StorageClass)
+            echo "StorageClass '${name}' 삭제 시 신규 PVC 프로비저닝이 불가능해집니다."
+            ;;
+    esac
+}
+
+# print_resource_summary() → 리소스 테이블 출력
+# Globals: RESOURCE_LINES (줄바꿈 구분)
+print_resource_summary() {
+    echo ""
+    echo -e "────────────────────────────────────────────────────────────────"
+    printf "  ${BOLD}%-4s %-12s %-26s %-20s %-s${NC}\n" "#" "심각도" "종류(Kind)" "이름" "네임스페이스"
+
+    local idx=0
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        idx=$((idx + 1))
+
+        local kind name ns severity color
+        kind=$(echo "$line" | cut -d'|' -f1)
+        name=$(echo "$line" | cut -d'|' -f2)
+        ns=$(echo "$line" | cut -d'|' -f3)
+        severity=$(classify_severity "$kind")
+        color=$(severity_color "$severity")
+
+        # 이름이 길면 자르기
+        if [ ${#name} -gt 20 ]; then
+            name="${name:0:18}.."
+        fi
+
+        printf "  %-4s ${color}%-12s${NC} %-26s %-20s %-s\n" "$idx" "$severity" "$kind" "$name" "$ns"
+    done <<< "$RESOURCE_LINES"
+
+    echo -e "────────────────────────────────────────────────────────────────"
+}
+
+# count_by_severity() → 각 심각도 카운트 출력
+# Globals: RESOURCE_LINES
+count_by_severity() {
+    local critical=0 high=0 medium=0 low=0
+
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        local kind severity
+        kind=$(echo "$line" | cut -d'|' -f1)
+        severity=$(classify_severity "$kind")
+        case "$severity" in
+            CRITICAL) critical=$((critical + 1)) ;;
+            HIGH)     high=$((high + 1)) ;;
+            MEDIUM)   medium=$((medium + 1)) ;;
+            LOW)      low=$((low + 1)) ;;
+        esac
+    done <<< "$RESOURCE_LINES"
+
+    echo ""
+    echo -e "  ${RED}CRITICAL: ${critical}개${NC}  |  ${YELLOW}HIGH: ${high}개${NC}  |  ${BLUE}MEDIUM: ${medium}개${NC}  |  LOW: ${low}개"
+}
+
+# get_max_severity() → RESOURCE_LINES 중 최고 심각도 반환
+get_max_severity() {
+    local max_num=0 max_sev="LOW"
+
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        local kind severity num
+        kind=$(echo "$line" | cut -d'|' -f1)
+        severity=$(classify_severity "$kind")
+        num=$(severity_to_number "$severity")
+        if [ "$num" -gt "$max_num" ]; then
+            max_num=$num
+            max_sev=$severity
+        fi
+    done <<< "$RESOURCE_LINES"
+
+    echo "$max_sev"
+}
+
+# print_warnings() → CRITICAL/HIGH 리소스별 경고 메시지 출력
+print_warnings() {
+    local max_severity
+    max_severity=$(get_max_severity)
+
+    if [ "$max_severity" = "CRITICAL" ]; then
+        echo ""
+        echo -e "  ${RED}${BOLD}!! 경고 !!${NC}  ${RED}CRITICAL 등급 리소스가 포함되어 있습니다!${NC}"
+        echo ""
+
+        while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            local kind name severity warning
+            kind=$(echo "$line" | cut -d'|' -f1)
+            name=$(echo "$line" | cut -d'|' -f2)
+            severity=$(classify_severity "$kind")
+            if [ "$severity" = "CRITICAL" ]; then
+                warning=$(get_critical_warning "$kind" "$name")
+                echo -e "  ${RED}-${NC} $warning"
+            fi
+        done <<< "$RESOURCE_LINES"
+    elif [ "$max_severity" = "HIGH" ]; then
+        echo ""
+        echo -e "  ${YELLOW}${BOLD}! 주의 !${NC}  ${YELLOW}HIGH 등급 리소스가 포함되어 있습니다.${NC}"
+        echo ""
+
+        while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            local kind name severity warning
+            kind=$(echo "$line" | cut -d'|' -f1)
+            name=$(echo "$line" | cut -d'|' -f2)
+            severity=$(classify_severity "$kind")
+            if [ "$severity" = "HIGH" ]; then
+                warning=$(get_high_warning "$kind" "$name")
+                echo -e "  ${YELLOW}-${NC} $warning"
+            fi
+        done <<< "$RESOURCE_LINES"
+    fi
+}
+
+# confirm_deletion(max_severity) → 사용자 확인. 0=승인, 1=거부
+confirm_deletion() {
+    local max_severity="$1"
+
+    if [ "$max_severity" = "CRITICAL" ]; then
+        echo ""
+        echo -e "  ${RED}CRITICAL 리소스를 삭제하려면 'yes'를 정확히 입력하세요:${NC} "
+        read -r answer
+        if [ "$answer" != "yes" ]; then
+            print_error "삭제가 취소되었습니다."
+            return 1
+        fi
+        # 3초 카운트다운
+        echo ""
+        for i in 3 2 1; do
+            echo -ne "  ${YELLOW}${i}초 후 삭제를 시작합니다...${NC}\r"
+            sleep 1
+        done
+        echo -e "  ${RED}삭제를 시작합니다.                ${NC}"
+        return 0
+
+    elif [ "$max_severity" = "HIGH" ]; then
+        echo ""
+        echo -e "  ${YELLOW}HIGH 등급 리소스가 포함되어 있습니다. 계속하시겠습니까? (y/yes):${NC} "
+        read -r answer
+        case "$answer" in
+            y|yes|Y|YES) return 0 ;;
+            *)
+                print_error "삭제가 취소되었습니다."
+                return 1
+                ;;
+        esac
+
+    else
+        # MEDIUM 이하
+        if [ "$OPT_FORCE" = "true" ]; then
+            print_info "--force 옵션으로 확인을 생략합니다."
+            return 0
+        fi
+        echo ""
+        echo -e "  계속하시겠습니까? (y/yes): "
+        read -r answer
+        case "$answer" in
+            y|yes|Y|YES) return 0 ;;
+            *)
+                print_error "삭제가 취소되었습니다."
+                return 1
+                ;;
+        esac
+    fi
+}
+
+# execute_delete(target) → kubectl delete -f 실행
+execute_delete() {
+    local target="$1"
+    local kubectl_args=""
+
+    if [ -n "$OPT_CONTEXT" ]; then
+        kubectl_args="$kubectl_args --context $OPT_CONTEXT"
+    fi
+    if [ -n "$OPT_NAMESPACE" ]; then
+        kubectl_args="$kubectl_args -n $OPT_NAMESPACE"
+    fi
+
+    echo ""
+    print_info "실행: kubectl delete $kubectl_args -f $target"
+    kubectl delete $kubectl_args -f "$target"
+    local exit_code=$?
+
+    if [ $exit_code -eq 0 ]; then
+        print_success "삭제가 완료되었습니다."
+    else
+        print_error "kubectl delete 실행 중 오류가 발생했습니다. (exit code: $exit_code)"
+    fi
+
+    return $exit_code
+}
+
+# ── 메인 ──────────────────────────────────────────────────────
+
+OPT_DRY_RUN="false"
+OPT_FORCE="false"
+OPT_CONTEXT=""
+OPT_NAMESPACE=""
+TARGET=""
+
+# 인자 파싱
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dry-run)
+            OPT_DRY_RUN="true"
+            shift
+            ;;
+        --force)
+            OPT_FORCE="true"
+            shift
+            ;;
+        --context)
+            OPT_CONTEXT="$2"
+            shift 2
+            ;;
+        -n|--namespace)
+            OPT_NAMESPACE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -*)
+            print_error "알 수 없는 옵션: $1"
+            usage
+            exit 1
+            ;;
+        *)
+            if [ -n "$TARGET" ]; then
+                print_error "대상은 하나만 지정할 수 있습니다."
+                usage
+                exit 1
+            fi
+            TARGET="$1"
+            shift
+            ;;
+    esac
+done
+
+# 전제조건 검증
+if [ -z "$TARGET" ]; then
+    print_error "대상 파일 또는 디렉토리를 지정하세요."
+    usage
+    exit 1
+fi
+
+if [ ! -e "$TARGET" ]; then
+    print_error "대상을 찾을 수 없습니다: $TARGET"
+    exit 1
+fi
+
+# jq 존재 확인
+if ! command -v jq &>/dev/null; then
+    print_error "jq가 설치되어 있지 않습니다. brew install jq 로 설치하세요."
+    exit 1
+fi
+
+# kubectl 존재 확인
+if ! command -v kubectl &>/dev/null; then
+    print_error "kubectl이 설치되어 있지 않습니다."
+    exit 1
+fi
+
+# 헤더 출력
+echo ""
+echo "================================================================================"
+echo "  kubectl delete 안전 검사 도구"
+echo "================================================================================"
+
+if [ "$OPT_DRY_RUN" = "true" ]; then
+    print_info "모드: 검사만 수행 (--dry-run)"
+fi
+if [ -n "$OPT_CONTEXT" ]; then
+    print_info "Context: $OPT_CONTEXT"
+fi
+if [ -n "$OPT_NAMESPACE" ]; then
+    print_info "Namespace: $OPT_NAMESPACE"
+fi
+
+# 파일 목록 수집
+FILES=""
+if [ -d "$TARGET" ]; then
+    print_info "디렉토리 스캔: $TARGET"
+    # find로 yaml/yml 파일 수집
+    FILES=$(find "$TARGET" -maxdepth 3 -type f \( -name "*.yaml" -o -name "*.yml" \) | sort)
+    if [ -z "$FILES" ]; then
+        print_error "디렉토리에 YAML 파일이 없습니다: $TARGET"
+        exit 1
+    fi
+else
+    FILES="$TARGET"
+fi
+
+# 모든 파일에서 리소스 수집
+RESOURCE_LINES=""
+
+while IFS= read -r file; do
+    [ -z "$file" ] && continue
+
+    echo ""
+    echo -e "[검사 대상] ${BOLD}${file}${NC}"
+
+    parsed=$(parse_kinds_from_file "$file")
+
+    if [ -z "$parsed" ]; then
+        print_info "리소스를 찾을 수 없습니다 (빈 파일 또는 파싱 실패)"
+        continue
+    fi
+
+    if [ -z "$RESOURCE_LINES" ]; then
+        RESOURCE_LINES="$parsed"
+    else
+        RESOURCE_LINES="${RESOURCE_LINES}
+${parsed}"
+    fi
+done <<< "$FILES"
+
+# 리소스가 없으면 종료
+if [ -z "$RESOURCE_LINES" ]; then
+    echo ""
+    print_info "삭제할 리소스가 없습니다."
+    exit 0
+fi
+
+# 요약 출력
+print_resource_summary
+count_by_severity
+
+# 경고 출력
+print_warnings
+
+# 최고 심각도 판단
+MAX_SEVERITY=$(get_max_severity)
+
+if [ "$OPT_DRY_RUN" = "true" ]; then
+    echo ""
+    print_info "검사가 완료되었습니다. (--dry-run 모드이므로 삭제를 수행하지 않습니다)"
+    exit 0
+fi
+
+# 확인 프롬프트
+if ! confirm_deletion "$MAX_SEVERITY"; then
+    exit 1
+fi
+
+# 실행
+execute_delete "$TARGET"

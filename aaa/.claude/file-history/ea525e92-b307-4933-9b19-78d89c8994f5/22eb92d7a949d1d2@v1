@@ -1,0 +1,958 @@
+---
+title: "2.1 캐싱 전략"
+created: "2026-02-15"
+tags:
+  - concept
+  - caching
+  - redis
+  - caffeine
+  - spring-cache
+  - senior-backend
+  - phase2
+category: "concept"
+status: "seedling"
+difficulty: "advanced"
+phase: 2
+week: "1~2"
+estimated_hours: "16~20"
+tech-stack:
+  - spring-boot
+  - redis
+  - caffeine
+  - spring-cache
+related:
+  - "[[Phase 2 - 데이터 계층 마스터리]]"
+  - "[[2.2 SQL과 데이터 접근 최적화]]"
+  - "[[Phase 3 - 메시징과 비동기 시스템]]"
+---
+
+# 2.1 캐싱 전략
+
+## 1. 개념 정의
+
+### 캐시란 무엇인가
+
+캐시는 원본 데이터 소스(예: DB)보다 빠르게 접근 가능한 임시 저장소 계층이다.
+
+- 요청 처리 중 자주 읽히는 데이터를 메모리 또는 분산 저장소에 저장한다.
+- 동일 데이터에 대한 반복 요청이 들어왔을 때 원본 조회 비용을 회피한다.
+- 응답 지연(latency)을 줄이고, DB 부하를 낮춘다.
+- 캐시는 성능 최적화의 대표적 수단이자 운영 품질의 핵심 설계 요소다.
+
+### 캐시가 필요한 이유
+
+- DB는 디스크 기반이거나 네트워크 왕복이 필수라 응답이 상대적으로 느리다.
+- 서비스 트래픽이 증가하면 동일 데이터 조회가 폭증한다.
+- `read-heavy` 패턴에서 동일 엔티티를 반복 조회할 가능성이 높다.
+- 캐시는 다음 목적을 동시에 달성한다.
+  - 낮은 응답 지연 시간
+  - 스로틀링 완화
+  - 시스템 탄력성 향상
+  - 비용 절감(불필요한 DB 스케일 아웃 지연)
+
+### 캐시 핵심 트레이드오프: 속도 vs 정합성
+
+캐시를 쓰면 성능은 좋아지지만 정합성(consistency)과 trade-off가 발생한다.
+
+- 속도 향상: 
+  - 응답이 빠름.
+  - 캐시 히트율이 높을수록 DB 호출이 감소.
+- 정합성 저하 가능성:
+  - 데이터 갱신 후 캐시가 즉시 반영되지 않을 수 있음.
+  - 만료시간(TTL)이 있으면 시간이 지나기 전까지 오래된 값(스테일 데이터)을 반환.
+- 운영에서는 `성능 우선`보다 먼저 `정합성 요구사항`을 정해야 한다.
+  - 금융·결제: 정합성 우선.
+  - 조회 중심 UI 화면: 속도 우선.
+  - 실시간성이 낮은 분석: 정합성 허용 오차가 커도 됨.
+
+### 유명한 불변의 진리와 설계 철학
+
+> There are only two hard things in CS: cache invalidation and naming things
+
+이 문장은 캐시 설계에서 다음을 경고한다.
+
+- 캐시 무효화는 쉬워 보이지만 운영 중 가장 많은 사고가 발생한다.
+- 캐시 키 네이밍이 나쁘면 디버깅·운영이 불가능에 가까워진다.
+- 따라서 `좋은 캐시 설계`의 80%는 데이터 동기화와 키 설계이다.
+
+## 2. 핵심 원리
+
+### 2.1 L1 캐시 - Caffeine
+
+#### W-TinyLFU 핵심 아이디어
+
+W-TinyLFU는 Caffeine이 사용하는 현대적 캐시 정책이며 `LRU`와 `LFU`의 장점을 결합한다.
+
+- LRU(Longest Recently Used)는 최근성(Recency)에 집중한다.
+- LFU(Least Frequently Used)는 빈도(Frequency)에 집중한다.
+- TinyLFU는 admission(삽입 허용) 단계에서 최근 빈도를 근사해 "많이 쓰이지 않는 엔트리"의 캐시 적재를 막는다.
+- W-Windowed TinyLFU는 최근 접근한 항목을 위해 작은 창(Window)을 둬서 최신성과 빈도 정보를 함께 반영한다.
+- 결과적으로
+  - 순수 LRU보다 스캔성 부하에 강하고
+  - 순수 LFU보다 메모리 효율이 좋으며
+  - 워크로드 급변 시 적응이 빠르다.
+
+#### 만료 정책: expireAfterWrite / expireAfterAccess / refreshAfterWrite
+
+- `expireAfterWrite`
+  - 엔트리가 쓰인 시점을 기준으로 TTL.
+  - 값이 한 번 캐싱되면 시간이 지나면 만료.
+  - 정합성이 중요할 때 갱신 주기 제어에 유리.
+- `expireAfterAccess`
+  - 마지막 접근 시각을 기준으로 TTL.
+  - 핫 데이터가 자연스럽게 오래 살아남음.
+  - access가 활발하면 만료 연장.
+- `refreshAfterWrite`
+  - 만료 자체와 별개로 백그라운드에서 갱신.
+  - 값은 stale 상태로 반환 가능(설정에 따라 즉시 갱신 아님).
+  - 읽기 성능을 유지하며 점진적 갱신에 적합.
+
+```kotlin
+// Caffeine 캐시 빈 설정
+@Configuration
+class CacheConfig {
+    @Bean
+    fun caffeineCache(): Cache<String, Product> {
+        return Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(Duration.ofMinutes(10))
+            .recordStats()
+            .build()
+    }
+}
+```
+
+#### CacheLoader, AsyncCacheLoader 사용법
+
+`CacheLoader`는 누락된 키를 조회해 캐시에 채우기 위한 동기 로더다.
+
+```kotlin
+val productLoader: CacheLoader<String, Product> = CacheLoader { key ->
+    val id = key.removePrefix("product:").toLong()
+    repository.findById(id)
+        .orElseThrow { IllegalArgumentException("No product: $id") }
+}
+
+val cache = Caffeine.newBuilder()
+    .build(productLoader)
+```
+
+`AsyncCacheLoader`는 비동기 조회를 지원해 I/O 블로킹이 있는 코드에서 유리하다.
+
+```kotlin
+val asyncLoader = AsyncCacheLoader { key: String, executor: Executor ->
+    CompletableFuture.supplyAsync({
+        val id = key.removePrefix("product:").toLong()
+        repository.findById(id).orElse(null)
+    }, executor)
+}
+
+val asyncCache = Caffeine.newBuilder()
+    .expireAfterWrite(Duration.ofMinutes(10))
+    .buildAsync(asyncLoader)
+```
+
+#### recordStats()로 히트율 모니터링
+
+`recordStats()`를 활성화하면 히트율, 적중률, 적재 실패 등을 계측할 수 있다.
+
+```kotlin
+val cache = Caffeine.newBuilder()
+    .maximumSize(5_000)
+    .recordStats()
+    .build<String, Product>()
+
+val snapshot = cache.stats()
+val hitRate = snapshot.hitRate()
+val missRate = snapshot.missRate()
+val evictionCount = snapshot.evictionCount()
+```
+
+- 모니터링 지표 예시:
+  - `requestCount`: 총 요청
+  - `hitCount`: 캐시 적중 수
+  - `hitRate`: 적중률
+  - `loadCount`: 직접 로드 횟수
+  - `evictionCount`: 퇴출 횟수
+- 운영 임계치 예시
+  - hitRate < 0.7: 캐시 전략 재검토
+  - evict 급증: 최대 크기/TTL 재조정 필요
+  - load 실패 비율 증가: DB 병목 또는 캐시 데이터 문제
+
+### 2.2 L2 캐시 - Redis
+
+#### Redis 데이터 구조별 캐시 활용 시나리오
+
+- String
+  - 단일 객체 캐시에 가장 단순.
+  - `PRODUCT:123 -> { json }` 형태.
+  - 세션, 단일 조회 결과 캐시, 메타 값 저장.
+- Hash
+  - 엔티티 필드 단위 업데이트에 유리.
+  - 하나의 key에 여러 필드 저장.
+  - 부분 갱신이 잦은 모델에 유리.
+- Sorted Set
+  - 랭킹 보드, TTL 기반 우선순위 큐, 만료 임박 정렬.
+  - score를 timestamp/priority로 사용 가능.
+- HyperLogLog
+  - `distinct user count` 근사치.
+  - 정확도 오차가 허용될 때 유용.
+  - 캐시 키 조회 후 집계 보조 지표로 사용.
+
+#### 직렬화 전략 비교
+
+- JSON
+  - 장점: 사람이 읽기 쉬움, 호환성 높음, 디버깅 용이.
+  - 단점: 바이트 크기가 큼, 파싱 비용이 큼.
+- Protobuf
+  - 장점: 스키마 기반 고성능 이진 직렬화, 크기 작음.
+  - 단점: 스키마 관리가 추가 필요, 언어 간 호환/버전 전략 필요.
+- Kryo
+  - 장점: Java/Kotlin 객체 그래프 직렬화 성능 우수.
+  - 단점: 레거시 호환성 약함, 보안 설정 필요, 버전 호환 관리 부담.
+
+추천 지침
+- 내부 서비스 간 통신 고성능이 필요하면 `Protobuf`.
+- 운영·운영자 디버깅 우선이면 `JSON`.
+- JVM 내부에서만 쓰고 속도 극대화 시 `Kryo`.
+
+#### TTL 전략
+
+TTL 전략은 비즈니스 특성에 따라 다르게 둔다.
+
+- 정적 TTL
+  - 상품 상세는 10~30분
+  - 카테고리 목록은 30분~2시간
+- 슬라이딩 TTL(유형별 접근 갱신)
+  - 핫 키를 상대적으로 오래 유지.
+- Jitter TTL
+  - 동일 만료시각 몰림 방지를 위해 ±10~20% 랜덤 가감.
+  - Stampede 완화에 도움.
+
+#### maxmemory-policy 비교
+
+| 정책 | 동작 방식 | 장점 | 단점 | 권장 상황 |
+|---|---|---|---|---|
+| allkeys-lru | 모든 key 대상 LRU 추출 | 전체 메모리 관리 단순 | 만료 없는 데이터도 퇴출 | 캐시 위주 사용 |
+| volatile-lru | TTL 있는 key 중 LRU | 영속성 key 보호 가능 | all key 미사용 시 퇴출 여지 적음 | 영구/임시 key 혼합 |
+| allkeys-random | 모든 key 중 랜덤 퇴출 | 구현 간단, 안정적 | 캐시 효율 저하 가능 | 특수 테스트/실험 |
+| volatile-random | TTL 있는 key 중 랜덤 | 구현 단순 | 빈번 조회 key 손실 위험 | 만료 키만 다루는 환경 |
+| noeviction | 퇴출 없음, 메모리 초과 시 에러 | 데이터 보존 최대 | 캐시 쓰기 실패 가능성 | 영속성이 필수일 때 |
+
+#### Spring Boot Redis 캐시 설정 예제
+
+```kotlin
+@Configuration
+@EnableCaching
+class RedisCacheConfig {
+    @Bean
+    fun cacheManager(connectionFactory: RedisConnectionFactory): RedisCacheManager {
+        val config = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(30))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair
+                    .fromSerializer(GenericJackson2JsonRedisSerializer())
+            )
+        return RedisCacheManager.builder(connectionFactory)
+            .cacheDefaults(config)
+            .withCacheConfiguration("products",
+                config.entryTtl(Duration.ofHours(1)))
+            .build()
+    }
+}
+```
+
+### 2.3 Spring Cache Abstraction
+
+Spring Cache는 AOP 기반으로 캐시 동작을 비즈니스 코드와 분리한다.
+
+#### @Cacheable
+
+메서드 호출 전후로 캐시를 조회/저장한다.
+
+- 캐시 미스이면 실제 로직 호출 후 결과를 캐시에 넣는다.
+- 캐시 히트이면 메서드 본문 실행 없이 반환.
+
+```kotlin
+@Cacheable(cacheNames = ["products"], key = "#id")
+fun findById(id: Long): Product? {
+    return repository.findById(id).orElse(null)
+}
+```
+
+#### @CachePut
+
+캐시를 강제로 갱신한다.
+
+- 메서드 실행을 항상 수행.
+- 반환값을 캐시에 저장해 이후 조회를 최신 상태에 가깝게 만든다.
+
+```kotlin
+@CachePut(cacheNames = ["products"], key = "#product.id")
+fun updateProduct(product: Product): Product {
+    return repository.save(product)
+}
+```
+
+#### @CacheEvict
+
+캐시를 삭제한다.
+
+- `allEntries = true`이면 지정 캐시 전체 제거.
+- 특정 key만 삭제 가능.
+- `beforeInvocation`으로 실패 이전 제거 여부 제어 가능.
+
+```kotlin
+@CacheEvict(cacheNames = ["products"], key = "#id")
+fun deleteById(id: Long) {
+    repository.deleteById(id)
+}
+```
+
+#### 프록시 기반 AOP 제약: 자기 호출 문제
+
+Spring의 캐시는 프록시 기반이다.
+
+- 외부에서 프록시를 통해 호출되어야 어드바이스가 동작.
+- 같은 클래스 내의 내부 호출(self-invocation)은 캐시가 동작하지 않는다.
+- 예시: `findById()` 내부에서 `getById()`를 직접 호출하면 캐시 우회됨.
+- 해결책:
+  - self-invocation 제거.
+  - 분리된 서비스 계층 호출.
+  - `@Transactional`처럼 외부 프록시 경로 설계.
+
+#### 조건부 캐싱: condition / unless
+
+- `condition`: 캐시에 진입할지 결정.
+- `unless`: 실행 결과를 기준으로 캐시 저장 여부 제외.
+- 예시로 오류/빈 값 캐싱 배제 등을 구현 가능.
+
+```kotlin
+@Cacheable(
+    value = ["products"],
+    key = "#id",
+    condition = "#id > 0",
+    unless = "#result == null"
+)
+fun findById(id: Long): Product? {
+    return repository.findById(id).orElse(null)
+}
+```
+
+#### SpEL 활용 예제
+
+```kotlin
+@Service
+class ProductService(private val productRepository: ProductRepository) {
+
+    @Cacheable(value = ["products"], key = "#id",
+               unless = "#result == null")
+    fun findById(id: Long): Product? {
+        return productRepository.findById(id).orElse(null)
+    }
+
+    @CacheEvict(value = ["products"], key = "#product.id")
+    fun update(product: Product): Product {
+        return productRepository.save(product)
+    }
+
+    @CacheEvict(value = ["products"], allEntries = true)
+    fun clearAllCache() {}
+}
+```
+
+### 2.4 캐시 패턴 5가지
+
+#### 2.4.1 Cache-Aside (Lazy Loading)
+
+텍스트 다이어그램
+
+`Client -> Service -> Cache(miss) -> DB -> Cache write`  
+`Client -> Service -> Cache(hit) -> Response`
+
+핵심 아이디어
+
+- 조회 시 캐시를 먼저 확인.
+- 미스이면 DB 조회 후 캐시에 저장.
+- 캐시 갱신은 주로 읽기 경로에서 발생.
+
+장점
+
+- 구현이 단순하다.
+- DB를 단일 소스 오브 트루스로 유지.
+- 대부분의 웹 서비스에 맞는 기본형.
+
+단점
+
+- Cache miss 순간 DB 부하 증가.
+- TTL 동기화 실패 시 stale 데이터 증가 가능.
+
+적합 시나리오
+
+- 상품 상세 조회, 프로필 조회, 자주 읽히지만 갱신 빈도 낮음.
+- 일관성보다 읽기 성능이 우선인 엔드포인트.
+
+Kotlin 코드 예제
+
+```kotlin
+class CacheAsideProductService(
+    private val localCache: Cache<String, Product>,
+    private val productRepository: ProductRepository
+) {
+    fun findById(id: Long): Product? {
+        val key = "product:$id"
+        localCache.getIfPresent(key)?.let { return it }
+
+        val product = productRepository.findById(id).orElse(null)
+        if (product != null) {
+            localCache.put(key, product)
+        }
+        return product
+    }
+}
+```
+
+#### 2.4.2 Write-Through
+
+텍스트 다이어그램
+
+`Client -> Service -> DB write + Cache write -> Response`
+
+핵심 아이디어
+
+- 쓰기 시 DB와 캐시를 동시에 갱신.
+- 캐시는 항상 최신에 가깝다.
+
+장점
+
+- 읽기 경로에서 stale 위험 감소.
+- 캐시-DB 정합성 예측이 쉬움.
+
+단점
+
+- 쓰기 지연 증가 가능.
+- 캐시 서버 장애가 쓰기 API에 영향.
+
+적합 시나리오
+
+- 가격, 정책 값, 설정값 등 읽기 전환이 잦으면서 정합성이 중요한 데이터.
+
+Kotlin 코드 예제
+
+```kotlin
+@Service
+class WriteThroughProductService(
+    private val productRepository: ProductRepository,
+    private val redisTemplate: RedisTemplate<String, Product>,
+) {
+    fun update(product: Product): Product {
+        val saved = productRepository.save(product)
+
+        val key = "product:${saved.id}"
+        redisTemplate.opsForValue().set(key, saved, Duration.ofMinutes(10))
+
+        return saved
+    }
+}
+```
+
+#### 2.4.3 Write-Behind (Write-Back)
+
+텍스트 다이어그램
+
+`Client -> Service -> Cache update -> (비동기 큐) -> DB flush` 
+`(실시간 응답은 즉시)`
+
+핵심 아이디어
+
+- 쓰기 시 캐시에 먼저 반영하고 DB는 비동기로 지연 반영.
+
+장점
+
+- 쓰기 성능이 높다.
+- 배치형 쓰기(합쳐쓰기) 가능.
+
+단점
+
+- 캐시 장애 시 데이터 손실 위험.
+- 배치 실패 복구 전략이 필수.
+
+적합 시나리오
+
+- 실시간 트래픽이 큰 조회·갱신 혼합 환경에서 쓰기 병목 완화.
+- 손실보다 처리량이 우선인 이벤트성 데이터.
+
+Kotlin 코드 예제
+
+```kotlin
+@Service
+class WriteBehindProductService(
+    private val productRepository: ProductRepository,
+    private val localCache: Cache<String, Product>,
+    private val queue: BlockingQueue<Product>
+) {
+    fun update(product: Product): Product {
+        localCache.put("product:${product.id}", product)
+        queue.offer(product) // 비동기 flush 대상
+        return product
+    }
+
+    @Scheduled(fixedDelay = 5_000)
+    fun flushToDb() {
+        repeat(100) {
+            val p = queue.poll() ?: return
+            productRepository.save(p)
+        }
+    }
+}
+```
+
+#### 2.4.4 Read-Through
+
+텍스트 다이어그램
+
+`Client -> Cache (miss) -> CacheProvider.load(key) -> DB -> Cache populate -> Response`
+
+핵심 아이디어
+
+- 캐시가 직접 로딩 책임을 가진다.
+- 앱은 `cache.get(key)`만 호출하고 캐시 내부에서 DB 조회.
+
+장점
+
+- 캐시 접근 코드가 단순.
+- 로딩 정책 중앙 집중.
+
+단점
+
+- 캐시 제공자 구현 복잡.
+- 데이터 소스 장애 시 캐시 계층이 곧 장애 지점이 될 수 있음.
+
+적합 시나리오
+
+- 여러 시스템에서 동일 캐시 정책을 재사용.
+- 캐시 계층을 API 경계처럼 설계한 마이크로서비스.
+
+Kotlin 코드 예제
+
+```kotlin
+val loader = object : CacheLoader<String, Product> {
+    override fun load(key: String): Product {
+        val id = key.removePrefix("product:").toLong()
+        return repository.findById(id).orElseThrow {
+            IllegalArgumentException("product not found")
+        }
+    }
+}
+
+val cache = Caffeine.newBuilder()
+    .build(loader)
+
+fun findById(id: Long): Product {
+    return cache["product:$id"]
+}
+```
+
+#### 2.4.5 Refresh-Ahead
+
+텍스트 다이어그램
+
+`Cache check -> if near-expire then trigger async refresh -> return old value quickly`
+
+핵심 아이디어
+
+- 만료 임박할 때 백그라운드 refresh.
+- 요청은 stale 데이터라도 빠르게 응답.
+
+장점
+
+- 사용자 체감 지연 감소.
+- TTL 만료 순간 트래픽 스파이크 완화.
+
+단점
+
+- 동시에 여러 노드가 갱신 시 duplicate refresh 가능.
+- 캐시와 백엔드 동시 호출 증가 가능성.
+
+적합 시나리오
+
+- 뉴스/랭킹/상품 리스트처럼 조회량 변동 큰 데이터.
+- stale 응답이 비즈니스적으로 허용되는 영역.
+
+Kotlin 코드 예제
+
+```kotlin
+val cache = Caffeine.newBuilder()
+    .refreshAfterWrite(Duration.ofMinutes(5))
+    .buildAsync<String, Product> { key, _ ->
+        CompletableFuture.supplyAsync {
+            val id = key.removePrefix("product:").toLong()
+            repository.findById(id).orElseThrow()
+        }
+    }
+
+fun getProduct(id: Long): Product {
+    return cache.get("product:$id").join()
+}
+```
+
+### 2.5 캐시 무효화와 정합성
+
+#### 이벤트 기반 캐시 무효화 (Redis Pub/Sub)
+
+- DB 변경 이벤트를 발행하고 캐시 서비스는 이를 구독.
+- 특정 엔티티 변경 시 해당 키만 무효화해 전역 정합성 확보.
+- `Write-Through`만으로 막히는 stale gap을 보완.
+
+Kotlin 예시
+
+```kotlin
+@Component
+class CacheInvalidationPublisher(private val template: RedisTemplate<String, String>) {
+    fun publishProductUpdated(productId: Long) {
+        template.convertAndSend("cache-invalidation:product", "product:$productId")
+    }
+}
+
+@Component
+class CacheInvalidationSubscriber(
+    private val cache: Cache<String, Product>,
+    private val redisTemplate: RedisTemplate<String, Product>
+) : MessageListener {
+    override fun onMessage(message: Message, pattern: ByteArray?) {
+        val key = String(message.body)
+        cache.invalidate(key)
+        redisTemplate.delete(key)
+    }
+}
+```
+
+#### 캐시 스탬피드 방지 3가지 전략
+
+1) 뮤텍스(분산 락)
+
+- 동시에 많은 miss가 몰릴 때 하나만 DB를 조회하고 나머지는 대기.
+- Redis `SETNX` 또는 Redisson `RLock` 사용.
+
+```kotlin
+@Service
+class StampedeWithLockService(
+    private val cache: Cache<String, Product>,
+    private val productRepository: ProductRepository,
+    private val redissonClient: RedissonClient
+) {
+    fun findById(id: Long): Product? {
+        val key = "product:$id"
+        cache.getIfPresent(key)?.let { return it }
+
+        val lock = redissonClient.getLock("lock:$key")
+        return lock.let {
+            try {
+                if (!it.tryLock(100, 2_000, TimeUnit.MILLISECONDS)) {
+                    return null
+                }
+                cache.getIfPresent(key)?.let { return it }
+                val product = productRepository.findById(id).orElse(null)
+                if (product != null) cache.put(key, product)
+                product
+            } finally {
+                if (it.isHeldByCurrentThread) it.unlock()
+            }
+        }
+    }
+}
+```
+
+2) 확률적 조기 만료(PER)
+
+- TTL을 랜덤 오차로 둬서 동시 만료를 분산.
+- 일부 키만 일찍 갱신되어 thundering herd 완화.
+
+```kotlin
+fun buildEarlyExpirationTtl(baseSeconds: Long, jitterRatio: Double = 0.15): Duration {
+    val jitter = (ThreadLocalRandom.current().nextDouble(1.0 - jitterRatio, 1.0 + jitterRatio))
+    return Duration.ofSeconds((baseSeconds * jitter).toLong())
+}
+```
+
+3) 스태거 TTL
+
+- key별 TTL을 환경별 offset으로 분산.
+- 같은 도메인 키라도 만료 시점을 다르게 하여 집중 트래픽 분산.
+
+```kotlin
+fun staggeredTtl(baseMinutes: Long, keyHash: Int): Duration {
+    val jitter = (keyHash % 5) * 60L
+    return Duration.ofMinutes(baseMinutes).plusSeconds(jitter)
+}
+```
+
+#### 핫키 문제와 해결
+
+핫키 특징
+
+- 특정 key가 과도하게 조회되어 특정 노드/커넥션/DB 파티션에 과부하.
+- cache miss 폭주와 lock contention 유발.
+
+해결 전략
+
+- key 쪼개기(sharding keys)
+- 두 단계 캐시(Tiered cache)
+- soft TTL + async refresh
+- 요청 라우팅 분산
+- 임계치 이상의 hot key는 쓰기 제한/미리 갱신
+
+핫키 완화 Kotlin 예시
+
+```kotlin
+fun productHotKey(id: Long): String {
+    val shard = Math.floorMod(id.toString().hashCode(), 4)
+    return "product:$id:shard:$shard"
+}
+```
+
+#### 캐시 웜업 전략
+
+캐시를 서비스 시작/재배포 후 즉시 핫 데이터로 채우는 방식.
+
+- 중요 조회 API에서 상위 N개 key를 pre-load
+- 이벤트 기반으로 최근 변경 데이터 선제 적재
+- A/B로 점진적 웜업하여 초기 부하 완화
+
+Kotlin 예시
+
+```kotlin
+@Component
+class CacheWarmupRunner(
+    private val service: ProductService,
+    private val repository: ProductRepository
+) {
+    @PostConstruct
+    fun warmup() {
+        repository.findTopViewedProducts(50).forEach { product ->
+            service.findById(product.id)
+        }
+    }
+}
+```
+
+### 2.6 멀티레벨 캐시 아키텍처
+
+#### L1 + L2 조합 설계
+
+- L1: Caffeine (로컬, 매우 빠름)
+- L2: Redis (분산, 공유 캐시)
+- 흐름
+  - 조회: L1 -> L2 -> DB
+  - 쓰기: DB 쓰기 후 L1/L2 무효화
+  - 갱신: TTL 정책 다층으로 분리
+
+텍스트 다이어그램
+
+`Request -> L1(Caffeine) hit/miss -> L2(Redis) hit/miss -> DB`
+
+장점
+
+- L1 히트는 거의 로컬 메모리 수준 초고속.
+- L2는 노드 간 공유 정합성 유지를 보조.
+- 장애시 캐시 계층 일부 고장 내성이 좋아짐.
+
+단점
+
+- 구조가 복잡해지고 키 설계가 까다로움.
+- 무효화/갱신 정책 동기화가 어렵다.
+
+#### 계층 간 정합성 유지 (Redis Pub/Sub로 L1 무효화)
+
+L2에서 데이터가 바뀌면 Pub/Sub 이벤트를 publish하고 각 노드의 L1을 invalidate.
+
+```kotlin
+@Service
+class MultiLevelCacheService(
+    private val localCache: Cache<String, Product>,
+    private val redisTemplate: RedisTemplate<String, Product>,
+    private val productRepository: ProductRepository
+) {
+    fun findById(id: Long): Product? {
+        val key = "product:$id"
+        localCache.getIfPresent(key)?.let { return it }
+
+        redisTemplate.opsForValue().get(key)?.let { product ->
+            localCache.put(key, product)
+            return product
+        }
+
+        return productRepository.findById(id).orElse(null)?.also { product ->
+            redisTemplate.opsForValue().set(key, product, Duration.ofMinutes(30))
+            localCache.put(key, product)
+        }
+    }
+}
+
+@Component
+class MultiLevelInvalidationListener(
+    private val localCache: Cache<String, Product>,
+    private val redisTemplate: RedisTemplate<String, String>
+) : MessageListener {
+    override fun onMessage(message: Message, pattern: ByteArray?) {
+        val key = String(message.body)
+        localCache.invalidate(key)
+    }
+}
+```
+
+#### 다층 캐시 정책 샘플
+
+- L1 TTL: 10분
+- L2 TTL: 30분
+- L1 max size: 20k
+- L2 maxmemory-policy: allkeys-lru
+
+Kotlin 구성 예시(요지)
+
+```kotlin
+@Configuration
+class MultiLevelConfig {
+    @Bean
+    fun l1Cache(): Cache<String, Product> = Caffeine.newBuilder()
+        .maximumSize(20_000)
+        .expireAfterWrite(Duration.ofMinutes(10))
+        .recordStats()
+        .build()
+
+    @Bean
+    fun topicContainer(factory: RedisConnectionFactory): RedisMessageListenerContainer {
+        val container = RedisMessageListenerContainer()
+        container.setConnectionFactory(factory)
+        return container
+    }
+}
+```
+
+## 3. 실무 사례와 함정
+
+### 캐시 스탬피드 장애 사례
+
+사례 1: 할인 이벤트 전환 시 상품 목록 캐시 만료 동시 발생
+
+- 상황: 수천 건 동시 조회 상품의 TTL이 같은 시각.
+- 결과: DB가 과부하, 응답 타임아웃 증가.
+- 복구: TTL Jitter, 분산 락, 레이지 로딩 제한 적용.
+
+사례 2: 외부 동기화 지연으로 인한 DB 재조회 폭증
+
+- 상황: L2 일시 장애로 L1 미스율 급증.
+- 결과: DB 커넥션 고갈.
+- 복구: read-through fallback + 실패 캐시(failed result short TTL) + circuit breaker.
+
+### 배포 시 캐시 불일치 사례 (스키마 변경 + 구버전 캐시)
+
+- 상황: Product 엔티티에 `supplier_id` 추가 후 기존 캐시 값은 구 스키마 JSON.
+- 증상: 역직렬화 실패, 500 에러.
+- 대처:
+  - 캐시 버전 키 도입 (`product:v2:id`)
+  - 스키마 마이그레이션 시 캐시 일괄 삭제.
+  - 하위 호환 디시리얼라이저 도입.
+
+### 상품 vs 재고 차별 캐시 전략
+
+상품 상세와 재고는 정합성 요구 수준이 다르다.
+
+- 상품 상세(`Product`):
+  - 이름, 설명, 가격 등은 약간의 staleness 허용 가능.
+  - TTL 상대적으로 길게 두어도 됨.
+- 재고(`Inventory`):
+  - 결제·주문 실패 방지를 위해 매우 짧거나 이벤트 기반 즉시 갱신.
+  - 캐시 miss 허용 범위를 신중히 설정.
+
+권장 원칙
+
+- 동시성 높은 재고는 캐시-DB 트랜잭션 or 예약어 락 정책 결합.
+- 상품 상세는 write-through/refresh-ahead로 사용자 UX 최적화.
+- 서로 다른 데이터는 서로 다른 캐시 레이어/TTL/무효화 채널을 사용.
+
+## 4. 실습 과제 가이드
+
+### 과제 1: 다층 캐시 기본 구성하기
+
+- 목표
+  - Caffeine L1 + Redis L2 읽기 경로를 구현한다.
+  - DB miss 시 캐시 저장까지 연결한다.
+- 힌트
+  - 먼저 `findById`를 구현하고 L1->L2->DB 순으로 조회한다.
+  - key는 `product:{id}`로 통일한다.
+- 검증 포인트
+  - 첫 조회는 DB 1회 호출.
+  - 두 번째 조회는 캐시 히트로 DB 호출 없음.
+  - TTL 도달 후 재조회 시 갱신되는지 확인.
+
+### 과제 2: 캐시 무효화 이벤트 적용
+
+- 목표
+  - 상품 업데이트 시 Redis Pub/Sub로 L1 무효화를 구현한다.
+- 힌트
+  - `CacheInvalidationPublisher`를 서비스에서 호출.
+  - 각 노드에 Subscriber를 등록.
+- 검증 포인트
+  - 노드 A 업데이트 후 노드 B에서 stale 데이터가 더 이상 반환되지 않아야 함.
+  - 무효화 메시지 손실을 로그로 검증.
+
+### 과제 3: 스탬피드 방지 실습
+
+- 목표
+  - 한정된 TTL 키 50개에서 lock + PER 조합을 구현.
+- 힌트
+  - 동시 1000 요청 테스트를 생성.
+  - `CacheStampede` 지표를 로그로 수집.
+- 검증 포인트
+  - lock 획득 횟수가 DB 직접 호출 횟수와 유의하게 일치할 것.
+  - 만료 직전 refresh가 분산되는지 확인.
+
+### 과제 4: 패턴 비교 구현(쓰기 중심)
+
+- 목표
+  - Cache-Aside와 Write-Through, Write-Behind를 하나의 엔드포인트에서 비교.
+- 힌트
+  - 업데이트 API 2개 생성(강제 즉시 무효화형, 동기 갱신형).
+  - 동일 벤치마크 스크립트로 지연/스루풋 비교.
+- 검증 포인트
+  - 동시 업데이트 100회 기준으로 응답 지연 비교 그래프.
+  - 데이터 정합성(최신 값 일치율) 비교.
+  - 장애 시나리오에서 fallback 동작 확인.
+
+## 5. 핵심 정리
+
+> [!tip] 핵심 takeaway
+> 1. 캐시는 속도 개선 장치일 뿐, 정합성 정책 없이는 운영 위험이 급증한다.
+> 2. L1은 초고속 응답, L2는 공유 정합성 보완을 담당하도록 역할을 명확히 나눈다.
+> 3. Caffeine의 W-TinyLFU는 단순 LRU/LFU보다 실제 워크로드에 더 안정적이다.
+> 4. Cache-Aside만 믿지 말고 무효화/스탬피드 대응을 기본 설계에 포함해야 한다.
+> 5. 이벤트 기반 무효화와 TTL 분산은 대규모 운영에서 장애 확률을 크게 낮춘다.
+
+## 6. 관련 개념
+
+### 연결 개념
+
+- [[2.2 SQL과 데이터 접근 최적화]]
+- [[Phase 3 - 메시징과 비동기 시스템]]
+
+### 참고 자료
+
+- Redis 공식 문서: https://redis.io/docs/
+- Caffeine GitHub: https://github.com/ben-manes/caffeine
+- Spring Cache 가이드: https://docs.spring.io/spring-framework/reference/integration/cache.html
+
+## 학습 체크리스트
+
+- [ ] 캐시와 DB 간 정합성 요구사항을 정의할 수 있다.
+- [ ] W-TinyLFU의 동작 원리를 2분 안에 설명할 수 있다.
+- [ ] Caffeine의 `expireAfterWrite`, `expireAfterAccess`, `refreshAfterWrite` 차이를 구분한다.
+- [ ] Redis 직렬화 포맷(JSON/Protobuf/Kryo) 트레이드오프를 사례로 설명한다.
+- [ ] @Cacheable, @CachePut, @CacheEvict의 실행 시점과 key 생성 시점을 이해한다.
+- [ ] self-invocation 문제와 해결 방법을 아는가.
+- [ ] Cache-Aside와 Write-Through의 장단점을 시스템별로 비교할 수 있다.
+- [ ] Cache Stampede의 원인과 3가지 차단 전략을 구현한다.
+- [ ] Redis Pub/Sub 기반 L1 무효화 파이프라인을 설명한다.
+- [ ] 멀티레벨 캐시에서 이벤트 정합성 유지 전략을 설계할 수 있다.
+- [ ] 핫키 대응, 웜업, 스키마 변경 시 캐시 버저닝 전략을 적용한다.
+- [ ] 과제 1~4를 실제 코드 레벨로 완성하고 성능/정합성 관측 지표를 제시한다.

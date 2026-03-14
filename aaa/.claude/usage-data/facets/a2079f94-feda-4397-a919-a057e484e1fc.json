@@ -1,0 +1,18 @@
+{
+  "underlying_goal": "Change Elasticsearch data node PVC capacity from 150Gi to 1TB in Kubernetes Helm values file",
+  "goal_categories": {
+    "config_change": 1,
+    "quick_question": 1
+  },
+  "outcome": "fully_achieved",
+  "user_satisfaction_counts": {
+    "satisfied": 1
+  },
+  "claude_helpfulness": "very_helpful",
+  "session_type": "multi_task",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "correct_code_edits",
+  "brief_summary": "User wanted to increase Elasticsearch data node PVC from 150Gi to 1Ti and also asked how to check disk allocation in Kibana; both were addressed successfully.",
+  "session_id": "a2079f94-feda-4397-a919-a057e484e1fc"
+}

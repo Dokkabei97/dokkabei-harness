@@ -1,0 +1,1856 @@
+2026-02-15T15:35:31.083Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.087Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T15:35:31.088Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.089Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T15:35:31.428Z [DEBUG] Getting matching hook commands for SessionEnd with query: clear
+2026-02-15T15:35:31.428Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:35:31.428Z [DEBUG] Matched 0 unique hooks for query "clear" (0 before deduplication)
+2026-02-15T15:35:31.428Z [DEBUG] Cleared all session hooks for session 3030a2c5-c28e-46ca-bac6-ef7b16a0b9d0
+2026-02-15T15:35:31.429Z [DEBUG] Getting matching hook commands for SessionStart with query: clear
+2026-02-15T15:35:31.429Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:35:31.429Z [DEBUG] Matched 1 unique hooks for query "clear" (1 before deduplication)
+2026-02-15T15:35:31.436Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.440Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169731440
+2026-02-15T15:35:31.440Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:31.440Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:31.440Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:31.440Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169731440 to /Users/admin/.claude.json
+2026-02-15T15:35:31.441Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:31.443Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169731443
+2026-02-15T15:35:31.443Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:31.444Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:31.444Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:31.444Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169731443 to /Users/admin/.claude.json
+2026-02-15T15:35:31.444Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:31.448Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:35:31.451Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.453Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-15T15:35:31.453Z [DEBUG] [claudeai-mcp] Gate returned: true
+2026-02-15T15:35:31.453Z [DEBUG] [claudeai-mcp] Fetching from https://api.anthropic.com/v1/mcp_servers?limit=1000
+2026-02-15T15:35:31.456Z [DEBUG] Hooks: Checking initial response for async: {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T15:35:31.456Z [DEBUG] Hooks: Parsed initial response: {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."}}
+2026-02-15T15:35:31.456Z [DEBUG] Hooks: Initial response is not async, continuing normal processing
+2026-02-15T15:35:31.456Z [DEBUG] Successfully parsed and validated hook JSON output
+2026-02-15T15:35:31.456Z [DEBUG] Hook SessionStart:clear (SessionStart) success:
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T15:35:31.456Z [DEBUG] FileHistory: Added snapshot for 04e3a693-4cea-4d35-8714-4f880af8e5ce, tracking 0 files
+2026-02-15T15:35:31.465Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.467Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.472Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.473Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:35:31.775Z [DEBUG] [claudeai-mcp] Fetched 1 servers
+2026-02-15T15:35:31.777Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.780Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.815Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:31.826Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:32.008Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:32.009Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:32.331Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:35.921Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:36.072Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:36.270Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:36.407Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:36.604Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:37.396Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:37.478Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:39.921Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:40.397Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:40.797Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:40.913Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:41.463Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:41.616Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:41.776Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:41.925Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:42.344Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:42.541Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169742541
+2026-02-15T15:35:42.541Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:42.541Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:42.541Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:42.541Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169742541 to /Users/admin/.claude.json
+2026-02-15T15:35:42.541Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:42.542Z [DEBUG] Metadata string for obsidian:
+2026-02-15T15:35:42.542Z [DEBUG] <command-message>obsidian</command-message>
+<command-name>/obsidian</command-name>
+<command-args>  @LLM-context.md 이 파일을 읽고 작업을 codex에게 이어가게 해줘</command-args>
+2026-02-15T15:35:42.542Z [DEBUG] command-message tags in metadata: 1
+2026-02-15T15:35:42.548Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:42.554Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:35:42.559Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-15T15:35:42.561Z [DEBUG] Passes: Using fresh cached eligibility data
+2026-02-15T15:35:42.561Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:35:42.561Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:35:42.561Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:35:42.561Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:35:42.561Z [DEBUG] getPluginSkills: Processing 14 enabled plugins
+2026-02-15T15:35:42.561Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-15T15:35:42.561Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7/skills
+2026-02-15T15:35:42.562Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin gitlab: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:42.562Z [DEBUG] Total plugin skills loaded: 1
+2026-02-15T15:35:42.562Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-15T15:35:42.563Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-15T15:35:42.563Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-15T15:35:42.563Z [DEBUG] Total plugin commands loaded: 5
+2026-02-15T15:35:42.566Z [DEBUG] Loaded 17 unique skills (17 unconditional, 0 conditional, managed: 0, user: 10, project: 0, additional: 0, legacy commands: 7)
+2026-02-15T15:35:42.566Z [DEBUG] getSkills returning: 17 skill dir commands, 1 plugin skills, 2 bundled skills
+2026-02-15T15:35:42.566Z [DEBUG] Sending 24 skills via attachment (initial, 24 total sent)
+2026-02-15T15:35:42.566Z [DEBUG] Skill prompt: showing "frontend-design:frontend-design" (userFacingName="frontend-design")
+2026-02-15T15:35:42.566Z [DEBUG] processPromptSlashCommand creating 5 messages for obsidian
+2026-02-15T15:35:42.566Z [DEBUG] Message 1: <command-message>obsidian</command-message>
+<command-name>/obsidian</command-name>
+<command-args>  @LLM-context.md 이 파일을 읽고 작업을 codex에게 이어가게 해줘</command-args>
+2026-02-15T15:35:42.566Z [DEBUG] Message 2 [META]: [{"type":"text","text":"# /obsidian - 기술 학습 노트 생성\n\n## Triggers\n- 기술 개념 학습 노트 작성\n- 코드 실습/튜토리얼 기록\n- 라이브러리/프레임워크 비교 분석\n- 에러 해결/트러블슈팅 기록\n- 아키텍처/설계 패턴 학습\n- TIL(Today I Learned) 작성\n- MOC(Map of Con
+2026-02-15T15:35:42.566Z [DEBUG] Message 3: [ATTACHMENT]
+2026-02-15T15:35:42.566Z [DEBUG] Message 4: [ATTACHMENT]
+2026-02-15T15:35:42.566Z [DEBUG] Message 5: [ATTACHMENT]
+2026-02-15T15:35:42.568Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:35:42.568Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:35:42.568Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:35:42.568Z [DEBUG] FileHistory: Making snapshot for message 95d15e98-c754-479e-8462-da2b818f5481
+2026-02-15T15:35:42.568Z [DEBUG] FileHistory: Added snapshot for 95d15e98-c754-479e-8462-da2b818f5481, tracking 0 files
+2026-02-15T15:35:42.569Z [DEBUG] [useDeferredValue] Messages deferred by 5 (6→11)
+2026-02-15T15:35:42.570Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:42.571Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:35:42.578Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169742578
+2026-02-15T15:35:42.578Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:42.578Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:42.578Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:42.578Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169742578 to /Users/admin/.claude.json
+2026-02-15T15:35:42.578Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:42.603Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:35:42.607Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169742607
+2026-02-15T15:35:42.607Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:42.607Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:42.607Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:42.607Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169742607 to /Users/admin/.claude.json
+2026-02-15T15:35:42.608Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:42.608Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:35:42.608Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:35:42.609Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:42.609Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:42.609Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:42.612Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:45.210Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:35:45.222Z [DEBUG] [useDeferredValue] Messages deferred by 1 (11→12)
+2026-02-15T15:35:45.223Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:51.587Z [DEBUG] [useDeferredValue] Messages deferred by 1 (12→13)
+2026-02-15T15:35:51.588Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:52.327Z [DEBUG] [useDeferredValue] Messages deferred by 1 (13→14)
+2026-02-15T15:35:52.331Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:53.455Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:35:53.457Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:35:53.457Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:35:53.457Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:35:53.463Z [DEBUG] [useDeferredValue] Messages deferred by 1 (14→15)
+2026-02-15T15:35:53.466Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:53.490Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:53.526Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:35:53.526Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:35:53.526Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:53.526Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:53.526Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:53.528Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:35:53.528Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:35:53.528Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:35:53.529Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.086Z [DEBUG] [useDeferredValue] Messages deferred by 1 (15→16)
+2026-02-15T15:35:54.089Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.091Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:54.092Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:35:54.093Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:35:54.093Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:35:54.093Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:35:54.095Z [DEBUG] [useDeferredValue] Messages deferred by 2 (15→17)
+2026-02-15T15:35:54.097Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.102Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:35:54.102Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:35:54.102Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:35:54.104Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.105Z [DEBUG] [useDeferredValue] Messages deferred by 3 (17→20)
+2026-02-15T15:35:54.106Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.108Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:54.114Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:35:54.114Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:35:54.114Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:35:54.114Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:35:54.115Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:35:54.119Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169754119
+2026-02-15T15:35:54.119Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:54.120Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:54.120Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:54.120Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169754119 to /Users/admin/.claude.json
+2026-02-15T15:35:54.120Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:54.120Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:35:54.121Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:35:54.121Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:54.121Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:54.121Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:54.125Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:54.127Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:54.189Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:35:56.743Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:35:56.783Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:58.202Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:35:58.204Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:35:58.204Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:35:58.204Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:35:58.207Z [DEBUG] [useDeferredValue] Messages deferred by 1 (20→21)
+2026-02-15T15:35:58.214Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:58.218Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:58.225Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:35:58.225Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:35:58.225Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:35:58.226Z [DEBUG] [useDeferredValue] Messages deferred by 1 (20→21)
+2026-02-15T15:35:58.227Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:58.255Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:58.887Z [DEBUG] [useDeferredValue] Messages deferred by 3 (21→24)
+2026-02-15T15:35:58.892Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:58.894Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:58.895Z [DEBUG] [useDeferredValue] Messages deferred by 3 (21→24)
+2026-02-15T15:35:58.930Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.059Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:35:59.061Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:35:59.061Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:35:59.061Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:35:59.065Z [DEBUG] [useDeferredValue] Messages deferred by 1 (24→25)
+2026-02-15T15:35:59.069Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.071Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.074Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:35:59.074Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:35:59.074Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:35:59.075Z [DEBUG] [useDeferredValue] Messages deferred by 1 (24→25)
+2026-02-15T15:35:59.076Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.104Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.624Z [DEBUG] [useDeferredValue] Messages deferred by 3 (25→28)
+2026-02-15T15:35:59.628Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.629Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.653Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.943Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:35:59.945Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:35:59.945Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:35:59.945Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:35:59.947Z [DEBUG] [useDeferredValue] Messages deferred by 1 (28→29)
+2026-02-15T15:35:59.950Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.955Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:35:59.955Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:35:59.955Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:35:59.956Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.979Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.982Z [DEBUG] [useDeferredValue] Messages deferred by 3 (29→32)
+2026-02-15T15:35:59.985Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:59.987Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:35:59.988Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:35:59.988Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:35:59.988Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:35:59.988Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:35:59.989Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:35:59.993Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169759993
+2026-02-15T15:35:59.993Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:59.993Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:59.993Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:59.993Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169759993 to /Users/admin/.claude.json
+2026-02-15T15:35:59.993Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:59.994Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:35:59.994Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:35:59.995Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:59.995Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:59.995Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:59.997Z [DEBUG] [useDeferredValue] Messages deferred by 3 (29→32)
+2026-02-15T15:35:59.998Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:00.023Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:36:04.309Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:05.661Z [DEBUG] [useDeferredValue] Messages deferred by 1 (32→33)
+2026-02-15T15:36:05.663Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:05.668Z [DEBUG] [useDeferredValue] Messages deferred by 1 (32→33)
+2026-02-15T15:36:05.697Z [DEBUG] High write ratio: blit=0, write=1027 (100.0% writes), screen=24x212
+2026-02-15T15:36:06.642Z [DEBUG] [useDeferredValue] Messages deferred by 1 (33→34)
+2026-02-15T15:36:06.648Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:06.650Z [DEBUG] High write ratio: blit=0, write=1033 (100.0% writes), screen=24x212
+2026-02-15T15:36:06.685Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:08.275Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:36:08.277Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:36:08.277Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:36:08.277Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:36:08.280Z [DEBUG] [useDeferredValue] Messages deferred by 1 (34→35)
+2026-02-15T15:36:08.284Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:08.286Z [DEBUG] High write ratio: blit=0, write=1068 (100.0% writes), screen=26x212
+2026-02-15T15:36:08.294Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:36:08.294Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:36:08.294Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:36:08.295Z [DEBUG] [useDeferredValue] Messages deferred by 1 (34→35)
+2026-02-15T15:36:08.296Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:08.322Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:08.325Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:36:08.325Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:36:08.325Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:36:08.325Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:36:08.326Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:36:08.330Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169768330
+2026-02-15T15:36:08.330Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:36:08.331Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:36:08.331Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:36:08.331Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169768330 to /Users/admin/.claude.json
+2026-02-15T15:36:08.331Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:36:08.331Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:36:08.332Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:08.332Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:08.332Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:08.332Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:08.335Z [DEBUG] [useDeferredValue] Messages deferred by 3 (35→38)
+2026-02-15T15:36:08.340Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:08.357Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:08.391Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:11.247Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:11.257Z [DEBUG] High write ratio: blit=0, write=1104 (100.0% writes), screen=28x212
+2026-02-15T15:36:12.417Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:36:12.419Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:36:12.419Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:36:12.419Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:36:12.422Z [DEBUG] [useDeferredValue] Messages deferred by 1 (38→39)
+2026-02-15T15:36:12.427Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:12.430Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:12.438Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:36:12.438Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:36:12.438Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:36:12.439Z [DEBUG] [useDeferredValue] Messages deferred by 1 (38→39)
+2026-02-15T15:36:12.440Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:12.455Z [DEBUG] [useDeferredValue] Messages deferred by 3 (39→42)
+2026-02-15T15:36:12.458Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:12.461Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:12.462Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:36:12.462Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:36:12.462Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:36:12.462Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:36:12.462Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:36:12.467Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169772467
+2026-02-15T15:36:12.467Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:36:12.467Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:36:12.467Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:36:12.467Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169772467 to /Users/admin/.claude.json
+2026-02-15T15:36:12.467Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:36:12.468Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:36:12.468Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:12.468Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:12.468Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:12.468Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:12.471Z [DEBUG] [useDeferredValue] Messages deferred by 4 (39→43)
+2026-02-15T15:36:12.472Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:12.481Z [DEBUG] High write ratio: blit=0, write=1103 (100.0% writes), screen=28x212
+2026-02-15T15:36:14.859Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:28.985Z [DEBUG] [useDeferredValue] Messages deferred by 1 (43→44)
+2026-02-15T15:36:28.988Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:28.992Z [DEBUG] [useDeferredValue] Messages deferred by 1 (43→44)
+2026-02-15T15:36:29.021Z [DEBUG] High write ratio: blit=0, write=1125 (100.0% writes), screen=28x212
+2026-02-15T15:36:34.224Z [DEBUG] [useDeferredValue] Messages deferred by 1 (44→45)
+2026-02-15T15:36:34.227Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:34.229Z [DEBUG] [useDeferredValue] Messages deferred by 1 (44→45)
+2026-02-15T15:36:34.249Z [DEBUG] High write ratio: blit=0, write=1598 (100.0% writes), screen=44x212
+2026-02-15T15:36:52.302Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:36:52.305Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:36:52.305Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:36:52.305Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:36:52.326Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:36:52.326Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:36:52.326Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:36:52.326Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:52.327Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:52.327Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:52.327Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:52.327Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.925; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:52.327Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:52.327Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:52.329Z [DEBUG] [useDeferredValue] Messages deferred by 1 (45→46)
+2026-02-15T15:36:52.334Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:52.336Z [DEBUG] High write ratio: blit=0, write=1603 (100.0% writes), screen=44x212
+2026-02-15T15:36:52.365Z [DEBUG] High write ratio: blit=0, write=1688 (100.0% writes), screen=47x212
+2026-02-15T15:36:53.053Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:53.099Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:53.871Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:53.897Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:36:53.898Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:36:53.898Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:36:53.898Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:36:53.898Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:36:53.900Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:36:53.901Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:36:53.901Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:36:53.903Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:54.621Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:36:58.535Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:58.541Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:36:58.558Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:04.533Z [DEBUG] [useDeferredValue] Messages deferred by 1 (46→47)
+2026-02-15T15:37:04.538Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:04.541Z [DEBUG] High write ratio: blit=0, write=1712 (100.0% writes), screen=47x212
+2026-02-15T15:37:04.542Z [DEBUG] [useDeferredValue] Messages deferred by 1 (46→47)
+2026-02-15T15:37:04.580Z [DEBUG] High write ratio: blit=0, write=1743 (100.0% writes), screen=47x212
+2026-02-15T15:37:05.147Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:37:05.148Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:37:05.148Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:37:05.148Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:05.156Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:05.156Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:05.156Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:05.156Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:05.156Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:05.156Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:05.156Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:05.156Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.93f; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:05.156Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:05.156Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:05.157Z [DEBUG] [useDeferredValue] Messages deferred by 1 (47→48)
+2026-02-15T15:37:05.161Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:05.192Z [DEBUG] High write ratio: blit=0, write=1828 (100.0% writes), screen=50x212
+2026-02-15T15:37:05.685Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:05.766Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:05.856Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:06.027Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:06.028Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:06.028Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:06.028Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:06.028Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:06.030Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:37:06.030Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:37:06.030Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:06.032Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:06.122Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:06.125Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:06.147Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:06.172Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:06.728Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:07.461Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:07.513Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:07.518Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:07.520Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:16.609Z [DEBUG] [useDeferredValue] Messages deferred by 1 (48→49)
+2026-02-15T15:37:16.614Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:16.616Z [DEBUG] [useDeferredValue] Messages deferred by 1 (48→49)
+2026-02-15T15:37:16.617Z [DEBUG] [useDeferredValue] Messages deferred by 1 (48→49)
+2026-02-15T15:37:16.644Z [DEBUG] High write ratio: blit=0, write=1859 (100.0% writes), screen=50x212
+2026-02-15T15:37:17.089Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:37:17.091Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:37:17.091Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:37:17.091Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:17.098Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:17.098Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:17.098Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:17.098Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:17.098Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:17.098Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:17.098Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:17.098Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.e97; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:17.098Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:17.098Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:17.099Z [DEBUG] [useDeferredValue] Messages deferred by 1 (49→50)
+2026-02-15T15:37:17.103Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:17.105Z [DEBUG] High write ratio: blit=0, write=1859 (100.0% writes), screen=50x212
+2026-02-15T15:37:17.122Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:17.124Z [DEBUG] High write ratio: blit=0, write=1944 (100.0% writes), screen=53x212
+2026-02-15T15:37:17.750Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:17.750Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:17.765Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:17.884Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:17.884Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:17.884Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:17.884Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:17.884Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:17.886Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:37:17.886Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:37:17.886Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:17.886Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:37:17.886Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:37:17.886Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:37:17.886Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:37:17.887Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:37:17.891Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169837891
+2026-02-15T15:37:17.891Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:37:17.891Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:37:17.891Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:37:17.891Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169837891 to /Users/admin/.claude.json
+2026-02-15T15:37:17.891Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:37:17.892Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:37:17.892Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:17.892Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:17.892Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:17.892Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:17.894Z [DEBUG] [useDeferredValue] Messages deferred by 2 (50→52)
+2026-02-15T15:37:17.898Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:17.900Z [DEBUG] High write ratio: blit=0, write=1911 (100.0% writes), screen=53x212
+2026-02-15T15:37:17.933Z [DEBUG] High write ratio: blit=0, write=1942 (100.0% writes), screen=53x212
+2026-02-15T15:37:17.983Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:18.007Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:18.030Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:18.754Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:21.376Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:22.138Z [DEBUG] [useDeferredValue] Messages deferred by 1 (52→53)
+2026-02-15T15:37:22.146Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:22.148Z [DEBUG] High write ratio: blit=0, write=1942 (100.0% writes), screen=53x212
+2026-02-15T15:37:22.178Z [DEBUG] High write ratio: blit=0, write=1964 (100.0% writes), screen=55x212
+2026-02-15T15:37:22.471Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:22.525Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:22.529Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:37.391Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:37:37.392Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:37:37.392Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:37:37.392Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:37.401Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:37.401Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:37.401Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:37.401Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:37.401Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:37.401Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:37.401Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:37.401Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:37.401Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:37.401Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.f87; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:37.401Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:37.401Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:37.402Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:37.402Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:37.402Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:37.403Z [DEBUG] [useDeferredValue] Messages deferred by 1 (53→54)
+2026-02-15T15:37:37.408Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:37.411Z [DEBUG] High write ratio: blit=0, write=1993 (100.0% writes), screen=55x212
+2026-02-15T15:37:37.443Z [DEBUG] High write ratio: blit=0, write=2078 (100.0% writes), screen=58x212
+2026-02-15T15:37:37.983Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:38.026Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:38.119Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:38.271Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:38.272Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:38.272Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:38.272Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:38.272Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:38.274Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:37:38.274Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:37:38.274Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:38.276Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:38.367Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:38.371Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:38.395Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:38.418Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:39.500Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:39.865Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:39.930Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:39.933Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:39.935Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:47.914Z [DEBUG] [useDeferredValue] Messages deferred by 1 (54→55)
+2026-02-15T15:37:47.922Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:47.924Z [DEBUG] High write ratio: blit=0, write=2077 (100.0% writes), screen=58x212
+2026-02-15T15:37:47.926Z [DEBUG] [useDeferredValue] Messages deferred by 1 (54→55)
+2026-02-15T15:37:47.928Z [DEBUG] [useDeferredValue] Messages deferred by 1 (54→55)
+2026-02-15T15:37:47.958Z [DEBUG] High write ratio: blit=0, write=2108 (100.0% writes), screen=58x212
+2026-02-15T15:37:48.473Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:37:48.475Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:37:48.475Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:37:48.475Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:48.482Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:48.482Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:48.482Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:48.482Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:48.482Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:48.482Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:48.482Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:48.483Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:48.483Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:48.483Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.935; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:48.483Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:48.483Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:48.483Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:48.483Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:48.483Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:48.484Z [DEBUG] [useDeferredValue] Messages deferred by 1 (55→56)
+2026-02-15T15:37:48.489Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:48.522Z [DEBUG] High write ratio: blit=0, write=2193 (100.0% writes), screen=61x212
+2026-02-15T15:37:49.167Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:49.400Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:50.293Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:50.551Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:50.552Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:50.552Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:50.552Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:50.552Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:50.553Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:37:50.553Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:37:50.553Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:50.556Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:50.646Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:50.649Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:50.676Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:50.696Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:51.248Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:58.642Z [DEBUG] [useDeferredValue] Messages deferred by 1 (56→57)
+2026-02-15T15:37:58.650Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:58.652Z [DEBUG] [useDeferredValue] Messages deferred by 1 (56→57)
+2026-02-15T15:37:58.669Z [DEBUG] High write ratio: blit=0, write=2193 (100.0% writes), screen=61x212
+2026-02-15T15:37:58.987Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:59.021Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:59.025Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:59.192Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:37:59.194Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:37:59.194Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:37:59.194Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:37:59.204Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:59.205Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:59.205Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:37:59.205Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:59.205Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:59.205Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:59.205Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:59.205Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:59.205Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:59.205Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.e97; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:37:59.205Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:37:59.205Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:37:59.206Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:59.206Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:59.206Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:37:59.208Z [DEBUG] [useDeferredValue] Messages deferred by 1 (57→58)
+2026-02-15T15:37:59.214Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:37:59.217Z [DEBUG] High write ratio: blit=0, write=2226 (100.0% writes), screen=61x212
+2026-02-15T15:37:59.251Z [DEBUG] High write ratio: blit=0, write=2311 (100.0% writes), screen=64x212
+2026-02-15T15:37:59.817Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:37:59.959Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:00.149Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:00.229Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:38:00.230Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.ddf; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:38:00.230Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:38:00.230Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:38:00.230Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:38:00.231Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:38:00.231Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:00.231Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:38:00.232Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:38:00.232Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:38:00.232Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:38:00.232Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:38:00.233Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:38:00.238Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169880238
+2026-02-15T15:38:00.238Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:38:00.238Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:38:00.238Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:38:00.238Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169880238 to /Users/admin/.claude.json
+2026-02-15T15:38:00.238Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:38:00.239Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:38:00.239Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:38:00.240Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:38:00.240Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:38:00.240Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:38:00.242Z [DEBUG] [useDeferredValue] Messages deferred by 2 (58→60)
+2026-02-15T15:38:00.249Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:00.251Z [DEBUG] High write ratio: blit=0, write=2278 (100.0% writes), screen=64x212
+2026-02-15T15:38:00.297Z [DEBUG] High write ratio: blit=0, write=2309 (100.0% writes), screen=64x212
+2026-02-15T15:38:00.367Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:00.372Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:00.395Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:00.415Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:01.122Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:02.761Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:06.116Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:06.168Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:06.173Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:06.677Z [DEBUG] [useDeferredValue] Messages deferred by 1 (60→61)
+2026-02-15T15:38:06.686Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:06.690Z [DEBUG] High write ratio: blit=0, write=2342 (100.0% writes), screen=64x212
+2026-02-15T15:38:06.722Z [DEBUG] High write ratio: blit=0, write=2588 (100.0% writes), screen=75x212
+2026-02-15T15:38:07.131Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:07.132Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:07.132Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:07.132Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:07.134Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:07.134Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:07.134Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:07.134Z [DEBUG] [useDeferredValue] Messages deferred by 1 (61→62)
+2026-02-15T15:38:07.140Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:07.143Z [DEBUG] High write ratio: blit=0, write=2588 (100.0% writes), screen=75x212
+2026-02-15T15:38:07.157Z [DEBUG] [useDeferredValue] Messages deferred by 2 (62→64)
+2026-02-15T15:38:07.162Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:07.164Z [DEBUG] High write ratio: blit=0, write=2608 (100.0% writes), screen=77x212
+2026-02-15T15:38:07.168Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:38:07.168Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:38:07.168Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:38:07.168Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:38:07.169Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:38:07.172Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169887172
+2026-02-15T15:38:07.172Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:38:07.173Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:38:07.173Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:38:07.173Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169887172 to /Users/admin/.claude.json
+2026-02-15T15:38:07.173Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:38:07.173Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:38:07.173Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:38:07.174Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:38:07.174Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:38:07.174Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:38:07.176Z [DEBUG] [useDeferredValue] Messages deferred by 4 (62→66)
+2026-02-15T15:38:07.181Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:07.184Z [DEBUG] High write ratio: blit=0, write=2608 (100.0% writes), screen=77x212
+2026-02-15T15:38:07.215Z [DEBUG] High write ratio: blit=0, write=2755 (100.0% writes), screen=81x212
+2026-02-15T15:38:10.668Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:11.801Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:11.804Z [DEBUG] High write ratio: blit=2120, write=2480 (53.9% writes), screen=81x212
+2026-02-15T15:38:11.836Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:11.838Z [DEBUG] High write ratio: blit=2120, write=2480 (53.9% writes), screen=81x212
+2026-02-15T15:38:11.841Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:11.870Z [DEBUG] High write ratio: blit=2120, write=2457 (53.7% writes), screen=81x212
+2026-02-15T15:38:14.130Z [DEBUG] [useDeferredValue] Messages deferred by 1 (66→67)
+2026-02-15T15:38:14.132Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:14.167Z [DEBUG] High write ratio: blit=0, write=2749 (100.0% writes), screen=81x212
+2026-02-15T15:38:15.112Z [DEBUG] [useDeferredValue] Messages deferred by 1 (67→68)
+2026-02-15T15:38:15.113Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:15.115Z [DEBUG] [useDeferredValue] Messages deferred by 1 (67→68)
+2026-02-15T15:38:15.158Z [DEBUG] High write ratio: blit=0, write=2786 (100.0% writes), screen=83x212
+2026-02-15T15:38:16.325Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:16.327Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:16.327Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:16.327Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:16.328Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:16.328Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:16.328Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:16.329Z [DEBUG] [useDeferredValue] Messages deferred by 3 (68→71)
+2026-02-15T15:38:16.336Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:16.364Z [DEBUG] High write ratio: blit=0, write=2945 (100.0% writes), screen=89x212
+2026-02-15T15:38:16.850Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:16.851Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:16.851Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:16.851Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:16.853Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:16.853Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:16.853Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:16.853Z [DEBUG] [useDeferredValue] Messages deferred by 3 (71→74)
+2026-02-15T15:38:16.860Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:16.876Z [DEBUG] High write ratio: blit=0, write=3104 (100.0% writes), screen=95x212
+2026-02-15T15:38:17.532Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:17.533Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:17.533Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:17.533Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:17.535Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:17.535Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:17.535Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:17.535Z [DEBUG] [useDeferredValue] Messages deferred by 3 (74→77)
+2026-02-15T15:38:17.542Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:17.556Z [DEBUG] High write ratio: blit=0, write=3262 (100.0% writes), screen=101x212
+2026-02-15T15:38:18.249Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:18.251Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:18.251Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:18.251Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:18.253Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:18.253Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:18.253Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:18.253Z [DEBUG] [useDeferredValue] Messages deferred by 3 (77→80)
+2026-02-15T15:38:18.261Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:18.277Z [DEBUG] High write ratio: blit=0, write=3420 (100.0% writes), screen=107x212
+2026-02-15T15:38:18.760Z [DEBUG] executePreToolHooks called for tool: TaskOutput
+2026-02-15T15:38:18.761Z [DEBUG] Getting matching hook commands for PreToolUse with query: TaskOutput
+2026-02-15T15:38:18.761Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:38:18.761Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:18.763Z [DEBUG] Getting matching hook commands for PostToolUse with query: TaskOutput
+2026-02-15T15:38:18.763Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:38:18.763Z [DEBUG] Matched 0 unique hooks for query "TaskOutput" (0 before deduplication)
+2026-02-15T15:38:18.763Z [DEBUG] [useDeferredValue] Messages deferred by 1 (80→81)
+2026-02-15T15:38:18.771Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:18.774Z [DEBUG] High write ratio: blit=0, write=3420 (100.0% writes), screen=107x212
+2026-02-15T15:38:18.779Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:38:18.779Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:38:18.779Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:38:18.779Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:38:18.779Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:38:18.783Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169898783
+2026-02-15T15:38:18.783Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:38:18.783Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:38:18.783Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:38:18.783Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169898783 to /Users/admin/.claude.json
+2026-02-15T15:38:18.784Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:38:18.784Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:38:18.784Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:38:18.784Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:38:18.784Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:38:18.785Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:38:18.787Z [DEBUG] [useDeferredValue] Messages deferred by 3 (80→83)
+2026-02-15T15:38:18.793Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:18.831Z [DEBUG] High write ratio: blit=0, write=3578 (100.0% writes), screen=113x212
+2026-02-15T15:38:21.937Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:38:25.042Z [DEBUG] [useDeferredValue] Messages deferred by 1 (83→84)
+2026-02-15T15:38:25.043Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:25.077Z [DEBUG] High write ratio: blit=0, write=3578 (100.0% writes), screen=113x212
+2026-02-15T15:38:25.861Z [DEBUG] [useDeferredValue] Messages deferred by 1 (84→85)
+2026-02-15T15:38:25.862Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:38:25.866Z [DEBUG] [useDeferredValue] Messages deferred by 1 (84→85)
+2026-02-15T15:38:25.876Z [DEBUG] [useDeferredValue] Messages deferred by 1 (84→85)
+2026-02-15T15:38:25.911Z [DEBUG] High write ratio: blit=0, write=3631 (100.0% writes), screen=115x212
+2026-02-15T15:38:28.217Z [DEBUG] High write ratio: blit=2756, write=3222 (53.9% writes), screen=115x212
+2026-02-15T15:39:23.686Z [WARN] Streaming stall detected: 56.1s gap between events (stall #1)
+2026-02-15T15:39:23.826Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:39:23.828Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:39:23.828Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:39:23.828Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:39:23.829Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/2-1 LangChain 아키텍처와 LCEL.md
+2026-02-15T15:39:23.829Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/2-1 LangChain 아키텍처와 LCEL.md.tmp.13853.1771169963829
+2026-02-15T15:39:23.830Z [DEBUG] Temp file written successfully, size: 5489 bytes
+2026-02-15T15:39:23.830Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/2-1 LangChain 아키텍처와 LCEL.md.tmp.13853.1771169963829 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/2-1 LangChain 아키텍처와 LCEL.md
+2026-02-15T15:39:23.830Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/2-1 LangChain 아키텍처와 LCEL.md written atomically
+2026-02-15T15:39:23.831Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:39:23.831Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:39:23.831Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:39:23.833Z [DEBUG] [useDeferredValue] Messages deferred by 1 (85→86)
+2026-02-15T15:39:23.840Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:39:23.843Z [DEBUG] High write ratio: blit=0, write=3650 (100.0% writes), screen=115x212
+2026-02-15T15:39:23.844Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:39:23.861Z [DEBUG] High write ratio: blit=0, write=3705 (100.0% writes), screen=117x212
+2026-02-15T15:39:24.293Z [DEBUG] [useDeferredValue] Messages deferred by 3 (86→89)
+2026-02-15T15:39:24.299Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:39:24.302Z [DEBUG] High write ratio: blit=0, write=3708 (100.0% writes), screen=117x212
+2026-02-15T15:39:24.306Z [DEBUG] [useDeferredValue] Messages deferred by 3 (86→89)
+2026-02-15T15:39:24.321Z [DEBUG] High write ratio: blit=0, write=4071 (100.0% writes), screen=129x212
+2026-02-15T15:39:42.557Z [DEBUG] Restarting caffeinate to maintain sleep prevention
+2026-02-15T15:39:42.560Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:39:57.686Z [DEBUG] High write ratio: blit=2756, write=3662 (57.1% writes), screen=129x212
+2026-02-15T15:40:44.701Z [WARN] Streaming stall detected: 80.4s gap between events (stall #2)
+2026-02-15T15:40:45.939Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:40:45.940Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:40:45.940Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:40:45.940Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:40:45.942Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-3 검색 워크플로우 그래프 설계.md
+2026-02-15T15:40:45.942Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-3 검색 워크플로우 그래프 설계.md.tmp.13853.1771170045942
+2026-02-15T15:40:45.943Z [DEBUG] Temp file written successfully, size: 10580 bytes
+2026-02-15T15:40:45.943Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-3 검색 워크플로우 그래프 설계.md.tmp.13853.1771170045942 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-3 검색 워크플로우 그래프 설계.md
+2026-02-15T15:40:45.943Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-3 검색 워크플로우 그래프 설계.md written atomically
+2026-02-15T15:40:45.944Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:40:45.944Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:40:45.944Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:40:45.945Z [DEBUG] [useDeferredValue] Messages deferred by 4 (89→93)
+2026-02-15T15:40:45.952Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:40:45.956Z [DEBUG] High write ratio: blit=0, write=4070 (100.0% writes), screen=129x212
+2026-02-15T15:40:45.956Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:40:45.976Z [DEBUG] High write ratio: blit=0, write=4399 (100.0% writes), screen=143x212
+2026-02-15T15:41:21.468Z [DEBUG] High write ratio: blit=2756, write=3990 (59.1% writes), screen=143x212
+2026-02-15T15:41:54.422Z [WARN] Streaming stall detected: 68.5s gap between events (stall #3)
+2026-02-15T15:41:54.854Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:41:54.856Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:41:54.856Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:41:54.856Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:41:54.857Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-4 에이전트 기반 검색.md
+2026-02-15T15:41:54.857Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-4 에이전트 기반 검색.md.tmp.13853.1771170114857
+2026-02-15T15:41:54.858Z [DEBUG] Temp file written successfully, size: 7423 bytes
+2026-02-15T15:41:54.858Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-4 에이전트 기반 검색.md.tmp.13853.1771170114857 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-4 에이전트 기반 검색.md
+2026-02-15T15:41:54.858Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-4 에이전트 기반 검색.md written atomically
+2026-02-15T15:41:54.859Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:41:54.859Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:41:54.859Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:41:54.860Z [DEBUG] [useDeferredValue] Messages deferred by 1 (93→94)
+2026-02-15T15:41:54.867Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:41:54.871Z [DEBUG] High write ratio: blit=0, write=4400 (100.0% writes), screen=143x212
+2026-02-15T15:41:54.871Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:41:54.905Z [DEBUG] High write ratio: blit=0, write=4445 (100.0% writes), screen=145x212
+2026-02-15T15:41:55.459Z [DEBUG] [useDeferredValue] Messages deferred by 3 (94→97)
+2026-02-15T15:41:55.469Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:41:55.476Z [DEBUG] [useDeferredValue] Messages deferred by 3 (94→97)
+2026-02-15T15:41:55.499Z [DEBUG] High write ratio: blit=0, write=4702 (100.0% writes), screen=157x212
+2026-02-15T15:42:53.314Z [WARN] Streaming stall detected: 57.8s gap between events (stall #4)
+2026-02-15T15:42:53.804Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:42:53.806Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:42:53.806Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:42:53.806Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:42:53.808Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-5 Human-in-the-loop 패턴.md
+2026-02-15T15:42:53.808Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-5 Human-in-the-loop 패턴.md.tmp.13853.1771170173808
+2026-02-15T15:42:53.808Z [DEBUG] Temp file written successfully, size: 7514 bytes
+2026-02-15T15:42:53.808Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-5 Human-in-the-loop 패턴.md.tmp.13853.1771170173808 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-5 Human-in-the-loop 패턴.md
+2026-02-15T15:42:53.808Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-5 Human-in-the-loop 패턴.md written atomically
+2026-02-15T15:42:53.811Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:42:53.811Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:42:53.811Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:42:53.812Z [DEBUG] [useDeferredValue] Messages deferred by 4 (97→101)
+2026-02-15T15:42:53.821Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:42:53.826Z [DEBUG] High write ratio: blit=0, write=4702 (100.0% writes), screen=157x212
+2026-02-15T15:42:53.827Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:42:53.849Z [DEBUG] High write ratio: blit=0, write=5040 (100.0% writes), screen=171x212
+2026-02-15T15:43:07.835Z [DEBUG] High write ratio: blit=2756, write=4631 (62.7% writes), screen=171x212
+2026-02-15T15:43:42.557Z [DEBUG] Restarting caffeinate to maintain sleep prevention
+2026-02-15T15:43:42.564Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:43:50.542Z [WARN] Streaming stall detected: 56.7s gap between events (stall #5)
+2026-02-15T15:43:50.763Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:43:50.765Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:43:50.765Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:43:50.765Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:43:50.766Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-6 서브그래프와 상태 관리.md
+2026-02-15T15:43:50.766Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-6 서브그래프와 상태 관리.md.tmp.13853.1771170230766
+2026-02-15T15:43:50.767Z [DEBUG] Temp file written successfully, size: 6562 bytes
+2026-02-15T15:43:50.767Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-6 서브그래프와 상태 관리.md.tmp.13853.1771170230766 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-6 서브그래프와 상태 관리.md
+2026-02-15T15:43:50.767Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-6 서브그래프와 상태 관리.md written atomically
+2026-02-15T15:43:50.768Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:43:50.768Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:43:50.768Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:43:50.769Z [DEBUG] [useDeferredValue] Messages deferred by 1 (101→102)
+2026-02-15T15:43:50.778Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:43:50.784Z [DEBUG] High write ratio: blit=0, write=5039 (100.0% writes), screen=171x212
+2026-02-15T15:43:50.784Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:43:50.822Z [DEBUG] High write ratio: blit=0, write=5086 (100.0% writes), screen=173x212
+2026-02-15T15:43:51.257Z [DEBUG] [useDeferredValue] Messages deferred by 3 (102→105)
+2026-02-15T15:43:51.265Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:43:51.270Z [DEBUG] High write ratio: blit=0, write=5082 (100.0% writes), screen=173x212
+2026-02-15T15:43:51.274Z [DEBUG] [useDeferredValue] Messages deferred by 3 (102→105)
+2026-02-15T15:43:51.311Z [DEBUG] High write ratio: blit=0, write=5445 (100.0% writes), screen=185x212
+2026-02-15T15:44:37.956Z [WARN] Streaming stall detected: 46.7s gap between events (stall #6)
+2026-02-15T15:44:38.061Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:44:38.063Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:44:38.063Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:44:38.063Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:44:38.064Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-7 스트리밍과 이벤트.md
+2026-02-15T15:44:38.064Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-7 스트리밍과 이벤트.md.tmp.13853.1771170278064
+2026-02-15T15:44:38.065Z [DEBUG] Temp file written successfully, size: 5313 bytes
+2026-02-15T15:44:38.065Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-7 스트리밍과 이벤트.md.tmp.13853.1771170278064 to /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-7 스트리밍과 이벤트.md
+2026-02-15T15:44:38.065Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/01-Concepts/LLM-RAG/4-7 스트리밍과 이벤트.md written atomically
+2026-02-15T15:44:38.067Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:44:38.067Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:44:38.067Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:44:38.067Z [DEBUG] [useDeferredValue] Messages deferred by 1 (105→106)
+2026-02-15T15:44:38.076Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:38.082Z [DEBUG] High write ratio: blit=0, write=5446 (100.0% writes), screen=185x212
+2026-02-15T15:44:38.083Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T15:44:38.097Z [DEBUG] [useDeferredValue] Messages deferred by 3 (106→109)
+2026-02-15T15:44:38.103Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:38.109Z [DEBUG] High write ratio: blit=0, write=5490 (100.0% writes), screen=187x212
+2026-02-15T15:44:38.110Z [WARN] Streaming completed with 6 stall(s), total stall time: 366.2s
+2026-02-15T15:44:38.113Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:44:38.113Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:44:38.113Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:44:38.113Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:44:38.114Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:44:38.118Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170278118
+2026-02-15T15:44:38.118Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:44:38.118Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:44:38.118Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:44:38.118Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170278118 to /Users/admin/.claude.json
+2026-02-15T15:44:38.118Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:44:38.119Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:44:38.119Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:44:38.120Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:44:38.120Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:44:38.120Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:44:38.122Z [DEBUG] [useDeferredValue] Messages deferred by 4 (106→110)
+2026-02-15T15:44:38.124Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:38.145Z [DEBUG] High write ratio: blit=0, write=5841 (100.0% writes), screen=199x212
+2026-02-15T15:44:46.894Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:44:47.784Z [DEBUG] [useDeferredValue] Messages deferred by 1 (110→111)
+2026-02-15T15:44:47.802Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:47.811Z [DEBUG] High write ratio: blit=0, write=5840 (100.0% writes), screen=199x212
+2026-02-15T15:44:47.849Z [DEBUG] High write ratio: blit=0, write=5868 (100.0% writes), screen=201x212
+2026-02-15T15:44:48.921Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:44:48.924Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:44:48.924Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:44:48.924Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:44:48.936Z [DEBUG] [useDeferredValue] Messages deferred by 1 (111→112)
+2026-02-15T15:44:48.945Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:48.982Z [DEBUG] High write ratio: blit=0, write=5904 (100.0% writes), screen=203x212
+2026-02-15T15:44:49.001Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:44:49.001Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.955; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:44:49.002Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:44:49.002Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:44:49.002Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:44:49.003Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:44:49.003Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:44:49.003Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:44:49.004Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:44:49.004Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:44:49.004Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:44:49.004Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:44:49.004Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:44:49.007Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170289007
+2026-02-15T15:44:49.007Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:44:49.007Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:44:49.008Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:44:49.008Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170289007 to /Users/admin/.claude.json
+2026-02-15T15:44:49.008Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:44:49.008Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:44:49.008Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:44:49.008Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:44:49.008Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:44:49.009Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:44:49.010Z [DEBUG] [useDeferredValue] Messages deferred by 1 (112→113)
+2026-02-15T15:44:49.018Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:44:49.022Z [DEBUG] High write ratio: blit=0, write=5904 (100.0% writes), screen=203x212
+2026-02-15T15:44:49.053Z [DEBUG] High write ratio: blit=0, write=5904 (100.0% writes), screen=203x212
+2026-02-15T15:44:49.606Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:44:52.933Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:06.786Z [DEBUG] [useDeferredValue] Messages deferred by 1 (113→114)
+2026-02-15T15:45:06.792Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.814Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:06.814Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:06.814Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:06.814Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:06.821Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170306821
+2026-02-15T15:45:06.821Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:06.822Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:06.822Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:06.822Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170306821 to /Users/admin/.claude.json
+2026-02-15T15:45:06.822Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:06.823Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:06.823Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:06.824Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:06.824Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:06.824Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:06.826Z [DEBUG] [useDeferredValue] Messages deferred by 2 (113→115)
+2026-02-15T15:45:06.827Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.833Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:06.834Z [DEBUG] [useDeferredValue] Messages deferred by 5 (113→118)
+2026-02-15T15:45:06.842Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.843Z [DEBUG] [useDeferredValue] Messages deferred by 5 (113→118)
+2026-02-15T15:45:06.850Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.855Z [DEBUG] High write ratio: blit=0, write=5966 (100.0% writes), screen=205x212
+2026-02-15T15:45:06.857Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:06.858Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:06.858Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:06.858Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:06.858Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:06.860Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:06.860Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:06.860Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:06.864Z [DEBUG] [useDeferredValue] Messages deferred by 6 (113→119)
+2026-02-15T15:45:06.865Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.867Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:06.867Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:06.867Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:06.867Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:06.867Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:06.867Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:06.869Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170306869
+2026-02-15T15:45:06.869Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:06.870Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:06.870Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:06.870Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170306869 to /Users/admin/.claude.json
+2026-02-15T15:45:06.870Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:06.871Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:06.873Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170306873
+2026-02-15T15:45:06.873Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:06.874Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:06.874Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:06.874Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170306873 to /Users/admin/.claude.json
+2026-02-15T15:45:06.874Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:06.874Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:06.875Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:06.875Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:06.875Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:06.875Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:06.877Z [DEBUG] [useDeferredValue] Messages deferred by 6 (113→119)
+2026-02-15T15:45:06.878Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:06.883Z [DEBUG] High write ratio: blit=0, write=5880 (100.0% writes), screen=203x212
+2026-02-15T15:45:06.913Z [DEBUG] High write ratio: blit=0, write=7963 (100.0% writes), screen=238x212
+2026-02-15T15:45:07.595Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:10.528Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:10.738Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:10.760Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:10.760Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:10.760Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:10.760Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=11 cacheRead=153284 cacheCreate=985
+2026-02-15T15:45:10.760Z [DEBUG] [Speculation] enabled=false
+2026-02-15T15:45:10.763Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:12.468Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:15.258Z [DEBUG] [useDeferredValue] Messages deferred by 1 (119→120)
+2026-02-15T15:45:15.261Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.293Z [DEBUG] High write ratio: blit=0, write=8135 (100.0% writes), screen=242x212
+2026-02-15T15:45:15.298Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:15.298Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:15.298Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:15.298Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:15.303Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170315303
+2026-02-15T15:45:15.303Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:15.304Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:15.304Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:15.304Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170315303 to /Users/admin/.claude.json
+2026-02-15T15:45:15.304Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:15.304Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:15.305Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:15.305Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:15.305Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:15.305Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:15.307Z [DEBUG] [useDeferredValue] Messages deferred by 1 (120→121)
+2026-02-15T15:45:15.308Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.315Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:15.321Z [DEBUG] [useDeferredValue] Messages deferred by 2 (121→123)
+2026-02-15T15:45:15.327Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.332Z [DEBUG] High write ratio: blit=0, write=8135 (100.0% writes), screen=242x212
+2026-02-15T15:45:15.333Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:45:15.333Z [DEBUG] [useDeferredValue] Messages deferred by 2 (121→123)
+2026-02-15T15:45:15.339Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.341Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:15.341Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:15.341Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:15.341Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:15.341Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:15.342Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:15.342Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:15.342Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:15.346Z [DEBUG] [useDeferredValue] Messages deferred by 3 (121→124)
+2026-02-15T15:45:15.347Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.348Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:15.349Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:15.349Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:15.349Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:15.349Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:15.349Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:15.351Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170315351
+2026-02-15T15:45:15.351Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:15.351Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:15.351Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:15.351Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170315351 to /Users/admin/.claude.json
+2026-02-15T15:45:15.352Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:15.352Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:15.355Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170315355
+2026-02-15T15:45:15.355Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:15.355Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:15.355Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:15.355Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170315355 to /Users/admin/.claude.json
+2026-02-15T15:45:15.355Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:15.356Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:15.356Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:15.356Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:15.356Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:15.356Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:15.358Z [DEBUG] [useDeferredValue] Messages deferred by 3 (121→124)
+2026-02-15T15:45:15.359Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:15.364Z [DEBUG] High write ratio: blit=0, write=8135 (100.0% writes), screen=242x212
+2026-02-15T15:45:15.399Z [DEBUG] High write ratio: blit=0, write=8222 (100.0% writes), screen=244x212
+2026-02-15T15:45:16.277Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:21.372Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:21.436Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:21.947Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:22.011Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:22.011Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:22.011Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:22.011Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=154128 cacheCreate=456
+2026-02-15T15:45:22.016Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.201Z [DEBUG] [useDeferredValue] Messages deferred by 1 (124→125)
+2026-02-15T15:45:22.205Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.241Z [DEBUG] High write ratio: blit=0, write=8288 (100.0% writes), screen=246x212
+2026-02-15T15:45:22.250Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:22.250Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:22.251Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:22.251Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:22.256Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170322256
+2026-02-15T15:45:22.256Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:22.257Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:22.257Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:22.257Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170322256 to /Users/admin/.claude.json
+2026-02-15T15:45:22.257Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:22.257Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:22.258Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:22.258Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:22.258Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:22.258Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:22.260Z [DEBUG] [useDeferredValue] Messages deferred by 1 (125→126)
+2026-02-15T15:45:22.261Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.270Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:22.279Z [DEBUG] High write ratio: blit=0, write=8308 (100.0% writes), screen=246x212
+2026-02-15T15:45:22.282Z [DEBUG] [useDeferredValue] Messages deferred by 2 (126→128)
+2026-02-15T15:45:22.289Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.290Z [DEBUG] [useDeferredValue] Messages deferred by 2 (126→128)
+2026-02-15T15:45:22.295Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.301Z [DEBUG] High write ratio: blit=0, write=8374 (100.0% writes), screen=248x212
+2026-02-15T15:45:22.303Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:22.303Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:22.303Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:22.303Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:22.303Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:22.305Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:22.305Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:22.305Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:22.309Z [DEBUG] [useDeferredValue] Messages deferred by 3 (126→129)
+2026-02-15T15:45:22.310Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.311Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:22.311Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:22.311Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:22.311Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:22.311Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:22.311Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:22.313Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170322313
+2026-02-15T15:45:22.313Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:22.314Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:22.314Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:22.314Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170322313 to /Users/admin/.claude.json
+2026-02-15T15:45:22.314Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:22.315Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:22.317Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170322317
+2026-02-15T15:45:22.317Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:22.317Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:22.317Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:22.317Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170322317 to /Users/admin/.claude.json
+2026-02-15T15:45:22.318Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:22.318Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:22.318Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:22.318Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:22.318Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:22.318Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:22.320Z [DEBUG] [useDeferredValue] Messages deferred by 3 (126→129)
+2026-02-15T15:45:22.321Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:22.326Z [DEBUG] High write ratio: blit=0, write=8288 (100.0% writes), screen=246x212
+2026-02-15T15:45:22.360Z [DEBUG] High write ratio: blit=0, write=8374 (100.0% writes), screen=248x212
+2026-02-15T15:45:23.255Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:26.404Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:26.659Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:26.716Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:26.716Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:26.716Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:26.716Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=154447 cacheCreate=360
+2026-02-15T15:45:26.720Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:26.742Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:27.430Z [DEBUG] [useDeferredValue] Messages deferred by 1 (129→130)
+2026-02-15T15:45:27.432Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.486Z [DEBUG] High write ratio: blit=0, write=8413 (100.0% writes), screen=250x212
+2026-02-15T15:45:27.933Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:27.933Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:27.933Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:27.934Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:27.938Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170327938
+2026-02-15T15:45:27.938Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:27.939Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:27.939Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:27.939Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170327938 to /Users/admin/.claude.json
+2026-02-15T15:45:27.939Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:27.939Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:27.940Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:27.940Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:27.940Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:27.940Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:27.942Z [DEBUG] [useDeferredValue] Messages deferred by 1 (130→131)
+2026-02-15T15:45:27.943Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.950Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:27.952Z [DEBUG] [useDeferredValue] Messages deferred by 2 (131→133)
+2026-02-15T15:45:27.957Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.958Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:45:27.958Z [DEBUG] [useDeferredValue] Messages deferred by 2 (131→133)
+2026-02-15T15:45:27.963Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.969Z [DEBUG] High write ratio: blit=0, write=8497 (100.0% writes), screen=252x212
+2026-02-15T15:45:27.971Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:27.971Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:27.971Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:27.971Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:27.971Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:27.973Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:27.973Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:27.973Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:27.974Z [DEBUG] [useDeferredValue] Messages deferred by 3 (131→134)
+2026-02-15T15:45:27.978Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.980Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:27.980Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:27.980Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:27.980Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:27.980Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:27.980Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:27.984Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170327984
+2026-02-15T15:45:27.984Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:27.984Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:27.984Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:27.984Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170327984 to /Users/admin/.claude.json
+2026-02-15T15:45:27.985Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:27.985Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:27.988Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170327988
+2026-02-15T15:45:27.988Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:27.988Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:27.988Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:27.988Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170327988 to /Users/admin/.claude.json
+2026-02-15T15:45:27.988Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:27.988Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:27.989Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:27.989Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:27.989Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:27.989Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:27.991Z [DEBUG] [useDeferredValue] Messages deferred by 3 (131→134)
+2026-02-15T15:45:27.991Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:27.997Z [DEBUG] High write ratio: blit=0, write=8413 (100.0% writes), screen=250x212
+2026-02-15T15:45:28.030Z [DEBUG] High write ratio: blit=0, write=8497 (100.0% writes), screen=252x212
+2026-02-15T15:45:28.806Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:31.219Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:31.538Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:31.582Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:31.582Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:31.582Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:31.582Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=154666 cacheCreate=333
+2026-02-15T15:45:31.586Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.023Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:32.232Z [DEBUG] [useDeferredValue] Messages deferred by 1 (134→135)
+2026-02-15T15:45:32.236Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.248Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:32.248Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:32.248Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:32.249Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:32.258Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170332258
+2026-02-15T15:45:32.258Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:32.258Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:32.258Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:32.258Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170332258 to /Users/admin/.claude.json
+2026-02-15T15:45:32.258Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:32.259Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:32.260Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:32.260Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:32.260Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:32.260Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:32.263Z [DEBUG] [useDeferredValue] Messages deferred by 2 (134→136)
+2026-02-15T15:45:32.264Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.269Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:32.270Z [DEBUG] [useDeferredValue] Messages deferred by 4 (134→138)
+2026-02-15T15:45:32.277Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.279Z [DEBUG] [useDeferredValue] Messages deferred by 4 (134→138)
+2026-02-15T15:45:32.285Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.291Z [DEBUG] High write ratio: blit=0, write=8577 (100.0% writes), screen=254x212
+2026-02-15T15:45:32.294Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:32.294Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:32.294Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:32.294Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:32.294Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:32.296Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:32.296Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:32.296Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:32.300Z [DEBUG] [useDeferredValue] Messages deferred by 5 (134→139)
+2026-02-15T15:45:32.301Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.302Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:32.302Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:32.302Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:32.302Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:32.302Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:32.303Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:32.305Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170332305
+2026-02-15T15:45:32.305Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:32.305Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:32.305Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:32.305Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170332305 to /Users/admin/.claude.json
+2026-02-15T15:45:32.306Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:32.306Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:32.309Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170332309
+2026-02-15T15:45:32.309Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:32.309Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:32.309Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:32.309Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170332309 to /Users/admin/.claude.json
+2026-02-15T15:45:32.309Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:32.310Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:32.310Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:32.310Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:32.310Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:32.310Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:32.312Z [DEBUG] [useDeferredValue] Messages deferred by 5 (134→139)
+2026-02-15T15:45:32.313Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:32.318Z [DEBUG] High write ratio: blit=0, write=8497 (100.0% writes), screen=252x212
+2026-02-15T15:45:32.353Z [DEBUG] High write ratio: blit=0, write=8609 (100.0% writes), screen=256x212
+2026-02-15T15:45:33.482Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:35.914Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:36.159Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:36.193Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:36.193Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:36.193Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:36.193Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=154858 cacheCreate=329
+2026-02-15T15:45:36.198Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:37.447Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:38.275Z [DEBUG] [useDeferredValue] Messages deferred by 1 (139→140)
+2026-02-15T15:45:38.278Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.299Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:38.299Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:38.299Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:38.300Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:38.306Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170338306
+2026-02-15T15:45:38.306Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:38.306Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:38.307Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:38.307Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170338306 to /Users/admin/.claude.json
+2026-02-15T15:45:38.307Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:38.307Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:38.308Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:38.308Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:38.308Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:38.308Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:38.310Z [DEBUG] [useDeferredValue] Messages deferred by 2 (139→141)
+2026-02-15T15:45:38.311Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.323Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:38.328Z [DEBUG] [useDeferredValue] Messages deferred by 2 (141→143)
+2026-02-15T15:45:38.334Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.340Z [DEBUG] High write ratio: blit=0, write=8635 (100.0% writes), screen=258x212
+2026-02-15T15:45:38.341Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:45:38.341Z [DEBUG] [useDeferredValue] Messages deferred by 2 (141→143)
+2026-02-15T15:45:38.347Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.350Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:45:38.350Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:45:38.350Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:45:38.350Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:45:38.350Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:45:38.351Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:45:38.351Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:38.351Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:38.356Z [DEBUG] [useDeferredValue] Messages deferred by 3 (141→144)
+2026-02-15T15:45:38.357Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.363Z [DEBUG] High write ratio: blit=0, write=8635 (100.0% writes), screen=258x212
+2026-02-15T15:45:38.364Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:45:38.364Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:45:38.364Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.841; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:38.364Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:38.364Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:38.364Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:38.366Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170338366
+2026-02-15T15:45:38.366Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:38.367Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:38.367Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:38.367Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170338366 to /Users/admin/.claude.json
+2026-02-15T15:45:38.367Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:38.368Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:38.370Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170338370
+2026-02-15T15:45:38.370Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:38.370Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:38.371Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:38.371Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170338370 to /Users/admin/.claude.json
+2026-02-15T15:45:38.371Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:38.371Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:38.371Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:38.371Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:38.371Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:38.371Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:38.376Z [DEBUG] [useDeferredValue] Messages deferred by 3 (141→144)
+2026-02-15T15:45:38.377Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:38.392Z [DEBUG] High write ratio: blit=0, write=8716 (100.0% writes), screen=260x212
+2026-02-15T15:45:40.113Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:41.649Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:41.920Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:41.947Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:41.947Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:41.948Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:41.948Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=155048 cacheCreate=322
+2026-02-15T15:45:41.951Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:42.471Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:43.704Z [DEBUG] [useDeferredValue] Messages deferred by 1 (144→145)
+2026-02-15T15:45:43.705Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:43.719Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:45:43.719Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:45:43.719Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:45:43.719Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:45:43.724Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170343724
+2026-02-15T15:45:43.724Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:45:43.725Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:45:43.725Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:45:43.725Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170343724 to /Users/admin/.claude.json
+2026-02-15T15:45:43.725Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:45:43.726Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:45:43.726Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:45:43.726Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:45:43.726Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:45:43.726Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:45:43.728Z [DEBUG] [useDeferredValue] Messages deferred by 1 (145→146)
+2026-02-15T15:45:43.729Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:43.736Z [DEBUG] High write ratio: blit=0, write=8830 (100.0% writes), screen=264x212
+2026-02-15T15:45:43.737Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:45:43.739Z [DEBUG] [useDeferredValue] Messages deferred by 3 (145→148)
+2026-02-15T15:45:43.750Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:45:43.766Z [DEBUG] High write ratio: blit=0, write=8778 (100.0% writes), screen=262x212
+2026-02-15T15:45:47.899Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:45:48.063Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:45:48.099Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:45:48.099Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:45:48.099Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:45:48.099Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=155226 cacheCreate=389
+2026-02-15T15:45:48.103Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:46:43.755Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2026-02-15T15:46:43.755Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:46:43.755Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2026-02-15T15:47:04.692Z [DEBUG] High write ratio: blit=2756, write=8369 (75.2% writes), screen=262x212
+2026-02-15T15:47:11.114Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:11.543Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:11.694Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:13.869Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:13.881Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T15:47:13.882Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:13.884Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T15:47:17.979Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:18.796Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:19.845Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:20.300Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:21.927Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:25.410Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:25.915Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:26.351Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:27.148Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:28.961Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:30.864Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:32.144Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:32.678Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:33.493Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170453493
+2026-02-15T15:47:33.494Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:33.495Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:33.495Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:33.495Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170453493 to /Users/admin/.claude.json
+2026-02-15T15:47:33.496Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:33.497Z [DEBUG] Metadata string for handoff:
+2026-02-15T15:47:33.497Z [DEBUG] <command-message>handoff</command-message>
+<command-name>/handoff</command-name>
+<command-args>LLM-context.md에 컨텍스트를 업데이트 해줘</command-args>
+2026-02-15T15:47:33.497Z [DEBUG] command-message tags in metadata: 1
+2026-02-15T15:47:33.500Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:47:33.500Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:47:33.500Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:47:33.500Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:47:33.501Z [DEBUG] processPromptSlashCommand creating 3 messages for handoff
+2026-02-15T15:47:33.501Z [DEBUG] Message 1: <command-message>handoff</command-message>
+<command-name>/handoff</command-name>
+<command-args>LLM-context.md에 컨텍스트를 업데이트 해줘</command-args>
+2026-02-15T15:47:33.501Z [DEBUG] Message 2 [META]: [{"type":"text","text":"# /handoff - Session Context Transfer\n\n## Triggers\n- 대화가 길어져 컨텍스트 윈도우 한계에 근접할 때\n- 세션을 종료하고 나중에 이어서 작업해야 할 때\n- 작업 진행 상황을 다른 세션/에이전트에 인계할 때\n\n## Usage\n```\n/handoff\n```\n
+2026-02-15T15:47:33.501Z [DEBUG] Message 3: [ATTACHMENT]
+2026-02-15T15:47:33.503Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:47:33.503Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:47:33.503Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:47:33.503Z [DEBUG] FileHistory: Making snapshot for message 2424aed3-e6b6-45b5-8201-605372342834
+2026-02-15T15:47:33.509Z [DEBUG] FileHistory: Added snapshot for 2424aed3-e6b6-45b5-8201-605372342834, tracking 6 files
+2026-02-15T15:47:33.513Z [DEBUG] [useDeferredValue] Messages deferred by 3 (148→151)
+2026-02-15T15:47:33.523Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:33.531Z [DEBUG] High write ratio: blit=0, write=8787 (100.0% writes), screen=264x212
+2026-02-15T15:47:33.535Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:47:33.535Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:47:33.538Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170453538
+2026-02-15T15:47:33.538Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:33.538Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:33.538Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:33.538Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170453538 to /Users/admin/.claude.json
+2026-02-15T15:47:33.538Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:33.539Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:47:33.543Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170453543
+2026-02-15T15:47:33.543Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:33.543Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:33.543Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:33.543Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170453543 to /Users/admin/.claude.json
+2026-02-15T15:47:33.543Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:33.543Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:47:33.544Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:33.544Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:33.544Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:33.545Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:33.552Z [DEBUG] [useDeferredValue] Messages deferred by 3 (148→151)
+2026-02-15T15:47:33.553Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:33.585Z [DEBUG] High write ratio: blit=0, write=8828 (100.0% writes), screen=266x212
+2026-02-15T15:47:38.507Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:38.509Z [DEBUG] [useDeferredValue] Messages deferred by 1 (151→152)
+2026-02-15T15:47:38.510Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:38.541Z [DEBUG] High write ratio: blit=0, write=8838 (100.0% writes), screen=266x212
+2026-02-15T15:47:39.633Z [DEBUG] [useDeferredValue] Messages deferred by 1 (152→153)
+2026-02-15T15:47:39.635Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:39.636Z [DEBUG] [useDeferredValue] Messages deferred by 1 (152→153)
+2026-02-15T15:47:39.666Z [DEBUG] High write ratio: blit=0, write=8839 (100.0% writes), screen=266x212
+2026-02-15T15:47:40.745Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:40.746Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:40.746Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:40.747Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:40.753Z [DEBUG] [useDeferredValue] Messages deferred by 1 (153→154)
+2026-02-15T15:47:40.761Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:40.799Z [DEBUG] High write ratio: blit=0, write=8936 (100.0% writes), screen=269x212
+2026-02-15T15:47:40.819Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:40.819Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:40.819Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:40.819Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:40.819Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:40.821Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:40.821Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:40.821Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:40.823Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.035Z [DEBUG] [useDeferredValue] Messages deferred by 1 (154→155)
+2026-02-15T15:47:41.050Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.058Z [DEBUG] High write ratio: blit=0, write=8936 (100.0% writes), screen=269x212
+2026-02-15T15:47:41.062Z [DEBUG] [useDeferredValue] Messages deferred by 1 (154→155)
+2026-02-15T15:47:41.088Z [DEBUG] High write ratio: blit=0, write=8934 (100.0% writes), screen=269x212
+2026-02-15T15:47:41.371Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:41.372Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:41.372Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:41.372Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:41.377Z [DEBUG] [useDeferredValue] Messages deferred by 1 (155→156)
+2026-02-15T15:47:41.385Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.393Z [DEBUG] High write ratio: blit=0, write=8934 (100.0% writes), screen=269x212
+2026-02-15T15:47:41.400Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:41.415Z [DEBUG] High write ratio: blit=0, write=9018 (100.0% writes), screen=272x212
+2026-02-15T15:47:41.452Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:41.452Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:41.452Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:41.452Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:41.452Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:41.453Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:41.453Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:41.453Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:41.455Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.704Z [DEBUG] [useDeferredValue] Messages deferred by 1 (156→157)
+2026-02-15T15:47:41.713Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.721Z [DEBUG] High write ratio: blit=0, write=9018 (100.0% writes), screen=272x212
+2026-02-15T15:47:41.726Z [DEBUG] [useDeferredValue] Messages deferred by 1 (156→157)
+2026-02-15T15:47:41.753Z [DEBUG] High write ratio: blit=0, write=9126 (100.0% writes), screen=275x212
+2026-02-15T15:47:41.932Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:41.934Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:41.934Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:41.934Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:41.938Z [DEBUG] [useDeferredValue] Messages deferred by 1 (157→158)
+2026-02-15T15:47:41.946Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:41.953Z [DEBUG] High write ratio: blit=0, write=9126 (100.0% writes), screen=275x212
+2026-02-15T15:47:41.994Z [DEBUG] High write ratio: blit=0, write=9213 (100.0% writes), screen=278x212
+2026-02-15T15:47:41.997Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:41.997Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:41.997Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:41.997Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:41.997Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:41.998Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:41.998Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:41.998Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:42.003Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:42.028Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:42.308Z [DEBUG] [useDeferredValue] Messages deferred by 1 (158→159)
+2026-02-15T15:47:42.316Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:42.320Z [DEBUG] [useDeferredValue] Messages deferred by 1 (158→159)
+2026-02-15T15:47:42.358Z [DEBUG] High write ratio: blit=0, write=9288 (100.0% writes), screen=278x212
+2026-02-15T15:47:42.684Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:42.686Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:42.686Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:42.686Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:42.691Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:42.693Z [DEBUG] [useDeferredValue] Messages deferred by 1 (159→160)
+2026-02-15T15:47:42.701Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:42.742Z [DEBUG] High write ratio: blit=0, write=9353 (100.0% writes), screen=281x212
+2026-02-15T15:47:42.754Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:42.754Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:42.754Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:42.754Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:42.754Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:42.755Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:42.755Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:42.756Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:42.756Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:47:42.756Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:47:42.756Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:47:42.756Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:47:42.757Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:47:42.761Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170462761
+2026-02-15T15:47:42.761Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:42.761Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:42.761Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:42.761Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170462761 to /Users/admin/.claude.json
+2026-02-15T15:47:42.762Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:42.762Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:47:42.762Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:42.763Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:42.763Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:42.763Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:42.765Z [DEBUG] [useDeferredValue] Messages deferred by 2 (160→162)
+2026-02-15T15:47:42.771Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:42.778Z [DEBUG] High write ratio: blit=0, write=9353 (100.0% writes), screen=281x212
+2026-02-15T15:47:42.799Z [DEBUG] High write ratio: blit=0, write=9457 (100.0% writes), screen=282x212
+2026-02-15T15:47:43.543Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:43.767Z [DEBUG] High write ratio: blit=2756, write=9048 (76.7% writes), screen=282x212
+2026-02-15T15:47:48.133Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:48.196Z [DEBUG] High write ratio: blit=0, write=9457 (100.0% writes), screen=282x212
+2026-02-15T15:47:49.456Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:49.460Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:49.460Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:49.460Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:49.475Z [DEBUG] [useDeferredValue] Messages deferred by 1 (162→163)
+2026-02-15T15:47:49.488Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:49.515Z [DEBUG] High write ratio: blit=0, write=9557 (100.0% writes), screen=285x212
+2026-02-15T15:47:49.554Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:49.554Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:49.554Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:49.554Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:49.554Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:49.555Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:49.555Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:49.555Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:49.556Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:47:49.556Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:47:49.556Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:47:49.556Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:47:49.556Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:47:49.559Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170469559
+2026-02-15T15:47:49.559Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:49.560Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:49.560Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:49.560Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170469559 to /Users/admin/.claude.json
+2026-02-15T15:47:49.560Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:49.560Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:47:49.561Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:49.561Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:49.561Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:49.561Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:49.563Z [DEBUG] [useDeferredValue] Messages deferred by 1 (163→164)
+2026-02-15T15:47:49.572Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:49.579Z [DEBUG] High write ratio: blit=0, write=9557 (100.0% writes), screen=285x212
+2026-02-15T15:47:49.619Z [DEBUG] High write ratio: blit=0, write=9554 (100.0% writes), screen=285x212
+2026-02-15T15:47:50.177Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:52.824Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:52.852Z [DEBUG] High write ratio: blit=0, write=9554 (100.0% writes), screen=285x212
+2026-02-15T15:47:54.398Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-15T15:47:54.406Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-15T15:47:54.406Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:54.406Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:54.417Z [DEBUG] [useDeferredValue] Messages deferred by 1 (164→165)
+2026-02-15T15:47:54.430Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:54.440Z [DEBUG] High write ratio: blit=0, write=9554 (100.0% writes), screen=285x212
+2026-02-15T15:47:54.473Z [DEBUG] High write ratio: blit=0, write=9589 (100.0% writes), screen=287x212
+2026-02-15T15:47:54.482Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T15:47:54.482Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.8e0; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:54.482Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:54.482Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:54.482Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:54.483Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-15T15:47:54.483Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:54.483Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-15T15:47:54.484Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:47:54.484Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:47:54.484Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:47:54.484Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:47:54.484Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:47:54.488Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170474488
+2026-02-15T15:47:54.488Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:54.489Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:54.489Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:54.489Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170474488 to /Users/admin/.claude.json
+2026-02-15T15:47:54.489Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:54.489Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:47:54.490Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:54.490Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:54.490Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:54.490Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:54.492Z [DEBUG] [useDeferredValue] Messages deferred by 1 (165→166)
+2026-02-15T15:47:54.498Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:54.504Z [DEBUG] High write ratio: blit=0, write=9589 (100.0% writes), screen=287x212
+2026-02-15T15:47:54.524Z [DEBUG] High write ratio: blit=0, write=9589 (100.0% writes), screen=287x212
+2026-02-15T15:47:55.589Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:57.960Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:47:58.613Z [DEBUG] [useDeferredValue] Messages deferred by 1 (166→167)
+2026-02-15T15:47:58.638Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:58.661Z [DEBUG] High write ratio: blit=0, write=9648 (100.0% writes), screen=291x212
+2026-02-15T15:47:58.988Z [DEBUG] executePreToolHooks called for tool: Read
+2026-02-15T15:47:58.990Z [DEBUG] Getting matching hook commands for PreToolUse with query: Read
+2026-02-15T15:47:58.990Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:47:58.990Z [DEBUG] Matched 0 unique hooks for query "Read" (0 before deduplication)
+2026-02-15T15:47:58.992Z [DEBUG] [useDeferredValue] Messages deferred by 1 (167→168)
+2026-02-15T15:47:58.999Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:59.006Z [DEBUG] High write ratio: blit=0, write=9613 (100.0% writes), screen=289x212
+2026-02-15T15:47:59.013Z [DEBUG] Getting matching hook commands for PostToolUse with query: Read
+2026-02-15T15:47:59.013Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:47:59.013Z [DEBUG] Matched 1 unique hooks for query "Read" (1 before deduplication)
+2026-02-15T15:47:59.014Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:47:59.014Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:47:59.014Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:47:59.014Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:47:59.015Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:47:59.018Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170479018
+2026-02-15T15:47:59.018Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:47:59.018Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:47:59.018Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:47:59.018Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170479018 to /Users/admin/.claude.json
+2026-02-15T15:47:59.019Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:47:59.019Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:47:59.020Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:47:59.020Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:47:59.020Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:47:59.020Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:47:59.022Z [DEBUG] [useDeferredValue] Messages deferred by 4 (167→171)
+2026-02-15T15:47:59.029Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:47:59.036Z [DEBUG] High write ratio: blit=0, write=9613 (100.0% writes), screen=289x212
+2026-02-15T15:47:59.067Z [DEBUG] High write ratio: blit=0, write=9648 (100.0% writes), screen=291x212
+2026-02-15T15:48:04.249Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:48:04.278Z [DEBUG] High write ratio: blit=0, write=9663 (100.0% writes), screen=291x212
+2026-02-15T15:48:36.407Z [WARN] Streaming stall detected: 31.3s gap between events (stall #1)
+2026-02-15T15:48:36.744Z [DEBUG] executePreToolHooks called for tool: Write
+2026-02-15T15:48:36.746Z [DEBUG] Getting matching hook commands for PreToolUse with query: Write
+2026-02-15T15:48:36.746Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T15:48:36.746Z [DEBUG] Matched 0 unique hooks for query "Write" (0 before deduplication)
+2026-02-15T15:48:36.749Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/Documents/Obsidian Vault/LLM-context.md
+2026-02-15T15:48:36.749Z [DEBUG] Writing to temp file: /Users/admin/Documents/Obsidian Vault/LLM-context.md.tmp.13853.1771170516749
+2026-02-15T15:48:36.749Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:48:36.749Z [DEBUG] Temp file written successfully, size: 3237 bytes
+2026-02-15T15:48:36.749Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:48:36.749Z [DEBUG] Renaming /Users/admin/Documents/Obsidian Vault/LLM-context.md.tmp.13853.1771170516749 to /Users/admin/Documents/Obsidian Vault/LLM-context.md
+2026-02-15T15:48:36.750Z [DEBUG] File /Users/admin/Documents/Obsidian Vault/LLM-context.md written atomically
+2026-02-15T15:48:36.752Z [DEBUG] Getting matching hook commands for PostToolUse with query: Write
+2026-02-15T15:48:36.752Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T15:48:36.752Z [DEBUG] Matched 1 unique hooks for query "Write" (1 before deduplication)
+2026-02-15T15:48:36.753Z [WARN] Streaming completed with 1 stall(s), total stall time: 31.3s
+2026-02-15T15:48:36.754Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:48:36.754Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:48:36.754Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:48:36.754Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:48:36.755Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:48:36.758Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170516758
+2026-02-15T15:48:36.758Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:48:36.759Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:48:36.759Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:48:36.759Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170516758 to /Users/admin/.claude.json
+2026-02-15T15:48:36.759Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:48:36.759Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:48:36.760Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:48:36.760Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:48:36.760Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:48:36.760Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:48:36.764Z [DEBUG] [useDeferredValue] Messages deferred by 4 (171→175)
+2026-02-15T15:48:36.771Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:36.777Z [DEBUG] High write ratio: blit=0, write=9732 (100.0% writes), screen=291x212
+2026-02-15T15:48:36.865Z [DEBUG] High write ratio: blit=0, write=24663 (100.0% writes), screen=401x212
+2026-02-15T15:48:41.174Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:48:48.967Z [DEBUG] [useDeferredValue] Messages deferred by 1 (175→176)
+2026-02-15T15:48:48.969Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:49.007Z [DEBUG] High write ratio: blit=0, write=25089 (100.0% writes), screen=417x212
+2026-02-15T15:48:49.037Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T15:48:49.037Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:48:49.037Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T15:48:49.037Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:48:49.042Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771170529042
+2026-02-15T15:48:49.043Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:48:49.043Z [DEBUG] Temp file written successfully, size: 105926 bytes
+2026-02-15T15:48:49.043Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:48:49.043Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771170529042 to /Users/admin/.claude.json
+2026-02-15T15:48:49.043Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:48:49.044Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:48:49.044Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:48:49.044Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:48:49.044Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:48:49.044Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:48:49.046Z [DEBUG] [useDeferredValue] Messages deferred by 1 (176→177)
+2026-02-15T15:48:49.047Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:49.050Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T15:48:49.054Z [DEBUG] [useDeferredValue] Messages deferred by 4 (176→180)
+2026-02-15T15:48:49.061Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:49.062Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:48:49.084Z [DEBUG] High write ratio: blit=0, write=25072 (100.0% writes), screen=417x212
+2026-02-15T15:48:53.143Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:48:53.340Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T15:48:53.431Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T15:48:53.431Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:48:53.431Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:48:53.431Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=166086 cacheCreate=641
+2026-02-15T15:48:53.436Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:55.335Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:56.148Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:56.151Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T15:48:56.153Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:48:56.153Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager

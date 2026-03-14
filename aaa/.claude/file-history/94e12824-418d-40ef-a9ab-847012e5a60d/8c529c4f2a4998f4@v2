@@ -1,0 +1,88 @@
+package member
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/plane-cli/plane-cli/internal/api"
+	"github.com/plane-cli/plane-cli/internal/cmdutil"
+	"github.com/plane-cli/plane-cli/internal/output"
+)
+
+// NewCmd creates the member command.
+func NewCmd(f *cmdutil.Factory) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "member",
+		Short: "List workspace and project members",
+	}
+
+	cmd.AddCommand(newListCmd(f))
+	cmd.AddCommand(newListProjectCmd(f))
+
+	return cmd
+}
+
+var memberColumns = []output.Column{
+	{Header: "ID", Field: "id"},
+	{Header: "ROLE", Field: "role"},
+	{Header: "MEMBER", Field: "member"},
+}
+
+func newListCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list",
+		Short: "List workspace members",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, err := f.RequireWorkspace()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath("workspaces/{workspace_slug}/members/").
+				Workspace(ws).Build()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get(path)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, memberColumns)
+		},
+	}
+}
+
+func newListProjectCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list-project",
+		Short: "List project members",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/members/").
+				Workspace(ws).Project(proj).Build()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get(path)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, memberColumns)
+		},
+	}
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "content": "Redis 공유 패키지 디렉토리 구조 생성",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Redis 클라이언트 공유 패키지 pyproject.toml 작성",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Redis 설정 관리 모듈 구현 (config.py)",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "기본 Redis 클라이언트 추상화 구현 (client.py)",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "캐싱 전용 클라이언트 구현 (cache.py)",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "Pub/Sub 전용 클라이언트 구현 (pubsub.py)",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "Redis 예외 처리 모듈 구현 (exceptions.py)",
+    "status": "completed",
+    "priority": "low",
+    "id": "7"
+  },
+  {
+    "content": "루트 pyproject.toml에 redis-client 워크스페이스 멤버 추가",
+    "status": "completed",
+    "priority": "medium",
+    "id": "8"
+  },
+  {
+    "content": "ppuri pyproject.toml에서 coredis 의존성 제거 및 공유 패키지 의존성 추가",
+    "status": "completed",
+    "priority": "medium",
+    "id": "9"
+  },
+  {
+    "content": "ppuri Redis 연결 코드를 공유 패키지 사용하도록 리팩토링",
+    "status": "completed",
+    "priority": "high",
+    "id": "10"
+  }
+]

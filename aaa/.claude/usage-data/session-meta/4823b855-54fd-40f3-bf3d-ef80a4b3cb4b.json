@@ -1,0 +1,48 @@
+{
+  "session_id": "4823b855-54fd-40f3-bf3d-ef80a4b3cb4b",
+  "project_path": "/Users/admin/project/integrated-search",
+  "start_time": "2026-02-27T08:00:32.701Z",
+  "duration_minutes": 4,
+  "user_message_count": 5,
+  "assistant_message_count": 34,
+  "tool_counts": {
+    "Read": 11,
+    "Glob": 4,
+    "Bash": 3,
+    "Write": 1
+  },
+  "languages": {
+    "Markdown": 11,
+    "YAML": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 709,
+  "output_tokens": 2841,
+  "first_prompt": "No prompt",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 67,
+  "lines_removed": 0,
+  "files_modified": 1,
+  "message_hours": [
+    17,
+    17,
+    17,
+    17,
+    17
+  ],
+  "user_message_timestamps": [
+    "2026-02-27T08:00:41.907Z",
+    "2026-02-27T08:00:41.906Z",
+    "2026-02-27T08:00:41.906Z",
+    "2026-02-27T08:00:59.227Z",
+    "2026-02-27T08:00:59.227Z"
+  ]
+}

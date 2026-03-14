@@ -1,0 +1,89 @@
+reload-dict 엔드포인트 명세
+
+  기본 정보
+
+  ┌─────────────┬───────────────────────────────────────────┐
+  │    항목     │                   내용                    │
+  ├─────────────┼───────────────────────────────────────────┤
+  │ URL         │ /_analysis-product-name/reload-dict       │
+  ├─────────────┼───────────────────────────────────────────┤
+  │ Method      │ GET, POST                                 │
+  ├─────────────┼───────────────────────────────────────────┤
+  │ Action Name │ cluster:admin/analysis/dict/reload        │
+  ├─────────────┼───────────────────────────────────────────┤
+  │ 기능        │ 클러스터 전체 노드의 사전을 병렬로 리로드 │
+  └─────────────┴───────────────────────────────────────────┘
+
+  요청 파라미터
+
+  ┌──────────┬────────┬──────┬────────────────────────────────────────┐
+  │ 파라미터 │  타입  │ 필수 │                  설명                  │
+  ├──────────┼────────┼──────┼────────────────────────────────────────┤
+  │ type     │ String │ 선택 │ 사전 타입 (SYNONYM, USER, COMPOUND 등) │
+  └──────────┴────────┴──────┴────────────────────────────────────────┘
+
+  호출 예시
+
+  # 전체 사전 리로드
+  POST /_analysis-product-name/reload-dict
+
+  # 특정 타입 사전만 리로드
+  POST /_analysis-product-name/reload-dict?type=SYNONYM
+
+  # GET도 동일하게 동작
+  GET /_analysis-product-name/reload-dict
+
+  응답 구조
+
+  {
+    "cluster_name": "my-cluster",
+    "nodes": [
+      {
+        "node_id": "node-1-id",
+        "node_name": "node-1",
+        "success": true,
+        "message": "Reload successful",
+        "reload_time_ms": 125,
+        "dictionary_size": 12
+      },
+      {
+        "node_id": "node-2-id",
+        "node_name": "node-2",
+        "success": true,
+        "message": "Reload successful",
+        "reload_time_ms": 98,
+        "dictionary_size": 12
+      }
+    ],
+    "all_successful": true
+  }
+
+  실패 시 failures 배열이 추가됩니다:
+
+  {
+    "cluster_name": "my-cluster",
+    "nodes": [...],
+    "failures": [
+      {
+        "node_id": "node-3-id",
+        "reason": "Dictionary not initialized"
+      }
+    ],
+    "all_successful": false
+  }
+
+  HTTP 응답 코드
+
+  ┌──────────────────┬────────────────────────────────────────┐
+  │       코드       │                  조건                  │
+  ├──────────────────┼────────────────────────────────────────┤
+  │ 200 OK           │ 모든 노드 성공 (all_successful: true)  │
+  ├──────────────────┼────────────────────────────────────────┤
+  │ 207 Multi-Status │ 일부 노드 실패 (all_successful: false) │
+  └──────────────────┴────────────────────────────────────────┘
+
+  ★ Insight ─────────────────────────────────────
+  - 이 API는 ES의 TransportNodesAction 패턴을 사용합니다. REST 요청이 코디네이터 노드에 도달하면, 내부 Transport 레이어를 통해 모든 데이터 노드에 병렬 전파됩니다. 각 노드에서 ProductNameDictionary.reloadDictionary()를 독립적으로 실행합니다.
+  - MANAGEMENT executor를 사용하는 이유는 사전 로딩이 I/O 바운드 작업이기 때문입니다. 검색/인덱싱용 스레드풀을 점유하지 않도록 분리한 설계입니다.
+  - type 파라미터는 ReloadDictNodeRequest로 전달되지만, 실제 nodeOperation()에서는 ProductNameDictionary.reloadDictionary()를 호출하여 전체 사전을 리로드합니다. 현재 구현에서는 type 값으로 특정 사전만 선택적 리로드하는 분기가 없습니다.
+  ─────────────────────────────────────────────────

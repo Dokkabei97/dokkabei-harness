@@ -1,0 +1,20 @@
+[
+  {
+    "content": "commonLabels를 labels로 변경",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "base/kustomization.yaml의 chartHome 필드 제거",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "올바른 Kustomize 구조로 최종 수정",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  }
+]

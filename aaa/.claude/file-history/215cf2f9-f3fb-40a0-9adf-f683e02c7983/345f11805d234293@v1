@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "legacy-sync.fullname" . }}-config
+  labels:
+    {{- include "legacy-sync.labels" . | nindent 4 }}
+data:
+  # ===== 서비스 특화 설정 (공통 ConfigMap에 없는 것들) =====
+  OTEL_SERVICE_NAME: {{ .Values.otelServiceName | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.endpoint | quote }}
+  OTEL_TRACES_EXPORTER: {{ .Values.otel.tracesExporter | quote }}
+  OTEL_METRICS_EXPORTER: {{ .Values.otel.metricsExporter | quote }}
+  OTEL_LOGS_EXPORTER: {{ .Values.otel.logsExporter | quote }}
+  OTEL_INSTRUMENTATION_MICROMETER_ENABLED: {{ .Values.otel.micrometerEnabled | quote }}
+  JAVA_TOOL_OPTIONS: >
+    -javaagent:{{ .Values.otel.agentPath }}
+    -Dotel.experimental.config.file={{ .Values.otel.otelConfig }}
+
+  # Spring Boot profile
+  SPRING_PROFILES_ACTIVE: {{ .Values.config.profile | quote }}
+
+  # Search index configuration
+  SEARCH_INDEX_ADMIN_CATALOG: {{ .Values.config.index.adminCatalog | quote }}
+  SEARCH_INDEX_ADMIN_PRODUCT: {{ .Values.config.index.adminProduct | quote }}
+
+  # ===== Kafka Legacy Sync Consumer - Product CDC =====
+  {{- with .Values.config.legacySyncConsumer.productCdc }}
+  KAFKA_LEGACY_SYNC_PRODUCT_SERVER: {{ .bootstrapServers | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_TOPIC: {{ .topic | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_GROUP_ID: {{ .groupId | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_CONCURRENCY: {{ .concurrency | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_AUTO_OFFSET_RESET: {{ .properties.autoOffsetReset | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_ENABLE_AUTO_COMMIT: {{ .properties.enableAutoCommit | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_MAX_POLL_RECORDS: {{ .properties.maxPollRecords | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MAX_WAIT_MS: {{ .properties.fetchMaxWaitMs | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_FETCH_MIN_SIZE: {{ .properties.fetchMinSize | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_SESSION_TIMEOUT_MS: {{ .properties.sessionTimeoutMs | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_SCHEMA_REGISTRY_URL: {{ .properties.schemaRegistryUrl | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_SPECIFIC_AVRO_READER: {{ .properties.specificAvroReader | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_HEARTBEAT_INTERVAL_MS: {{ .properties.heartbeatIntervalMs | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_SECURITY_PROTOCOL: {{ .properties.securityProtocol | quote }}
+  KAFKA_LEGACY_SYNC_PRODUCT_PROP_SASL_MECHANISM: {{ .properties.saslMechanism | quote }}
+  {{- end }}
+
+  # ===== Client 설정 =====
+  {{- with .Values.config.client }}
+  LEGACY_API_BASEURL: {{ .legacyApi.baseUrl | quote }}
+  LEGACY_API_TIMEOUT: {{ .legacyApi.timeout | quote }}
+  PROXY_API_BASEURL: {{ .proxyApi.baseUrl | quote }}
+  {{- end }}
+
+  # ===== Valkey 설정 =====
+  {{- with .Values.config.valkey.backend }}
+  VALKEY_BACKEND_HOSTS: {{ .hosts | quote }}
+  VALKEY_BACKEND_DATABASE: {{ .database | quote }}
+  {{- end }}
+
+  # ===== 인프라 공통 설정 =====
+  {{- with .Values.config.elasticsearch }}
+  ELASTICSEARCH_URLS: {{ .urls | quote }}
+  ELASTICSEARCH_CONNECTION_TIMEOUT: {{ .connectionTimeout | quote }}
+  ELASTICSEARCH_SOCKET_TIMEOUT: {{ .socketTimeout | quote }}
+  {{- end }}
+  {{- with .Values.config.keywordAnalysis }}
+  KEYWORD_ANALYSIS_URL: {{ .url | quote }}
+  KEYWORD_ANALYSIS_CONNECTION_TIMEOUT: {{ .connectionTimeout | quote }}
+  KEYWORD_ANALYSIS_SOCKET_TIMEOUT: {{ .socketTimeout | quote }}
+  {{- end }}

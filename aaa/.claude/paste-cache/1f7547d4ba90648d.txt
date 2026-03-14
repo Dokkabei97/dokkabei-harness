@@ -1,0 +1,507 @@
+오전 11:35:08: 실행 중 ':inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()'…
+
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:compileKotlin UP-TO-DATE
+> Task :shared:compileJava NO-SOURCE
+> Task :shared:processResources NO-SOURCE
+> Task :shared:classes UP-TO-DATE
+> Task :shared:jar UP-TO-DATE
+> Task :application:index:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:cdc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:cdc:generateAvroProtocol NO-SOURCE
+> Task :domain:cdc:generateAvroJava UP-TO-DATE
+> Task :domain:cdc:compileKotlin NO-SOURCE
+> Task :domain:cdc:compileJava UP-TO-DATE
+> Task :domain:cdc:processResources NO-SOURCE
+> Task :domain:cdc:classes UP-TO-DATE
+> Task :domain:cdc:jar UP-TO-DATE
+> Task :domain:index:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:proxy:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:proxy:compileKotlin UP-TO-DATE
+> Task :domain:proxy:compileJava NO-SOURCE
+> Task :domain:proxy:processResources NO-SOURCE
+> Task :domain:proxy:classes UP-TO-DATE
+> Task :domain:proxy:jar UP-TO-DATE
+> Task :domain:search:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:search:compileKotlin UP-TO-DATE
+> Task :domain:search:compileJava NO-SOURCE
+> Task :domain:search:processResources NO-SOURCE
+> Task :domain:search:classes UP-TO-DATE
+> Task :domain:search:jar UP-TO-DATE
+> Task :domain:index:compileKotlin UP-TO-DATE
+> Task :domain:index:compileJava NO-SOURCE
+> Task :domain:index:processResources NO-SOURCE
+> Task :domain:index:classes UP-TO-DATE
+> Task :domain:index:jar UP-TO-DATE
+> Task :application:index:compileKotlin UP-TO-DATE
+> Task :application:index:compileJava NO-SOURCE
+> Task :application:index:processResources NO-SOURCE
+> Task :application:index:classes UP-TO-DATE
+> Task :application:index:jar UP-TO-DATE
+> Task :inbound-adapter:legacy:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :inbound-adapter:legacy:compileKotlin UP-TO-DATE
+> Task :inbound-adapter:legacy:compileJava NO-SOURCE
+> Task :inbound-adapter:legacy:processResources NO-SOURCE
+> Task :inbound-adapter:legacy:classes UP-TO-DATE
+> Task :inbound-adapter:legacy:jar UP-TO-DATE
+> Task :inbound-adapter:legacy:compileTestKotlin UP-TO-DATE
+> Task :inbound-adapter:legacy:compileTestJava NO-SOURCE
+> Task :inbound-adapter:legacy:processTestResources NO-SOURCE
+> Task :inbound-adapter:legacy:testClasses UP-TO-DATE
+
+> Task :inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()
+11:35:09.533 [main] INFO org.apache.kafka.clients.producer.ProducerConfig -- ProducerConfig values: 
+    acks = -1
+    auto.include.jmx.reporter = true
+    batch.size = 16384
+    bootstrap.servers = [localhost:9092]
+    buffer.memory = 33554432
+    client.dns.lookup = use_all_dns_ips
+    client.id = producer-1
+    compression.gzip.level = -1
+    compression.lz4.level = 9
+    compression.type = none
+    compression.zstd.level = 3
+    connections.max.idle.ms = 540000
+    delivery.timeout.ms = 120000
+    enable.idempotence = true
+    enable.metrics.push = true
+    interceptor.classes = []
+    key.serializer = class io.confluent.kafka.serializers.KafkaAvroSerializer
+    linger.ms = 0
+    max.block.ms = 60000
+    max.in.flight.requests.per.connection = 5
+    max.request.size = 1048576
+    metadata.max.age.ms = 300000
+    metadata.max.idle.ms = 300000
+    metadata.recovery.strategy = none
+    metric.reporters = []
+    metrics.num.samples = 2
+    metrics.recording.level = INFO
+    metrics.sample.window.ms = 30000
+    partitioner.adaptive.partitioning.enable = true
+    partitioner.availability.timeout.ms = 0
+    partitioner.class = null
+    partitioner.ignore.keys = false
+    receive.buffer.bytes = 32768
+    reconnect.backoff.max.ms = 1000
+    reconnect.backoff.ms = 50
+    request.timeout.ms = 30000
+    retries = 2147483647
+    retry.backoff.max.ms = 1000
+    retry.backoff.ms = 100
+    sasl.client.callback.handler.class = null
+    sasl.jaas.config = null
+    sasl.kerberos.kinit.cmd = /usr/bin/kinit
+    sasl.kerberos.min.time.before.relogin = 60000
+    sasl.kerberos.service.name = null
+    sasl.kerberos.ticket.renew.jitter = 0.05
+    sasl.kerberos.ticket.renew.window.factor = 0.8
+    sasl.login.callback.handler.class = null
+    sasl.login.class = null
+    sasl.login.connect.timeout.ms = null
+    sasl.login.read.timeout.ms = null
+    sasl.login.refresh.buffer.seconds = 300
+    sasl.login.refresh.min.period.seconds = 60
+    sasl.login.refresh.window.factor = 0.8
+    sasl.login.refresh.window.jitter = 0.05
+    sasl.login.retry.backoff.max.ms = 10000
+    sasl.login.retry.backoff.ms = 100
+    sasl.mechanism = GSSAPI
+    sasl.oauthbearer.clock.skew.seconds = 30
+    sasl.oauthbearer.expected.audience = null
+    sasl.oauthbearer.expected.issuer = null
+    sasl.oauthbearer.header.urlencode = false
+    sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+    sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+    sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+    sasl.oauthbearer.jwks.endpoint.url = null
+    sasl.oauthbearer.scope.claim.name = scope
+    sasl.oauthbearer.sub.claim.name = sub
+    sasl.oauthbearer.token.endpoint.url = null
+    security.protocol = PLAINTEXT
+    security.providers = null
+    send.buffer.bytes = 131072
+    socket.connection.setup.timeout.max.ms = 30000
+    socket.connection.setup.timeout.ms = 10000
+    ssl.cipher.suites = null
+    ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    ssl.endpoint.identification.algorithm = https
+    ssl.engine.factory.class = null
+    ssl.key.password = null
+    ssl.keymanager.algorithm = SunX509
+    ssl.keystore.certificate.chain = null
+    ssl.keystore.key = null
+    ssl.keystore.location = null
+    ssl.keystore.password = null
+    ssl.keystore.type = JKS
+    ssl.protocol = TLSv1.3
+    ssl.provider = null
+    ssl.secure.random.implementation = null
+    ssl.trustmanager.algorithm = PKIX
+    ssl.truststore.certificates = null
+    ssl.truststore.location = null
+    ssl.truststore.password = null
+    ssl.truststore.type = JKS
+    transaction.timeout.ms = 60000
+    transactional.id = null
+    value.serializer = class io.confluent.kafka.serializers.KafkaAvroSerializer
+
+11:35:09.566 [main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector -- initializing Kafka metrics collector
+11:35:09.659 [main] INFO io.confluent.kafka.serializers.KafkaAvroSerializerConfig -- KafkaAvroSerializerConfig values: 
+    auto.register.schemas = true
+    avro.reflection.allow.null = false
+    avro.remove.java.properties = false
+    avro.use.logical.type.converters = false
+    basic.auth.credentials.source = URL
+    basic.auth.user.info = [hidden]
+    bearer.auth.cache.expiry.buffer.seconds = 300
+    bearer.auth.client.id = null
+    bearer.auth.client.secret = null
+    bearer.auth.credentials.source = STATIC_TOKEN
+    bearer.auth.custom.provider.class = null
+    bearer.auth.identity.pool.id = null
+    bearer.auth.issuer.endpoint.url = null
+    bearer.auth.logical.cluster = null
+    bearer.auth.scope = null
+    bearer.auth.scope.claim.name = scope
+    bearer.auth.sub.claim.name = sub
+    bearer.auth.token = [hidden]
+    context.name.strategy = class io.confluent.kafka.serializers.context.NullContextNameStrategy
+    http.connect.timeout.ms = 60000
+    http.read.timeout.ms = 60000
+    id.compatibility.strict = true
+    key.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    key.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    key.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+    latest.cache.size = 1000
+    latest.cache.ttl.sec = -1
+    latest.compatibility.strict = true
+    max.retries = 3
+    max.schemas.per.subject = 1000
+    normalize.schemas = false
+    propagate.schema.tags = false
+    proxy.host = 
+    proxy.port = -1
+    retries.max.wait.ms = 20000
+    retries.wait.ms = 1000
+    rule.actions = []
+    rule.executors = []
+    rule.service.loader.enable = true
+    schema.format = null
+    schema.reflection = false
+    schema.registry.basic.auth.user.info = [hidden]
+    schema.registry.ssl.cipher.suites = null
+    schema.registry.ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    schema.registry.ssl.endpoint.identification.algorithm = https
+    schema.registry.ssl.engine.factory.class = null
+    schema.registry.ssl.key.password = null
+    schema.registry.ssl.keymanager.algorithm = SunX509
+    schema.registry.ssl.keystore.certificate.chain = null
+    schema.registry.ssl.keystore.key = null
+    schema.registry.ssl.keystore.location = null
+    schema.registry.ssl.keystore.password = null
+    schema.registry.ssl.keystore.type = JKS
+    schema.registry.ssl.protocol = TLSv1.3
+    schema.registry.ssl.provider = null
+    schema.registry.ssl.secure.random.implementation = null
+    schema.registry.ssl.trustmanager.algorithm = PKIX
+    schema.registry.ssl.truststore.certificates = null
+    schema.registry.ssl.truststore.location = null
+    schema.registry.ssl.truststore.password = null
+    schema.registry.ssl.truststore.type = JKS
+    schema.registry.url = [http://localhost:8081]
+    schema.registry.url.randomize = false
+    use.latest.version = false
+    use.latest.with.metadata = null
+    use.schema.id = -1
+    value.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    value.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    value.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+
+11:35:09.799 [main] INFO io.confluent.kafka.serializers.KafkaAvroSerializerConfig -- KafkaAvroSerializerConfig values: 
+    auto.register.schemas = true
+    avro.reflection.allow.null = false
+    avro.remove.java.properties = false
+    avro.use.logical.type.converters = false
+    basic.auth.credentials.source = URL
+    basic.auth.user.info = [hidden]
+    bearer.auth.cache.expiry.buffer.seconds = 300
+    bearer.auth.client.id = null
+    bearer.auth.client.secret = null
+    bearer.auth.credentials.source = STATIC_TOKEN
+    bearer.auth.custom.provider.class = null
+    bearer.auth.identity.pool.id = null
+    bearer.auth.issuer.endpoint.url = null
+    bearer.auth.logical.cluster = null
+    bearer.auth.scope = null
+    bearer.auth.scope.claim.name = scope
+    bearer.auth.sub.claim.name = sub
+    bearer.auth.token = [hidden]
+    context.name.strategy = class io.confluent.kafka.serializers.context.NullContextNameStrategy
+    http.connect.timeout.ms = 60000
+    http.read.timeout.ms = 60000
+    id.compatibility.strict = true
+    key.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    key.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    key.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+    latest.cache.size = 1000
+    latest.cache.ttl.sec = -1
+    latest.compatibility.strict = true
+    max.retries = 3
+    max.schemas.per.subject = 1000
+    normalize.schemas = false
+    propagate.schema.tags = false
+    proxy.host = 
+    proxy.port = -1
+    retries.max.wait.ms = 20000
+    retries.wait.ms = 1000
+    rule.actions = []
+    rule.executors = []
+    rule.service.loader.enable = true
+    schema.format = null
+    schema.reflection = false
+    schema.registry.basic.auth.user.info = [hidden]
+    schema.registry.ssl.cipher.suites = null
+    schema.registry.ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+    schema.registry.ssl.endpoint.identification.algorithm = https
+    schema.registry.ssl.engine.factory.class = null
+    schema.registry.ssl.key.password = null
+    schema.registry.ssl.keymanager.algorithm = SunX509
+    schema.registry.ssl.keystore.certificate.chain = null
+    schema.registry.ssl.keystore.key = null
+    schema.registry.ssl.keystore.location = null
+    schema.registry.ssl.keystore.password = null
+    schema.registry.ssl.keystore.type = JKS
+    schema.registry.ssl.protocol = TLSv1.3
+    schema.registry.ssl.provider = null
+    schema.registry.ssl.secure.random.implementation = null
+    schema.registry.ssl.trustmanager.algorithm = PKIX
+    schema.registry.ssl.truststore.certificates = null
+    schema.registry.ssl.truststore.location = null
+    schema.registry.ssl.truststore.password = null
+    schema.registry.ssl.truststore.type = JKS
+    schema.registry.url = [http://localhost:8081]
+    schema.registry.url.randomize = false
+    use.latest.version = false
+    use.latest.with.metadata = null
+    use.schema.id = -1
+    value.schema.id.deserializer = class io.confluent.kafka.serializers.schema.id.DualSchemaIdDeserializer
+    value.schema.id.serializer = class io.confluent.kafka.serializers.schema.id.PrefixSchemaIdSerializer
+    value.subject.name.strategy = class io.confluent.kafka.serializers.subject.TopicNameStrategy
+
+11:35:09.805 [main] INFO org.apache.kafka.clients.producer.KafkaProducer -- [Producer clientId=producer-1] Instantiated an idempotent producer.
+11:35:09.828 [main] INFO org.apache.kafka.clients.producer.ProducerConfig -- These configurations '[schema.registry.url, auto.register.schemas]' were supplied but are not used yet.
+11:35:09.830 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka version: 3.9.1
+11:35:09.830 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka commitId: f745dfdcee2b9851
+11:35:09.830 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- Kafka startTimeMs: 1772159709829
+=== 정상 케이스 100건 발행 시작 ===
+11:35:09.979 [kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata -- [Producer clientId=producer-1] Cluster ID: jdiJVuaASAu7wM1hExRbxg
+11:35:09.980 [kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.producer.internals.TransactionManager -- [Producer clientId=producer-1] ProducerId set to 4 with epoch 0
+11:35:10.022 [main] ERROR io.confluent.kafka.schemaregistry.client.rest.RestService -- Failed to send HTTP request to endpoint: http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false
+java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+    at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+    at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+    at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+    at java.base/java.net.Socket.connect(Socket.java:751)
+    at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+    at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:280)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1319)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1252)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1138)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1067)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1461)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1432)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.sendHttpRequest(RestService.java:445)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.lambda$httpRequest$0(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RetryExecutor.retry(RetryExecutor.java:53)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.httpRequest(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:885)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:869)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:861)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerAndGetId(CachedSchemaRegistryClient.java:396)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:539)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:513)
+    at io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe.registerWithResponse(AbstractKafkaSchemaSerDe.java:550)
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:124)
+    at io.confluent.kafka.serializers.KafkaAvroSerializer.serialize(KafkaAvroSerializer.java:68)
+    at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1038)
+    at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:993)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt:39)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt)
+11:35:10.285 [main] ERROR io.confluent.kafka.schemaregistry.client.rest.RestService -- Failed to send HTTP request to endpoint: http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false
+java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+    at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+    at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+    at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+    at java.base/java.net.Socket.connect(Socket.java:751)
+    at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+    at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:280)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1319)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1252)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1138)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1067)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1461)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1432)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.sendHttpRequest(RestService.java:445)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.lambda$httpRequest$0(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RetryExecutor.retry(RetryExecutor.java:53)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.httpRequest(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:885)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:869)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:861)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerAndGetId(CachedSchemaRegistryClient.java:396)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:539)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:513)
+    at io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe.registerWithResponse(AbstractKafkaSchemaSerDe.java:550)
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:124)
+    at io.confluent.kafka.serializers.KafkaAvroSerializer.serialize(KafkaAvroSerializer.java:68)
+    at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1038)
+    at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:993)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt:39)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt)
+11:35:11.753 [main] ERROR io.confluent.kafka.schemaregistry.client.rest.RestService -- Failed to send HTTP request to endpoint: http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false
+java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+    at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+    at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+    at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+    at java.base/java.net.Socket.connect(Socket.java:751)
+    at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+    at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:280)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1319)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1252)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1138)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1067)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1461)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1432)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.sendHttpRequest(RestService.java:445)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.lambda$httpRequest$0(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RetryExecutor.retry(RetryExecutor.java:53)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.httpRequest(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:885)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:869)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:861)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerAndGetId(CachedSchemaRegistryClient.java:396)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:539)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:513)
+    at io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe.registerWithResponse(AbstractKafkaSchemaSerDe.java:550)
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:124)
+    at io.confluent.kafka.serializers.KafkaAvroSerializer.serialize(KafkaAvroSerializer.java:68)
+    at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1038)
+    at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:993)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt:39)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt)
+11:35:14.244 [main] ERROR io.confluent.kafka.schemaregistry.client.rest.RestService -- Failed to send HTTP request to endpoint: http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false
+java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+    at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+    at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+    at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+    at java.base/java.net.Socket.connect(Socket.java:751)
+    at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+    at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:280)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1319)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1252)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1138)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1067)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1461)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1432)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.sendHttpRequest(RestService.java:445)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.lambda$httpRequest$0(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RetryExecutor.retry(RetryExecutor.java:53)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.httpRequest(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:885)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:869)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:861)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerAndGetId(CachedSchemaRegistryClient.java:396)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:539)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:513)
+    at io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe.registerWithResponse(AbstractKafkaSchemaSerDe.java:550)
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:124)
+    at io.confluent.kafka.serializers.KafkaAvroSerializer.serialize(KafkaAvroSerializer.java:68)
+    at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1038)
+    at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:993)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt:39)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt)
+11:35:14.246 [main] WARN io.confluent.kafka.schemaregistry.client.rest.RestService -- Request to URL http://localhost:8081/subjects/cmn.pricecompare-be-team.cdc.mongo.shopping.products.v1-key/versions?normalize=false failed with error: java.net.ConnectException: Connection refused. Failing over to next URL if available...
+11:35:14.247 [main] INFO org.apache.kafka.clients.producer.KafkaProducer -- [Producer clientId=producer-1] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+11:35:14.264 [main] INFO org.apache.kafka.common.metrics.Metrics -- Metrics scheduler closed
+11:35:14.264 [main] INFO org.apache.kafka.common.metrics.Metrics -- Closing reporter org.apache.kafka.common.metrics.JmxReporter
+11:35:14.264 [main] INFO org.apache.kafka.common.metrics.Metrics -- Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+11:35:14.264 [main] INFO org.apache.kafka.common.metrics.Metrics -- Metrics reporters closed
+11:35:14.265 [main] INFO org.apache.kafka.common.utils.AppInfoParser -- App info kafka.producer for producer-1 unregistered
+
+> Task :inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main() FAILED
+Exception in thread "main" org.apache.kafka.common.errors.SerializationException: Error serializing Avro message
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:201)
+    at io.confluent.kafka.serializers.KafkaAvroSerializer.serialize(KafkaAvroSerializer.java:68)
+    at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1038)
+    at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:993)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt:39)
+    at com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main(LegacyReserveSyncTestProducer.kt)
+Caused by: java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+    at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+    at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+    at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+    at java.base/java.net.Socket.connect(Socket.java:751)
+    at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531)
+    at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:636)
+    at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:280)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:386)
+    at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:408)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1319)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1252)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1138)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1067)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1461)
+    at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1432)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.sendHttpRequest(RestService.java:445)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.lambda$httpRequest$0(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RetryExecutor.retry(RetryExecutor.java:53)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.httpRequest(RestService.java:652)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:885)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:869)
+    at io.confluent.kafka.schemaregistry.client.rest.RestService.registerSchema(RestService.java:861)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerAndGetId(CachedSchemaRegistryClient.java:396)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:539)
+    at io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient.registerWithResponse(CachedSchemaRegistryClient.java:513)
+    at io.confluent.kafka.serializers.AbstractKafkaSchemaSerDe.registerWithResponse(AbstractKafkaSchemaSerDe.java:550)
+    at io.confluent.kafka.serializers.AbstractKafkaAvroSerializer.serializeImpl(AbstractKafkaAvroSerializer.java:124)
+    ... 5 more
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()'.
+> Process 'command '/Users/admin/Library/Java/JavaVirtualMachines/corretto-21.0.5/Contents/Home/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 6s
+17 actionable tasks: 1 executed, 16 up-to-date
+오전 11:35:14: 실행이 완료되었습니다 ':inbound-adapter:legacy:com.cowave.search.inbound_adapter.legacy.producer.LegacyReserveSyncTestProducerKt.main()'.

@@ -1,0 +1,413 @@
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/Dictionary.java-11-
+src/main/java/com/danawa/search/analysis/dict/Dictionary.java:12:	public abstract void setPreDictionary(Map<CharSequence, P> map);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/Dictionary.java-13-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/Dictionary.java-19-
+src/main/java/com/danawa/search/analysis/dict/Dictionary.java:20:	public abstract void appendAdditionalNounEntry(Set<CharSequence> set, String tokenType);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/Dictionary.java-21-}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-25-	private static final Pattern ptn = Pattern.compile("^[\\x00-\\x7F]*$");
+src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java:26:	private Set<CharSequence> wordSet;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-27-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-46-
+src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java:47:	public Set<CharSequence> getWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-48-		return wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-50-
+src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java:51:	public void setWordSet(Set<CharSequence> wordSet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-52-		this.wordSet = wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-54-
+src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java:55:	public Set<CharSequence> getUnmodifiableWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SpaceDictionary.java-56-		return Collections.unmodifiableSet(wordSet);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-28-	private static final Logger logger = LogManager.getLogger(CustomDictionary.class);
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:29:	private Set<CharSequence> wordSet;
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:30:	private Map<CharSequence, Object[]> map;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-31-	
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-45-		if (!file.exists()) {
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:46:			map = new HashMap<CharSequence, Object[]>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-47-			logger.error("사전파일이 존재하지 않습니다. file={}", file.getAbsolutePath());
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-69-	
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:70:	public Set<CharSequence> getWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-71-		return wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-73-	
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:74:	public Map<CharSequence, Object[]> getUnmodifiableMap() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-75-		return Collections.unmodifiableMap(map);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-77-
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:78:	public Map<CharSequence, Object[]> map() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-79-		return map;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-81-
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:82:	public void setMap(Map<CharSequence, Object[]> map) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-83-		this.map = map;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-102-			// write values
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:103:			Object[] values = map.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-104-			output.writeVInt(values.length);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-137-		DataInput input = new InputStreamDataInput(in);
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:138:		map = new HashMap<CharSequence, Object[]>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-139-		int size = input.readVInt();
+--
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-176-			/ FIXME:ElasticSearch 셋팅에 맞도록 재설계 필요
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:177:			// ColumnSetting columnSetting = columnSettingList.get(i);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-178-			// String separator = columnSetting.getSeparator();
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-219-	
+src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java:220:	public void setWordSet(Set<CharSequence> wordSet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CustomDictionary.java-221-		this.wordSet = wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-23-
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:24:	private Set<CharSequence> set;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-25-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-34-
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:35:	public SetDictionary(HashSet<CharSequence> set, boolean ignoreCase, String label, int seq, String tokenType, ProductNameDictionary.Type type) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-36-		super(ignoreCase, label, seq, tokenType, type);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-75-
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:76:	public Set<CharSequence> getUnmodifiableSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-77-		return Collections.unmodifiableSet(set);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-79-	
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:80:	public Set<CharSequence> set() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-81-		return set;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-83-	
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:84:	public void setSet(Set<CharSequence> set) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-85-		this.set = set;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-88-	public boolean contains(CharSequence key) {
+src/main/java/com/danawa/search/analysis/dict/SetDictionary.java:89:		return set.contains(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SetDictionary.java-90-	}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-23-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:24:	private Set<CharSequence> mainWordSet;
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:25:	private Set<CharSequence> wordSet;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-26-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-60-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:61:	public Set<CharSequence> getWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-62-		return wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-64-	
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:65:	public void setWordSet(Set<CharSequence> wordSet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-66-		this.wordSet = wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-68-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:69:	public Set<CharSequence> getMainWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-70-		return mainWordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-72-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:73:	public void setMainWordSet(Set<CharSequence> mainWordSet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-74-		this.mainWordSet = mainWordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-76-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:77:	public Set<CharSequence> getUnmodifiableWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-78-		return Collections.unmodifiableSet(wordSet);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-80-
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:81:	public Set<CharSequence> getUnmodifiableMainWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-82-		return Collections.unmodifiableSet(mainWordSet);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-108-		for (int j = 0; j < value.length; j++) {
+src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java:109:			CharSequence word = list.get(j);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CompoundDictionary.java-110-			value[j] = word;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-28-	private boolean ignoreCase;
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:29:	private Map<CharSequence, List<TagProb>> probMap;
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:30:	private Map<CharSequence, PreResult<CharSequence>> preMap;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-31-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-33-		this.ignoreCase = ignoreCase;
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:34:		probMap = new HashMap<CharSequence, List<TagProb>>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-35-	}
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-36-
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:37:	public TagProbDictionary(Map<CharSequence, List<TagProb>> probMap, boolean ignoreCase) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-38-		this.ignoreCase = ignoreCase;
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:39:		this.probMap = new HashMap<CharSequence, List<TagProb>>(probMap);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-40-	}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-44-		if (!file.exists()) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:45:			probMap = new HashMap<CharSequence, List<TagProb>>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-46-			logger.error("사전파일이 존재하지 않습니다. file={}", file.getAbsolutePath());
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-68-	}
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:69:	public void setPreMap(Map<CharSequence, PreResult<CharSequence>> preMap) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-70-		this.preMap = preMap;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-72-
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:73:	public void appendNounEntry(Set<CharSequence> entrySet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-74-		appendPosTagEntry(entrySet, PosTag.N, TagProb.MAX_PROB);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-77-	@Override
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:78:	public void appendAdditionalNounEntry(Set<CharSequence> entrySet, String tokenType) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-79-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-91-
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:92:	public void appendPosTagEntry(Set<CharSequence> entrySet, PosTag posTag, double prob) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-93-		if(entrySet == null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-109-	public static void addSourceEntry(
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:110:		Map<CharSequence, List<TagProb>> probMap,
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-111-		String line, boolean ignoreCase) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-152-		}
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:153:		List<TagProb> tagProbList = probMap.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-154-		TagProb tagProb = new TagProb(posTag, prob);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-159-		} else {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:160:			if (tagProbList.contains(tagProb)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-161-				for (int i = 0; i < tagProbList.size(); i++) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:162:					TagProb tagProb2 = tagProbList.get(i);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-163-					if (tagProb2.posTag() == tagProb.posTag()) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-177-	private void putAndReplaceProbMap(CharSequence key, TagProb tagProb) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:178:		List<TagProb> tagProbList = probMap.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-179-		if (tagProbList == null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-185-			for (int i = 0; i < tagProbList.size(); i++) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:186:				TagProb oldTagProb = tagProbList.get(i);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-187-				if (oldTagProb.equals(tagProb)) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-203-	// 최종사용시 수정불가 맵으로 변환하여 넘겨준다.
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:204:	public Map<CharSequence, List<TagProb>> getUnmodifiableDictionary() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-205-		return Collections.unmodifiableMap(probMap);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-216-			input = new InputStreamDataInput(in);
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:217:			probMap = new HashMap<CharSequence, List<TagProb>>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-218-			
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-271-	public List<TagProb> find(CharSequence token) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:272:		return probMap.get(token);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-273-	}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-277-		if (preMap != null) {
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:278:			return preMap.get(token);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-279-		}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-288-	@Override
+src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java:289:	public void setPreDictionary(Map<CharSequence, PreResult<CharSequence>> map) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/TagProbDictionary.java-290-		this.preMap = map;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-39-
+src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java:40:	public void setPreDictionary(Map<CharSequence, P> map) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-41-		systemDictionary.setPreDictionary(map);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-58-			@SuppressWarnings("unchecked")
+src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java:59:			D ret = (D) dictionaryMap.get(dictionaryId);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-60-			return ret;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-74-
+src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java:75:	public void appendAdditionalNounEntry(Set<CharSequence> keySet, String tokenType) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/CommonDictionary.java-76-		systemDictionary.appendAdditionalNounEntry(keySet, tokenType);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-24-
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:25:	private Set<CharSequence> wordSet;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-26-	
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-51-
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:52:	public Set<CharSequence> getWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-53-		return wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-55-	
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:56:	public void setWordSet(Set<CharSequence> wordSet) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-57-		this.wordSet = wordSet;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-59-	
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:60:	public Set<CharSequence> getUnmodifiableWordSet() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-61-		return Collections.unmodifiableSet(wordSet);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-111-			for (int j = 0; j < list.size(); j++) {
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:112:				CharVector key = CharVector.valueOf(list.get(j));
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-113-				CharSequence[] value = new CharSequence[list.size() - 1];
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-115-				for (int k = 0; k < list.size(); k++) {
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:116:					CharSequence val = list.get(k);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-117-					if (!key.equals(val)) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-128-				if (value.length > 0) {
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:129:					CharSequence[] value2 = map.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-130-					if (value2 != null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-138-						key = new CharVector(String.valueOf(key), ignoreCase).removeWhitespaces();
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:139:						value2 = map.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-140-						if (value2 != null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-154-			for (int j = 0; j < value.length; j++) {
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:155:				CharSequence word = list.get(j);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-156-				if (!mainWord.equals(word)) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-164-			if (value.length > 0) {
+src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java:165:				CharSequence[] value2 = map.get(mainWord);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/SynonymDictionary.java-166-				if (value2 != null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-27-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:28:	protected Map<CharSequence, CharSequence[]> map;
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-29-
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-38-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:39:	public MapDictionary(Map<CharSequence, CharSequence[]> map, boolean ignoreCase, String label, int seq, String tokenType, ProductNameDictionary.Type type) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-40-		super(ignoreCase, label, seq, tokenType, type);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-83-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:84:	public Map<CharSequence, CharSequence[]> getUnmodifiableMap() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-85-		return Collections.unmodifiableMap(map);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-87-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:88:	public Map<CharSequence, CharSequence[]> map() {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-89-		return map;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-91-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:92:	public void setMap(Map<CharSequence, CharSequence[]> map) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-93-		this.map = map;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-95-
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:96:	public boolean containsKey(CharSequence key) {
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:97:		return map.containsKey(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-98-	}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-100-	public CharSequence[] get(CharSequence key) {
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:101:		return map.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-102-	}
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-119-			// write values
+src/main/java/com/danawa/search/analysis/dict/MapDictionary.java:120:			CharSequence[] values = map.get(key);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/MapDictionary.java-121-			output.writeVInt(values.length);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-252-					commonDictionary.appendAdditionalNounEntry(spaceDictionary.getWordSet(), tokenType);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:253:					Map<CharSequence, PreResult<CharSequence>> map = new HashMap<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-254-					for (Entry<CharSequence, CharSequence[]> e : spaceDictionary.map().entrySet()) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-373-			// 필터가 존재하면서 dictionaryId가 없다면 스킵!
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:374:			if (filters.size() > 0 && !filters.contains(dictionaryId)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-375-				continue;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-381-			Map<String, Object> compileDictMap = compileDictionaryOne(repo, dictList, dictionaryId);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:382:			SourceDictionary<?> sourceDictionary = (SourceDictionary) compileDictMap.get("dict");
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-383-			if (sourceDictionary != null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-526-
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:527:	public static List<CharSequence> getTwowaySynonymWord(CharSequence mainWord, Map<CharSequence, CharSequence[]> synonymMap) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-528-		CharSequence word = null;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:529:		Map<CharSequence, List<CharSequence>> map = new HashMap<>();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-530-		List<CharSequence> keys = new ArrayList<>();
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-535-		keys.addAll(map.keySet());
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:536:		values.addAll(Arrays.asList(synonymMap.get(mainWord)));
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-537-
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-538-		for (int kinx = 0; kinx < keys.size(); kinx++) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:539:			word = keys.get(kinx);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:540:			synonyms = synonymMap.get(word);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-541-			logger.trace("SYN {} : {}", word, synonyms);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-544-				CharSequence synonym = synonyms[sinx];
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:545:				if (keys.contains(synonym)) { continue; }
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:546:				subSynonyms = synonymMap.get(synonym);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-547-				if (subSynonyms != null && synonyms.length > 0) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-564-			keys.clear();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:565:			keys.addAll(new TreeSet<CharSequence>(map.keySet()));
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-566-			return keys;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-570-
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:571:	public static void normalizeSynonymMap(Map<CharSequence, List<CharSequence>> map) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-572-		CharSequence word = null;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-577-		for (int inx = 0; inx < keys.size(); inx++) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:578:			word = keys.get(inx);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:579:			values = map.get(word);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-580-			for (int vinx = 0; vinx < values.size(); vinx++) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:581:				CharSequence value = values.get(vinx);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:582:				if (!keys.contains(value)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-583-					values.remove(vinx);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-591-		for (int sinx = 0; sinx < keys.size(); sinx++) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:592:			word = keys.get(sinx);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-593-			for (int tinx = 0; tinx < keys.size(); tinx++) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-594-				if (sinx == tinx) { continue; }
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:595:				values = map.get(keys.get(tinx));
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:596:				if (!values.contains(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-597-					delete.add(word);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-607-
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:608:	public static boolean isOneWaySynonym(CharSequence word, Map<CharSequence, CharSequence[]> map) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:609:		if (map.containsKey(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-610-			List<CharSequence> twoway = getTwowaySynonymWord(word, map);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-611-			logger.trace("TWO-WAY {} = {}", word, twoway);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:612:			for (CharSequence value : map.get(word)) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:613:				if (twoway != null && twoway.contains(value)) { continue; }
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-614-				// 단방향이 하나라도 있으면 단방향 동의어
+--
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-626-		for (String key : keySet) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:627:			SourceDictionary<?> sourceDictionary = dictionaryMap.get(key);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-628-			logger.debug("KEY:{} / {}", key, sourceDictionary);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-630-				SetDictionary dictionary = (SetDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:631:				Set<CharSequence> words = dictionary.set();
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-632-				repo.restore(key, dictionary.ignoreCase(), words);
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-634-				MapDictionary dictionary = (MapDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:635:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:636:				Map<CharSequence, CharSequence[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-637-				for (CharSequence word : map.keySet()) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-638-					StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:639:					for (CharSequence value : map.get(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-640-						if (sb.length() > 0) { sb.append(","); }
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-647-				SynonymDictionary dictionary = (SynonymDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:648:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:649:				Map<CharSequence, CharSequence[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-650-				for (CharSequence word : map.keySet()) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-654-						StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:655:						for (CharSequence value : map.get(word)) {
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:656:							if (twoway != null && twoway.contains(value)) { continue; }
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-657-							if (sb.length() > 0) { sb.append(","); }
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-678-				SpaceDictionary dictionary = (SpaceDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:679:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:680:				Map<CharSequence, CharSequence[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-681-				for (CharSequence word : map.keySet()) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-682-					StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:683:					for (CharSequence value : map.get(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-684-						if (sb.length() > 0) { sb.append(" "); }
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-691-				CustomDictionary dictionary = (CustomDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:692:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:693:				Map<CharSequence, Object[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-694-				for (CharSequence word : map.keySet()) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-695-					StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:696:					for (Object value : map.get(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-697-						if (value != null) {
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-706-				InvertMapDictionary dictionary = (InvertMapDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:707:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:708:				Map<CharSequence, CharSequence[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-709-				for (CharSequence word : map.keySet()) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-710-					StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:711:					for (CharSequence value : map.get(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-712-						if (sb.length() > 0) { sb.append(","); }
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-719-				CompoundDictionary dictionary = (CompoundDictionary) sourceDictionary;
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:720:				Set<CharSequence> words = new HashSet<>();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:721:				Map<CharSequence, CharSequence[]> map = dictionary.map();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-722-				for (CharSequence word : map.keySet()) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-723-					StringBuilder sb = new StringBuilder();
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:724:					for (CharSequence value : map.get(word)) {
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-725-						if (sb.length() > 0) { sb.append(","); }
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-743-
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:744:		tagProbDictionary.setLabel(prop.has("label") ? prop.get("label").toString() : "");
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:745:		tagProbDictionary.setSeq(prop.has("seq") ? Integer.parseInt(prop.get("seq").toString()) : 0 );
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-746-		return tagProbDictionary;
+--
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-750-		public abstract Iterator<CharSequence[]> getSource(String type);
+src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java:751:		public abstract void restore(String type, boolean ignoreCase, Set<CharSequence> wordSet);
+/Users/admin/project/analysis-danuri/src/main/java/com/danawa/search/analysis/dict/ProductNameDictionary.java-752-		public abstract void close();

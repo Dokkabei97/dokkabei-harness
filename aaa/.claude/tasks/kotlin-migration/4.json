@@ -1,0 +1,16 @@
+{
+  "id": "4",
+  "subject": "Phase 2: Foundation Layer 마이그레이션 (io/util/tokenattributes - 16 files)",
+  "description": "com.danawa.io (6 files):\nBytesBuffer → CachedCharArray → DataInput → DataOutput → InputStreamDataInput → OutputStreamDataOutput\n\ncom.danawa.util (4 files):\nCharVector → ContextStore → ResourceResolver → SystemDictionaryCompiler\n\norg.apache.lucene.analysis.tokenattributes (6 files):\nInterface + Impl 패턴 유지, *Impl 클래스명 보존\n\n주의사항:\n- readByte() & 0xFF → readByte().toInt() and 0xFF\n- i >>>= 7 → i = i ushr 7\n- CharVector: data class 금지, mutable class 유지, clone() → shallow copy",
+  "activeForm": "Foundation Layer 마이그레이션 중",
+  "status": "pending",
+  "blocks": [
+    "5",
+    "6"
+  ],
+  "blockedBy": [
+    "1",
+    "2",
+    "3"
+  ]
+}

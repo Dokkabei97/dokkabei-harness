@@ -1,0 +1,73 @@
+2026-03-13T04:10:18.685075Z 00O Running with gitlab-runner 18.8.0 (9ffb4aa0)
+2026-03-13T04:10:18.685095Z 00O   on gitlab-runner-5fb6b646df-t7fps VxYDx9Zi6, system ID: r_6ylrxPI5ZHcA
+2026-03-13T04:10:18.685104Z 00O   feature flags: FF_USE_ADVANCED_POD_SPEC_CONFIGURATION:true, FF_PRINT_POD_EVENTS:true
+2026-03-13T04:10:18.685137Z 00O section_start:1773375018:prepare_executor
+2026-03-13T04:10:18.685138Z 00O+Preparing the "kubernetes" executor
+2026-03-13T04:10:18.685306Z 00O Using Kubernetes namespace: devops
+2026-03-13T04:10:18.685911Z 00O Using Kubernetes executor with image docker:27.1.1-dind-alpine3.20 ...
+2026-03-13T04:10:18.685917Z 00O Using attach strategy to execute scripts...
+2026-03-13T04:10:18.685929Z 00O Using effective pull policy of [] for container build
+2026-03-13T04:10:18.685933Z 00O Using effective pull policy of [] for container helper
+2026-03-13T04:10:18.685937Z 00O Using effective pull policy of [] for container init-permissions
+2026-03-13T04:10:18.685940Z 00O Using effective pull policy of [] for container docker
+2026-03-13T04:10:18.685944Z 00O Using effective pull policy of [] for container svc-0
+2026-03-13T04:10:18.790257Z 00O section_end:1773375018:prepare_executor
+2026-03-13T04:10:18.790269Z 00O+section_start:1773375018:prepare_script
+2026-03-13T04:10:18.790459Z 00O+Preparing environment
+2026-03-13T04:10:18.796791Z 00O Using FF_USE_POD_ACTIVE_DEADLINE_SECONDS, the Pod activeDeadlineSeconds will be set to the job timeout: 1h0m0s...
+2026-03-13T04:10:18.796816Z 00O WARNING: Advanced Pod Spec configuration enabled, merging the provided PodSpec to the generated one. This is a beta feature and is subject to change. Feedback is collected in this issue: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/29659 ...
+2026-03-13T04:10:18.834522Z 00O Subscribing to Kubernetes Pod events...
+2026-03-13T04:10:18.846049Z 00E Type     Reason      Message
+2026-03-13T04:10:18.846065Z 00E Normal   Scheduled   Successfully assigned devops/runner-vxydx9zi6-project-1426-concurrent-2-1cbcd6jh to ake-system-infra-svc-c64m128d200-lxcsh-tvsnt
+2026-03-13T04:10:19.482541Z 00E Normal   Pulled   Container image "registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v18.8.0" already present on machine
+2026-03-13T04:10:19.534857Z 00E Normal   Created   Created container: init-permissions
+2026-03-13T04:10:19.630931Z 00E Normal   Started   Started container init-permissions
+2026-03-13T04:10:19.717608Z 00E Normal   Pulling   Pulling image "docker:27.1.1-dind-alpine3.20"
+2026-03-13T04:10:27.303100Z 00E Normal   Pulled   Successfully pulled image "docker:27.1.1-dind-alpine3.20" in 7.584s (7.584s including waiting). Image size: 130347689 bytes.
+2026-03-13T04:10:27.386246Z 00E Normal   Created   Created container: build
+2026-03-13T04:10:27.477680Z 00E Normal   Started   Started container build
+2026-03-13T04:10:27.480358Z 00E Normal   Pulled   Container image "registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v18.8.0" already present on machine
+2026-03-13T04:10:27.532651Z 00E Normal   Created   Created container: helper
+2026-03-13T04:10:27.632755Z 00E Normal   Started   Started container helper
+2026-03-13T04:10:27.635565Z 00E Normal   Pulled   Container image "docker:dind" already present on machine
+2026-03-13T04:10:27.698465Z 00E Normal   Created   Created container: docker
+2026-03-13T04:10:27.797384Z 00E Normal   Started   Started container docker
+2026-03-13T04:10:27.800016Z 00E Normal   Pulled   Container image "docker:27.1.1-dind-alpine3.20" already present on machine
+2026-03-13T04:10:27.861844Z 00E Normal   Created   Created container: svc-0
+2026-03-13T04:10:27.960688Z 00E Normal   Started   Started container svc-0
+2026-03-13T04:10:31.032146Z 01O Running on runner-vxydx9zi6-project-1426-concurrent-2-1cbcd6jh via gitlab-runner-5fb6b646df-t7fps...
+2026-03-13T04:10:31.032163Z 01O 
+2026-03-13T04:10:31.032204Z 00O section_end:1773375031:prepare_script
+2026-03-13T04:10:31.032206Z 00O+section_start:1773375031:get_sources
+2026-03-13T04:10:31.032664Z 00O+Getting source from Git repository
+2026-03-13T04:10:31.532431Z 01O Gitaly correlation ID: 01KKJP6NBPYQNTCWQB83D1CYW0
+2026-03-13T04:10:31.532451Z 01O Fetching changes with git depth set to 20...
+2026-03-13T04:10:31.532457Z 01O Initialized empty Git repository in /builds/consumer-commerce-dev/search/integrated-search/.git/
+2026-03-13T04:10:31.532459Z 01O Created fresh repository.
+2026-03-13T04:10:32.033514Z 01O Checking out fc69f489 as detached HEAD (ref is main)...
+2026-03-13T04:10:32.033532Z 01O 
+2026-03-13T04:10:32.033540Z 01O Skipping Git submodules setup
+2026-03-13T04:10:32.033585Z 01O 
+2026-03-13T04:10:32.033679Z 00O section_end:1773375032:get_sources
+2026-03-13T04:10:32.033681Z 00O+section_start:1773375032:step_script
+2026-03-13T04:10:32.035073Z 00O+Executing "step_script" stage of the job script
+2026-03-13T04:10:32.534977Z 01O $ if [ -f /opt/docker-conf/config.json ]; then # collapsed multi-line command
+2026-03-13T04:10:32.534998Z 01O $ echo $HARBOR_PASSWORD | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
+2026-03-13T04:10:32.535006Z 01O WARNING! Your password will be stored unencrypted in /builds/consumer-commerce-dev/search/integrated-search/.docker/config.json.
+2026-03-13T04:10:32.535009Z 01O Configure a credential helper to remove this warning. See
+2026-03-13T04:10:32.535014Z 01O https://docs.docker.com/engine/reference/commandline/login/#credential-stores
+2026-03-13T04:10:32.535018Z 01O 
+2026-03-13T04:10:32.535022Z 01O Login Succeeded
+2026-03-13T04:10:32.535025Z 01O $ set -e
+2026-03-13T04:10:32.535028Z 01O $ echo "Docker Build Start"
+2026-03-13T04:10:32.535030Z 01O Docker Build Start
+2026-03-13T04:10:32.535063Z 01O $ if [ -n "$DOCKER_FILE_PATH" ]; then # collapsed multi-line command
+2026-03-13T04:10:32.535109Z 01O ERROR: Cannot connect to the Docker daemon at tcp://docker:2375. Is the docker daemon running?
+2026-03-13T04:10:32.535112Z 01O 
+2026-03-13T04:10:32.546568Z 00O section_end:1773375032:step_script
+2026-03-13T04:10:32.546579Z 00O+section_start:1773375032:cleanup_file_variables
+2026-03-13T04:10:32.547318Z 00O+Cleaning up project directory and file based variables
+2026-03-13T04:10:33.035209Z 01O 
+2026-03-13T04:10:33.035259Z 00O section_end:1773375033:cleanup_file_variables
+2026-03-13T04:10:33.035261Z 00O+
+2026-03-13T04:10:33.044216Z 00O ERROR: Job failed: command terminated with exit code 1

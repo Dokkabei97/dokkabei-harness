@@ -1,0 +1,40 @@
+version: 2
+
+gitlab_urls:
+  api: https://labs.cowave.kr/api/v4/
+  download: https://labs.cowave.kr
+
+release:
+  gitlab:
+    owner: consumer-commerce-dev/search/techlab
+    name: plane-cli
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/plane-cli/plane-cli/cmd.Version={{.Version}}
+      - -X github.com/plane-cli/plane-cli/cmd.Commit={{.Commit}}
+      - -X github.com/plane-cli/plane-cli/cmd.BuildDate={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"

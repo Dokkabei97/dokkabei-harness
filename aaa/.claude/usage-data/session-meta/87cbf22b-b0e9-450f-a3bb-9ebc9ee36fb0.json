@@ -1,0 +1,38 @@
+{
+  "session_id": "87cbf22b-b0e9-450f-a3bb-9ebc9ee36fb0",
+  "project_path": "/Users/admin/project/auto-work",
+  "start_time": "2026-03-09T06:50:48.462Z",
+  "duration_minutes": 3,
+  "user_message_count": 1,
+  "assistant_message_count": 13,
+  "tool_counts": {
+    "Agent": 6,
+    "Read": 2
+  },
+  "languages": {
+    "JSON": 1,
+    "Markdown": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 27,
+  "output_tokens": 3306,
+  "first_prompt": "회사에서 claude code, slack, plane, outline을 사용하는데 이걸 통합 및 자동화를 할려고 하는데 어떻게 할 수 있을까? 팀을 구성해서 조사해줘",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-09T06:52:12.663Z"
+  ]
+}

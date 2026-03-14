@@ -1,0 +1,169 @@
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-15-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-16-	private static Logger logger = Loggers.getLogger(ProductNameAnalysisFilterFactory.class, "");
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-17-
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java:18:	private static final ContextStore contextStore = ContextStore.getStore(AnalysisProductNamePlugin.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-19-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-20-	private ProductNameDictionary dictionary;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-21-	private AnalyzerOption option;
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-32-	@Override
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-33-	public TokenStream create(TokenStream tokenStream) {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-34-		logger.trace("ProductNameAnalysisFilter::create {}", this);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java:35:		if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java:36:			dictionary = contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-37-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-38-		return new ProductNameAnalysisFilter(tokenStream, dictionary, option);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilterFactory.java-39-	}
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-63-	private static Logger logger = Loggers.getLogger(ProductNameAnalysisAction.class, "");
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-64-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-65-	// 플러그인 내 전역저장소 설정
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:66:	private static final ContextStore contextStore = ContextStore.getStore(AnalysisProductNamePlugin.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-67-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-68-	private static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-69-	private static final String BASE_URI = "/_analysis-product-name";
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-211-		} else if (ACTION_SEARCH_KEYWORD.equals(action)) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-212-			makeSearchKeyword(request, client, builder);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-213-		} else if (ACTION_CHECK_ENABLE.equals(action)) {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:214:			builder.object().key("loaded").value(getDictionary() != null);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-215-			builder.endObject();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-216-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-217-		return channel -> {
+--
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-438-			logger.trace("SYNONYM:{}-{} = {}", index, word, count);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-439-		} else {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-440-			// 메모리 사전을 이용하는 경우
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:441:			ProductNameDictionary dictionary = getDictionary();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:442:			SynonymDictionary synonyms = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-443-			ret = ProductNameDictionary.isOneWaySynonym(CharVector.valueOf(word), synonyms.map());
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-444-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-445-		return ret;
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-478-		// 이전 텀, 이전 이전텀
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-479-		String prevTerm = null;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-480-		String prePrevTerm = null;
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:481:		ProductNameDictionary dictionary = getDictionary();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:482:		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-483-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-484-		try {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-485-			stream.reset();
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-840-		List<Object> termWords;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-841-		// 검색어 확장을 위한 변수
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-842-		List<Object> extraTermWords;
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:843:		ProductNameDictionary dictionary = getDictionary();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:844:		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-845-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-846-		List<CharSequence> synonyms;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-847-
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1115-	 * 상품명사전을 메모리에 재적제 시킨다
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1116-	 */
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1117-	private void reloadDictionary() {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1118:		if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1119-			ProductNameDictionary.reloadDictionary();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1120-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1121-	}
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1210-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1211-		RemoteNodeClient remoteNodeClient = new RemoteNodeClient(client.settings(), client.threadPool(), ES_DICTIONARY_INDEX, host, port, username, password);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1212-
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1213:		ProductNameDictionary productNameDictionary = getDictionary();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1214-		builder
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1215-			.key("dictionary").array()
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1216-				.object()
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1222-				.key("ignoreCase").value(productNameDictionary.ignoreCase())
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1223-				.key("tokenType").value("NONE") // system 사전은 없음.
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1224-				.endObject();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1225:		Map<String, SourceDictionary<?>> dictionaryMap = productNameDictionary.getDictionaryMap();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1226-		Set<String> keySet = dictionaryMap.keySet();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1227-		for (String key : keySet) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1228-			String type = key.toUpperCase();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1229-			SourceDictionary<?> sourceDictionary = dictionaryMap.get(key);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1230:			int[] info = ProductNameDictionary.getDictionaryInfo(sourceDictionary);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1231-			long indexCount;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1232-			if (host != null && !"".equals(host)) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1233-				indexCount = SearchUtil.count(remoteNodeClient, index, QueryBuilders.matchQuery(ES_DICT_FIELD_TYPE, type));
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1290-			word = jparam.optString("word", "");
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1291-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1292-
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1293:		ProductNameDictionary productNameDictionary = getDictionary();
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1294:		Set<String> keySet = productNameDictionary.getDictionaryMap().keySet();
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1295-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1296-		builder
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1297-			.key("result").array();
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1635-	/**
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1636-	 * 상품명사전
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1637-	 */
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1638:	private static ProductNameDictionary getDictionary() {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java:1639:		return contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1640-	}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1641-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisAction.java-1642-	/**
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-18-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-19-public class ProductNameAnalyzerProvider extends AbstractIndexAnalyzerProvider<Analyzer> {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-20-	private static final Logger logger = Loggers.getLogger(ProductNameAnalyzerProvider.class, "");
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java:21:	private static final ContextStore contextStore = ContextStore.getStore(AnalysisProductNamePlugin.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-22-	private static ProductNameDictionary dictionary;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-23-	private Analyzer analyzer;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-24-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-25-	public ProductNameAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-26-		super(name);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-27-		logger.trace("ProductNameAnalyzerProvider::self {}", this);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java:28:		if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java:29:			dictionary = contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-30-		} else {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-31-			dictionary = ProductNameDictionary.loadDictionary(env);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java:32:			contextStore.put(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, dictionary);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-33-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-34-		analyzer = new ProductNameAnalyzer(dictionary);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalyzerProvider.java-35-	}
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-15-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-16-	protected static Logger logger = Loggers.getLogger(ProductNameTokenizerFactory.class, "");
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-17-
+src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java:18:	private static final ContextStore contextStore = ContextStore.getStore(AnalysisProductNamePlugin.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-19-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-20-	private ProductNameDictionary commonDictionary;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-21-	private boolean exportTerm;
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-26-
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-27-		exportTerm = settings.getAsBoolean("export_term", false);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-28-
+src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java:29:		if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java:30:			commonDictionary = contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-31-		} else {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-32-			commonDictionary = ProductNameDictionary.loadDictionary(env);
+src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java:33:			contextStore.put(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, commonDictionary);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-34-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-35-	}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameTokenizerFactory.java-36-
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-41-        this.extractor = extractor;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-42-        this.option = option;
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-43-        if (dictionary != null) {
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:44:            unitDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_UNIT, SetDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:45:            synonymDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:46:            unitSynonymDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_UNIT_SYNONYM, SynonymDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:47:            spaceDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_SPACE, SpaceDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:48:            userDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_USER, SetDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:49:            compoundDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_COMPOUND, CompoundDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java:50:            stopDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_STOP, SetDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-51-        }
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-52-    }
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameParsingRule.java-53-
+--
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-62-		super(input);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-63-		if (dictionary != null) {
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-64-			this.dictionary = dictionary;
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java:65:			this.synonymDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java:66:			this.spaceDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_SPACE, SpaceDictionary.class);
+src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java:67:			this.stopDictionary = dictionary.getDictionary(ProductNameDictionary.DICT_STOP, SetDictionary.class);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-68-		}
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-69-		this.extractor = new KoreanWordExtractor(dictionary);
+/Users/admin/project/analysis-product2/src/main/java/com/danawa/search/analysis/product/ProductNameAnalysisFilter.java-70-		this.option = option;

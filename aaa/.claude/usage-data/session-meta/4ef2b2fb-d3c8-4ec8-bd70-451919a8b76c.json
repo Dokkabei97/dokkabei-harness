@@ -1,0 +1,53 @@
+{
+  "session_id": "4ef2b2fb-d3c8-4ec8-bd70-451919a8b76c",
+  "project_path": "/Users/admin/project/shopping-k8s-manifest/.claude/worktrees/legacy-sync",
+  "start_time": "2026-02-23T05:01:07.371Z",
+  "duration_minutes": 22,
+  "user_message_count": 5,
+  "assistant_message_count": 37,
+  "tool_counts": {
+    "Task": 4,
+    "Read": 15,
+    "AskUserQuestion": 1,
+    "Write": 1,
+    "ExitPlanMode": 1
+  },
+  "languages": {
+    "YAML": 15,
+    "Markdown": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 61,
+  "output_tokens": 7763,
+  "first_prompt": "@apps/next-search 에서는 @apps/next-search/shared-resources/ 로configmap을 공통으로 뺏는데 다시 각 서비스마다 cm을 설정하게 변경을 할려고해  values-prod.yaml, values-dev.yaml에 정의를 하면 좀 길어지니 values-config.yaml같은 파일을 만드는게 좋을까? 아니면 그냥…",
+  "user_interruptions": 1,
+  "user_response_times": [
+    782.728
+  ],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "User Rejected": 1
+  },
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 215,
+  "lines_removed": 0,
+  "files_modified": 1,
+  "message_hours": [
+    14,
+    14,
+    14,
+    14,
+    14
+  ],
+  "user_message_timestamps": [
+    "2026-02-23T05:01:07.514Z",
+    "2026-02-23T05:01:07.360Z",
+    "2026-02-23T05:01:07.513Z",
+    "2026-02-23T05:02:54.606Z",
+    "2026-02-23T05:23:03.829Z"
+  ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "content": "UI 디렉토리 구조 파악 및 오류 발생 페이지 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Gemini CLI와 협력하여 변수 오류 분석",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "오류 수정 방안 구현",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "미사용 변수 제거 및 TypeScript 오류 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  }
+]

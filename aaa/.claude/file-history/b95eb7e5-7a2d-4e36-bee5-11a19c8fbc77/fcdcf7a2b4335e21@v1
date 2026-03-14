@@ -1,0 +1,55 @@
+NEXT_PUBLIC_MOCK_SERVER_ENABLED=false
+NEXT_PUBLIC_MOCK_AUTH=true
+NEXT_PUBLIC_MOCK_GRAPHQL_URL=http://api.danawa.com/graphql
+
+
+## SHOPPING 관련
+SHOPPING_URL=http://dev-shopping-internal.danuricorp.com/graphql
+
+## AUTH 관련
+CODEGEN_AUTH_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoLWNvd2F2ZSIsImlkIjoiREFOVVJJX1NZU1RFTSIsInJvbGVzIjpbIlJPTEVfREFOVVJJX1NZU1RFTSJdLCJjbGllbnRJZCI6ImRhbnVyaV9zeXN0ZW0iLCJzdWIiOiJhY2Nlc3MgdG9rZW4iLCJpYXQiOjE3NTkyMTAzMDcsImV4cCI6MTc5MDc0NjMwN30.4cKB-Xn65meWUqx5_oAp9RhsWE7tDEx9FZY4geWUC-Q
+AUTH_CODEGEN_GRAPHQL_URL=https://dev-auth-cowave-proxy.danawacorp.com/graphql
+COWAVE_AUTH_WEB_URL=http://dev-auth-cowave.danawacorp.com
+COWAVE_AUTH_API_URL=http://dev-auth-cowave.danawacorp.com
+COWAVE_AUTH_PROXY_URL=http://dev-auth-cowave-proxy.danawacorp.com
+GRAPHQL_AUTH_URL=https://dev-auth-cowave-proxy.danawacorp.com/graphql
+AUTH_CLIENT_ID=BIzUxZv4f1a9a0qlLeHYhoI24OJolQ12
+
+## IMG AUTH
+SHOPPING_IMAGE_AUTH_USERNAME=image-user
+SHOPPING_IMAGE_AUTH_PASSWORD=image-password
+
+## 각 운영 프론트 상품블로그
+NEXT_PUBLIC_DANAWA_PRODUCT_BLOG_URL=https://prod-t.danawa.com/info/
+NEXT_PUBLIC_ENURI_PRODUCT_BLOG_URL=https://www.enuri.com/detail.jsp
+
+## AUTH
+NEXT_PUBLIC_CODEGEN_AUTH_USERNAME=admin
+NEXT_PUBLIC_CODEGEN_AUTH_PASSWORD="Uqd}}e0?3]v@zaV?MKa>,YxK4K-"
+NEXT_PUBLIC_COWAVE_AUTH_API_URL=http://dev-auth-cowave.danawacorp.com
+NEXT_PUBLIC_COWAVE_AUTH_WEB_URL=http://dev-auth-cowave.danawacorp.com
+NEXT_PUBLIC_COWAVE_AUTH_PROXY_URL=http://dev-auth-cowave-proxy.danawacorp.com
+
+NEXT_PUBLIC_AUTH_GRAPHQL_URI=http://dev-auth-cowave-proxy.danawacorp.com/graphql
+
+## 이미지 
+NEXT_PUBLIC_IMAGE_SERVER_URL=http://dev-img.danuricorp.com
+NEXT_PUBLIC_CDN_IMAGE_URL=https://dev-img.danuri.io
+
+## Billing System (서버사이드 전용 - Next.js rewrites에서 사용)
+## Dev 환경: Istio Ingress Gateway를 통한 원격 접근 (HTTP - self-signed cert 회피)
+SETTLEMENT_API_URL=http://billing-dev.danuricorp.com/settlement
+ADMIN_API_URL=http://billing-dev.danuricorp.com/admin
+PAYMENT_API_URL=http://billing-dev.danuricorp.com/payment
+ORDER_API_URL=http://billing-dev.danuricorp.com/order
+CART_API_URL=http://billing-dev.danuricorp.com/cart
+
+## Place System (place-api REST backend)
+PLACE_API_URL=http://localhost:8081
+
+## ai_attribute_tool
+AI_ATTRIBUTE_URL=https://ner.hj.aiops.koapp.com
+
+## 기타
+NEXT_PUBLIC_JODIT_LICENSE=4210E-1DJ61-AOPPP-LH84Z
+NEXT_PUBLIC_APP_ORIGIN=http://localhost:3000

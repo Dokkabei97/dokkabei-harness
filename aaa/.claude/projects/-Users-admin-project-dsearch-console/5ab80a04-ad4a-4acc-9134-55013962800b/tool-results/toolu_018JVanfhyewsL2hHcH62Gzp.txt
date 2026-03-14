@@ -1,0 +1,44 @@
+     1→import {ADD_PIPELINE, DELETE_PIPELINE, SET_PIPELINE, SET_PIPELINE_LIST, SET_PIPELINE_RESULT} from "../constants";
+     2→import Client from '~/Client'
+     3→
+     4→const client = new Client()
+     5→
+     6→export const setPipelineAction = (pipeline) => dispatch => dispatch({type: SET_PIPELINE, payload: pipeline})
+     7→
+     8→export const testPipeline = (item, jsonData, isDetail = false) => dispatch => client.call({
+     9→    uri: `/pipeline/${item}?isDetail=${isDetail}`,
+    10→    method: "POST",
+    11→    headers: {'Content-type': 'application/json'},
+    12→    data: jsonData
+    13→}).then(response => dispatch({type: SET_PIPELINE_RESULT, payload: response.data}))
+    14→
+    15→export const setPipelineList = () => dispatch => client.call({
+    16→    uri: "/pipeline/list",
+    17→    method: "GET"
+    18→}).then(response => dispatch({type: SET_PIPELINE_LIST, payload: response.data}))
+    19→
+    20→export const deletePipeline = (item) => dispatch => client.call({
+    21→    uri: "/pipeline/" + item,
+    22→    method: "DELETE"
+    23→}).then(response => dispatch({type: DELETE_PIPELINE, payload: response.data}))
+    24→
+    25→export const addPipeline = (item, jsonData) => dispatch => client.call({
+    26→    uri: "/pipeline/" + item,
+    27→    method: "PUT",
+    28→    headers: {'Content-type': 'application/json'},
+    29→    data: jsonData
+    30→}).then(response => dispatch({type: ADD_PIPELINE, payload: response.data})).catch((err) => {
+    31→    console.log(err)
+    32→})
+    33→
+    34→export const editPipeline = (item, jsonData) => dispatch => client.call({
+    35→    uri: "/pipeline/" + item,
+    36→    method: "PUT",
+    37→    headers: {'Content-type': 'application/json'},
+    38→    data: jsonData
+    39→}).then(response => dispatch({type: ADD_PIPELINE, payload: response.data}))
+    40→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

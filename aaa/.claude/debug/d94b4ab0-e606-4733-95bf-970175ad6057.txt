@@ -1,0 +1,1035 @@
+2026-02-20T06:49:43.762Z [DEBUG] Failed to check enabledPlatforms: TypeError: undefined is not an object (evaluating 'mK.join')
+2026-02-20T06:49:43.825Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183825
+2026-02-20T06:49:43.825Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.826Z [DEBUG] Temp file written successfully, size: 50 bytes
+2026-02-20T06:49:43.826Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.826Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183825 to /Users/admin/.claude.json
+2026-02-20T06:49:43.826Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.826Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-20T06:49:43.826Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-20T06:49:43.826Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-20T06:49:43.826Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-20T06:49:43.827Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183827
+2026-02-20T06:49:43.827Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.828Z [DEBUG] Temp file written successfully, size: 86 bytes
+2026-02-20T06:49:43.828Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.828Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183827 to /Users/admin/.claude.json
+2026-02-20T06:49:43.828Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.829Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183829
+2026-02-20T06:49:43.829Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.829Z [DEBUG] Temp file written successfully, size: 125 bytes
+2026-02-20T06:49:43.829Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.829Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183829 to /Users/admin/.claude.json
+2026-02-20T06:49:43.829Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.833Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183833
+2026-02-20T06:49:43.833Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.833Z [DEBUG] Temp file written successfully, size: 205 bytes
+2026-02-20T06:49:43.833Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.833Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183833 to /Users/admin/.claude.json
+2026-02-20T06:49:43.833Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.834Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-02-20T06:49:43.838Z [DEBUG] [ToolSearch:optimistic] mode=tst-auto, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-02-20T06:49:43.838Z [DEBUG] [STARTUP] Running setup()...
+2026-02-20T06:49:43.839Z [DEBUG] [TeammateModeSnapshot] Captured from config: auto
+2026-02-20T06:49:43.840Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-20T06:49:43.842Z [DEBUG] Error log sink initialized
+2026-02-20T06:49:43.847Z [DEBUG] [Claude in Chrome] Found chrome profiles: Default
+2026-02-20T06:49:43.851Z [DEBUG] [Claude in Chrome] Extension fcoeoabgfenejglbffodgkkbkcdhcgfn found in chrome Default
+2026-02-20T06:49:43.851Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183851
+2026-02-20T06:49:43.851Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.852Z [DEBUG] Temp file written successfully, size: 247 bytes
+2026-02-20T06:49:43.852Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.852Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183851 to /Users/admin/.claude.json
+2026-02-20T06:49:43.852Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.853Z [DEBUG] Git remote URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-20T06:49:43.853Z [DEBUG] Could not parse repository from: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-20T06:49:43.853Z [DEBUG] Parsed repository: null from URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-20T06:49:43.861Z [DEBUG] Loading plugin frontend-design from source: "./plugins/frontend-design"
+2026-02-20T06:49:43.862Z [DEBUG] Loading plugin playwright from source: "./external_plugins/playwright"
+2026-02-20T06:49:43.863Z [DEBUG] Loading plugin learning-output-style from source: "./plugins/learning-output-style"
+2026-02-20T06:49:43.864Z [DEBUG] Loading plugin context7 from source: "./external_plugins/context7"
+2026-02-20T06:49:43.865Z [DEBUG] Loading plugin serena from source: "./external_plugins/serena"
+2026-02-20T06:49:43.865Z [DEBUG] Loading plugin code-review from source: "./plugins/code-review"
+2026-02-20T06:49:43.866Z [DEBUG] Loading plugin ralph-loop from source: "./plugins/ralph-loop"
+2026-02-20T06:49:43.867Z [DEBUG] Loading plugin jdtls-lsp from source: "./plugins/jdtls-lsp"
+2026-02-20T06:49:43.867Z [DEBUG] Loading plugin typescript-lsp from source: "./plugins/typescript-lsp"
+2026-02-20T06:49:43.868Z [DEBUG] Loading plugin feature-dev from source: "./plugins/feature-dev"
+2026-02-20T06:49:43.876Z [DEBUG] Loading plugin pyright-lsp from source: "./plugins/pyright-lsp"
+2026-02-20T06:49:43.876Z [DEBUG] Loading plugin kotlin-lsp from source: "./plugins/kotlin-lsp"
+2026-02-20T06:49:43.877Z [DEBUG] Loading plugin gopls-lsp from source: "./plugins/gopls-lsp"
+2026-02-20T06:49:43.879Z [DEBUG] Loaded 21 unique skills (21 unconditional, 0 conditional, managed: 0, user: 12, project: 0, additional: 0, legacy commands: 9)
+2026-02-20T06:49:43.879Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:49:43.880Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:49:43.880Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:49:43.880Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:49:43.880Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Plugin pyright-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Resolved local plugin pyright-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Plugin typescript-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Resolved local plugin typescript-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Plugin jdtls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Resolved local plugin jdtls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Plugin kotlin-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-20T06:49:43.892Z [DEBUG] Resolved local plugin kotlin-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-20T06:49:43.894Z [DEBUG] Plugin gopls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-20T06:49:43.894Z [DEBUG] Resolved local plugin gopls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for serena@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for context7@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin pyright-lsp has no entry.skills defined
+2026-02-20T06:49:43.896Z [DEBUG] Plugin jdtls-lsp has no entry.skills defined
+2026-02-20T06:49:43.896Z [DEBUG] Plugin typescript-lsp has no entry.skills defined
+2026-02-20T06:49:43.896Z [DEBUG] Plugin kotlin-lsp has no entry.skills defined
+2026-02-20T06:49:43.896Z [DEBUG] Plugin gopls-lsp has no entry.skills defined
+2026-02-20T06:49:43.896Z [DEBUG] Plugin frontend-design@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin frontend-design to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin code-review@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin code-review to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin playwright@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin playwright to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin context7@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin context7 to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin learning-output-style@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin learning-output-style to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Plugin serena@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/8deab8460a9d
+2026-02-20T06:49:43.896Z [DEBUG] Resolved local plugin serena to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/8deab8460a9d
+2026-02-20T06:49:43.897Z [DEBUG] Plugin feature-dev@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/8deab8460a9d
+2026-02-20T06:49:43.897Z [DEBUG] Resolved local plugin feature-dev to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/8deab8460a9d
+2026-02-20T06:49:43.897Z [DEBUG] Plugin ralph-loop@claude-plugins-official version 8deab8460a9d already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/8deab8460a9d
+2026-02-20T06:49:43.897Z [DEBUG] Resolved local plugin ralph-loop to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/8deab8460a9d
+2026-02-20T06:49:43.899Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570183899
+2026-02-20T06:49:43.899Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:43.900Z [DEBUG] Temp file written successfully, size: 288 bytes
+2026-02-20T06:49:43.900Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:43.900Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570183899 to /Users/admin/.claude.json
+2026-02-20T06:49:43.900Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:43.901Z [DEBUG] Loaded hooks from standard location for plugin learning-output-style: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/8deab8460a9d/hooks/hooks.json
+2026-02-20T06:49:43.901Z [DEBUG] Loaded hooks from standard location for plugin ralph-loop: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/8deab8460a9d/hooks/hooks.json
+2026-02-20T06:49:43.901Z [DEBUG] Found 13 plugins (13 enabled, 0 disabled)
+2026-02-20T06:49:43.901Z [DEBUG] getPluginSkills: Processing 13 enabled plugins
+2026-02-20T06:49:43.901Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-20T06:49:43.901Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/8deab8460a9d/skills
+2026-02-20T06:49:43.902Z [DEBUG] Loading hooks from plugin: ralph-loop
+2026-02-20T06:49:43.902Z [DEBUG] Loading hooks from plugin: learning-output-style
+2026-02-20T06:49:43.902Z [DEBUG] Registered 2 hooks from 13 plugins
+2026-02-20T06:49:43.902Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-20T06:49:43.902Z [DEBUG] Total plugin skills loaded: 1
+2026-02-20T06:49:43.902Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-20T06:49:43.903Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-20T06:49:43.904Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-20T06:49:43.904Z [DEBUG] Total plugin commands loaded: 5
+2026-02-20T06:49:43.905Z [DEBUG] getSkills returning: 21 skill dir commands, 1 plugin skills, 3 bundled skills
+2026-02-20T06:49:43.911Z [DEBUG] [STARTUP] setup() completed in 73ms
+2026-02-20T06:49:43.911Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-02-20T06:49:43.914Z [DEBUG] Loaded 3 agents from plugin feature-dev default directory
+2026-02-20T06:49:43.914Z [DEBUG] Total plugin agents loaded: 3
+2026-02-20T06:49:43.914Z [DEBUG] [STARTUP] Commands and agents loaded in 3ms
+2026-02-20T06:49:43.916Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-02-20T06:49:44.286Z [DEBUG] [keybindings] KeybindingSetup initialized with 103 bindings, 0 warnings
+2026-02-20T06:49:44.309Z [DEBUG] [keybindings] Skipping file watcher - user customization disabled
+2026-02-20T06:49:44.313Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184313
+2026-02-20T06:49:44.313Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.313Z [DEBUG] Temp file written successfully, size: 464 bytes
+2026-02-20T06:49:44.313Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.313Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184313 to /Users/admin/.claude.json
+2026-02-20T06:49:44.314Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.315Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184315
+2026-02-20T06:49:44.315Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.315Z [DEBUG] Temp file written successfully, size: 500 bytes
+2026-02-20T06:49:44.315Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.315Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184315 to /Users/admin/.claude.json
+2026-02-20T06:49:44.315Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.316Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184316
+2026-02-20T06:49:44.316Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.317Z [DEBUG] Temp file written successfully, size: 539 bytes
+2026-02-20T06:49:44.317Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.317Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184316 to /Users/admin/.claude.json
+2026-02-20T06:49:44.317Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.318Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184318
+2026-02-20T06:49:44.318Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.318Z [DEBUG] Temp file written successfully, size: 578 bytes
+2026-02-20T06:49:44.318Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.318Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184318 to /Users/admin/.claude.json
+2026-02-20T06:49:44.318Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.319Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184319
+2026-02-20T06:49:44.319Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.319Z [DEBUG] Temp file written successfully, size: 616 bytes
+2026-02-20T06:49:44.320Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.320Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184319 to /Users/admin/.claude.json
+2026-02-20T06:49:44.320Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.321Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184321
+2026-02-20T06:49:44.321Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.321Z [DEBUG] Temp file written successfully, size: 648 bytes
+2026-02-20T06:49:44.321Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.321Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184321 to /Users/admin/.claude.json
+2026-02-20T06:49:44.321Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.322Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184322
+2026-02-20T06:49:44.322Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.322Z [DEBUG] Temp file written successfully, size: 678 bytes
+2026-02-20T06:49:44.322Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.322Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184322 to /Users/admin/.claude.json
+2026-02-20T06:49:44.322Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.323Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184323
+2026-02-20T06:49:44.323Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.323Z [DEBUG] Temp file written successfully, size: 711 bytes
+2026-02-20T06:49:44.323Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.323Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184323 to /Users/admin/.claude.json
+2026-02-20T06:49:44.323Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.324Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184324
+2026-02-20T06:49:44.324Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.324Z [DEBUG] Temp file written successfully, size: 763 bytes
+2026-02-20T06:49:44.324Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.324Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184324 to /Users/admin/.claude.json
+2026-02-20T06:49:44.324Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.325Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184325
+2026-02-20T06:49:44.325Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.325Z [DEBUG] Temp file written successfully, size: 795 bytes
+2026-02-20T06:49:44.325Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.325Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184325 to /Users/admin/.claude.json
+2026-02-20T06:49:44.325Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.326Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184326
+2026-02-20T06:49:44.326Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.326Z [DEBUG] Temp file written successfully, size: 831 bytes
+2026-02-20T06:49:44.326Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.326Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184326 to /Users/admin/.claude.json
+2026-02-20T06:49:44.326Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.327Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184327
+2026-02-20T06:49:44.327Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.327Z [DEBUG] Temp file written successfully, size: 861 bytes
+2026-02-20T06:49:44.327Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.327Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184327 to /Users/admin/.claude.json
+2026-02-20T06:49:44.327Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.328Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184328
+2026-02-20T06:49:44.328Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.328Z [DEBUG] Temp file written successfully, size: 885 bytes
+2026-02-20T06:49:44.328Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.328Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184328 to /Users/admin/.claude.json
+2026-02-20T06:49:44.329Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.329Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184329
+2026-02-20T06:49:44.329Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.329Z [DEBUG] Temp file written successfully, size: 921 bytes
+2026-02-20T06:49:44.329Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.329Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184329 to /Users/admin/.claude.json
+2026-02-20T06:49:44.330Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.529Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184529
+2026-02-20T06:49:44.529Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.530Z [DEBUG] Temp file written successfully, size: 996 bytes
+2026-02-20T06:49:44.530Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.530Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184529 to /Users/admin/.claude.json
+2026-02-20T06:49:44.531Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.553Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570184553
+2026-02-20T06:49:44.553Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:44.553Z [DEBUG] Temp file written successfully, size: 1402 bytes
+2026-02-20T06:49:44.554Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:44.554Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570184553 to /Users/admin/.claude.json
+2026-02-20T06:49:44.554Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:44.798Z [DEBUG] High write ratio: blit=0, write=2193 (100.0% writes), screen=36x236
+2026-02-20T06:49:44.815Z [DEBUG] High write ratio: blit=0, write=2193 (100.0% writes), screen=36x236
+2026-02-20T06:49:46.745Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570186745
+2026-02-20T06:49:46.745Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:46.745Z [DEBUG] Temp file written successfully, size: 1402 bytes
+2026-02-20T06:49:46.745Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:46.745Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570186745 to /Users/admin/.claude.json
+2026-02-20T06:49:46.746Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:46.747Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570186747
+2026-02-20T06:49:46.747Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:49:46.747Z [DEBUG] Temp file written successfully, size: 1402 bytes
+2026-02-20T06:49:46.747Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:49:46.747Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570186747 to /Users/admin/.claude.json
+2026-02-20T06:49:46.748Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:49:46.761Z [DEBUG] High write ratio: blit=0, write=1222 (100.0% writes), screen=28x236
+2026-02-20T06:50:04.434Z [ERROR] Error: Error: Failed to delete keychain entry
+    at nYB (/$bunfs/root/claude:2600:6912)
+    at async KT0 (/$bunfs/root/claude:6088:685)
+    at async BzA (/$bunfs/root/claude:6088:589)
+    at async pXT (/$bunfs/root/claude:2109:2222)
+    at async startOAuthFlow (/$bunfs/root/claude:2109:3619)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:04.435Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570204435
+2026-02-20T06:50:04.435Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:04.435Z [DEBUG] Temp file written successfully, size: 1402 bytes
+2026-02-20T06:50:04.435Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:04.435Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570204435 to /Users/admin/.claude.json
+2026-02-20T06:50:04.436Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:04.500Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570204500
+2026-02-20T06:50:04.500Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:04.500Z [DEBUG] Temp file written successfully, size: 996 bytes
+2026-02-20T06:50:04.501Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:04.501Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570204500 to /Users/admin/.claude.json
+2026-02-20T06:50:04.501Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:05.439Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570205439
+2026-02-20T06:50:05.439Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:05.441Z [DEBUG] Temp file written successfully, size: 1347 bytes
+2026-02-20T06:50:05.441Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:05.441Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570205439 to /Users/admin/.claude.json
+2026-02-20T06:50:05.441Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:05.801Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570205801
+2026-02-20T06:50:05.801Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:05.802Z [DEBUG] Temp file written successfully, size: 1468 bytes
+2026-02-20T06:50:05.802Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:05.802Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570205801 to /Users/admin/.claude.json
+2026-02-20T06:50:05.803Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:06.222Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570206222
+2026-02-20T06:50:06.222Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:06.223Z [DEBUG] Temp file written successfully, size: 1529 bytes
+2026-02-20T06:50:06.223Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:06.223Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570206222 to /Users/admin/.claude.json
+2026-02-20T06:50:06.224Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:06.229Z [DEBUG] Getting matching hook commands for Notification with query: auth_success
+2026-02-20T06:50:06.229Z [DEBUG] Found 0 hook matchers in settings
+2026-02-20T06:50:06.229Z [DEBUG] Matched 0 unique hooks for query "auth_success" (0 before deduplication)
+2026-02-20T06:50:06.518Z [DEBUG] Metrics opt-out API response: enabled=true, vcsLinking=false
+2026-02-20T06:50:13.991Z [DEBUG] High write ratio: blit=0, write=1160 (100.0% writes), screen=28x236
+2026-02-20T06:50:15.922Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215922
+2026-02-20T06:50:15.922Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.923Z [DEBUG] Temp file written successfully, size: 1600 bytes
+2026-02-20T06:50:15.923Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.923Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215922 to /Users/admin/.claude.json
+2026-02-20T06:50:15.924Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.925Z [DEBUG] Grove: No cache, fetching config in background (dialog skipped this session)
+2026-02-20T06:50:15.926Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-02-20T06:50:15.927Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-02-20T06:50:15.927Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-02-20T06:50:15.929Z [DEBUG] [STARTUP] showSetupScreens() completed in 32013ms
+2026-02-20T06:50:15.929Z [DEBUG] Programmatic settings change notification for policySettings
+2026-02-20T06:50:15.933Z [DEBUG] Plugin hooks: skipping reload, enabledPlugins unchanged
+2026-02-20T06:50:15.936Z [DEBUG] Settings changed from policySettings, updating app state
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all allow rules for destination 'userSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all deny rules for destination 'userSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all ask rules for destination 'userSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all allow rules for destination 'projectSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all deny rules for destination 'projectSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all ask rules for destination 'projectSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all allow rules for destination 'localSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all deny rules for destination 'localSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] Replacing all ask rules for destination 'localSettings' with 0 rule(s): []
+2026-02-20T06:50:15.938Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-02-20T06:50:15.938Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-02-20T06:50:15.938Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-02-20T06:50:15.939Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-20T06:50:15.939Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-20T06:50:15.939Z [DEBUG] Passes: No cache, fetching eligibility in background (command unavailable this session)
+2026-02-20T06:50:15.943Z [DEBUG] [STARTUP] MCP configs loaded in 32109ms
+2026-02-20T06:50:15.946Z [DEBUG] MCP server "plugin:serena:serena": Starting connection with timeout of 30000ms
+2026-02-20T06:50:15.948Z [DEBUG] MCP server "plugin:context7:context7": Starting connection with timeout of 30000ms
+2026-02-20T06:50:15.950Z [DEBUG] MCP server "plugin:playwright:playwright": Starting connection with timeout of 30000ms
+2026-02-20T06:50:15.968Z [DEBUG] All plugins already exist, skipping migration
+2026-02-20T06:50:15.969Z [DEBUG] [Reconnection] computeInitialTeamContext: No teammate context set (not a teammate)
+2026-02-20T06:50:15.970Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215970
+2026-02-20T06:50:15.970Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.970Z [DEBUG] Temp file written successfully, size: 1620 bytes
+2026-02-20T06:50:15.970Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.970Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215970 to /Users/admin/.claude.json
+2026-02-20T06:50:15.970Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.971Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-20T06:50:15.974Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2026-02-20T06:50:15.974Z [DEBUG] Found 1 hook matchers in settings
+2026-02-20T06:50:15.974Z [DEBUG] Matched 1 unique hooks for query "startup" (1 before deduplication)
+2026-02-20T06:50:15.975Z [DEBUG] Loaded 17 installed plugins from /Users/admin/.claude/plugins/installed_plugins.json
+2026-02-20T06:50:15.975Z [DEBUG] Initialized versioned plugins system with 17 plugins
+2026-02-20T06:50:15.983Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215983
+2026-02-20T06:50:15.983Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.983Z [DEBUG] Temp file written successfully, size: 1656 bytes
+2026-02-20T06:50:15.983Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.983Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215983 to /Users/admin/.claude.json
+2026-02-20T06:50:15.984Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.985Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215985
+2026-02-20T06:50:15.985Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.985Z [DEBUG] Temp file written successfully, size: 1689 bytes
+2026-02-20T06:50:15.985Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.985Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215985 to /Users/admin/.claude.json
+2026-02-20T06:50:15.986Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.987Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215987
+2026-02-20T06:50:15.987Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.987Z [DEBUG] Temp file written successfully, size: 1720 bytes
+2026-02-20T06:50:15.987Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.987Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215987 to /Users/admin/.claude.json
+2026-02-20T06:50:15.987Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.989Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215989
+2026-02-20T06:50:15.989Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.989Z [DEBUG] Temp file written successfully, size: 1719 bytes
+2026-02-20T06:50:15.989Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.989Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215989 to /Users/admin/.claude.json
+2026-02-20T06:50:15.990Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:15.991Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570215991
+2026-02-20T06:50:15.991Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:15.991Z [DEBUG] Temp file written successfully, size: 1720 bytes
+2026-02-20T06:50:15.991Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:15.991Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570215991 to /Users/admin/.claude.json
+2026-02-20T06:50:15.991Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.010Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216010
+2026-02-20T06:50:16.010Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.010Z [DEBUG] Temp file written successfully, size: 1757 bytes
+2026-02-20T06:50:16.010Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.010Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216010 to /Users/admin/.claude.json
+2026-02-20T06:50:16.010Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.011Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216011
+2026-02-20T06:50:16.011Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.011Z [DEBUG] Temp file written successfully, size: 1789 bytes
+2026-02-20T06:50:16.011Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.011Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216011 to /Users/admin/.claude.json
+2026-02-20T06:50:16.012Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.015Z [DEBUG] [keybindings] KeybindingSetup initialized with 103 bindings, 0 warnings
+2026-02-20T06:50:16.023Z [DEBUG] High write ratio: blit=0, write=1784 (100.0% writes), screen=27x236
+2026-02-20T06:50:16.029Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216029
+2026-02-20T06:50:16.029Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.029Z [DEBUG] Temp file written successfully, size: 1825 bytes
+2026-02-20T06:50:16.029Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.029Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216029 to /Users/admin/.claude.json
+2026-02-20T06:50:16.030Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.032Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216032
+2026-02-20T06:50:16.032Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.032Z [DEBUG] Temp file written successfully, size: 1907 bytes
+2026-02-20T06:50:16.032Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.032Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216032 to /Users/admin/.claude.json
+2026-02-20T06:50:16.033Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.034Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216034
+2026-02-20T06:50:16.034Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.034Z [DEBUG] Temp file written successfully, size: 1941 bytes
+2026-02-20T06:50:16.034Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.034Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216034 to /Users/admin/.claude.json
+2026-02-20T06:50:16.034Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.036Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-02-20T06:50:16.038Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:16.038Z [DEBUG] performStartupChecks called
+2026-02-20T06:50:16.039Z [DEBUG] Starting background plugin installations
+2026-02-20T06:50:16.039Z [DEBUG] performBackgroundPluginInstallations called
+2026-02-20T06:50:16.040Z [DEBUG] Loaded 3 CLAUDE.md/rules files:
+  [User] /Users/admin/.claude/CLAUDE.md (847 chars)
+  [Project] /Users/admin/project/integrated-search/CLAUDE.md (10070 chars)
+  [AutoMem] /Users/admin/.claude/projects/-Users-admin-project-integrated-search/memory/MEMORY.md (1222 chars)
+2026-02-20T06:50:16.051Z [DEBUG] Watching for changes in setting files /Users/admin/.claude/settings.json, /Users/admin/project/integrated-search/.claude/settings.json, /Users/admin/project/integrated-search/.claude/settings.local.json...
+2026-02-20T06:50:16.053Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216053
+2026-02-20T06:50:16.054Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.054Z [DEBUG] Temp file written successfully, size: 1976 bytes
+2026-02-20T06:50:16.054Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.054Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216053 to /Users/admin/.claude.json
+2026-02-20T06:50:16.054Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.056Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216056
+2026-02-20T06:50:16.056Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.056Z [DEBUG] Temp file written successfully, size: 2008 bytes
+2026-02-20T06:50:16.057Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.057Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216056 to /Users/admin/.claude.json
+2026-02-20T06:50:16.057Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.061Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216061
+2026-02-20T06:50:16.061Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.064Z [DEBUG] Temp file written successfully, size: 2081 bytes
+2026-02-20T06:50:16.064Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.065Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216061 to /Users/admin/.claude.json
+2026-02-20T06:50:16.065Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.074Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216074
+2026-02-20T06:50:16.074Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.074Z [DEBUG] Temp file written successfully, size: 2133 bytes
+2026-02-20T06:50:16.076Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.076Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216074 to /Users/admin/.claude.json
+2026-02-20T06:50:16.077Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.081Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216081
+2026-02-20T06:50:16.081Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.082Z [DEBUG] Temp file written successfully, size: 2173 bytes
+2026-02-20T06:50:16.082Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.082Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216081 to /Users/admin/.claude.json
+2026-02-20T06:50:16.082Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.086Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216086
+2026-02-20T06:50:16.086Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.087Z [DEBUG] Temp file written successfully, size: 2208 bytes
+2026-02-20T06:50:16.087Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.087Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216086 to /Users/admin/.claude.json
+2026-02-20T06:50:16.087Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.104Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-20T06:50:16.104Z [DEBUG] [claudeai-mcp] Gate returned: false
+2026-02-20T06:50:16.104Z [DEBUG] [claudeai-mcp] Disabled via gate
+2026-02-20T06:50:16.105Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216105
+2026-02-20T06:50:16.105Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.106Z [DEBUG] Temp file written successfully, size: 2251 bytes
+2026-02-20T06:50:16.106Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.106Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216105 to /Users/admin/.claude.json
+2026-02-20T06:50:16.106Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.108Z [DEBUG] [keybindings] Watching for changes to /Users/admin/.claude/keybindings.json
+2026-02-20T06:50:16.109Z [DEBUG] Official marketplace 'claude-plugins-official' already installed, skipping
+2026-02-20T06:50:16.111Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216111
+2026-02-20T06:50:16.111Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.111Z [DEBUG] Temp file written successfully, size: 2346 bytes
+2026-02-20T06:50:16.111Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.111Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216111 to /Users/admin/.claude.json
+2026-02-20T06:50:16.112Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.112Z [DEBUG] Found 13 enabled plugins
+2026-02-20T06:50:16.113Z [DEBUG] All plugins already exist, skipping migration
+2026-02-20T06:50:16.113Z [DEBUG] Found 17 installed plugins (V2 format)
+2026-02-20T06:50:16.113Z [DEBUG] Found 0 missing plugins (not installed):
+2026-02-20T06:50:16.113Z [DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+2026-02-20T06:50:16.116Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216116
+2026-02-20T06:50:16.116Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.116Z [DEBUG] Temp file written successfully, size: 2384 bytes
+2026-02-20T06:50:16.116Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.116Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216116 to /Users/admin/.claude.json
+2026-02-20T06:50:16.117Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.122Z [DEBUG] Security messages are fresh (<1h old), skipping fetch
+2026-02-20T06:50:16.137Z [DEBUG] Watching for changes in skill/command directories: /Users/admin/.claude/skills, /Users/admin/.claude/commands...
+2026-02-20T06:50:16.167Z [DEBUG] Loaded 1 LSP server(s) from plugin: typescript-lsp
+2026-02-20T06:50:16.170Z [DEBUG] Loaded 1 LSP server(s) from plugin: kotlin-lsp
+2026-02-20T06:50:16.170Z [DEBUG] Loaded 1 LSP server(s) from plugin: jdtls-lsp
+2026-02-20T06:50:16.172Z [DEBUG] Loaded 1 LSP server(s) from plugin: pyright-lsp
+2026-02-20T06:50:16.173Z [DEBUG] Loaded plugins - Enabled: 13, Disabled: 0, Commands: 5, Agents: 3, Errors: 0
+2026-02-20T06:50:16.173Z [DEBUG] Loaded 1 LSP server(s) from plugin: gopls-lsp
+2026-02-20T06:50:16.174Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216174
+2026-02-20T06:50:16.174Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.174Z [DEBUG] Temp file written successfully, size: 2384 bytes
+2026-02-20T06:50:16.174Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.174Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216174 to /Users/admin/.claude.json
+2026-02-20T06:50:16.174Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.175Z [DEBUG] Total LSP servers loaded: 5
+2026-02-20T06:50:16.175Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 5 server(s)
+2026-02-20T06:50:16.175Z [DEBUG] Queued request handler for plugin:typescript-lsp:typescript.workspace/configuration (connection not ready)
+2026-02-20T06:50:16.175Z [DEBUG] Starting LSP server instance: plugin:typescript-lsp:typescript
+2026-02-20T06:50:16.176Z [ERROR] Error: Error: Failed to initialize LSP server plugin:kotlin-lsp:kotlin-lsp: LSP server 'plugin:kotlin-lsp:kotlin-lsp': startupTimeout is not yet implemented. Remove this field from the configuration.
+    at _ (/$bunfs/root/claude:2550:32629)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.176Z [ERROR] Error: Error: Failed to initialize LSP server plugin:jdtls-lsp:jdtls: LSP server 'plugin:jdtls-lsp:jdtls': startupTimeout is not yet implemented. Remove this field from the configuration.
+    at _ (/$bunfs/root/claude:2550:32629)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.176Z [DEBUG] Queued request handler for plugin:pyright-lsp:pyright.workspace/configuration (connection not ready)
+2026-02-20T06:50:16.176Z [DEBUG] Starting LSP server instance: plugin:pyright-lsp:pyright
+2026-02-20T06:50:16.176Z [DEBUG] Queued request handler for plugin:gopls-lsp:gopls.workspace/configuration (connection not ready)
+2026-02-20T06:50:16.176Z [DEBUG] Starting LSP server instance: plugin:gopls-lsp:gopls
+2026-02-20T06:50:16.176Z [DEBUG] LSP manager initialized with 3 servers
+2026-02-20T06:50:16.176Z [DEBUG] LSP server manager initialized successfully
+2026-02-20T06:50:16.176Z [DEBUG] Queued notification handler for plugin:typescript-lsp:typescript.textDocument/publishDiagnostics (connection not ready)
+2026-02-20T06:50:16.177Z [DEBUG] Registered diagnostics handler for plugin:typescript-lsp:typescript
+2026-02-20T06:50:16.177Z [DEBUG] Queued notification handler for plugin:pyright-lsp:pyright.textDocument/publishDiagnostics (connection not ready)
+2026-02-20T06:50:16.177Z [DEBUG] Registered diagnostics handler for plugin:pyright-lsp:pyright
+2026-02-20T06:50:16.177Z [DEBUG] Queued notification handler for plugin:gopls-lsp:gopls.textDocument/publishDiagnostics (connection not ready)
+2026-02-20T06:50:16.177Z [DEBUG] Registered diagnostics handler for plugin:gopls-lsp:gopls
+2026-02-20T06:50:16.177Z [DEBUG] LSP notification handlers registered successfully for all 3 server(s)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: LSP server plugin:typescript-lsp:typescript failed to start: Executable not found in $PATH: "typescript-language-server"
+    at start (/$bunfs/root/claude:2550:22314)
+    at async H (/$bunfs/root/claude:2550:24762)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: LSP server plugin:pyright-lsp:pyright failed to start: Executable not found in $PATH: "pyright-langserver"
+    at start (/$bunfs/root/claude:2550:22314)
+    at async H (/$bunfs/root/claude:2550:24762)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: LSP server plugin:gopls-lsp:gopls failed to start: Executable not found in $PATH: "gopls"
+    at start (/$bunfs/root/claude:2550:22314)
+    at async H (/$bunfs/root/claude:2550:24762)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Executable not found in $PATH: "typescript-language-server"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2550:20844)
+    at H (/$bunfs/root/claude:2550:24762)
+    at _ (/$bunfs/root/claude:2550:32538)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Executable not found in $PATH: "pyright-langserver"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2550:20844)
+    at H (/$bunfs/root/claude:2550:24762)
+    at _ (/$bunfs/root/claude:2550:32538)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Executable not found in $PATH: "gopls"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2550:20844)
+    at H (/$bunfs/root/claude:2550:24762)
+    at _ (/$bunfs/root/claude:2550:32538)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Failed to start LSP server plugin:typescript-lsp:typescript: Executable not found in $PATH: "typescript-language-server"
+    at <anonymous> (/$bunfs/root/claude:2550:32560)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Failed to start LSP server plugin:pyright-lsp:pyright: Executable not found in $PATH: "pyright-langserver"
+    at <anonymous> (/$bunfs/root/claude:2550:32560)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.177Z [ERROR] Error: Error: Failed to start LSP server plugin:gopls-lsp:gopls: Executable not found in $PATH: "gopls"
+    at <anonymous> (/$bunfs/root/claude:2550:32560)
+    at processTicksAndRejections (native:7:39)
+2026-02-20T06:50:16.190Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216190
+2026-02-20T06:50:16.190Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.190Z [DEBUG] Temp file written successfully, size: 2418 bytes
+2026-02-20T06:50:16.190Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.190Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216190 to /Users/admin/.claude.json
+2026-02-20T06:50:16.190Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.191Z [DEBUG] Hooks: Checking initial response for async: {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-20T06:50:16.191Z [DEBUG] Hooks: Parsed initial response: {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."}}
+2026-02-20T06:50:16.191Z [DEBUG] Hooks: Initial response is not async, continuing normal processing
+2026-02-20T06:50:16.192Z [DEBUG] Successfully parsed and validated hook JSON output
+2026-02-20T06:50:16.192Z [DEBUG] Hook SessionStart:startup (SessionStart) success:
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-20T06:50:16.192Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-02-20T06:50:16.192Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-02-20T06:50:16.225Z [DEBUG] [useDeferredValue] Messages deferred by 3 (0→3)
+2026-02-20T06:50:16.227Z [DEBUG] [FileIndex] git ls-files (tracked) took 35ms
+2026-02-20T06:50:16.227Z [DEBUG] [FileIndex] git ls-files: 362 tracked files in 35ms
+2026-02-20T06:50:16.229Z [DEBUG] [FileIndex] using git ls-files result (362 files)
+2026-02-20T06:50:16.245Z [WARN] Failed to parse YAML frontmatter in /Users/admin/.claude/skills/search-platform-best-practices/references/mapping-explicit-mapping.md: YAML Parse error: Unexpected token
+2026-02-20T06:50:16.248Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216248
+2026-02-20T06:50:16.248Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.249Z [DEBUG] Temp file written successfully, size: 2451 bytes
+2026-02-20T06:50:16.249Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.249Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216248 to /Users/admin/.claude.json
+2026-02-20T06:50:16.249Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:16.249Z [DEBUG] Org fast mode: enabled
+2026-02-20T06:50:16.251Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570216251
+2026-02-20T06:50:16.251Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:16.251Z [DEBUG] Temp file written successfully, size: 2594 bytes
+2026-02-20T06:50:16.251Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:16.251Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570216251 to /Users/admin/.claude.json
+2026-02-20T06:50:16.251Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.454Z [DEBUG] [FileIndex] cache refresh completed in 1262ms (rust index)
+2026-02-20T06:50:17.456Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217456
+2026-02-20T06:50:17.456Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.456Z [DEBUG] Temp file written successfully, size: 2636 bytes
+2026-02-20T06:50:17.456Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.456Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217456 to /Users/admin/.claude.json
+2026-02-20T06:50:17.456Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.457Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217457
+2026-02-20T06:50:17.457Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.457Z [DEBUG] Temp file written successfully, size: 3095 bytes
+2026-02-20T06:50:17.457Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.457Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217457 to /Users/admin/.claude.json
+2026-02-20T06:50:17.458Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.458Z [DEBUG] Passes eligibility cached for org 3e7c54d5-dea8-4689-9feb-5587da38d641: true
+2026-02-20T06:50:17.467Z [DEBUG] [FileIndex] background untracked fetch: 0 files
+2026-02-20T06:50:17.468Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-20T06:50:17.469Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217469
+2026-02-20T06:50:17.469Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.469Z [DEBUG] Temp file written successfully, size: 3162 bytes
+2026-02-20T06:50:17.469Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.469Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217469 to /Users/admin/.claude.json
+2026-02-20T06:50:17.470Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.470Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.49.41a; cc_entrypoint=cli; cch=00000;
+2026-02-20T06:50:17.470Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-20T06:50:17.470Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-20T06:50:17.471Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217471
+2026-02-20T06:50:17.471Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.471Z [DEBUG] Temp file written successfully, size: 3208 bytes
+2026-02-20T06:50:17.471Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.471Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217471 to /Users/admin/.claude.json
+2026-02-20T06:50:17.471Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.472Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217472
+2026-02-20T06:50:17.472Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.473Z [DEBUG] Temp file written successfully, size: 3246 bytes
+2026-02-20T06:50:17.473Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.473Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217472 to /Users/admin/.claude.json
+2026-02-20T06:50:17.473Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.473Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217473
+2026-02-20T06:50:17.473Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.474Z [DEBUG] Temp file written successfully, size: 3284 bytes
+2026-02-20T06:50:17.474Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.474Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217473 to /Users/admin/.claude.json
+2026-02-20T06:50:17.474Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.474Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-20T06:50:17.482Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/Caskroom/claude-code/2.1.49/claude)
+2026-02-20T06:50:17.483Z [ERROR] MCP server "plugin:context7:context7" Server stderr: WARNING: Using default CLIENT_IP_ENCRYPTION_KEY.
+Context7 Documentation MCP Server v2.0.2 running on stdio
+2026-02-20T06:50:17.483Z [DEBUG] MCP server "plugin:context7:context7": Successfully connected to undefined server in 1536ms
+2026-02-20T06:50:17.484Z [DEBUG] MCP server "plugin:context7:context7": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"Context7","version":"2.0.2"}}
+2026-02-20T06:50:17.485Z [DEBUG] MCP server "plugin:playwright:playwright": Successfully connected to undefined server in 1536ms
+2026-02-20T06:50:17.485Z [DEBUG] MCP server "plugin:playwright:playwright": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"Playwright","version":"0.0.68"}}
+2026-02-20T06:50:17.495Z [DEBUG] Writing to temp file: /Users/admin/.claude/settings.json.tmp.3475.1771570217495
+2026-02-20T06:50:17.495Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.495Z [DEBUG] Temp file written successfully, size: 12733 bytes
+2026-02-20T06:50:17.495Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.495Z [DEBUG] Renaming /Users/admin/.claude/settings.json.tmp.3475.1771570217495 to /Users/admin/.claude/settings.json
+2026-02-20T06:50:17.495Z [DEBUG] File /Users/admin/.claude/settings.json written atomically
+2026-02-20T06:50:17.499Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:17.501Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:17.504Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:17.506Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:17.507Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:17.507Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217507
+2026-02-20T06:50:17.507Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.508Z [DEBUG] Temp file written successfully, size: 3317 bytes
+2026-02-20T06:50:17.508Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.508Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217507 to /Users/admin/.claude.json
+2026-02-20T06:50:17.508Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.509Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217509
+2026-02-20T06:50:17.509Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.509Z [DEBUG] Temp file written successfully, size: 3350 bytes
+2026-02-20T06:50:17.509Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.509Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217509 to /Users/admin/.claude.json
+2026-02-20T06:50:17.509Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.510Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570217510
+2026-02-20T06:50:17.510Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:17.510Z [DEBUG] Temp file written successfully, size: 3383 bytes
+2026-02-20T06:50:17.510Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:17.510Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570217510 to /Users/admin/.claude.json
+2026-02-20T06:50:17.510Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:17.519Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:18.118Z [ERROR] MCP server "plugin:serena:serena" Server stderr: INFO  2026-02-20 15:50:17,839 [MainThread] serena.cli:start_mcp_server:268 - Initializing Serena MCP server
+INFO  2026-02-20 15:50:17,839 [MainThread] serena.cli:start_mcp_server:269 - Storing logs in /Users/admin/.serena/logs/2026-02-20/mcp_20260220-155017.txt
+INFO  2026-02-20 15:50:17,840 [MainThread] serena.config.serena_config:from_config_file:601 - Loading Serena configuration from /Users/admin/.serena/serena_config.yml
+INFO  2026-02-20 15:50:17,868 [MainThread] serena.agent:__init__:289 - Will record tool usage statistics with token count estimator: TIKTOKEN_GPT4O.
+INFO  2026-02-20 15:50:17,871 [MainThread] serena.analytics:__init__:39 - Loading tiktoken encoding for model gpt-4o, this may take a while on the first run.
+INFO  2026-02-20 15:50:18,076 [MainThread] serena.agent:__init__:293 - Starting Serena server (version=0.1.4-a9f5bba5-dirty, process id=3545, parent process id=3496; language backend=LSP)
+INFO  2026-02-20 15:50:18,076 [MainThread] serena.agent:__init__:297 - Configuration file: /Users/admin/.serena/serena_config.yml
+INFO  2026-02-20 15:50:18,076 [MainThread] serena.agent:__init__:298 - Available projects: admin, analysis-danuri, analysis-product, dsearch-indexer, dsearch-server, findining, findining-crawl, integrated-search, search-admin, searchapi-elastic
+INFO  2026-02-20 15:50:18,077 [MainThread] serena.agent:__init__:299 - Loaded tools (40): read_file, create_text_file, list_dir, find_file, replace_content, delete_lines, replace_lines, insert_at_line, search_for_pattern, restart_language_server, get_symbols_overview, find_symbol, find_referencing_symbols, replace_symbol_body, insert_after_symbol, insert_before_symbol, rename_symbol, write_memory, read_memory, list_memories, delete_memory, edit_memory, execute_shell_command, open_dashboard, activate_project, remove_project, switch_modes, get_current_config, check_onboarding_performed, onboarding, think_about_collected_information, think_about_task_adherence, think_about_whether_you_are_done, summarize_changes, prepare_for_new_conversation, initial_instructions, jet_brains_find_symbol, jet_brains_find_referencing_symbols, jet_brains_get_symbols_overview, jet_brains_type_hierarchy
+INFO  2026-02-20 15:50:18,077 [MainThread] serena.agent:apply:142 - SerenaAgentContext[name='desktop-app'] included 1 tools: switch_modes
+INFO  2026-02-20 15:50:18,078 [MainThread] serena.agent:__init__:325 - Number of exposed tools: 26
+INFO  2026-02-20 15:50:18,085 [MainThread] serena.agent:get_mode_names:199 - Active modes: ['editing', 'interactive']
+INFO  2026-02-20 15:50:18,087 [MainThread] serena.agent:_update_active_modes_and_tools:584 - Active tools (26): activate_project, check_onboarding_performed, create_text_file, delete_memory, edit_memory, execute_shell_command, find_file, find_referencing_symbols, find_symbol, get_current_config, get_symbols_overview, initial_instructions, insert_after_symbol, insert_before_symbol, list_dir, list_memories, onboarding, prepare_for_new_conversation, read_file, read_memory, rename_symbol, replace_content, replace_symbol_body, search_for_pattern, switch_modes, write_memory
+INFO  2026-02-20 15:50:18,090 [MainThread] serena.dashboard:run_in_thread:642 - Starting dashboard (listen_address=127.0.0.1, port=24282)
+INFO  2026-02-20 15:50:18,090 [MainThread] serena.agent:__init__:361 - Serena web dashboard started at http://127.0.0.1:24282/dashboard/index.html
+INFO  2026-02-20 15:50:18,093 [MainThread] serena.agent:create_system_prompt:543 - Generating system prompt with available_tools=(see active tools), available_markers={'ExecuteShellCommandTool', 'ToolMarkerOptional', 'FindReferencingSymbolsTool', 'ToolMarkerSymbolicEdit', 'ToolMarkerDoesNotRequireActiveProject', 'FindSymbolTool', 'ActivateProjectTool', 'SwitchModesTool', 'DeleteMemoryTool', 'InsertBeforeSymbolTool', 'EditMemoryTool', 'RenameSymbolTool', 'ToolMarkerCanEdit', 'WriteMemoryTool', 'ToolMarkerSymbolicRead', 'CreateTextFileTool', 'GetSymbolsOverviewTool', 'InsertAfterSymbolTool', 'ReplaceContentTool', 'InitialInstructionsTool', 'ReplaceSymbolBodyTool'}
+INFO  2026-02-20 15:50:18,094 [MainThread] serena.agent:create_system_prompt:555 - System prompt:
+You are a professional coding agent. 
+You have access to semantic coding tools upon which you rely heavily for all your work.
+You operate in a resource-efficient and intelligent manner, always keeping in mind to not read or generate
+content that is not needed for the task at hand.
+
+Some tasks may require you to understand the architecture of large parts of the codebase, while for others,
+it may be enough to read a small set of symbols or a single file.
+You avoid reading entire files unless it is absolutely necessary, instead relying on intelligent step-by-step 
+acquisition of information. Once you have read a full file, it does not make
+sense to analyse it with the symbolic read tools; you already have the information.
+
+You can achieve intelligent reading of code by using the symbolic tools for getting an overview of symbols and
+the relations between them, and then only reading the bodies of symbols that are necessary to complete the task at hand. 
+You can use the standard tools like list_dir, find_file and search_for_pattern if you need to.
+Where appropriate, you pass the `relative_path` parameter to restrict the search to a specific file or directory.
+
+If you are unsure about a symbol's name or location (to the extent that substring_matching for the symbol name is not enough), you can use the `search_for_pattern` tool, which allows fast
+and flexible search for patterns in the codebase. In this way, you can first find candidates for symbols or files,
+and then proceed with the symbolic tools.
+
+
+
+Symbols are identified by their `name_path` and `relative_path` (see the description of the `find_symbol` tool).
+You can get information about the symbols in a file by using the `get_symbols_overview` tool or use the `find_symbol` to search. 
+You only read the bodies of symbols when you need to (e.g. if you want to fully understand or edit it).
+For example, if you are working with Python code and already know that you need to read the body of the constructor of the class Foo, you can directly
+use `find_symbol` with name path pattern `Foo/__init__` and `include_body=True`. If you don't know yet which methods in `Foo` you need to read or edit,
+you can use `find_symbol` with name path pattern `Foo`, `include_body=False` and `depth=1` to get all (top-level) methods of `Foo` before proceeding
+to read the desired methods with `include_body=True`.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool.
+
+
+
+You generally have access to memories and it may be useful for you to read them.
+You infer whether memories are relevant based on their names.
+
+
+The context and modes of operation are described below. These determine how to interact with your user
+and which kinds of interactions are expected of you.
+
+Context description:
+You are running in a desktop application context.
+Serena's tools give you access to the code base as well as some access to the file system (if enabled). 
+You interact with the user through a chat interface that is separated from the code base. 
+As a consequence, if you are in interactive mode, your communication with the user should
+involve high-level thinking and planning as well as some summarization of any code edits that you make.
+To view the code edits you make, the user will have switch to a separate application.
+To illustrate complex relationships, consider creating diagrams in addition to your text-based communication
+(depending on the options for text, html, mermaid diagrams, etc. that you are provided with in your initial instructions).
+
+Modes descriptions:
+
+You are operating in editing mode. You can edit files with the provided tools.
+You adhere to the project's code style and patterns.
+
+Use symbolic editing tools whenever possible for precise code modifications.
+If no explicit editing task has yet been provided, wait for the user to provide one. Do not be overly eager.
+
+When writing new code, think about where it belongs best. Don't generate new files if you don't plan on actually
+properly integrating them into the codebase.
+
+You have two main approaches for editing code: (a) editing at the symbol level and (b) file-based editing.
+The symbol-based approach is appropriate if you need to adjust an entire symbol, e.g. a method, a class, a function, etc.
+It is not appropriate if you need to adjust just a few lines of code within a larger symbol.
+
+**Symbolic editing**
+Use symbolic retrieval tools to identify the symbols you need to edit.
+If you need to replace the definition of a symbol, use the `replace_symbol_body` tool.
+If you want to add some new code at the end of the file, use the `insert_after_symbol` tool with the last top-level symbol in the file. 
+Similarly, you can use `insert_before_symbol` with the first top-level symbol in the file to insert code at the beginning of a file.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool. If not explicitly requested otherwise by the user,
+you make sure that when you edit a symbol, the change is either backward-compatible or you find and update all references as needed.
+The `find_referencing_symbols` tool will give you code snippets around the references as well as symbolic information.
+You can assume that all symbol editing tools are reliable, so you never need to verify the results if the tools return without error.
+
+
+**File-based editing**
+The `replace_content` tool allows you to perform regex-based replacements within files (as well as simple string replacements).
+This is your primary tool for editing code whenever replacing or deleting a whole symbol would be a more expensive operation,
+e.g. if you need to adjust just a few lines of code within a method.
+You are extremely good at regex, so you never need to check whether the replacement produced the correct result.
+In particular, you know how to use wildcards effectively in order to avoid specifying the full original text to be replaced!
+
+
+You are operating in interactive mode. You should engage with the user throughout the task, asking for clarification
+whenever anything is unclear, insufficiently specified, or ambiguous.
+
+Break down complex tasks into smaller steps and explain your thinking at each stage. When you're uncertain about
+a decision, present options to the user and ask for guidance rather than making assumptions.
+
+Focus on providing informative results for intermediate steps, such that the user can follow along with your progress and
+provide feedback as needed.
+
+
+You have hereby read the 'Serena Instructions Manual' and do not need to read it again.
+INFO  2026-02-20 15:50:18,096 [MainThread] serena.cli:start_mcp_server:300 - Starting MCP server …
+INFO  2026-02-20 15:50:18,116 [MainThread] serena.mcp:_set_mcp_tools:261 - Starting MCP server with 26 tools: ['read_file', 'create_text_file', 'list_dir', 'find_file', 'replace_content', 'search_for_pattern', 'get_symbols_overview', 'find_symbol', 'find_referencing_symbols', 'replace_symbol_body', 'insert_after_symbol', 'insert_before_symbol', 'rename_symbol', 'write_memory', 'read_memory', 'list_memories', 'delete_memory', 'edit_memory', 'execute_shell_command', 'activate_project', 'switch_modes', 'get_current_config', 'check_onboarding_performed', 'onboarding', 'prepare_for_new_conversation', 'initial_instructions']
+INFO  2026-02-20 15:50:18,116 [MainThread] serena.mcp:server_lifespan:343 - MCP server lifetime setup complete
+2026-02-20T06:50:18.118Z [DEBUG] MCP server "plugin:serena:serena": Successfully connected to undefined server in 2174ms
+2026-02-20T06:50:18.118Z [DEBUG] MCP server "plugin:serena:serena": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"FastMCP","version":"1.23.0"}}
+2026-02-20T06:50:18.128Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:18.131Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:18.138Z [DEBUG] Stream started - received first chunk
+2026-02-20T06:50:18.321Z [WARN] [3P telemetry] Event dropped (no event logger initialized): api_request
+2026-02-20T06:50:18.322Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570218322
+2026-02-20T06:50:18.322Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:18.322Z [DEBUG] Temp file written successfully, size: 4054 bytes
+2026-02-20T06:50:18.322Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:18.322Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570218322 to /Users/admin/.claude.json
+2026-02-20T06:50:18.323Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:19.849Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:20.901Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:20.909Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:20.912Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:20.913Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:21.283Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570221283
+2026-02-20T06:50:21.283Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:21.284Z [DEBUG] Temp file written successfully, size: 4098 bytes
+2026-02-20T06:50:21.284Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:21.284Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570221283 to /Users/admin/.claude.json
+2026-02-20T06:50:21.284Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:21.299Z [DEBUG] Total plugin output styles loaded: 0
+2026-02-20T06:50:22.060Z [DEBUG] Successfully refreshed marketplace: claude-plugins-official
+2026-02-20T06:50:22.060Z [DEBUG] Plugin autoupdate: checking installed plugins
+2026-02-20T06:50:22.062Z [DEBUG] Caching plugin from source: {"source":"url","url":"https://github.com/figma/mcp-server-guide.git"} to temporary path /Users/admin/.claude/plugins/cache/temp_git_1771570222062_37bbby
+2026-02-20T06:50:22.071Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:50:22.071Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:50:22.071Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:50:22.071Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:50:22.072Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-20T06:50:22.072Z [DEBUG] Using git SHA for plugin-dev@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for commit-commands@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for serena@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for context7@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for hookify@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.074Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 8deab8460a9d
+2026-02-20T06:50:22.265Z [DEBUG] [useDeferredValue] Messages deferred by 2 (3→5)
+2026-02-20T06:50:22.270Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:22.272Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:22.280Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:22.283Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-20T06:50:22.284Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:22.286Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570222286
+2026-02-20T06:50:22.286Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:22.286Z [DEBUG] Temp file written successfully, size: 4143 bytes
+2026-02-20T06:50:22.286Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:22.286Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570222286 to /Users/admin/.claude.json
+2026-02-20T06:50:22.287Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:22.288Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:22.289Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570222289
+2026-02-20T06:50:22.289Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:22.289Z [DEBUG] Temp file written successfully, size: 4173 bytes
+2026-02-20T06:50:22.290Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:22.290Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570222289 to /Users/admin/.claude.json
+2026-02-20T06:50:22.290Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:22.299Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570222299
+2026-02-20T06:50:22.299Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:22.299Z [DEBUG] Temp file written successfully, size: 4222 bytes
+2026-02-20T06:50:22.299Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:22.299Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570222299 to /Users/admin/.claude.json
+2026-02-20T06:50:22.300Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:22.301Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570222301
+2026-02-20T06:50:22.301Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:22.301Z [DEBUG] Temp file written successfully, size: 4260 bytes
+2026-02-20T06:50:22.301Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:22.301Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570222301 to /Users/admin/.claude.json
+2026-02-20T06:50:22.301Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:22.302Z [DEBUG] [useDeferredValue] Messages deferred by 2 (3→5)
+2026-02-20T06:50:22.305Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:22.307Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-20T06:50:23.450Z [DEBUG] Cloned repository from https://github.com/figma/mcp-server-guide.git to /Users/admin/.claude/plugins/cache/temp_git_1771570222062_37bbby
+2026-02-20T06:50:23.451Z [DEBUG] Successfully cached plugin figma to /Users/admin/.claude/plugins/cache/figma
+2026-02-20T06:50:23.451Z [DEBUG] Using manifest version for figma@claude-plugins-official: 1.1.0
+2026-02-20T06:50:24.806Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:25.308Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:25.313Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:25.318Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:25.319Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:25.489Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:26.100Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:27.373Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:27.379Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:27.382Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:27.383Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:27.703Z [DEBUG] High write ratio: blit=0, write=1083 (100.0% writes), screen=27x236
+2026-02-20T06:50:27.707Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570227707
+2026-02-20T06:50:27.707Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:27.708Z [DEBUG] Temp file written successfully, size: 4304 bytes
+2026-02-20T06:50:27.708Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:27.708Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570227707 to /Users/admin/.claude.json
+2026-02-20T06:50:27.708Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:27.709Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570227709
+2026-02-20T06:50:27.709Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:27.709Z [DEBUG] Temp file written successfully, size: 4399 bytes
+2026-02-20T06:50:27.709Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:27.709Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570227709 to /Users/admin/.claude.json
+2026-02-20T06:50:27.710Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:30.010Z [DEBUG] Writing to temp file: /Users/admin/.claude/settings.json.tmp.3475.1771570230010
+2026-02-20T06:50:30.011Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:30.012Z [DEBUG] Temp file written successfully, size: 12733 bytes
+2026-02-20T06:50:30.012Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:30.012Z [DEBUG] Renaming /Users/admin/.claude/settings.json.tmp.3475.1771570230010 to /Users/admin/.claude/settings.json
+2026-02-20T06:50:30.013Z [DEBUG] File /Users/admin/.claude/settings.json written atomically
+2026-02-20T06:50:30.016Z [DEBUG] FileHistory: Added snapshot for 64d718a0-8440-466d-8e99-c5eaf9b7d68c, tracking 0 files
+2026-02-20T06:50:30.018Z [DEBUG] [useDeferredValue] Messages deferred by 3 (5→8)
+2026-02-20T06:50:30.026Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:30.027Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:30.038Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:30.039Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-20T06:50:30.040Z [DEBUG] [useDeferredValue] Messages deferred by 3 (5→8)
+2026-02-20T06:50:30.041Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:30.043Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:30.052Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570230052
+2026-02-20T06:50:30.052Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:30.052Z [DEBUG] Temp file written successfully, size: 4424 bytes
+2026-02-20T06:50:30.052Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:30.052Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570230052 to /Users/admin/.claude.json
+2026-02-20T06:50:30.053Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:30.055Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570230055
+2026-02-20T06:50:30.055Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:30.055Z [DEBUG] Temp file written successfully, size: 4449 bytes
+2026-02-20T06:50:30.055Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:30.055Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570230055 to /Users/admin/.claude.json
+2026-02-20T06:50:30.056Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:30.058Z [DEBUG] [useDeferredValue] Messages deferred by 3 (5→8)
+2026-02-20T06:50:30.061Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:30.064Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-20T06:50:31.424Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:34.518Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:34.524Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:34.524Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:34.524Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:35.490Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:36.082Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:36.087Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:36.090Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:36.091Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:39.852Z [DEBUG] [useDeferredValue] Messages deferred by 2 (8→10)
+2026-02-20T06:50:39.858Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:39.861Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:39.872Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:39.874Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-20T06:50:39.875Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:39.877Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:39.887Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570239887
+2026-02-20T06:50:39.887Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:39.888Z [DEBUG] Temp file written successfully, size: 4473 bytes
+2026-02-20T06:50:39.888Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:39.888Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570239887 to /Users/admin/.claude.json
+2026-02-20T06:50:39.888Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:39.890Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570239890
+2026-02-20T06:50:39.890Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:39.890Z [DEBUG] Temp file written successfully, size: 4496 bytes
+2026-02-20T06:50:39.890Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:39.890Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570239890 to /Users/admin/.claude.json
+2026-02-20T06:50:39.890Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:39.892Z [DEBUG] [useDeferredValue] Messages deferred by 2 (8→10)
+2026-02-20T06:50:39.896Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:39.899Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-20T06:50:40.030Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:42.145Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:42.149Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:42.150Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:42.151Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:44.738Z [DEBUG] [useDeferredValue] Messages deferred by 2 (10→12)
+2026-02-20T06:50:44.750Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:44.752Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:44.763Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:44.765Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-20T06:50:44.766Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:44.768Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:44.779Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570244779
+2026-02-20T06:50:44.779Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:44.779Z [DEBUG] Temp file written successfully, size: 4533 bytes
+2026-02-20T06:50:44.780Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:44.780Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570244779 to /Users/admin/.claude.json
+2026-02-20T06:50:44.780Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:44.782Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570244782
+2026-02-20T06:50:44.782Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:50:44.782Z [DEBUG] Temp file written successfully, size: 4553 bytes
+2026-02-20T06:50:44.782Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:50:44.782Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570244782 to /Users/admin/.claude.json
+2026-02-20T06:50:44.782Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:50:44.783Z [DEBUG] [useDeferredValue] Messages deferred by 2 (10→12)
+2026-02-20T06:50:44.786Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:44.789Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-20T06:50:44.881Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:46.369Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:46.376Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:50:46.378Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:50:46.379Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:50:46.733Z [DEBUG] Using cached install counts
+2026-02-20T06:50:49.786Z [DEBUG] Using cached install counts
+2026-02-20T06:51:01.738Z [DEBUG] FileHistory: Making snapshot for message 098e93ab-ca2e-4519-96f1-b2be3a8d9f1e
+2026-02-20T06:51:01.738Z [DEBUG] FileHistory: Added snapshot for 098e93ab-ca2e-4519-96f1-b2be3a8d9f1e, tracking 0 files
+2026-02-20T06:51:01.739Z [DEBUG] [useDeferredValue] Messages deferred by 3 (12→15)
+2026-02-20T06:51:01.748Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:01.749Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:01.753Z [DEBUG] High write ratio: blit=0, write=1043 (100.0% writes), screen=29x236
+2026-02-20T06:51:01.760Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:51:01.762Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-20T06:51:01.763Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:01.764Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:51:01.774Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570261774
+2026-02-20T06:51:01.774Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:51:01.775Z [DEBUG] Temp file written successfully, size: 4582 bytes
+2026-02-20T06:51:01.775Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:51:01.775Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570261774 to /Users/admin/.claude.json
+2026-02-20T06:51:01.776Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:51:01.778Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.3475.1771570261778
+2026-02-20T06:51:01.778Z [DEBUG] Preserving file permissions: 100644
+2026-02-20T06:51:01.778Z [DEBUG] Temp file written successfully, size: 4610 bytes
+2026-02-20T06:51:01.778Z [DEBUG] Applied original permissions to temp file
+2026-02-20T06:51:01.778Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.3475.1771570261778 to /Users/admin/.claude.json
+2026-02-20T06:51:01.778Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-20T06:51:01.779Z [DEBUG] [useDeferredValue] Messages deferred by 3 (12→15)
+2026-02-20T06:51:01.783Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:01.785Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-20T06:51:04.497Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:05.039Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:05.047Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.49/claude
+2026-02-20T06:51:05.047Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-20T06:51:05.048Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-20T06:51:05.492Z [DEBUG] Getting matching hook commands for SessionEnd with query: prompt_input_exit
+2026-02-20T06:51:05.492Z [DEBUG] Found 0 hook matchers in settings
+2026-02-20T06:51:05.492Z [DEBUG] Matched 0 unique hooks for query "prompt_input_exit" (0 before deduplication)

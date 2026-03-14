@@ -1,0 +1,1217 @@
+     1→<?xml version="1.0" encoding="UTF-8"?>
+     2→<!DOCTYPE mapper
+     3→        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     4→        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     5→
+     6→<mapper namespace="product">
+     7→    <!-- 기준상품 존재여부 -->
+     8→    <select id="isExistProdSeq"
+     9→            resultType="java.lang.Boolean">
+    10→        select
+    11→        prod_c
+    12→        from
+    13→        tprod where prod_c = #{productCode}
+    14→    </select>
+    15→
+    16→    <!-- 기준상품 존재여부 리스트-->
+    17→    <select id="isExistProdSeqList" resultType="java.util.HashMap">
+    18→        select
+    19→        prod_c as productCode
+    20→        from
+    21→        tprod
+    22→        where
+    23→        prod_c in (
+    24→        <foreach collection="list" item="prod" separator=",">
+    25→            #{prod.productCode}
+    26→        </foreach>
+    27→        )
+    28→    </select>
+    29→
+    30→    <select id="getAttributeValueSeq"
+    31→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+    32→
+    33→        SELECT
+    34→        tP.prod_c as productCode,
+    35→        NVL((select
+    36→        group_concat(nAttributeValueSeq, ',') from tProductAttributeValue tPA
+    37→        where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by
+    38→        tPA.nProductCategorySeq) , '') as nAttributeValueSeq
+    39→        FROM
+    40→        tprod tP
+    41→        INNER
+    42→        JOIN tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+    43→        WHERE
+    44→        tP.disp_yn = 'Y'
+    45→        AND tPC.nCategorySeq1=#{categoryCode1}
+    46→        AND
+    47→        tPC.nCategorySeq2=#{categoryCode2}
+    48→        AND
+    49→        tPC.nCategorySeq3=#{categoryCode3}
+    50→        AND
+    51→        tPC.nCategorySeq4=#{categoryCode4}
+    52→    </select>
+    53→
+    54→
+    55→    <select id="getCategoryKeyword" resultType="java.util.HashMap">
+    56→
+    57→        SELECT
+    58→        tc.cate_c as
+    59→        cate_c,
+    60→        tSKC.sCategoryKeyword as sCategoryKeyword,
+    61→        tSKC.emType as emType
+    62→        FROM
+    63→        tcate tc
+    64→        inner join tSearchKeywordCategory tSKC on (tc.cate_c =
+    65→        tSKC.cate_c)
+    66→        WHERE
+    67→        tc.cate_c=#{categoryCode1}
+    68→        or
+    69→        tc.cate_c=#{categoryCode2}
+    70→        or tc.cate_c=#{categoryCode3}
+    71→        or
+    72→        tc.cate_c=#{categoryCode4}
+    73→
+    74→    </select>
+    75→
+    76→    <select id="getProductMakerName"
+    77→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+    78→
+    79→        select
+    80→        tP.prod_n as productName,
+    81→        NVL(tM.maker_n,'') as
+    82→        productMaker,
+    83→        tM.maker_c as makerCode
+    84→        from
+    85→        tprod tP LEFT JOIN
+    86→        tprod_maker
+    87→        tM ON (tP.maker_c = tM.maker_c )
+    88→        where
+    89→        tP.prod_c=
+    90→        #{productCode}
+    91→
+    92→    </select>
+    93→
+    94→    <select id="getUpdateData"
+    95→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+    96→        <![CDATA[
+    97→	SELECT
+    98→		tP.prod_c as id,
+    99→		tP.prod_c as productCode,
+   100→		'dna' as shopCode,
+   101→		tP.prod_n as productName,
+   102→		NVL(tPM.maker_n ,'') as productMaker,
+   103→		NVL(tKFS.sMakerKeywordList,'') as makerKeyword,
+   104→		NVL(tPR.brand_n,'') as productBrand,
+   105→		NVL(tKFS.sBrandKeywordList,'') as brandKeyword,
+   106→		NVL(SUBSTR((SELECT GROUP_CONCAT(DISTINCT(tSKD.sModelKeyword) , ', ') FROM tSearchKeywordModel tSKD WHERE tP.prod_c = tSKD.prod_c AND tSKD.SKEYWORDTYPE = 'R' GROUP BY tP.prod_c),1,255),'') as productModel,
+   107→		NVL(tKFS.sModelKeywordList,'') as modelWeight,
+   108→		NVL(tPD.sSimpleDescription,'') as simpleDescription,
+   109→		NVL(tPD.sAddDescription,'') as addDescription,		
+   110→		NVL(tPD.sCmDescription,'') as cmDescription,
+   111→		tPD.sMobileSimpleDescription as mobileDescription,
+   112→		tPCDAT.sActionTagCode as actionTag,
+   113→		tPCDAT.sMobileActionTagCode as mobileActionTag,
+   114→		tP.nLowPrice as pcPrice,
+   115→		tP.nLowPrice as lowestPrice,
+   116→		CASE
+   117→            WHEN tP.NLOWPRICEINCLUDEDELIVERYCOST = 0 THEN tP.nLowPrice
+   118→            ELSE tP.NLOWPRICEINCLUDEDELIVERYCOST
+   119→        END AS totalPrice,
+   120→		tP.avgprice_q as averagePrice,
+   121→		tP.nLowPrice as mobilePrice,
+   122→		tP.shop_q as shopQuantity,
+   123→		NVL(tP.shot_yn ,'N') as discontinued,
+   124→		tPC.nCategorySeq1 as categoryCode1,
+   125→		tPC.nCategorySeq2 as categoryCode2,
+   126→		NVL(tPC.nCategorySeq3, 0) as categoryCode3,
+   127→		NVL(tPC.nCategorySeq4, 0) as categoryCode4,		
+   128→		CASE
+   129→			WHEN tCFS.nCategorySeq3 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   130→			WHEN tCFS.nCategorySeq3='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   131→			WHEN tCFS.nCategorySeq3=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   132→			WHEN tCFS.nCategorySeq4 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   133→			WHEN tCFS.nCategorySeq4='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   134→			WHEN tCFS.nCategorySeq4=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   135→			ELSE tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3 || '>' || tCFS.sCategoryName4
+   136→		END as categoryName,
+   137→		tCFS.sCategoryKeywordList as categoryKeyword,
+   138→		tCFS.sCategoryWeightList as categoryWeight1,
+   139→	    (SELECT group_concat(tAVFS.sWeightKeyword, ',')
+   140→         FROM tProductAttributeValue tPA
+   141→         LEFT JOIN TATTRIBUTEVALUEFORSEARCH tAVFS ON (tAVFS.nAttributeValueSeq = tPA.NATTRIBUTEVALUESEQ)
+   142→         WHERE tPA.nProductCategorySeq = tPC.nProductCategorySeq
+   143→         GROUP BY tPA.nProductCategorySeq) as categoryWeight2,
+   144→        TO_CHAR(tP.input_d, 'YYYYMMDD') as registerDate,
+   145→		TO_CHAR(tP.input_d, 'YYYYMMDD HH24:MI:SS') as registerDateTime,
+   146→		TO_CHAR(tP.dtPriceModifyDate, 'YYYYMMDD') as modifyDate,
+   147→		TO_CHAR(tP.modify_d, 'YYYYMMDD HH24:MI:SS') as modifyDateTime,
+   148→		TO_CHAR(tP.make_d, 'YYYYMMDD') as manufactureDate,
+   149→		TO_CHAR(tP.make_d, 'YYYYMMDD HH24:MI:SS') as manufactureDateTime,
+   150→        CASE
+   151→		    WHEN tP.shot_yn = 'Y'  THEN 0
+   152→		    WHEN tP.nLowPrice > 0  THEN tPC.nCntSave + 1
+   153→		    ELSE
+   154→				CASE
+   155→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30, 'DAY') THEN tPC.nCntSave + 1
+   156→					ELSE 0
+   157→				END
+   158→		END AS popularityScore,
+   159→		NVL(tPC.nCntSave,0) as cntSave,
+   160→		NVL(tKFS.sKeywordList, '') as managerKeyword,
+   161→		TO_CHAR(tPSM.MODIFY_DT, 'YYYYMMDD') as managerKeywordDate,
+   162→		CASE
+   163→			WHEN tP.shot_yn = 'Y'  THEN '1'
+   164→			WHEN tP.nLowPrice > 0  THEN '7' 
+   165→			ELSE
+   166→				CASE
+   167→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30,'DAY') THEN
+   168→						CASE
+   169→							WHEN tP.dtPriceModifyDate = '01-JAN-1970' THEN
+   170→								CASE
+   171→									WHEN tP.make_d > SYSDATE THEN '5'
+   172→									ELSE '4'
+   173→								END
+   174→							ELSE '3'
+   175→						END
+   176→					ELSE '3'
+   177→				END
+   178→		END as productClassification,
+   179→		tP.nPromotionMinPriceQ as promotionPrice,
+   180→		NVL(tPB.bundle_n, '') as bundleName,
+   181→		NVL(tPB.bundle_disp_seq, '1') as bundleDisplaySequence,
+   182→		tPB.sSelectYN as selectYN,
+   183→		tP.sPriceCompareServiceYN as priceCompareServiceYN,	
+   184→		NVL(tP.maker_c,0) as makerCode,
+   185→		NVL(tP.brand_c,0) as brandCode,	
+   186→		tP.movie_yn as movieYN,
+   187→		tP.sPriceLockYN as priceLockYN,
+   188→		NVL((select group_concat(nAttributeValueSeq, ',') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as nAttributeValueSeq,
+   189→		NVL((select group_concat(sAttributeValueDescription, '|') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as sAttributeValueDescription,
+   190→		tPDD.sSimpleDictionaryCode as simpleDictionaryCode,
+   191→		tPDD.sSummaryDictionaryCode as summaryDictionaryCode,
+   192→		NVL(tPC.nCntSave,0)+NVL(tSP.save_plus_q, 0) as savePlusQ,
+   193→		tUP.nTotalCapacity as totalCapacity,
+   194→		tUP.nStandardCapacity as standardCapacity,
+   195→		tUP.sUnit as unit,
+   196→	    '1' as prodType,
+   197→		tCFS.sBRPS as brps,
+   198→		tPIP.nPriceType as PriceType,
+   199→		tPIP.nPrice as initialPrice,
+   200→		CASE
+   201→			WHEN tPIP.nPrice > 0 THEN
+   202→				TRUNC(((1-(tP.nLowPrice/tPIP.nPrice))*100),0)
+   203→			ELSE '' 
+   204→		END as discountRate,
+   205→		tP.disp_yn as dispYN,
+   206→		NVL(tPBC.nWriteCnt + tPBC.nCmpnyWriteCnt, 0) as writeCnt,
+   207→		tP.sProductRegisterType as productRegisterType,
+   208→		CASE
+   209→			WHEN tP.nLowPrice > 0 THEN 'N'
+   210→			WHEN tP.shot_yn = 'Y' THEN 'N'
+   211→			WHEN
+   212→			(
+   213→				tP.input_d >= DATEADD(SYSDATE, -30, 'DAY') 
+   214→				OR 
+   215→				tP.make_d >= DATEADD(SYSDATE, -30, 'DAY') 
+   216→				OR 
+   217→				TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD')
+   218→			) THEN 'N'
+   219→			ELSE 'Y'
+   220→		END as priceComparisonStopYN,
+   221→		tCFS.sDispYN as categoryDispYN,
+   222→		tPB.sSelectYN as bundleSelectYN,
+   223→		NVL((select group_concat(tRPTP.sModel,',') from tRelationProductTargetProduct tRPTP, tRelationProduct tRP where tRP.sDetailYN = 'Y' and tRPTP.nRelationProductSeq = tRP.nRelationProductSeq and tRP.nRelationFormValue = tP.prod_c group by tP.prod_c), '') as RELATIONMODEL,
+   224→		tPB.nDescriptionListSeq as descriptionListSeq,
+   225→		TO_CHAR(tP.modify_d , 'YYYYMMDDHHMISS') as imageVersion,
+   226→		NVL(tPBC.nCmpnyWriteScoreSum, 0) as cmpnyWriteScoreSum,
+   227→		NVL(tPBC.nCmpnyWriteCnt, 0) as cmpnyWriteCnt,
+   228→		tPEV.SVIDEOID as videoId,
+   229→		NVL(tPMP.NMAXPOPULARSCORE, 0) as maxPopularScore,
+   230→		TO_CHAR(NVL(tfds.FIRSTDATE, tp.MAKE_D), 'YYYYMMDD') as firstMakeDate,
+   231→	    TO_CHAR(NVL(tfds.LASTDATE, tp.MAKE_D), 'YYYYMMDD') as lastMakeDate,
+   232→		NVL(tSS.NCATE2_SHARE,0) as shareCate2,
+   233→		NVL(tSS.NCATE3_SHARE,0) as shareCate3,
+   234→		NVL(tSS.NCATE4_SHARE,0) as shareCate4,
+   235→		NVL2(tm.NATTRIBUTEVALUESEQ, (tm.NATTRIBUTEVALUESEQ || '/' || tm.NCATEGORYSEQ || '.' || tm.SIMGTYPE), '') as optionMarkUrl,
+   236→		tm.NPOSITION as optionMarkPosition,
+   237→		NVL((select group_concat(TPS.KEYWORD,', ') from TPROD_SEARCH TPS WHERE TPS.PROD_C = tp.prod_c), '') AS searchKeyword,
+   238→		CASE 
+   239→			WHEN tP.avgprice_q > 0 THEN 
+   240→				CASE 
+   241→					WHEN tP.nLowPrice/tP.avgprice_q > 0.5 THEN 'N'
+   242→					ELSE 'Y'
+   243→				END
+   244→		END as priceDeviationYN,
+   245→		CASE
+   246→			WHEN tP.shot_yn = 'Y'  THEN 'D'
+   247→			ELSE	
+   248→				CASE
+   249→					WHEN tP.sPriceCompareServiceYN = 'N' THEN
+   250→						CASE
+   251→							WHEN tP.make_d > SYSDATE THEN 'R'
+   252→							ELSE 'B'
+   253→						END
+   254→					ELSE
+   255→						CASE
+   256→							WHEN tP.nLowPrice > 0 THEN 'N'
+   257→							ELSE 
+   258→								CASE
+   259→									WHEN TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD') THEN 'O'
+   260→									ELSE
+   261→										CASE
+   262→											WHEN tP.dtPriceModifyDate != '01-JAN-1970' THEN 'S'
+   263→											ELSE
+   264→												CASE
+   265→													WHEN tP.make_d > SYSDATE THEN 'R'
+   266→													ELSE 
+   267→														CASE
+   268→															WHEN tP.input_d >= DATEADD(SYSDATE, -30,'DAY') THEN 'B'
+   269→															ELSE 'S'
+   270→														END
+   271→												END
+   272→										END
+   273→								END
+   274→						END
+   275→				END
+   276→		END as stateValue,
+   277→		NVL(tpsize.NWIDTH,0) as width,
+   278→		NVL(tpsize.NHEIGHT,0) as height,
+   279→		NVL(tpsize.NDEPTH,0) as depth,
+   280→	    'N' as minabYN,
+   281→	    CASE
+   282→	        WHEN tP.SPRODUCTTYPE = 'A' THEN tP.PROD_C
+   283→            ELSE 0
+   284→        END as aiProductCode,
+   285→	    tQDLP.CMPNY_C as quickShopCode,
+   286→	    tQDLP.LINK_PROD_C as shopProductCode,
+   287→	    NVL(tQDLP.NQUICK_DLVY_LOW_PRICE,0) as quickPrice,
+   288→	    NVL(tulp.NUNIT_LOW_PRICE,0) as unitLowPrice,
+   289→	    NVL(tulp.NUNIT_DLVY_LOW_PRICE,0) as unitTotalPrice,
+   290→        CASE
+   291→		    WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE,0) = 0 THEN tP.nLowPrice
+   292→		    ELSE tlp.NMEMBERSHIP_LOW_PRICE
+   293→	    END as memberPrice,
+   294→        CASE
+   295→		    WHEN NVL(tlp.NMEMBERSHIP_DLVY_LOW_PRICE,0) = 0 THEN tP.NLOWPRICEINCLUDEDELIVERYCOST
+   296→		    ELSE tlp.NMEMBERSHIP_DLVY_LOW_PRICE
+   297→	    END AS memberTotalPrice,
+   298→	    CASE
+   299→		    WHEN NVL(tlp.NMEMBERSHIP_UNIT_LOW_PRICE,0) = 0 THEN NVL(tulp.NUNIT_LOW_PRICE,0)
+   300→		    ELSE tlp.NMEMBERSHIP_UNIT_LOW_PRICE
+   301→	    END as unitMemberPrice,
+   302→	    CASE
+   303→		    WHEN NVL(tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE,0) = 0 THEN NVL(tulp.NUNIT_DLVY_LOW_PRICE,0)
+   304→		    ELSE tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE
+   305→	    END as unitMemberTotalPrice,
+   306→        CASE
+   307→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is not null THEN 'E'
+   308→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is not null THEN 'ED'
+   309→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is null THEN 'D'
+   310→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is null THEN 'ETC'
+   311→        END as enuriProductOption,
+   312→        CASE
+   313→            WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE, tP.nLowPrice + 1) <= tP.nLowPrice THEN 'Y'
+   314→            ELSE 'N'
+   315→        END as memberPriceLowerYN,
+   316→	    NVL(TO_CHAR(tvml.DTLAST_MATCH_DATE, 'YYYYMMDD'),0) as vectorMatchDate,
+   317→	    tci.IMAGE_PATH as imagePath
+   318→	FROM
+   319→		tprod tP
+   320→		INNER JOIN tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+   321→		INNER JOIN tCategoryForSearch tCFS ON (tPC.nCategorySeq1 = tCFS.nCategorySeq1
+   322→			and tPC.nCategorySeq2 = tCFS.nCategorySeq2
+   323→			and tPC.nCategorySeq3 = tCFS.nCategorySeq3
+   324→			and tPC.nCategorySeq4 = tCFS.nCategorySeq4)
+   325→		INNER JOIN tProductDescription tPD ON (tPC.nProductCategorySeq = tPD.nProductCategorySeq)
+   326→		INNER JOIN tprod_maker tPM ON (tP.maker_c = tPM.maker_c)
+   327→		LEFT JOIN tProductCategoryDescriptionActionTag tPCDAT ON (tPC.nProductCategorySeq = tPCDAT.nProductCategorySeq)
+   328→		LEFT JOIN tprod_brand tPR ON (tP.brand_c = tPR.brand_c)
+   329→		LEFT JOIN tprod_bundle AS tPB ON (tP.prod_c = tPB.prod_c)
+   330→		LEFT JOIN tKeywordForSearch tKFS ON (tP.prod_c = tKFS.nProductSeq)
+   331→		LEFT JOIN tsave_plus tSP ON (tP.prod_c = tSP.prod_c)
+   332→		LEFT JOIN tGoodsUnitPrice tUP ON (tUP.nGoodsCode = tP.prod_c)
+   333→		LEFT JOIN tProductDescriptionDictionary tPDD ON (tPD.nProductCategorySeq = tPDD.nProductCategorySeq)
+   334→		LEFT JOIN tProductInitialPrice tPIP ON (tP.prod_c = tPIP.nProductSeq)
+   335→		LEFT JOIN tProductBoardCount tPBC ON (tP.prod_c = tPBC.nProductCode)
+   336→		LEFT JOIN tProd_Search_Manage tPSM ON (tP.prod_c = tPSM.prod_c)
+   337→		LEFT JOIN TPRODUCTEXTERNALVIDEO tPEV ON (tP.prod_c = tPEV.NPRODUCTSEQ and tPEV.NVIDEONUMBER=1)
+   338→		LEFT JOIN TPRODMAXPOPULARSCORE tPMP ON (tP.prod_c = tPMP.NPRODUCTSEQ)
+   339→		LEFT JOIN TFIRSTDATEFORSEARCH tfds ON (tP.prod_c = tfds.prod_c)
+   340→		LEFT JOIN TPRODSALESSHARE tSS ON (tP.prod_c = tSS.NPRODUCTSEQ)
+   341→		LEFT JOIN TMARKPRODUCT tmp ON (tP.prod_c = tmp.NPRODUCTSEQ)
+   342→		LEFT JOIN TMARK tm ON (tmp.NATTRIBUTEVALUESEQ = tm.NATTRIBUTEVALUESEQ and tmp.NCATEGORYSEQ = tm.NCATEGORYSEQ)
+   343→		LEFT JOIN TPRODSIZE tpsize ON (tP.prod_c = tpsize.NPRODCODE)
+   344→    	LEFT JOIN TQUICK_DLVY_LOW_PRICE_LINK tQDLP ON (tp.PROD_C = tQDLP.PROD_C)
+   345→	    LEFT JOIN TENURI_PRODUCT tep ON (tp.PROD_C = tep.NPRODUCTSEQ)
+   346→	    LEFT JOIN TUNIT_LOW_PRICE tulp ON (tp.PROD_C = tulp.PROD_C)
+   347→	    LEFT JOIN TMEMBERSHIP_LOW_PRICE tlp ON (tp.PROD_c = tlp.PROD_C)
+   348→	    LEFT JOIN TENURI_SOURCE_PRODUCT tesp ON (tp.PROD_C = tesp.NPRODUCTSEQ)
+   349→        LEFT JOIN TPROD_VECTOR_MATCH_LOG tvml ON (tP.prod_c = tvml.PROD_C)
+   350→		LEFT JOIN TCATALOGIMAGE tci ON (tp.PROD_C = tci.PROD_C)
+   351→	WHERE
+   352→	    NOT tPC.nCategorySeq2 =19563
+   353→	]]>
+   354→        AND tP.prod_c in (
+   355→        <foreach collection="list" item="prod" separator=",">
+   356→            #{prod.productCode}
+   357→        </foreach>
+   358→        )
+   359→    </select>
+   360→
+   361→
+   362→    <select id="getStandardProductData" parameterType="java.util.List"
+   363→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+   364→        <![CDATA[
+   365→	SELECT
+   366→		tP.prod_c as id,
+   367→		tP.prod_c as productCode,
+   368→		'dna' as shopCode,
+   369→		tP.disp_yn as dispYN,
+   370→		tP.prod_n as productName,
+   371→		NVL(tPM.maker_n ,'') as productMaker,
+   372→		NVL(tKFS.sMakerKeywordList,'') as makerKeyword,
+   373→		NVL(tPR.brand_n,'') as productBrand,
+   374→		NVL(tKFS.sBrandKeywordList,'') as brandKeyword,
+   375→		NVL(SUBSTR((SELECT GROUP_CONCAT(DISTINCT(tSKD.sModelKeyword) , ', ') FROM tSearchKeywordModel tSKD WHERE tP.prod_c = tSKD.prod_c AND tSKD.SKEYWORDTYPE = 'R' GROUP BY tP.prod_c),1,255),'') as productModel,
+   376→		NVL(tKFS.sModelKeywordList,'') as modelWeight,
+   377→		NVL(tPD.sSimpleDescription,'') as simpleDescription,
+   378→		NVL(tPD.sAddDescription,'') as addDescription,
+   379→		NVL(tPD.sCmDescription,'') as cmDescription,
+   380→		tPD.sMobileSimpleDescription as mobileDescription,
+   381→		tPCDAT.sActionTagCode as actionTag,
+   382→		tPCDAT.sMobileActionTagCode as mobileActionTag,
+   383→		tP.nLowPrice as pcPrice,
+   384→		tP.nLowPrice as lowestPrice,
+   385→		CASE
+   386→            WHEN tP.NLOWPRICEINCLUDEDELIVERYCOST = 0 THEN tP.nLowPrice
+   387→            ELSE tP.NLOWPRICEINCLUDEDELIVERYCOST
+   388→        END AS totalPrice,
+   389→		tP.avgprice_q as averagePrice,
+   390→		tP.nLowPrice as mobilePrice,
+   391→		tP.shop_q as shopQuantity,
+   392→		NVL(tP.shot_yn ,'N') as discontinued,
+   393→		tPC.nCategorySeq1 as categoryCode1,
+   394→		tPC.nCategorySeq2 as categoryCode2,
+   395→		NVL(tPC.nCategorySeq3, 0) as categoryCode3,
+   396→        NVL(tPC.nCategorySeq4, 0) as categoryCode4,
+   397→        CASE
+   398→            WHEN tCFS.nCategorySeq3 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   399→            WHEN tCFS.nCategorySeq3='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   400→            WHEN tCFS.nCategorySeq3=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   401→            WHEN tCFS.nCategorySeq4 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   402→            WHEN tCFS.nCategorySeq4='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   403→            WHEN tCFS.nCategorySeq4=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   404→            ELSE tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3 || '>' || tCFS.sCategoryName4
+   405→        END as categoryName,
+   406→        tCFS.sCategoryKeywordList as categoryKeyword,
+   407→        tCFS.sCategoryWeightList as categoryWeight1,
+   408→	    (SELECT group_concat(tAVFS.sWeightKeyword, ',')
+   409→         FROM tProductAttributeValue tPA
+   410→         LEFT JOIN TATTRIBUTEVALUEFORSEARCH tAVFS ON (tAVFS.nAttributeValueSeq = tPA.NATTRIBUTEVALUESEQ)
+   411→         WHERE tPA.nProductCategorySeq = tPC.nProductCategorySeq
+   412→         GROUP BY tPA.nProductCategorySeq) as categoryWeight2,
+   413→        TO_CHAR(tP.input_d, 'YYYYMMDD') as registerDate,
+   414→        TO_CHAR(tP.input_d, 'YYYYMMDD HH24:MI:SS') as registerDateTime,
+   415→        TO_CHAR(tP.dtPriceModifyDate, 'YYYYMMDD') as modifyDate,
+   416→        TO_CHAR(tP.modify_d, 'YYYYMMDD HH24:MI:SS') as modifyDateTime,
+   417→        TO_CHAR(tP.make_d, 'YYYYMMDD') as manufactureDate,
+   418→        TO_CHAR(tP.make_d, 'YYYYMMDD HH24:MI:SS') as manufactureDateTime,
+   419→        CASE
+   420→		    WHEN tP.shot_yn = 'Y'  THEN 0
+   421→		    WHEN tP.nLowPrice > 0  THEN tPC.nCntSave + 1
+   422→		    ELSE
+   423→				CASE
+   424→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30, 'DAY') THEN tPC.nCntSave + 1
+   425→					ELSE 0
+   426→				END
+   427→		END AS popularityScore,
+   428→        NVL(tPC.nCntSave,0) as cntSave,
+   429→        NVL(tKFS.sKeywordList, '') as managerKeyword,
+   430→        TO_CHAR(tPSM.MODIFY_DT, 'YYYYMMDD') as managerKeywordDate,
+   431→        CASE
+   432→            WHEN tP.shot_yn = 'Y'  THEN '1'
+   433→            WHEN tP.nLowPrice > 0  THEN '7'
+   434→            ELSE
+   435→                CASE
+   436→                    WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30,'DAY') THEN
+   437→                        CASE
+   438→                            WHEN tP.dtPriceModifyDate = '01-JAN-1970' THEN
+   439→                                CASE
+   440→                                    WHEN tP.make_d > SYSDATE THEN '5'
+   441→                                    ELSE '4'
+   442→                                END
+   443→                            ELSE '3'
+   444→                        END
+   445→                    ELSE '3'
+   446→                END
+   447→        END as productClassification,
+   448→        tP.nPromotionMinPriceQ as promotionPrice,
+   449→        NVL(tPB.bundle_n, '') as bundleName,
+   450→        NVL(tPB.bundle_disp_seq, '1') as bundleDisplaySequence,
+   451→        tPB.sSelectYN as selectYN,
+   452→        tP.sPriceCompareServiceYN as priceCompareServiceYN,
+   453→        NVL(tP.maker_c,0) as makerCode,
+   454→        NVL(tP.brand_c,0) as brandCode,
+   455→        tP.movie_yn as movieYN,
+   456→        tP.sPriceLockYN as priceLockYN,
+   457→        NVL((select group_concat(nAttributeValueSeq, ',') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as nAttributeValueSeq,
+   458→        NVL((select group_concat(sAttributeValueDescription, '|') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as sAttributeValueDescription,
+   459→        tPDD.sSimpleDictionaryCode as simpleDictionaryCode,
+   460→        tPDD.sSummaryDictionaryCode as summaryDictionaryCode,
+   461→        NVL(tPC.nCntSave,0)+NVL(tSP.save_plus_q, 0) as savePlusQ,
+   462→        tUP.nTotalCapacity as totalCapacity,
+   463→        tUP.nStandardCapacity as standardCapacity,
+   464→        tUP.sUnit as unit,
+   465→        '1' as prodType,
+   466→        tCFS.sBRPS as brps,
+   467→        tPIP.nPriceType as PriceType,
+   468→        tPIP.nPrice as initialPrice,
+   469→        CASE
+   470→            WHEN tPIP.nPrice > 0 THEN
+   471→                TRUNC(((1-(tP.nLowPrice/tPIP.nPrice))*100),0)
+   472→            ELSE ''
+   473→        END as discountRate,
+   474→        tP.disp_yn as dispYN,
+   475→        NVL(tPBC.nWriteCnt + tPBC.nCmpnyWriteCnt, 0) as writeCnt,
+   476→        tP.sProductRegisterType as productRegisterType,
+   477→        CASE
+   478→            WHEN tP.nLowPrice > 0 THEN 'N'
+   479→            WHEN tP.shot_yn = 'Y' THEN 'N'
+   480→            WHEN
+   481→            (
+   482→                tP.input_d >= DATEADD(SYSDATE, -30, 'DAY')
+   483→                OR
+   484→                tP.make_d >= DATEADD(SYSDATE, -30, 'DAY')
+   485→                OR
+   486→                TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD')
+   487→            ) THEN 'N'
+   488→            ELSE 'Y'
+   489→        END as priceComparisonStopYN,
+   490→        tCFS.sDispYN as categoryDispYN,
+   491→        tPB.sSelectYN as bundleSelectYN,
+   492→        NVL((select group_concat(tRPTP.sModel,',') from tRelationProductTargetProduct tRPTP, tRelationProduct tRP where tRP.sDetailYN = 'Y' and tRPTP.nRelationProductSeq = tRP.nRelationProductSeq and tRP.nRelationFormValue = tP.prod_c group by tP.prod_c), '') as RELATIONMODEL,
+   493→        tPB.nDescriptionListSeq as descriptionListSeq,
+   494→        TO_CHAR(tP.modify_d , 'YYYYMMDDHHMISS') as imageVersion,
+   495→        NVL(tPBC.nCmpnyWriteScoreSum, 0) as cmpnyWriteScoreSum,
+   496→        NVL(tPBC.nCmpnyWriteCnt, 0) as cmpnyWriteCnt,
+   497→        tPEV.SVIDEOID as videoId,
+   498→        NVL(tPMP.NMAXPOPULARSCORE, 0) as maxPopularScore,
+   499→        TO_CHAR(NVL(tfds.FIRSTDATE, tp.MAKE_D), 'YYYYMMDD') as firstMakeDate,
+   500→	    TO_CHAR(NVL(tfds.LASTDATE, tp.MAKE_D), 'YYYYMMDD') as lastMakeDate,
+   501→        NVL(tSS.NCATE2_SHARE,0) as shareCate2,
+   502→        NVL(tSS.NCATE3_SHARE,0) as shareCate3,
+   503→        NVL(tSS.NCATE4_SHARE,0) as shareCate4,
+   504→        NVL2(tm.NATTRIBUTEVALUESEQ, (tm.NATTRIBUTEVALUESEQ || '/' || tm.NCATEGORYSEQ || '.' || tm.SIMGTYPE), '') as optionMarkUrl,
+   505→        tm.NPOSITION as optionMarkPosition,
+   506→        NVL((select group_concat(TPS.KEYWORD,', ') from TPROD_SEARCH TPS WHERE TPS.PROD_C = tp.prod_c), '') AS searchKeyword,
+   507→        CASE
+   508→            WHEN tP.avgprice_q > 0 THEN
+   509→                CASE
+   510→                    WHEN tP.nLowPrice/tP.avgprice_q > 0.5 THEN 'N'
+   511→                    ELSE 'Y'
+   512→        END
+   513→        END as priceDeviationYN,
+   514→        CASE
+   515→            WHEN tP.shot_yn = 'Y'  THEN 'D'
+   516→            ELSE
+   517→                CASE
+   518→                    WHEN tP.sPriceCompareServiceYN = 'N' THEN
+   519→                        CASE
+   520→                            WHEN tP.make_d > SYSDATE THEN 'R'
+   521→                            ELSE 'B'
+   522→                        END
+   523→                    ELSE
+   524→                        CASE
+   525→                            WHEN tP.nLowPrice > 0 THEN 'N'
+   526→                            ELSE
+   527→                                CASE
+   528→                                    WHEN TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD') THEN 'O'
+   529→                                    ELSE
+   530→                                        CASE
+   531→                                            WHEN tP.dtPriceModifyDate != '01-JAN-1970' THEN 'S'
+   532→                                            ELSE
+   533→                                                CASE
+   534→                                                    WHEN tP.make_d > SYSDATE THEN 'R'
+   535→                                                    ELSE
+   536→                                                        CASE
+   537→                                                            WHEN tP.input_d >= DATEADD(SYSDATE, -30,'DAY') THEN 'B'
+   538→                                                            ELSE 'S'
+   539→                                                        END
+   540→                                                END
+   541→                                        END
+   542→                                END
+   543→                        END
+   544→                END
+   545→        END as stateValue,
+   546→        NVL(tpsize.NWIDTH,0) as width,
+   547→        NVL(tpsize.NHEIGHT,0) as height,
+   548→        NVL(tpsize.NDEPTH,0) as depth,
+   549→	    'N' as minabYN,
+   550→        CASE
+   551→	        WHEN tP.SPRODUCTTYPE = 'A' THEN tP.PROD_C
+   552→            ELSE 0
+   553→        END as aiProductCode,
+   554→	    tQDLP.CMPNY_C as quickShopCode,
+   555→	    tQDLP.LINK_PROD_C as shopProductCode,
+   556→	    NVL(tQDLP.NQUICK_DLVY_LOW_PRICE,0) as quickPrice,
+   557→	    NVL(tulp.NUNIT_LOW_PRICE,0) as unitLowPrice,
+   558→	    NVL(tulp.NUNIT_DLVY_LOW_PRICE,0) as unitTotalPrice,
+   559→        CASE
+   560→		    WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE,0) = 0 THEN tP.nLowPrice
+   561→		    ELSE tlp.NMEMBERSHIP_LOW_PRICE
+   562→	    END AS memberPrice,
+   563→        CASE
+   564→		    WHEN NVL(tlp.NMEMBERSHIP_DLVY_LOW_PRICE,0) = 0 THEN tP.NLOWPRICEINCLUDEDELIVERYCOST
+   565→		    ELSE tlp.NMEMBERSHIP_DLVY_LOW_PRICE
+   566→	    END AS memberTotalPrice,
+   567→	    CASE
+   568→		    WHEN NVL(tlp.NMEMBERSHIP_UNIT_LOW_PRICE,0) = 0 THEN NVL(tulp.NUNIT_LOW_PRICE,0)
+   569→		    ELSE tlp.NMEMBERSHIP_UNIT_LOW_PRICE
+   570→	    END AS unitMemberPrice,
+   571→	    CASE
+   572→		    WHEN NVL(tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE,0) = 0 THEN NVL(tulp.NUNIT_DLVY_LOW_PRICE,0)
+   573→		    ELSE tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE
+   574→	    END AS unitMemberTotalPrice,
+   575→        CASE
+   576→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is not null THEN 'E'
+   577→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is not null THEN 'ED'
+   578→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is null THEN 'D'
+   579→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is null THEN 'ETC'
+   580→        END as enuriProductOption,
+   581→	    CASE
+   582→            WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE, tP.nLowPrice + 1) <= tP.nLowPrice THEN 'Y'
+   583→            ELSE 'N'
+   584→        END as memberPriceLowerYN,
+   585→	    NVL(TO_CHAR(tvml.DTLAST_MATCH_DATE, 'YYYYMMDD'),0) as vectorMatchDate
+   586→	FROM
+   587→		tprod tP
+   588→		INNER JOIN tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+   589→		INNER JOIN tCategoryForSearch tCFS ON (tPC.nCategorySeq1 = tCFS.nCategorySeq1 and
+   590→			tPC.nCategorySeq2 = tCFS.nCategorySeq2 and
+   591→			tPC.nCategorySeq3 = tCFS.nCategorySeq3 and
+   592→			tPC.nCategorySeq4 = tCFS.nCategorySeq4)
+   593→		INNER JOIN tProductDescription tPD ON (tPC.nProductCategorySeq = tPD.nProductCategorySeq)
+   594→		INNER JOIN tprod_maker tPM ON (tP.maker_c = tPM.maker_c)
+   595→		LEFT JOIN tProductCategoryDescriptionActionTag tPCDAT ON (tPC.nProductCategorySeq = tPCDAT.nProductCategorySeq)
+   596→		LEFT JOIN tprod_brand tPR ON (tP.brand_c = tPR.brand_c)
+   597→		LEFT JOIN tprod_bundle AS tPB ON (tP.prod_c = tPB.prod_c)
+   598→		LEFT JOIN tKeywordForSearch tKFS ON (tP.prod_c = tKFS.nProductSeq)
+   599→		LEFT JOIN tsave_plus tSP ON (tP.prod_c = tSP.prod_c)
+   600→		LEFT JOIN tGoodsUnitPrice tUP ON (tUP.nGoodsCode = tP.prod_c)
+   601→		LEFT JOIN tProductDescriptionDictionary tPDD ON (tPD.nProductCategorySeq = tPDD.nProductCategorySeq)
+   602→		LEFT JOIN tProductInitialPrice tPIP ON (tP.prod_c = tPIP.nProductSeq)
+   603→		LEFT JOIN tProductBoardCount tPBC ON (tP.prod_c = tPBC.nProductCode)
+   604→		LEFT JOIN tProd_Search_Manage tPSM ON (tP.prod_c = tPSM.prod_c)
+   605→		LEFT JOIN TPRODUCTEXTERNALVIDEO tPEV ON (tP.prod_c = tPEV.NPRODUCTSEQ and tPEV.NVIDEONUMBER=1)
+   606→		LEFT JOIN TPRODMAXPOPULARSCORE tPMP ON (tP.prod_c = tPMP.NPRODUCTSEQ)
+   607→		LEFT JOIN TFIRSTDATEFORSEARCH tfds ON (tP.prod_c = tfds.prod_c)
+   608→		LEFT JOIN TPRODSALESSHARE tSS ON (tP.prod_c = tSS.NPRODUCTSEQ)
+   609→		LEFT JOIN TMARKPRODUCT tmp ON (tP.prod_c = tmp.NPRODUCTSEQ)
+   610→		LEFT JOIN TMARK tm ON (tmp.NATTRIBUTEVALUESEQ = tm.NATTRIBUTEVALUESEQ and tmp.NCATEGORYSEQ = tm.NCATEGORYSEQ)
+   611→		LEFT JOIN TPRODSIZE tpsize ON (tP.prod_c = tpsize.NPRODCODE)
+   612→	    LEFT JOIN TQUICK_DLVY_LOW_PRICE_LINK tQDLP ON (tp.PROD_C = tQDLP.PROD_C)
+   613→	    LEFT JOIN TENURI_PRODUCT tep ON (tp.PROD_C = tep.NPRODUCTSEQ)
+   614→        LEFT JOIN TUNIT_LOW_PRICE tulp ON (tp.PROD_C = tulp.PROD_C)
+   615→	    LEFT JOIN TMEMBERSHIP_LOW_PRICE tlp ON (tp.PROD_c = tlp.PROD_C)
+   616→	    LEFT JOIN TENURI_SOURCE_PRODUCT tesp ON (tp.PROD_C = tesp.NPRODUCTSEQ)
+   617→		LEFT JOIN TPROD_VECTOR_MATCH_LOG tvml ON (tP.prod_c = tvml.PROD_C)
+   618→	WHERE
+   619→	   NOT tPC.nCategorySeq2 =19563
+   620→	]]>
+   621→        AND tP.prod_c in (
+   622→        <foreach collection="list" item="item" separator=",">
+   623→            #{item.productCode}
+   624→        </foreach>
+   625→        )
+   626→    </select>
+   627→
+   628→    <!-- 기준상품 기준가격 -->
+   629→    <select id="getInitialPrice"
+   630→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+   631→        SELECT
+   632→        tPIP.nPrice as initialPrice
+   633→        FROM
+   634→        tProductInitialPrice
+   635→        tPIP
+   636→        WHERE
+   637→        nProductSeq = #{productCode}
+   638→    </select>
+   639→
+   640→    <!-- 기준상품 기준가격 리스트 -->
+   641→    <select id="getInitialPriceList" resultType="java.util.HashMap">
+   642→        SELECT
+   643→        tPIP.nProductSeq as productCode,
+   644→        tPIP.nPrice as initialPrice
+   645→        FROM
+   646→        tProductInitialPrice tPIP
+   647→        WHERE
+   648→        nProductSeq in (
+   649→        <foreach collection="list" item="prod" separator=",">
+   650→            #{prod.productCode}
+   651→        </foreach>
+   652→        )
+   653→    </select>
+   654→
+   655→    <!-- 검색키워드(cm) -->
+   656→    <select id="getManagerKeyword" resultType="java.lang.String">
+   657→        SELECT
+   658→        keyword
+   659→        FROM
+   660→        TPROD_SEARCH
+   661→        WHERE
+   662→        prod_c = #{productCode}
+   663→    </select>
+   664→
+   665→    <!-- 기준상품상태값  -->
+   666→    <select id="getProductStateValue" resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+   667→        <![CDATA[
+   668→	SELECT
+   669→		tP.prod_c as productCode,
+   670→		CASE
+   671→			WHEN tP.shot_yn = 'Y'  THEN 'D'
+   672→		ELSE
+   673→			CASE
+   674→				WHEN tP.sPriceCompareServiceYN = 'N' THEN
+   675→					CASE
+   676→						WHEN tP.make_d > SYSDATE THEN 'R'
+   677→						ELSE 'B'
+   678→					END
+   679→				ELSE
+   680→					CASE
+   681→						WHEN tP.nLowPrice > 0 THEN 'N'
+   682→						ELSE
+   683→							CASE
+   684→								WHEN TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD') THEN 'O'
+   685→								ELSE
+   686→									CASE
+   687→										WHEN tP.dtPriceModifyDate != '01-JAN-1970' THEN 'S'
+   688→										ELSE
+   689→											CASE
+   690→												WHEN tP.make_d > SYSDATE THEN 'R'
+   691→												ELSE
+   692→													CASE
+   693→														WHEN tP.input_d >= DATEADD(SYSDATE, -30,'DAY') THEN 'B'
+   694→														ELSE 'S'
+   695→													END
+   696→											END
+   697→									END
+   698→							END
+   699→					END
+   700→			END
+   701→		END as stateValue
+   702→		FROM
+   703→			tprod tP INNER JOIN
+   704→			tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+   705→		WHERE
+   706→			NOT tPC.nCategorySeq2 =19563 AND
+   707→		]]>
+   708→        tP.prod_c in (
+   709→        <foreach collection="list" item="prod" separator=",">
+   710→            #{prod.productCode}
+   711→        </foreach>
+   712→        )
+   713→    </select>
+   714→
+   715→    <select id="getUpdateDataOffice"
+   716→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+   717→        <![CDATA[
+   718→	SELECT
+   719→		tP.prod_c as id,
+   720→		tP.prod_c as productCode,
+   721→		'dna' as shopCode,
+   722→		tP.prod_n as productName,
+   723→		NVL(tPM.maker_n ,'') as productMaker,
+   724→		NVL(tKFS.sMakerKeywordList,'') as makerKeyword,
+   725→		NVL(tPR.brand_n,'') as productBrand,
+   726→		NVL(tKFS.sBrandKeywordList,'') as brandKeyword,
+   727→		NVL(SUBSTR((SELECT GROUP_CONCAT(DISTINCT(tSKD.sModelKeyword) , ', ') FROM tSearchKeywordModel tSKD WHERE tP.prod_c = tSKD.prod_c AND tSKD.SKEYWORDTYPE = 'R' GROUP BY tP.prod_c),1,255),'') as productModel,
+   728→		NVL(tKFS.sModelKeywordList,'') as modelWeight,
+   729→		NVL(tPD.sSimpleDescription,'') as simpleDescription,
+   730→		NVL(tPD.sAddDescription,'') as addDescription,
+   731→		NVL(tPD.sCmDescription,'') as cmDescription,
+   732→		tPD.sMobileSimpleDescription as mobileDescription,
+   733→		tPCDAT.sActionTagCode as actionTag,
+   734→		tPCDAT.sMobileActionTagCode as mobileActionTag,
+   735→		tP.nLowPrice as pcPrice,
+   736→		tP.nLowPrice as lowestPrice,
+   737→		CASE
+   738→            WHEN tP.NLOWPRICEINCLUDEDELIVERYCOST = 0 THEN tP.nLowPrice
+   739→            ELSE tP.NLOWPRICEINCLUDEDELIVERYCOST
+   740→        END AS totalPrice,
+   741→		tP.avgprice_q as averagePrice,
+   742→		tP.nLowPrice as mobilePrice,
+   743→		tP.shop_q as shopQuantity,
+   744→		NVL(tP.shot_yn ,'N') as discontinued,
+   745→		tPC.nCategorySeq1 as categoryCode1,
+   746→		tPC.nCategorySeq2 as categoryCode2,
+   747→		NVL(tPC.nCategorySeq3, 0) as categoryCode3,
+   748→		NVL(tPC.nCategorySeq4, 0) as categoryCode4,
+   749→		CASE
+   750→			WHEN tCFS.nCategorySeq3 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   751→			WHEN tCFS.nCategorySeq3='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   752→			WHEN tCFS.nCategorySeq3=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+   753→			WHEN tCFS.nCategorySeq4 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   754→			WHEN tCFS.nCategorySeq4='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   755→			WHEN tCFS.nCategorySeq4=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+   756→			ELSE tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3 || '>' || tCFS.sCategoryName4
+   757→		END as categoryName,
+   758→		tCFS.sCategoryKeywordList as categoryKeyword,
+   759→		tCFS.sCategoryWeightList as categoryWeight1,
+   760→	    (SELECT group_concat(tAVFS.sWeightKeyword, ',')
+   761→         FROM tProductAttributeValue tPA
+   762→         LEFT JOIN TATTRIBUTEVALUEFORSEARCH tAVFS ON (tAVFS.nAttributeValueSeq = tPA.NATTRIBUTEVALUESEQ)
+   763→         WHERE tPA.nProductCategorySeq = tPC.nProductCategorySeq
+   764→         GROUP BY tPA.nProductCategorySeq) as categoryWeight2,
+   765→        TO_CHAR(tP.input_d, 'YYYYMMDD') as registerDate,
+   766→		TO_CHAR(tP.input_d, 'YYYYMMDD HH24:MI:SS') as registerDateTime,
+   767→		TO_CHAR(tP.dtPriceModifyDate, 'YYYYMMDD') as modifyDate,
+   768→		TO_CHAR(tP.modify_d, 'YYYYMMDD HH24:MI:SS') as modifyDateTime,
+   769→		TO_CHAR(tP.make_d, 'YYYYMMDD') as manufactureDate,
+   770→		TO_CHAR(tP.make_d, 'YYYYMMDD HH24:MI:SS') as manufactureDateTime,
+   771→        CASE
+   772→		    WHEN tP.shot_yn = 'Y'  THEN 0
+   773→		    WHEN tP.nLowPrice > 0  THEN tPC.nCntSave + 1
+   774→		    ELSE
+   775→				CASE
+   776→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30, 'DAY') THEN tPC.nCntSave + 1
+   777→					ELSE 0
+   778→				END
+   779→		END AS popularityScore,
+   780→		NVL(tPC.nCntSave,0) as cntSave,
+   781→		NVL(tKFS.sKeywordList, '') as managerKeyword,
+   782→		TO_CHAR(tPSM.MODIFY_DT, 'YYYYMMDD') as managerKeywordDate,
+   783→		CASE
+   784→			WHEN tP.shot_yn = 'Y'  THEN '1'
+   785→			WHEN tP.nLowPrice > 0  THEN '7'
+   786→			ELSE
+   787→				CASE
+   788→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30,'DAY') THEN
+   789→						CASE
+   790→							WHEN tP.dtPriceModifyDate = '01-JAN-1970' THEN
+   791→								CASE
+   792→									WHEN tP.make_d > SYSDATE THEN '5'
+   793→									ELSE '4'
+   794→								END
+   795→							ELSE '3'
+   796→						END
+   797→					ELSE '3'
+   798→				END
+   799→		END as productClassification,
+   800→		tP.nPromotionMinPriceQ as promotionPrice,
+   801→		NVL(tPB.bundle_n, '') as bundleName,
+   802→		NVL(tPB.bundle_disp_seq, '1') as bundleDisplaySequence,
+   803→		tPB.sSelectYN as selectYN,
+   804→		tP.sPriceCompareServiceYN as priceCompareServiceYN,
+   805→		NVL(tP.maker_c,0) as makerCode,
+   806→		NVL(tP.brand_c,0) as brandCode,
+   807→		tP.movie_yn as movieYN,
+   808→		tP.sPriceLockYN as priceLockYN,
+   809→		NVL((select group_concat(nAttributeValueSeq, ',') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as nAttributeValueSeq,
+   810→		tPDD.sSimpleDictionaryCode as simpleDictionaryCode,
+   811→		NVL(tPC.nCntSave,0)+NVL(tSP.save_plus_q, 0) as savePlusQ,
+   812→		tUP.nTotalCapacity as totalCapacity,
+   813→		tUP.nStandardCapacity as standardCapacity,
+   814→		tUP.sUnit as unit,
+   815→	    '1' as prodType,
+   816→		tCFS.sBRPS as brps,
+   817→		tPIP.nPriceType as PriceType,
+   818→		tPIP.nPrice as initialPrice,
+   819→		CASE
+   820→			WHEN tPIP.nPrice > 0 THEN
+   821→				TRUNC(((1-(tP.nLowPrice/tPIP.nPrice))*100),0)
+   822→			ELSE ''
+   823→		END as discountRate,
+   824→		tP.disp_yn as dispYN,
+   825→		NVL(tPBC.nWriteCnt + tPBC.nCmpnyWriteCnt, 0) as writeCnt,
+   826→		tP.sProductRegisterType as productRegisterType,
+   827→		CASE
+   828→			WHEN tP.nLowPrice > 0 THEN 'N'
+   829→			WHEN tP.shot_yn = 'Y' THEN 'N'
+   830→			WHEN
+   831→			(
+   832→				tP.input_d >= DATEADD(SYSDATE, -30, 'DAY')
+   833→				OR
+   834→				tP.make_d >= DATEADD(SYSDATE, -30, 'DAY')
+   835→				OR
+   836→				TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD')
+   837→			) THEN 'N'
+   838→			ELSE 'Y'
+   839→		END as priceComparisonStopYN,
+   840→		tCFS.sDispYN as categoryDispYN,
+   841→		tPB.sSelectYN as bundleSelectYN,
+   842→		NVL((select group_concat(tRPTP.sModel,',') from tRelationProductTargetProduct tRPTP, tRelationProduct tRP where tRP.sDetailYN = 'Y' and tRPTP.nRelationProductSeq = tRP.nRelationProductSeq and tRP.nRelationFormValue = tP.prod_c group by tP.prod_c), '') as RELATIONMODEL,
+   843→		tPB.nDescriptionListSeq as descriptionListSeq,
+   844→		TO_CHAR(tP.modify_d , 'YYYYMMDDHHMISS') as imageVersion,
+   845→		NVL(tPBC.nCmpnyWriteScoreSum, 0) as cmpnyWriteScoreSum,
+   846→		NVL(tPBC.nCmpnyWriteCnt, 0) as cmpnyWriteCnt,
+   847→		tPEV.SVIDEOID as videoId,
+   848→		NVL(tPMP.NMAXPOPULARSCORE, 0) as maxPopularScore,
+   849→		TO_CHAR(NVL(tfds.FIRSTDATE, tp.MAKE_D), 'YYYYMMDD') as firstMakeDate,
+   850→	    TO_CHAR(NVL(tfds.LASTDATE, tp.MAKE_D), 'YYYYMMDD') as lastMakeDate,
+   851→		NVL(tSS.NCATE2_SHARE,0) as shareCate2,
+   852→		NVL(tSS.NCATE3_SHARE,0) as shareCate3,
+   853→		NVL(tSS.NCATE4_SHARE,0) as shareCate4,
+   854→		NVL2(tm.NATTRIBUTEVALUESEQ, (tm.NATTRIBUTEVALUESEQ || '/' || tm.NCATEGORYSEQ || '.' || tm.SIMGTYPE), '') as optionMarkUrl,
+   855→		tm.NPOSITION as optionMarkPosition,
+   856→		NVL((select group_concat(TPS.KEYWORD,', ') from TPROD_SEARCH TPS WHERE TPS.PROD_C = tp.prod_c), '') AS searchKeyword,
+   857→		CASE
+   858→			WHEN tP.avgprice_q > 0 THEN
+   859→				CASE
+   860→					WHEN tP.nLowPrice/tP.avgprice_q > 0.5 THEN 'N'
+   861→					ELSE 'Y'
+   862→				END
+   863→		END as priceDeviationYN,
+   864→		CASE
+   865→			WHEN tP.shot_yn = 'Y'  THEN 'D'
+   866→			ELSE
+   867→				CASE
+   868→					WHEN tP.sPriceCompareServiceYN = 'N' THEN
+   869→						CASE
+   870→							WHEN tP.make_d > SYSDATE THEN 'R'
+   871→							ELSE 'B'
+   872→						END
+   873→					ELSE
+   874→						CASE
+   875→							WHEN tP.nLowPrice > 0 THEN 'N'
+   876→							ELSE
+   877→								CASE
+   878→									WHEN TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD') THEN 'O'
+   879→									ELSE
+   880→										CASE
+   881→											WHEN tP.dtPriceModifyDate != '01-JAN-1970' THEN 'S'
+   882→											ELSE
+   883→												CASE
+   884→													WHEN tP.make_d > SYSDATE THEN 'R'
+   885→													ELSE
+   886→														CASE
+   887→															WHEN tP.input_d >= DATEADD(SYSDATE, -30,'DAY') THEN 'B'
+   888→															ELSE 'S'
+   889→														END
+   890→												END
+   891→										END
+   892→								END
+   893→						END
+   894→				END
+   895→		END as stateValue,
+   896→		NVL(tpsize.NWIDTH,0) as width,
+   897→		NVL(tpsize.NHEIGHT,0) as height,
+   898→		NVL(tpsize.NDEPTH,0) as depth,
+   899→	    'N' as minabYN,
+   900→        CASE
+   901→	        WHEN tP.SPRODUCTTYPE = 'A' THEN tP.PROD_C
+   902→            ELSE 0
+   903→        END as aiProductCode,
+   904→	    tQDLP.CMPNY_C as quickShopCode,
+   905→	    tQDLP.LINK_PROD_C as shopProductCode,
+   906→	    NVL(tQDLP.NQUICK_DLVY_LOW_PRICE,0) as quickPrice,
+   907→	    NVL(tulp.NUNIT_LOW_PRICE,0) as unitLowPrice,
+   908→	    NVL(tulp.NUNIT_DLVY_LOW_PRICE,0) as unitTotalPrice,
+   909→        NVL(tlp.NMEMBERSHIP_LOW_PRICE,0) AS memberPrice,
+   910→        NVL(tlp.NMEMBERSHIP_DLVY_LOW_PRICE,0) AS memberTotalPrice,
+   911→	    NVL(tlp.NMEMBERSHIP_UNIT_LOW_PRICE,0) AS unitMemberPrice,
+   912→	    NVL(tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE,0) AS unitMemberTotalPrice,
+   913→	    CASE
+   914→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is not null THEN 'E'
+   915→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is not null THEN 'ED'
+   916→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is null THEN 'D'
+   917→	        WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is null THEN 'ETC'
+   918→        END as enuriProductOption,
+   919→	    CASE
+   920→            WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE, tP.nLowPrice + 1) <= tP.nLowPrice THEN 'Y'
+   921→            ELSE 'N'
+   922→        END as memberPriceLowerYN,
+   923→	    NVL(TO_CHAR(tvml.DTLAST_MATCH_DATE, 'YYYYMMDD'),0) as vectorMatchDate
+   924→	FROM
+   925→		tprod tP
+   926→		INNER JOIN tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+   927→		INNER JOIN tCategoryForSearch tCFS ON (tPC.nCategorySeq1 = tCFS.nCategorySeq1
+   928→			and tPC.nCategorySeq2 = tCFS.nCategorySeq2
+   929→			and tPC.nCategorySeq3 = tCFS.nCategorySeq3
+   930→			and tPC.nCategorySeq4 = tCFS.nCategorySeq4)
+   931→		INNER JOIN tProductDescription tPD ON (tPC.nProductCategorySeq = tPD.nProductCategorySeq)
+   932→		INNER JOIN tprod_maker tPM ON (tP.maker_c = tPM.maker_c)
+   933→		LEFT JOIN tProductCategoryDescriptionActionTag tPCDAT ON (tPC.nProductCategorySeq = tPCDAT.nProductCategorySeq)
+   934→		LEFT JOIN tprod_brand tPR ON (tP.brand_c = tPR.brand_c)
+   935→		LEFT JOIN tprod_bundle AS tPB ON (tP.prod_c = tPB.prod_c)
+   936→		LEFT JOIN tKeywordForSearch tKFS ON (tP.prod_c = tKFS.nProductSeq)
+   937→		LEFT JOIN tsave_plus tSP ON (tP.prod_c = tSP.prod_c)
+   938→		LEFT JOIN tGoodsUnitPrice tUP ON (tUP.nGoodsCode = tP.prod_c)
+   939→		LEFT JOIN tProductDescriptionDictionary tPDD ON (tPD.nProductCategorySeq = tPDD.nProductCategorySeq)
+   940→		LEFT JOIN tProductInitialPrice tPIP ON (tP.prod_c = tPIP.nProductSeq)
+   941→		LEFT JOIN tProductBoardCount tPBC ON (tP.prod_c = tPBC.nProductCode)
+   942→		LEFT JOIN tProd_Search_Manage tPSM ON (tP.prod_c = tPSM.prod_c)
+   943→		LEFT JOIN TPRODUCTEXTERNALVIDEO tPEV ON (tP.prod_c = tPEV.NPRODUCTSEQ and tPEV.NVIDEONUMBER=1)
+   944→		LEFT JOIN TPRODMAXPOPULARSCORE tPMP ON (tP.prod_c = tPMP.NPRODUCTSEQ)
+   945→		LEFT JOIN TFIRSTDATEFORSEARCH tfds ON (tP.prod_c = tfds.prod_c)
+   946→		LEFT JOIN TPRODSALESSHARE tSS ON (tP.prod_c = tSS.NPRODUCTSEQ)
+   947→		LEFT JOIN TMARKPRODUCT tmp ON (tP.prod_c = tmp.NPRODUCTSEQ)
+   948→		LEFT JOIN TMARK tm ON (tmp.NATTRIBUTEVALUESEQ = tm.NATTRIBUTEVALUESEQ and tmp.NCATEGORYSEQ = tm.NCATEGORYSEQ)
+   949→		LEFT JOIN TPRODSIZE tpsize ON (tP.prod_c = tpsize.NPRODCODE)
+   950→    	LEFT JOIN TQUICK_DLVY_LOW_PRICE_LINK tQDLP ON (tp.PROD_C = tQDLP.PROD_C)
+   951→	    LEFT JOIN TENURI_PRODUCT tep ON (tp.PROD_C = tep.NPRODUCTSEQ)
+   952→	    LEFT JOIN TUNIT_LOW_PRICE tulp ON (tp.PROD_C = tulp.PROD_C)
+   953→	    LEFT JOIN TMEMBERSHIP_LOW_PRICE tlp ON (tp.PROD_c = tlp.PROD_C)
+   954→	    LEFT JOIN TENURI_SOURCE_PRODUCT tesp ON (tp.PROD_C = tesp.NPRODUCTSEQ)
+   955→        LEFT JOIN TPROD_VECTOR_MATCH_LOG tvml ON (tP.prod_c = tvml.PROD_C)
+   956→	WHERE
+   957→		NOT tPC.nCategorySeq2 =19563
+   958→	]]>
+   959→        AND tP.prod_c in (
+   960→        <foreach collection="list" item="prod" separator=",">
+   961→            #{prod.productCode}
+   962→        </foreach>
+   963→        )
+   964→    </select>
+   965→
+   966→    <select id="getStandardProductDataOffice" parameterType="java.util.List"
+   967→            resultType="com.danawa.queue.indexer.entity.MainProductMessage">
+   968→        <![CDATA[
+   969→	SELECT
+   970→		tP.prod_c as id,
+   971→		tP.prod_c as productCode,
+   972→		'dna' as shopCode,
+   973→		tP.disp_yn as dispYN,
+   974→		tP.prod_n as productName,
+   975→		NVL(tPM.maker_n ,'') as productMaker,
+   976→		NVL(tKFS.sMakerKeywordList,'') as makerKeyword,
+   977→		NVL(tPR.brand_n,'') as productBrand,
+   978→		NVL(tKFS.sBrandKeywordList,'') as brandKeyword,
+   979→		NVL(SUBSTR((SELECT GROUP_CONCAT(DISTINCT(tSKD.sModelKeyword) , ', ') FROM tSearchKeywordModel tSKD WHERE tP.prod_c = tSKD.prod_c AND tSKD.SKEYWORDTYPE = 'R' GROUP BY tP.prod_c),1,255),'') as productModel,
+   980→		NVL(tKFS.sModelKeywordList,'') as modelWeight,
+   981→		NVL(tPD.sSimpleDescription,'') as simpleDescription,
+   982→		NVL(tPD.sAddDescription,'') as addDescription,
+   983→		NVL(tPD.sCmDescription,'') as cmDescription,
+   984→		tPD.sMobileSimpleDescription as mobileDescription,
+   985→		tPCDAT.sActionTagCode as actionTag,
+   986→		tPCDAT.sMobileActionTagCode as mobileActionTag,
+   987→		tP.nLowPrice as pcPrice,
+   988→		tP.nLowPrice as lowestPrice,
+   989→		CASE
+   990→            WHEN tP.NLOWPRICEINCLUDEDELIVERYCOST = 0 THEN tP.nLowPrice
+   991→            ELSE tP.NLOWPRICEINCLUDEDELIVERYCOST
+   992→        END AS totalPrice,
+   993→		tP.avgprice_q as averagePrice,
+   994→		tP.nLowPrice as mobilePrice,
+   995→		tP.shop_q as shopQuantity,
+   996→		NVL(tP.shot_yn ,'N') as discontinued,
+   997→		tPC.nCategorySeq1 as categoryCode1,
+   998→		tPC.nCategorySeq2 as categoryCode2,
+   999→		NVL(tPC.nCategorySeq3, 0) as categoryCode3,
+  1000→        NVL(tPC.nCategorySeq4, 0) as categoryCode4,
+  1001→        CASE
+  1002→            WHEN tCFS.nCategorySeq3 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+  1003→            WHEN tCFS.nCategorySeq3='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+  1004→            WHEN tCFS.nCategorySeq3=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2
+  1005→            WHEN tCFS.nCategorySeq4 is null THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+  1006→            WHEN tCFS.nCategorySeq4='' THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+  1007→            WHEN tCFS.nCategorySeq4=0 THEN tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3
+  1008→            ELSE tCFS.sCategoryName1 || '>' || tCFS.sCategoryName2 || '>' || tCFS.sCategoryName3 || '>' || tCFS.sCategoryName4
+  1009→        END as categoryName,
+  1010→        tCFS.sCategoryKeywordList as categoryKeyword,
+  1011→        tCFS.sCategoryWeightList as categoryWeight1,
+  1012→	    (SELECT group_concat(tAVFS.sWeightKeyword, ',')
+  1013→         FROM tProductAttributeValue tPA
+  1014→         LEFT JOIN TATTRIBUTEVALUEFORSEARCH tAVFS ON (tAVFS.nAttributeValueSeq = tPA.NATTRIBUTEVALUESEQ)
+  1015→         WHERE tPA.nProductCategorySeq = tPC.nProductCategorySeq
+  1016→         GROUP BY tPA.nProductCategorySeq) as categoryWeight2,
+  1017→        TO_CHAR(tP.input_d, 'YYYYMMDD') as registerDate,
+  1018→        TO_CHAR(tP.input_d, 'YYYYMMDD HH24:MI:SS') as registerDateTime,
+  1019→        TO_CHAR(tP.dtPriceModifyDate, 'YYYYMMDD') as modifyDate,
+  1020→        TO_CHAR(tP.modify_d, 'YYYYMMDD HH24:MI:SS') as modifyDateTime,
+  1021→        TO_CHAR(tP.make_d, 'YYYYMMDD') as manufactureDate,
+  1022→        TO_CHAR(tP.make_d, 'YYYYMMDD HH24:MI:SS') as manufactureDateTime,
+  1023→        CASE
+  1024→		    WHEN tP.shot_yn = 'Y'  THEN 0
+  1025→		    WHEN tP.nLowPrice > 0  THEN tPC.nCntSave + 1
+  1026→		    ELSE
+  1027→				CASE
+  1028→					WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30, 'DAY') THEN tPC.nCntSave + 1
+  1029→					ELSE 0
+  1030→				END
+  1031→		END AS popularityScore,
+  1032→        NVL(tPC.nCntSave,0) as cntSave,
+  1033→        NVL(tKFS.sKeywordList, '') as managerKeyword,
+  1034→        TO_CHAR(tPSM.MODIFY_DT, 'YYYYMMDD') as managerKeywordDate,
+  1035→        CASE
+  1036→            WHEN tP.shot_yn = 'Y'  THEN '1'
+  1037→            WHEN tP.nLowPrice > 0  THEN '7'
+  1038→            ELSE
+  1039→                CASE
+  1040→                    WHEN tP.dtPriceModifyDate < DATEADD(SYSDATE, -30,'DAY') THEN
+  1041→                        CASE
+  1042→                            WHEN tP.dtPriceModifyDate = '01-JAN-1970' THEN
+  1043→                                CASE
+  1044→                                    WHEN tP.make_d > SYSDATE THEN '5'
+  1045→                                    ELSE '4'
+  1046→                                END
+  1047→                            ELSE '3'
+  1048→                        END
+  1049→                    ELSE '3'
+  1050→                END
+  1051→        END as productClassification,
+  1052→        tP.nPromotionMinPriceQ as promotionPrice,
+  1053→        NVL(tPB.bundle_n, '') as bundleName,
+  1054→        NVL(tPB.bundle_disp_seq, '1') as bundleDisplaySequence,
+  1055→        tPB.sSelectYN as selectYN,
+  1056→        tP.sPriceCompareServiceYN as priceCompareServiceYN,
+  1057→        NVL(tP.maker_c,0) as makerCode,
+  1058→        NVL(tP.brand_c,0) as brandCode,
+  1059→        tP.movie_yn as movieYN,
+  1060→        tP.sPriceLockYN as priceLockYN,
+  1061→        NVL((select group_concat(nAttributeValueSeq, ',') from tProductAttributeValue tPA where tPA.nProductCategorySeq = tPC.nProductCategorySeq group by tPA.nProductCategorySeq) , '') as nAttributeValueSeq,
+  1062→        tPDD.sSimpleDictionaryCode as simpleDictionaryCode,
+  1063→        NVL(tPC.nCntSave,0)+NVL(tSP.save_plus_q, 0) as savePlusQ,
+  1064→        tUP.nTotalCapacity as totalCapacity,
+  1065→        tUP.nStandardCapacity as standardCapacity,
+  1066→        tUP.sUnit as unit,
+  1067→        '1' as prodType,
+  1068→        tCFS.sBRPS as brps,
+  1069→        tPIP.nPriceType as PriceType,
+  1070→        tPIP.nPrice as initialPrice,
+  1071→        CASE
+  1072→            WHEN tPIP.nPrice > 0 THEN
+  1073→                TRUNC(((1-(tP.nLowPrice/tPIP.nPrice))*100),0)
+  1074→            ELSE ''
+  1075→        END as discountRate,
+  1076→        tP.disp_yn as dispYN,
+  1077→        NVL(tPBC.nWriteCnt + tPBC.nCmpnyWriteCnt, 0) as writeCnt,
+  1078→        tP.sProductRegisterType as productRegisterType,
+  1079→        CASE
+  1080→            WHEN tP.nLowPrice > 0 THEN 'N'
+  1081→            WHEN tP.shot_yn = 'Y' THEN 'N'
+  1082→            WHEN
+  1083→            (
+  1084→                tP.input_d >= DATEADD(SYSDATE, -30, 'DAY')
+  1085→                OR
+  1086→                tP.make_d >= DATEADD(SYSDATE, -30, 'DAY')
+  1087→                OR
+  1088→                TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD')
+  1089→            ) THEN 'N'
+  1090→            ELSE 'Y'
+  1091→        END as priceComparisonStopYN,
+  1092→        tCFS.sDispYN as categoryDispYN,
+  1093→        tPB.sSelectYN as bundleSelectYN,
+  1094→        NVL((select group_concat(tRPTP.sModel,',') from tRelationProductTargetProduct tRPTP, tRelationProduct tRP where tRP.sDetailYN = 'Y' and tRPTP.nRelationProductSeq = tRP.nRelationProductSeq and tRP.nRelationFormValue = tP.prod_c group by tP.prod_c), '') as RELATIONMODEL,
+  1095→        tPB.nDescriptionListSeq as descriptionListSeq,
+  1096→        TO_CHAR(tP.modify_d , 'YYYYMMDDHHMISS') as imageVersion,
+  1097→        NVL(tPBC.nCmpnyWriteScoreSum, 0) as cmpnyWriteScoreSum,
+  1098→        NVL(tPBC.nCmpnyWriteCnt, 0) as cmpnyWriteCnt,
+  1099→        tPEV.SVIDEOID as videoId,
+  1100→        NVL(tPMP.NMAXPOPULARSCORE, 0) as maxPopularScore,
+  1101→        TO_CHAR(NVL(tfds.FIRSTDATE, tp.MAKE_D), 'YYYYMMDD') as firstMakeDate,
+  1102→	    TO_CHAR(NVL(tfds.LASTDATE, tp.MAKE_D), 'YYYYMMDD') as lastMakeDate,
+  1103→        NVL(tSS.NCATE2_SHARE,0) as shareCate2,
+  1104→        NVL(tSS.NCATE3_SHARE,0) as shareCate3,
+  1105→        NVL(tSS.NCATE4_SHARE,0) as shareCate4,
+  1106→        NVL2(tm.NATTRIBUTEVALUESEQ, (tm.NATTRIBUTEVALUESEQ || '/' || tm.NCATEGORYSEQ || '.' || tm.SIMGTYPE), '') as optionMarkUrl,
+  1107→        tm.NPOSITION as optionMarkPosition,
+  1108→        NVL((select group_concat(TPS.KEYWORD,', ') from TPROD_SEARCH TPS WHERE TPS.PROD_C = tp.prod_c), '') AS searchKeyword,
+  1109→        CASE
+  1110→            WHEN tP.avgprice_q > 0 THEN
+  1111→                CASE
+  1112→                    WHEN tP.nLowPrice/tP.avgprice_q > 0.5 THEN 'N'
+  1113→                    ELSE 'Y'
+  1114→        END
+  1115→        END as priceDeviationYN,
+  1116→        CASE
+  1117→            WHEN tP.shot_yn = 'Y'  THEN 'D'
+  1118→            ELSE
+  1119→                CASE
+  1120→                    WHEN tP.sPriceCompareServiceYN = 'N' THEN
+  1121→                        CASE
+  1122→                            WHEN tP.make_d > SYSDATE THEN 'R'
+  1123→                            ELSE 'B'
+  1124→                        END
+  1125→                    ELSE
+  1126→                        CASE
+  1127→                            WHEN tP.nLowPrice > 0 THEN 'N'
+  1128→                            ELSE
+  1129→                                CASE
+  1130→                                    WHEN TO_CHAR(tP.dtPriceModifyDate,'YYYYMMDD') >= TO_CHAR(DATEADD(SYSDATE, -30, 'DAY'),'YYYYMMDD') THEN 'O'
+  1131→                                    ELSE
+  1132→                                        CASE
+  1133→                                            WHEN tP.dtPriceModifyDate != '01-JAN-1970' THEN 'S'
+  1134→                                            ELSE
+  1135→                                                CASE
+  1136→                                                    WHEN tP.make_d > SYSDATE THEN 'R'
+  1137→                                                    ELSE
+  1138→                                                        CASE
+  1139→                                                            WHEN tP.input_d >= DATEADD(SYSDATE, -30,'DAY') THEN 'B'
+  1140→                                                            ELSE 'S'
+  1141→                                                        END
+  1142→                                                END
+  1143→                                        END
+  1144→                                END
+  1145→                        END
+  1146→                END
+  1147→        END as stateValue,
+  1148→        NVL(tpsize.NWIDTH,0) as width,
+  1149→        NVL(tpsize.NHEIGHT,0) as height,
+  1150→        NVL(tpsize.NDEPTH,0) as depth,
+  1151→	    'N' as minabYN,
+  1152→        CASE
+  1153→	        WHEN tP.SPRODUCTTYPE = 'A' THEN tP.PROD_C
+  1154→            ELSE 0
+  1155→        END as aiProductCode,
+  1156→	    tQDLP.CMPNY_C as quickShopCode,
+  1157→	    tQDLP.LINK_PROD_C as shopProductCode,
+  1158→	    NVL(tQDLP.NQUICK_DLVY_LOW_PRICE,0) as quickPrice,
+  1159→	    NVL(tulp.NUNIT_LOW_PRICE,0) as unitLowPrice,
+  1160→	    NVL(tulp.NUNIT_DLVY_LOW_PRICE,0) as unitTotalPrice,
+  1161→	    NVL(tlp.NMEMBERSHIP_LOW_PRICE,0) as memberPrice,
+  1162→	    NVL(tlp.NMEMBERSHIP_DLVY_LOW_PRICE,0) as memberTotalPrice,
+  1163→	    NVL(tlp.NMEMBERSHIP_UNIT_LOW_PRICE,0) as unitMemberPrice,
+  1164→	    NVL(tlp.NMEMBERSHIP_UNIT_DLVY_LOW_PRICE,0) as unitMemberTotalPrice,
+  1165→        CASE
+  1166→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is not null THEN 'E'
+  1167→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is not null THEN 'ED'
+  1168→            WHEN tep.NPRODUCTSEQ is null AND tesp.NPRODUCTSEQ is null THEN 'D'
+  1169→            WHEN tep.NPRODUCTSEQ is not null AND tesp.NPRODUCTSEQ is null THEN 'ETC'
+  1170→        END as enuriProductOption,
+  1171→	    CASE
+  1172→            WHEN NVL(tlp.NMEMBERSHIP_LOW_PRICE, tP.nLowPrice + 1) <= tP.nLowPrice THEN 'Y'
+  1173→            ELSE 'N'
+  1174→        END as memberPriceLowerYN,
+  1175→	    NVL(TO_CHAR(tvml.DTLAST_MATCH_DATE, 'YYYYMMDD'),0) as vectorMatchDate
+  1176→	FROM
+  1177→		tprod tP
+  1178→		INNER JOIN tProductCategory tPC ON (tP.prod_c = tPC.nProductSeq)
+  1179→		INNER JOIN tCategoryForSearch tCFS ON (tPC.nCategorySeq1 = tCFS.nCategorySeq1 and
+  1180→			tPC.nCategorySeq2 = tCFS.nCategorySeq2 and
+  1181→			tPC.nCategorySeq3 = tCFS.nCategorySeq3 and
+  1182→			tPC.nCategorySeq4 = tCFS.nCategorySeq4)
+  1183→		INNER JOIN tProductDescription tPD ON (tPC.nProductCategorySeq = tPD.nProductCategorySeq)
+  1184→		INNER JOIN tprod_maker tPM ON (tP.maker_c = tPM.maker_c)
+  1185→		LEFT JOIN tProductCategoryDescriptionActionTag tPCDAT ON (tPC.nProductCategorySeq = tPCDAT.nProductCategorySeq)
+  1186→		LEFT JOIN tprod_brand tPR ON (tP.brand_c = tPR.brand_c)
+  1187→		LEFT JOIN tprod_bundle AS tPB ON (tP.prod_c = tPB.prod_c)
+  1188→		LEFT JOIN tKeywordForSearch tKFS ON (tP.prod_c = tKFS.nProductSeq)
+  1189→		LEFT JOIN tsave_plus tSP ON (tP.prod_c = tSP.prod_c)
+  1190→		LEFT JOIN tGoodsUnitPrice tUP ON (tUP.nGoodsCode = tP.prod_c)
+  1191→		LEFT JOIN tProductDescriptionDictionary tPDD ON (tPD.nProductCategorySeq = tPDD.nProductCategorySeq)
+  1192→		LEFT JOIN tProductInitialPrice tPIP ON (tP.prod_c = tPIP.nProductSeq)
+  1193→		LEFT JOIN tProductBoardCount tPBC ON (tP.prod_c = tPBC.nProductCode)
+  1194→		LEFT JOIN tProd_Search_Manage tPSM ON (tP.prod_c = tPSM.prod_c)
+  1195→		LEFT JOIN TPRODUCTEXTERNALVIDEO tPEV ON (tP.prod_c = tPEV.NPRODUCTSEQ and tPEV.NVIDEONUMBER=1)
+  1196→		LEFT JOIN TPRODMAXPOPULARSCORE tPMP ON (tP.prod_c = tPMP.NPRODUCTSEQ)
+  1197→		LEFT JOIN TFIRSTDATEFORSEARCH tfds ON (tP.prod_c = tfds.prod_c)
+  1198→		LEFT JOIN TPRODSALESSHARE tSS ON (tP.prod_c = tSS.NPRODUCTSEQ)
+  1199→		LEFT JOIN TMARKPRODUCT tmp ON (tP.prod_c = tmp.NPRODUCTSEQ)
+  1200→		LEFT JOIN TMARK tm ON (tmp.NATTRIBUTEVALUESEQ = tm.NATTRIBUTEVALUESEQ and tmp.NCATEGORYSEQ = tm.NCATEGORYSEQ)
+  1201→		LEFT JOIN TPRODSIZE tpsize ON (tP.prod_c = tpsize.NPRODCODE)
+  1202→	    LEFT JOIN TQUICK_DLVY_LOW_PRICE_LINK tQDLP ON (tp.PROD_C = tQDLP.PROD_C)
+  1203→	    LEFT JOIN TENURI_PRODUCT tep ON (tp.PROD_C = tep.NPRODUCTSEQ)
+  1204→        LEFT JOIN TUNIT_LOW_PRICE tulp ON (tp.PROD_C = tulp.PROD_C)
+  1205→	    LEFT JOIN TMEMBERSHIP_LOW_PRICE tlp ON (tp.PROD_c = tlp.PROD_C)
+  1206→	    LEFT JOIN TENURI_SOURCE_PRODUCT tesp ON (tp.PROD_C = tesp.NPRODUCTSEQ)
+  1207→	    LEFT JOIN TPROD_VECTOR_MATCH_LOG tvml ON (tP.prod_c = tvml.PROD_C)
+  1208→	WHERE
+  1209→	   NOT tPC.nCategorySeq2 =19563
+  1210→	]]>
+  1211→        AND tP.prod_c in (
+  1212→        <foreach collection="list" item="item" separator=",">
+  1213→            #{item.productCode}
+  1214→        </foreach>
+  1215→        )
+  1216→    </select>
+  1217→</mapper>

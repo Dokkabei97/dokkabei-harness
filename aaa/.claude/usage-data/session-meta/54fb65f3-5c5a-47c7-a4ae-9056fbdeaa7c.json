@@ -1,0 +1,42 @@
+{
+  "session_id": "54fb65f3-5c5a-47c7-a4ae-9056fbdeaa7c",
+  "project_path": "/Users/admin/Documents/Obsidian Vault",
+  "start_time": "2026-02-16T09:17:32.623Z",
+  "duration_minutes": 0,
+  "user_message_count": 6,
+  "assistant_message_count": 0,
+  "tool_counts": {},
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "first_prompt": "No prompt",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    18,
+    18,
+    18,
+    18,
+    18,
+    18
+  ],
+  "user_message_timestamps": [
+    "2026-02-16T09:17:32.696Z",
+    "2026-02-16T09:17:32.617Z",
+    "2026-02-16T09:17:32.696Z",
+    "2026-02-16T09:17:46.334Z",
+    "2026-02-16T09:17:46.334Z",
+    "2026-02-16T09:17:46.334Z"
+  ]
+}

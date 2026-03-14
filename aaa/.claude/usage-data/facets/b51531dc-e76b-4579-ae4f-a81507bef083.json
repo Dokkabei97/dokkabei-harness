@@ -1,0 +1,17 @@
+{
+  "underlying_goal": "Fix a typo in application-local.yml where ELASTICSEARCH_URLSs should be ELASTICSEARCH_URLS",
+  "goal_categories": {
+    "bug_fix": 1
+  },
+  "outcome": "fully_achieved",
+  "user_satisfaction_counts": {
+    "likely_satisfied": 1
+  },
+  "claude_helpfulness": "very_helpful",
+  "session_type": "single_task",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "correct_code_edits",
+  "brief_summary": "User asked to fix an environment variable typo in application-local.yml, and Claude correctly identified and fixed it with build verification.",
+  "session_id": "b51531dc-e76b-4579-ae4f-a81507bef083"
+}

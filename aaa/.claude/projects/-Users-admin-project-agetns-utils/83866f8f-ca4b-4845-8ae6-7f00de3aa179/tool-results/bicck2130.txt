@@ -1,0 +1,1121 @@
+diff --git a/.mcp.json b/.mcp.json
+index cdaf323..b8c1d7c 100644
+--- a/.mcp.json
++++ b/.mcp.json
+@@ -8,8 +8,8 @@
+       ],
+       "env": {
+         "PLANE_API_KEY": "${PLANE_API_KEY}",
+-        "PLANE_WORKSPACE_SLUG": "danawa",
+-        "PLANE_BASE_URL": "https://project.cowave.kr"
++        "PLANE_WORKSPACE_SLUG": "${PLANE_WORKSPACE_SLUG}",
++        "PLANE_BASE_URL": "${PLANE_BASE_URL}"
+       }
+     },
+     "outline": {
+@@ -19,7 +19,7 @@
+       ],
+       "env": {
+         "OUTLINE_API_KEY": "${OUTLINE_API_KEY}",
+-        "OUTLINE_API_URL": "https://cowave.wiki.cowave.kr/api",
++        "OUTLINE_API_URL": "${OUTLINE_API_URL}",
+         "OUTLINE_DISABLE_DELETE": "true"
+       }
+     },
+@@ -29,7 +29,7 @@
+         "--tls-skip-verify"
+       ],
+       "env": {
+-        "GRAFANA_URL": "http://grafana.danuricorp.com:80",
++        "GRAFANA_URL": "${GRAFANA_URL}",
+         "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}"
+       }
+     }
+diff --git a/README.md b/README.md
+index d14b759..71ccc53 100644
+--- a/README.md
++++ b/README.md
+@@ -1,23 +1,18 @@
+ # Agents-utils
+ 
+-사내 AI 코딩 에이전트(Claude Code, Copilot CLI 등)에서 공통으로 사용하는 에이전트, 커맨드, 스킬, 훅, MCP 서버 설정을 모아둔 플러그인 저장소입니다.
+-`setup.sh` 한 번 실행으로 모든 설정이 자동 설치됩니다.
++사내 AI 코딩 에이전트(Claude Code)에서 공통으로 사용하는 에이전트, 커맨드, 스킬, 훅, MCP/LSP 서버 설정을 모아둔 플러그인 저장소입니다.
+ 
+ ---
+ 
+ ## Quick Start
+ 
+ ```bash
+-# 1. 저장소 클론
+-git clone https://labs.cowave.kr/consumer-commerce-dev/search/techlab/agent-utils.git
++# 1. 플러그인 설치
++claude plugin install --plugin-dir /path/to/agent-utils
+ 
+-# 2. 환경변수 설정 (~/.zshrc 또는 ~/.bashrc에 추가)
+-export PLANE_API_KEY="your-plane-api-key"
+-export OUTLINE_API_KEY="your-outline-api-key"
+-export GRAFANA_SERVICE_ACCOUNT_TOKEN="your-grafana-token"
++# 2. claude/ 디렉토리 수동 적용 (아래 '사용자 설정 적용' 섹션 참고)
+ 
+-# 3. 설치 실행
+-cd agent-utils && ./script/setup.sh
++# 3. Claude Code 재시작
+ ```
+ 
+ ---
+@@ -26,11 +21,19 @@ cd agent-utils && ./script/setup.sh
+ 
+ | 도구 | 용도 | 설치 방법 |
+ |------|------|-----------|
+-| `git` | 저장소 클론 및 업데이트 | `brew install git` |
+-| `jq` | JSON 설정 파일 처리 | `brew install jq` |
+-| `node` | hooks 스크립트 실행 | `brew install node` |
+ | `claude` | Claude Code CLI | [공식 문서](https://docs.anthropic.com/en/docs/claude-code) 참고 |
+-| `uvx` | MCP 서버 실행 | `pip install uvx` 또는 `pipx install uvx` |
++| `node` | hooks 스크립트 실행 | `brew install node` |
++| `uvx` | MCP 서버 실행 | `pip install uv` |
++
++LSP 서버 (`.lsp.json`으로 자동 구성되며, 바이너리는 별도 설치 필요):
++
++| LSP 서버 | 언어 | 설치 방법 |
++|----------|------|-----------|
++| `typescript-language-server` | TypeScript/JavaScript | `npm install -g typescript-language-server typescript` |
++| `kotlin-language-server` | Kotlin | [GitHub Releases](https://github.com/fwcd/kotlin-language-server/releases) |
++| `jdtls` | Java | [Eclipse JDT.LS](https://github.com/eclipse-jdtls/eclipse.jdt.ls) |
++| `pyright-langserver` | Python | `pip install pyright` 또는 `npm install -g pyright` |
++| `gopls` | Go | `go install golang.org/x/tools/gopls@latest` |
+ 
+ ---
+ 
+@@ -38,245 +41,159 @@ cd agent-utils && ./script/setup.sh
+ 
+ MCP 서버 연동에 필요한 API 키를 발급받아 환경변수로 등록해야 합니다.
+ 
+-| 환경변수 | 설명 | API 키 발급 방법 |
+-|----------|------|------------------|
+-| `PLANE_API_KEY` | Plane 이슈 트래커 연동 | [https://project.cowave.kr](https://project.cowave.kr) -> 프로필 -> API 토큰 |
+-| `OUTLINE_API_KEY` | Outline 위키 연동 | [https://cowave.wiki.cowave.kr](https://cowave.wiki.cowave.kr) -> 설정 -> API 토큰 |
+-| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | Grafana 모니터링 연동 | [http://grafana.danuricorp.com](http://grafana.danuricorp.com) -> Administration -> Service Accounts |
++### API 키 (필수)
++
++| 환경변수 | 설명 | 발급 방법 |
++|----------|------|-----------|
++| `PLANE_API_KEY` | Plane 이슈 트래커 | 프로필 → API 토큰 |
++| `OUTLINE_API_KEY` | Outline 위키 | 설정 → API 토큰 |
++| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | Grafana 모니터링 | Administration → Service Accounts |
++
++### 서비스 URL (팀별 설정)
++
++| 환경변수 | 설명 | 기본값 (검색기술랩) |
++|----------|------|---------------------|
++| `PLANE_WORKSPACE_SLUG` | Plane 워크스페이스 슬러그 | `danawa` |
++| `PLANE_BASE_URL` | Plane 서버 URL | `https://project.cowave.kr` |
++| `OUTLINE_API_URL` | Outline API URL | `https://cowave.wiki.cowave.kr/api` |
++| `GRAFANA_URL` | Grafana 서버 URL | `http://grafana.danuricorp.com:80` |
+ 
+-`~/.zshrc` 또는 `~/.bashrc`에 다음을 추가한 뒤, 터미널을 재시작하거나 `source ~/.zshrc`를 실행하세요.
++`~/.zshrc` 또는 `~/.bashrc`에 추가:
+ 
+ ```bash
++# API 키 (필수)
+ export PLANE_API_KEY="your-plane-api-key"
+ export OUTLINE_API_KEY="your-outline-api-key"
+ export GRAFANA_SERVICE_ACCOUNT_TOKEN="your-grafana-token"
++
++# 서비스 URL (기본값과 다른 경우만 설정)
++export PLANE_WORKSPACE_SLUG="danawa"
++export PLANE_BASE_URL="https://project.cowave.kr"
++export OUTLINE_API_URL="https://cowave.wiki.cowave.kr/api"
++export GRAFANA_URL="http://grafana.danuricorp.com:80"
+ ```
+ 
+ ---
+ 
+-## 설치되는 내용
++## 사용자 설정 적용
+ 
+-### Agents (4개)
++`claude/` 디렉토리에는 플러그인이 자동으로 처리하지 않는 사용자 레벨 설정이 포함되어 있습니다. 수동으로 `~/.claude/`에 복사해주세요.
+ 
+-코드 리뷰, 테스트 등 전문화된 분석 에이전트입니다. 커맨드에서 자동으로 호출되거나, Claude Code의 Agent 기능으로 직접 사용할 수 있습니다.
++```bash
++# output-styles 디렉토리 복사
++cp -r claude/output-styles ~/.claude/
+ 
+-| 에이전트 | 설명 | 주요 동작 |
+-|---------|------|-----------|
+-| `arch-reviewer` | 아키텍처 리뷰 전문가 | 매크로 구조 → 의존성 추적 → 패키지 명명 → 데이터 모델링 → MSA 감지 → 개발자 의도 평가의 6단계 분석 수행 |
+-| `perf-reviewer` | 성능 리뷰 전문가 | 메모리, I/O, 동시성, 직렬화 등 9개 카테고리에서 성능 안티패턴 탐지 |
+-| `e2e-runner` | E2E 테스트 실행기 | Vercel Agent Browser(우선) 또는 Playwright로 E2E 테스트 생성 및 실행 |
+-| `tdd-guide` | TDD 워크플로우 가이드 | Red → Green → Refactor 사이클 강제, 80%+ 커버리지 달성 (Jest/Vitest, Kotest/MockK 지원) |
++# statusline 스크립트 복사
++cp claude/statusline-command.sh ~/.claude/
++chmod +x ~/.claude/statusline-command.sh
+ 
+-### Commands (9개)
++# CLAUDE.md 복사 (기존 파일이 있다면 내용 확인 후 병합)
++cp claude/CLAUDE.md ~/.claude/
++```
+ 
+-`/커맨드명`으로 실행하는 슬래시 커맨드입니다. Claude Code 대화 중 언제든 사용 가능합니다.
++`~/.claude/settings.json`에 statusLine 설정이 없다면 추가:
+ 
+-| 커맨드 | 설명 | 사용법 |
+-|--------|------|--------|
+-| `/analyze` | 코드 품질·보안·성능 종합 분석 | `--with gemini/copilot/codex` 옵션으로 다른 AI와 협업 분석 가능 |
+-| `/arch-review` | 아키텍처 적합성 리뷰 | `--focus structure/dependency/naming/data/msa/all` 옵션으로 분석 범위 지정 |
+-| `/perf-review` | 성능 안티패턴 탐지 | `--focus memory/io/concurrency/serialization/all` 옵션으로 분석 범위 지정 |
+-| `/e2e` | E2E 테스트 생성 및 실행 | Page Object Model 패턴, 멀티 브라우저 테스트 지원 |
+-| `/tdd` | TDD 워크플로우 실행 | 테스트 먼저 작성 → 구현 → 리팩토링 사이클 강제 |
+-| `/create-flow` | 플러그인 컴포넌트 스캐폴딩 | 에이전트, 커맨드, 스킬, 훅을 대화형으로 생성 |
+-| `/verify-flow` | 플러그인 컴포넌트 검증 | 구조, 보안, 품질 규칙 기반 검증 후 심각도별 리포트 |
+-| `/handoff` | 세션 컨텍스트 전달 | git status, 대화 요약, 미해결 이슈를 HANDOFF.md로 저장 |
+-| `/obsidian` | 기술 학습 노트 생성 | 7종 템플릿(개념, 실습, 비교, 트러블슈팅, 패턴, TIL, MOC) 지원 |
++```json
++{
++  "statusLine": {
++    "type": "command",
++    "command": "bash $HOME/.claude/statusline-command.sh"
++  }
++}
++```
+ 
+-### Skills (15개)
++> 이미 `~/.claude/settings.json`에 다른 설정이 있다면 `statusLine` 키만 추가하세요.
+ 
+-에이전트와 커맨드에서 자동으로 참조하는 지식 베이스 및 워크플로우입니다. 필요할 때 자동으로 로드됩니다.
++---
+ 
+-#### 이슈 추적 & 워크플로우 자동화
++## 설치되는 내용
+ 
+-| 스킬 | 설명 | 동작 방식 |
+-|------|------|-----------|
+-| `issue-tracker` | Plane 이슈 트래커 연동 | 브랜치명에서 이슈 자동 감지, 작업 상태 추적, 변경 이력 기록, 서브태스크 분할 제안 |
+-| `post-merge` | 머지 후 자동화 | MR 머지 후 Plane 이슈 종료 + Outline 문서 업데이트를 한 번에 처리 |
++### Agents (4개)
+ 
+-#### 문서 & 지식 관리
++| 에이전트 | 설명 |
++|---------|------|
++| `arch-reviewer` | 아키텍처 리뷰 전문가 — 6단계 분석 (매크로 구조 → 의존성 → 패키지 명명 → 데이터 모델링 → MSA → 개발자 의도) |
++| `perf-reviewer` | 성능 리뷰 전문가 — 9개 카테고리 성능 안티패턴 탐지 |
++| `e2e-runner` | E2E 테스트 실행기 — Vercel Agent Browser 또는 Playwright |
++| `tdd-guide` | TDD 워크플로우 가이드 — Red → Green → Refactor, 80%+ 커버리지 |
+ 
+-| 스킬 | 설명 | 동작 방식 |
+-|------|------|-----------|
+-| `document-lastest` | Outline 위키 자동 최신화 | 코드 변경 분석 → 문서 유형 분류 → 기존 문서 업데이트 또는 신규 생성, 민감정보 마스킹 |
+-| `sync-claude-md` | CLAUDE.md 자동 동기화 | 커밋/PR 전 아키텍처 변경, 컨벤션 변경 등을 감지하여 CLAUDE.md 업데이트 제안 |
+-| `obsidian-tech-note` | Obsidian 학습 노트 시스템 | Templater, DataView, Tasks 플러그인을 활용한 7종 학습 템플릿 |
+-| `claude-md-inverted-index` | CLAUDE.md 역인덱스 전략 | 기술 키워드 → 모듈/패키지 위치 매핑으로 AI 에이전트 도구 호출 42-68% 감소 |
++### Commands (9개)
+ 
+-#### 코드 리뷰 가이드
++| 커맨드 | 설명 |
++|--------|------|
++| `/analyze` | 코드 품질·보안·성능 종합 분석 (`--with gemini/copilot/codex` 지원) |
++| `/arch-review` | 아키텍처 적합성 리뷰 |
++| `/perf-review` | 성능 안티패턴 탐지 |
++| `/e2e` | E2E 테스트 생성 및 실행 |
++| `/tdd` | TDD 워크플로우 실행 |
++| `/create-flow` | 플러그인 컴포넌트 스캐폴딩 |
++| `/verify-flow` | 플러그인 컴포넌트 검증 |
++| `/handoff` | 세션 컨텍스트 전달 (HANDOFF.md) |
++| `/obsidian` | 기술 학습 노트 생성 (7종 템플릿) |
+ 
+-| 스킬 | 설명 | 동작 방식 |
+-|------|------|-----------|
+-| `arch-review-guide` | 아키텍처 리뷰 레퍼런스 | 6단계 분석 워크플로우, 4단계 심각도(Critical/High/Medium/Low) 기준 제공 |
+-| `perf-review-guide` | 성능 리뷰 레퍼런스 | 9개 카테고리 체크리스트, 언어별(Kotlin/TypeScript/Python) 성능 규칙 |
++### Skills (15개)
+ 
+-#### TDD & 테스트
++| 카테고리 | 스킬 |
++|----------|------|
++| 이슈·워크플로우 | `issue-tracker`, `post-merge` |
++| 문서·지식 관리 | `document-lastest`, `sync-claude-md`, `obsidian-tech-note`, `claude-md-inverted-index` |
++| 코드 리뷰 | `arch-review-guide`, `perf-review-guide` |
++| TDD·테스트 | `tdd-workflow` |
++| DB·플랫폼 | `mongodb-best-practices`, `elasticsearch-best-practices`, `supabase-postgres-best-practices` |
++| 플러그인 개발 | `flow-scaffolding`, `flow-validation` |
+ 
+-| 스킬 | 설명 | 동작 방식 |
+-|------|------|-----------|
+-| `tdd-workflow` | TDD 워크플로우 가이드 | Red-Green-Refactor 사이클, 커버리지 요구사항, Kotlin/TypeScript 테스트 유형 가이드 |
++### MCP Servers (3개)
+ 
+-#### 데이터베이스 & 플랫폼 베스트 프랙티스
++| 서버 | 연동 서비스 |
++|------|------------|
++| `plane` | Plane 이슈 트래커 — 이슈 CRUD, 사이클·모듈·마일스톤 관리 |
++| `outline` | Outline 위키 — 문서 검색/생성/수정 (삭제 비활성화) |
++| `grafana` | Grafana — 대시보드·메트릭 조회, 알림·인시던트·OnCall 연동 |
+ 
+-| 스킬 | 설명 | 참조 파일 |
+-|------|------|-----------|
+-| `mongodb-best-practices` | MongoDB 최적화 레퍼런스 | 11개 카테고리, 45+ 레퍼런스 (쿼리 성능, 인덱싱, 스키마 설계 등) |
+-| `elasticsearch-best-practices` | Elasticsearch 최적화 레퍼런스 | 10개 카테고리, 30+ 레퍼런스 (매핑, 쿼리 성능, 클러스터 아키텍처 등) |
+-| `supabase-postgres-best-practices` | Postgres 최적화 레퍼런스 | 8개 카테고리, 31+ 레퍼런스 (쿼리 성능, 연결 관리, RLS 등) |
++### LSP Servers (5개)
+ 
+-#### 플러그인 개발 도구
++`.lsp.json`으로 자동 구성됩니다. 바이너리만 별도 설치하면 코드 인텔리전스가 활성화됩니다.
+ 
+-| 스킬 | 설명 | 동작 방식 |
+-|------|------|-----------|
+-| `flow-scaffolding` | 컴포넌트 템플릿 시스템 | 에이전트, 커맨드, 스킬, 훅의 minimal/standard/advanced 템플릿 제공 |
+-| `flow-validation` | 컴포넌트 검증 규칙 | 7개 카테고리(CMD/AGT/SKL/HK/XRF/SEC/QUA), 56개 규칙으로 구조·보안·품질 검증 |
++| 언어 | LSP 서버 |
++|------|----------|
++| TypeScript/JavaScript | `typescript-language-server` |
++| Kotlin | `kotlin-language-server` |
++| Java | `jdtls` |
++| Python | `pyright-langserver` |
++| Go | `gopls` |
+ 
+ ### Hooks (15개)
+ 
+-Claude Code의 이벤트 기반 자동화입니다. 도구 실행 전후에 자동으로 트리거됩니다.
+-
+-#### PreToolUse (도구 실행 전 - 4개)
+-
+-| 훅 | 트리거 조건 | 동작 |
+-|----|------------|------|
+-| dev server 차단 | `npm run dev`, `uvicorn`, `flask run` 등 실행 시 | tmux 밖에서 실행하면 차단하고 tmux 사용법 안내 |
+-| tmux 권고 | `npm install`, `docker`, `pytest`, `gradlew` 등 장시간 명령 실행 시 | tmux 세션 사용을 권고하는 경고 표시 |
+-| git push 확인 | `git push` 실행 시 | push 전 변경사항 검토 리마인더 표시 |
+-| 문서 파일 차단 | `.md`/`.txt` 파일 생성 시 (README, CLAUDE 등 제외) | 불필요한 문서 파일 생성을 차단, README.md 사용 권고 |
+-
+-#### PostToolUse (도구 실행 후 - 11개)
+-
+-| 훅 | 트리거 조건 | 동작 |
+-|----|------------|------|
+-| PR/MR URL 로깅 | `gh pr create` 또는 `glab mr create` 실행 후 | 생성된 PR/MR URL과 리뷰 커맨드 출력 |
+-| 머지 후 액션 제안 | `glab mr merge` 성공 시 | `/post-merge` 커맨드로 Plane/Outline 후속 처리 제안 |
+-| 빌드 완료 알림 | `npm run build`, `gradlew build` 등 완료 시 | 비동기 분석 실행 알림 (백그라운드, 30-60초 타임아웃) |
+-| JS/TS 자동 포맷팅 | `.ts/.tsx/.js/.jsx` 파일 편집 후 | Prettier로 자동 포맷팅 적용 |
+-| Kotlin 자동 포맷팅 | `.kt/.kts` 파일 편집 후 | `./gradlew ktlintFormat`으로 자동 포맷팅 적용 |
+-| TypeScript 타입 검사 | `.ts/.tsx` 파일 편집 후 | `npx tsc --noEmit`으로 타입 에러 검출 |
+-| Kotlin 컴파일 검사 | `.kt/.kts` 파일 편집 후 | `./gradlew compileKotlin`으로 컴파일 에러 검출 (120초 타임아웃) |
+-| console.log 경고 | `.ts/.tsx/.js/.jsx` 파일 편집 후 | `console.log` 감지 시 경고 및 제거 권고 |
+-| println 경고 | `.kt/.kts` 파일 편집 후 | `println()` 감지 시 경고, logger 사용 권고 |
+-| Python 구문 검사 | `.py` 파일 편집 후 | `py_compile`로 구문 에러 검출 |
+-| print 경고 | `.py` 파일 편집 후 | `print()` 감지 시 경고, logging 모듈 사용 권고 |
+-
+-### MCP Servers (3개 + 1개 내장)
+-
+-외부 서비스와 연동하는 MCP(Model Context Protocol) 서버입니다. Claude Code 시작 시 자동으로 연결됩니다.
+-
+-| 서버 | 실행 명령 | 연동 서비스 | 주요 기능 |
+-|------|-----------|------------|-----------|
+-| `plane` | `uvx plane-mcp-server stdio` | Plane 이슈 트래커 | 이슈 생성/조회/수정, 사이클·모듈·마일스톤 관리, 이슈 검색 |
+-| `outline` | `uvx mcp-outline` | Outline 위키 | 문서 검색/생성/수정, 컬렉션 관리, 문서 내보내기 (삭제 비활성화) |
+-| `grafana` | `mcp-grafana --tls-skip-verify` | Grafana 모니터링 | 대시보드·메트릭 조회, 알림 규칙 관리, 인시던트·OnCall 연동 |
+-| `playwright` | (Claude Code 내장 플러그인) | 브라우저 자동화 | E2E 테스트, 웹 스크린샷, DOM 스냅샷, 네트워크 요청 분석 |
++| 분류 | 주요 훅 |
++|------|---------|
++| PreToolUse (4개) | dev server tmux 강제, 장시간 명령 tmux 권고, git push 확인, 불필요 문서 차단 |
++| PostToolUse (11개) | PR/MR URL 로깅, JS/TS·Kotlin 자동 포맷팅, 타입/컴파일 검사, 디버그 코드 경고 |
+ 
+ ### Output Styles (1개)
+ 
+-Claude Code의 응답 형태를 커스터마이징하는 출력 스타일입니다.
+-
+-| 스타일 | 설명 | 특징 |
+-|--------|------|------|
+-| `learning-plus` | 학습 중심 출력 스타일 | 보일러플레이트 자동 완성 + 핵심 로직 Learn by Doing 요청, 코드별 Insight 제공 |
+-
+-### CLAUDE.md 확장
+-
+-플러그인 설치 시 `~/.claude/CLAUDE.md`에 다음 설정이 마커 기반으로 추가됩니다.
+-
+-| 설정 | 설명 |
+-|------|------|
+-| Gemini CLI Integration | "Gemini와 상의하면서 진행해줘" 요청 시 Gemini CLI 연동 |
+-| Copilot CLI Integration | "Copilot하고 상의하면서 진행해줘" 요청 시 3개 모델(GPT-5.2, Claude Opus 4.5, Gemini 3 Pro) 비교 분석 |
+-| Codex CLI Integration | "Codex와 상의하면서 진행해줘" 요청 시 Codex CLI 연동 |
+-
+----
+-
+-## 설치 과정 상세
+-
+-`setup.sh` 실행 시 다음 순서로 설치됩니다:
+-
+-```
+-1. 사전 조건 확인 (git, jq, claude, node)
+-2. GitLab에서 플러그인 소스 클론/업데이트
+-3. 캐시 디렉토리에 플러그인 파일 배치
+-4. 마켓플레이스 등록 (known_marketplaces.json)
+-5. 플러그인 등록 (installed_plugins.json)
+-6. 플러그인 활성화 (settings.json)
+-7. hooks 머지 (description 기준 중복 방지)
+-8. output-styles 복사
+-9. statusline 스크립트 복사
+-10. CLAUDE.md 마커 기반 병합
+-11. 환경변수 확인 및 안내
+-```
+-
+-### 설치 경로
+-
+-```
+-$HOME/.claude/
+-├── plugins/
+-│   ├── marketplaces/cowave-plugins/         # GitLab 소스 (git clone)
+-│   ├── cache/cowave-plugins/agents-utils/   # 설치 캐시 (실제 참조 경로)
+-│   │   ├── .claude-plugin/                  # 플러그인 메타데이터
+-│   │   ├── .mcp.json                        # MCP 서버 설정
+-│   │   ├── agents/                          # 에이전트 정의 파일
+-│   │   ├── commands/                        # 커맨드 정의 파일
+-│   │   └── skills/                          # 스킬 정의 파일
+-│   ├── known_marketplaces.json              # 마켓플레이스 레지스트리
+-│   └── installed_plugins.json               # 플러그인 레지스트리
+-├── settings.json                            # 플러그인 활성화 + hooks
+-├── output-styles/learning-plus.md           # 출력 스타일
+-├── statusline-command.sh                    # 상태 표시줄 스크립트
+-└── CLAUDE.md                                # 글로벌 지시사항 (마커 기반 병합)
+-```
++| 스타일 | 설명 |
++|--------|------|
++| `learning-plus` | 보일러플레이트 자동 완성 + 핵심 로직 Learn by Doing + Insight 제공 |
+ 
+ ---
+ 
+ ## 저장소 구조
+ 
+ ```text
+-├── script/
+-│   ├── setup.sh                # 설치 스크립트
+-│   └── uninstall.sh            # 제거 스크립트
+-├── .mcp.json                   # MCP 서버 설정 (3개 서버)
+ ├── .claude-plugin/
+ │   ├── plugin.json             # 플러그인 메타데이터
+ │   └── marketplace.json        # 마켓플레이스 메타데이터
+-├── agents/                     # 에이전트 정의 (4개)
+-│   ├── arch-reviewer.md
+-│   ├── e2e-runner.md
+-│   ├── perf-reviewer.md
+-│   └── tdd-guide.md
+-├── commands/                   # 커맨드 정의 (9개)
+-│   ├── analyze.md
+-│   ├── arch-review.md
+-│   ├── create-flow.md
+-│   ├── e2e.md
+-│   ├── handoff.md
+-│   ├── obsidian.md
+-│   ├── perf-review.md
+-│   ├── tdd.md
+-│   └── verify-flow.md
+-├── skills/                     # 스킬 정의 (15개)
+-│   ├── arch-review-guide/
+-│   ├── claude-md-inverted-index/
+-│   ├── document-lastest/
+-│   ├── elasticsearch-best-practices/
+-│   ├── flow-scaffolding/
+-│   ├── flow-validation/
+-│   ├── issue-tracker/
+-│   ├── mongodb-best-practices/
+-│   ├── obsidian-tech-note/
+-│   ├── perf-review-guide/
+-│   ├── post-merge/
+-│   ├── supabase-postgres-best-practices/
+-│   ├── sync-claude-md/
+-│   └── tdd-workflow/
+-└── claude/
++├── .mcp.json                   # MCP 서버 설정
++├── .lsp.json                   # LSP 서버 설정
++├── agents/                     # 에이전트 (4개)
++├── commands/                   # 커맨드 (9개)
++├── skills/                     # 스킬 (15개)
++├── hooks/                      # 훅 설정
++│   └── hooks.json
++└── claude/                     # 사용자 설정 (수동 적용)
+     ├── CLAUDE.md               # 글로벌 지시사항 (Gemini/Copilot/Codex 연동)
+-    ├── settings.json           # Claude Code 설정
++    ├── settings.json           # statusLine 설정
+     ├── statusline-command.sh   # 상태 표시줄 스크립트
+-    ├── hooks/
+-    │   └── hooks.json          # 이벤트 훅 정의 (15개)
+     └── output-styles/
+         └── learning-plus.md    # 학습 중심 출력 스타일
+ ```
+@@ -293,96 +210,52 @@ $HOME/.claude/
+ 
+ ---
+ 
+-## 업데이트 방법
++## 업데이트
+ 
+-저장소를 최신으로 pull한 뒤 `setup.sh`를 다시 실행하면 됩니다.
++플러그인을 최신 버전으로 업데이트하려면:
+ 
+ ```bash
+-cd agent-utils && git pull && ./script/setup.sh
++claude plugin update cowave-devtools@cowave-plugins
+ ```
+ 
+-`setup.sh`는 멱등성(idempotent)을 보장합니다.
+-- hooks는 description 기준으로 중복을 건너뜁니다.
+-- CLAUDE.md는 마커 기반으로 기존 블록을 교체합니다.
+-- 플러그인 등록 정보는 덮어쓰기로 항상 최신 상태를 유지합니다.
+-
+----
+-
+-## 제거 방법
+-
+-```bash
+-./script/uninstall.sh
+-```
+-
+-제거되는 항목:
+-- 캐시 및 마켓플레이스 디렉토리
+-- `installed_plugins.json` / `known_marketplaces.json`의 플러그인 항목
+-- `settings.json`의 플러그인 활성화 및 hooks
+-- `output-styles/learning-plus.md`
+-- `CLAUDE.md`의 플러그인 마커 블록
+-
+-유지되는 항목:
+-- `statusline-command.sh` 및 statusLine 설정
+-- 사용자가 직접 작성한 CLAUDE.md 내용
+-
+ ---
+ 
+ ## 트러블슈팅
+ 
+-### Q: setup.sh 실행 시 "jq가 설치되어 있지 않습니다" 오류
+-
+-`jq`가 설치되어 있지 않은 경우 발생합니다. 다음 명령어로 설치하세요.
+-
+-```bash
+-brew install jq
+-```
+-
+-### Q: MCP 서버가 연결되지 않음
+-
+-1. 환경변수가 올바르게 설정되어 있는지 확인하세요.
++### MCP 서버가 연결되지 않음
+ 
+ ```bash
++# 환경변수 확인
+ echo $PLANE_API_KEY
+ echo $OUTLINE_API_KEY
+ echo $GRAFANA_SERVICE_ACCOUNT_TOKEN
+-```
+ 
+-2. `uvx`가 설치되어 있는지 확인하세요.
+-
+-```bash
++# uvx 설치 확인
+ uvx --version
+ ```
+ 
+-설치되어 있지 않다면 다음 중 하나로 설치하세요.
++### LSP가 동작하지 않음
+ 
+-```bash
+-pip install uvx
+-# 또는
+-pipx install uvx
+-```
+-
+-### Q: 플러그인이 로드되지 않음
+-
+-1. Claude Code를 재시작하세요.
+-2. 플러그인 등록 파일이 올바르게 생성되었는지 확인하세요.
++`/plugin` 탭에서 Errors를 확인하세요. `Executable not found in $PATH` 에러가 나면 해당 LSP 바이너리를 설치해야 합니다.
+ 
+ ```bash
+-cat ~/.claude/plugins/installed_plugins.json
++# 예: TypeScript LSP
++npm install -g typescript-language-server typescript
+ ```
+ 
+-`agents-utils@cowave-plugins` 항목이 존재하는지 확인하세요.
+-
+-### Q: hooks가 동작하지 않음
+-
+-hooks 스크립트는 `node`를 사용합니다. `node`가 PATH에 있는지 확인하세요.
++### hooks가 동작하지 않음
+ 
+ ```bash
+-which node
+-node --version
++# node 설치 확인
++which node && node --version
++
++# 설치되지 않았다면
++brew install node
+ ```
+ 
+-`node`가 설치되어 있지 않다면 다음 명령어로 설치하세요.
++### 플러그인이 로드되지 않음
+ 
+ ```bash
+-brew install node
++# 디버그 모드로 확인
++claude --debug
+ ```
+diff --git a/claude/settings.json b/claude/settings.json
+index e63eb50..95ca8ca 100644
+--- a/claude/settings.json
++++ b/claude/settings.json
+@@ -2,14 +2,5 @@
+   "statusLine": {
+     "type": "command",
+     "command": "bash $HOME/.claude/statusline-command.sh"
+-  },
+-  "enabledPlugins": {
+-    "playwright@claude-plugins-official": true,
+-    "ralph-loop@claude-plugins-official": true,
+-    "typescript-lsp@claude-plugins-official": true,
+-    "kotlin-lsp@claude-plugins-official": true,
+-    "jdtls-lsp@claude-plugins-official": true,
+-    "pyright-lsp@claude-plugins-official": true,
+-    "gopls-lsp@claude-plugins-official": true
+   }
+ }
+diff --git a/script/setup.sh b/script/setup.sh
+deleted file mode 100755
+index d93a013..0000000
+--- a/script/setup.sh
++++ /dev/null
+@@ -1,235 +0,0 @@
+-#!/bin/bash
+-set -euo pipefail
+-
+-# ============================================================
+-# Cowave Claude Plugin 설치 스크립트
+-# 사내 GitLab에서 플러그인을 설치하고 Claude Code에 등록합니다.
+-# ============================================================
+-
+-PLUGIN_NAME="cowave-devtools"
+-MARKETPLACE_NAME="cowave-plugins"
+-GITLAB_REPO="https://labs.cowave.kr/consumer-commerce-dev/search/techlab/agent-utils.git"
+-CLAUDE_DIR="$HOME/.claude"
+-PLUGINS_DIR="$CLAUDE_DIR/plugins"
+-MARKETPLACE_DIR="$PLUGINS_DIR/marketplaces/$MARKETPLACE_NAME"
+-CACHE_DIR="$PLUGINS_DIR/cache/$MARKETPLACE_NAME/$PLUGIN_NAME"
+-KNOWN_MARKETPLACES="$PLUGINS_DIR/known_marketplaces.json"
+-INSTALLED_PLUGINS="$PLUGINS_DIR/installed_plugins.json"
+-SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+-
+-RED='\033[0;31m'
+-GREEN='\033[0;32m'
+-YELLOW='\033[1;33m'
+-BLUE='\033[0;34m'
+-NC='\033[0m'
+-
+-info()  { echo -e "${BLUE}[INFO]${NC} $1"; }
+-ok()    { echo -e "${GREEN}[OK]${NC} $1"; }
+-warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
+-error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+-
+-# --- 사전 조건 확인 ---
+-check_prerequisites() {
+-    if ! command -v git &>/dev/null; then
+-        error "git이 설치되어 있지 않습니다."
+-    fi
+-    if ! command -v jq &>/dev/null; then
+-        error "jq가 설치되어 있지 않습니다. brew install jq 로 설치해주세요."
+-    fi
+-    if ! command -v claude &>/dev/null; then
+-        warn "claude CLI가 PATH에 없습니다. Claude Code가 설치되어 있는지 확인해주세요."
+-    fi
+-}
+-
+-# --- 디렉토리 준비 ---
+-prepare_dirs() {
+-    mkdir -p "$PLUGINS_DIR/marketplaces" "$PLUGINS_DIR/cache"
+-
+-    if [ ! -f "$KNOWN_MARKETPLACES" ]; then
+-        echo '{}' > "$KNOWN_MARKETPLACES"
+-    fi
+-    if [ ! -f "$INSTALLED_PLUGINS" ]; then
+-        echo '{"version":2,"plugins":{}}' > "$INSTALLED_PLUGINS"
+-    fi
+-}
+-
+-# --- GitLab에서 플러그인 클론/업데이트 ---
+-clone_or_update() {
+-    if [ -d "$MARKETPLACE_DIR/.git" ]; then
+-        info "기존 설치를 업데이트합니다..."
+-        cd "$MARKETPLACE_DIR"
+-        git pull --ff-only origin main 2>/dev/null || git pull --ff-only origin master 2>/dev/null || {
+-            warn "pull 실패. 기존 디렉토리를 재설정합니다."
+-            cd /
+-            rm -rf "$MARKETPLACE_DIR"
+-            git clone "$GITLAB_REPO" "$MARKETPLACE_DIR"
+-        }
+-    else
+-        info "GitLab에서 플러그인을 클론합니다..."
+-        rm -rf "$MARKETPLACE_DIR"
+-        git clone "$GITLAB_REPO" "$MARKETPLACE_DIR"
+-    fi
+-    ok "플러그인 소스 준비 완료: $MARKETPLACE_DIR"
+-}
+-
+-# --- 캐시 디렉토리에 플러그인 배치 ---
+-install_to_cache() {
+-    local commit_sha
+-    commit_sha=$(cd "$MARKETPLACE_DIR" && git rev-parse --short HEAD)
+-    local version="$commit_sha"
+-
+-    rm -rf "$CACHE_DIR"
+-    mkdir -p "$CACHE_DIR"
+-
+-    # 레포 루트가 곧 플러그인이므로 전체 복사
+-    cp -r "$MARKETPLACE_DIR/.claude-plugin" "$CACHE_DIR/"
+-    cp "$MARKETPLACE_DIR/.mcp.json" "$CACHE_DIR/"
+-    [ -d "$MARKETPLACE_DIR/skills" ]   && cp -r "$MARKETPLACE_DIR/skills" "$CACHE_DIR/"
+-    [ -d "$MARKETPLACE_DIR/agents" ]   && cp -r "$MARKETPLACE_DIR/agents" "$CACHE_DIR/"
+-    [ -d "$MARKETPLACE_DIR/commands" ] && cp -r "$MARKETPLACE_DIR/commands" "$CACHE_DIR/"
+-
+-    ok "캐시에 설치 완료: $CACHE_DIR" >&2
+-    echo "$version"
+-}
+-
+-# --- known_marketplaces.json 등록 ---
+-register_marketplace() {
+-    local now
+-    now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+-
+-    local updated
+-    updated=$(jq --arg name "$MARKETPLACE_NAME" \
+-        --arg location "$MARKETPLACE_DIR" \
+-        --arg now "$now" \
+-        '.[$name] = {
+-            "source": {
+-                "source": "gitlab",
+-                "repo": "consumer-commerce-dev/search/techlab/agent-utils"
+-            },
+-            "installLocation": $location,
+-            "lastUpdated": $now
+-        }' "$KNOWN_MARKETPLACES")
+-
+-    echo "$updated" > "$KNOWN_MARKETPLACES"
+-    ok "마켓플레이스 등록 완료: $MARKETPLACE_NAME"
+-}
+-
+-# --- installed_plugins.json 등록 ---
+-register_plugin() {
+-    local version="$1"
+-    local now
+-    now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+-    local commit_sha
+-    commit_sha=$(cd "$MARKETPLACE_DIR" && git rev-parse HEAD)
+-    local plugin_key="${PLUGIN_NAME}@${MARKETPLACE_NAME}"
+-
+-    local updated
+-    updated=$(jq --arg key "$plugin_key" \
+-        --arg path "$CACHE_DIR" \
+-        --arg ver "$version" \
+-        --arg now "$now" \
+-        --arg sha "$commit_sha" \
+-        '.plugins[$key] = [{
+-            "scope": "user",
+-            "installPath": $path,
+-            "version": $ver,
+-            "installedAt": $now,
+-            "lastUpdated": $now,
+-            "gitCommitSha": $sha
+-        }]' "$INSTALLED_PLUGINS")
+-
+-    echo "$updated" > "$INSTALLED_PLUGINS"
+-    ok "플러그인 등록 완료: $plugin_key"
+-}
+-
+-# --- settings.json에 플러그인 활성화 ---
+-activate_plugin() {
+-    local plugin_key="${PLUGIN_NAME}@${MARKETPLACE_NAME}"
+-
+-    if [ ! -f "$SETTINGS_FILE" ]; then
+-        echo '{}' > "$SETTINGS_FILE"
+-    fi
+-
+-    local is_active
+-    is_active=$(jq -r --arg key "$plugin_key" '.plugins[$key] // empty' "$SETTINGS_FILE" 2>/dev/null)
+-
+-    if [ "$is_active" = "true" ]; then
+-        info "이미 활성화되어 있습니다."
+-    else
+-        local updated
+-        updated=$(jq --arg key "$plugin_key" '.plugins[$key] = true' "$SETTINGS_FILE")
+-        echo "$updated" > "$SETTINGS_FILE"
+-        ok "플러그인 활성화 완료"
+-    fi
+-}
+-
+-# --- 환경변수 확인 ---
+-check_env_vars() {
+-    echo ""
+-    info "환경변수 설정을 확인합니다..."
+-
+-    local missing=()
+-
+-    [ -z "${PLANE_API_KEY:-}" ] && missing+=("PLANE_API_KEY")
+-    [ -z "${OUTLINE_API_KEY:-}" ] && missing+=("OUTLINE_API_KEY")
+-    [ -z "${GRAFANA_SERVICE_ACCOUNT_TOKEN:-}" ] && missing+=("GRAFANA_SERVICE_ACCOUNT_TOKEN")
+-
+-    if [ ${#missing[@]} -gt 0 ]; then
+-        warn "다음 환경변수가 설정되지 않았습니다:"
+-        for var in "${missing[@]}"; do
+-            echo "  - $var"
+-        done
+-        echo ""
+-        info "~/.zshrc 또는 ~/.bashrc에 다음을 추가하세요:"
+-        echo ""
+-        echo "  export PLANE_API_KEY=\"your-plane-api-key\""
+-        echo "  export OUTLINE_API_KEY=\"your-outline-api-key\""
+-        echo "  export GRAFANA_SERVICE_ACCOUNT_TOKEN=\"your-grafana-token\""
+-        echo ""
+-        info "API 키 발급 방법:"
+-        echo "  - Plane: https://project.cowave.kr → 프로필 → API 토큰"
+-        echo "  - Outline: https://cowave.wiki.cowave.kr → 설정 → API 토큰"
+-        echo "  - Grafana: http://grafana.danuricorp.com → Administration → Service Accounts"
+-    else
+-        ok "모든 환경변수가 설정되어 있습니다."
+-    fi
+-}
+-
+-# --- 메인 ---
+-main() {
+-    echo ""
+-    echo "=========================================="
+-    echo "  Cowave Claude Plugin 설치"
+-    echo "=========================================="
+-    echo ""
+-
+-    check_prerequisites
+-    prepare_dirs
+-    clone_or_update
+-
+-    local version
+-    version=$(install_to_cache)
+-
+-    register_marketplace
+-    register_plugin "$version"
+-    activate_plugin
+-    check_env_vars
+-
+-    echo ""
+-    echo "=========================================="
+-    echo -e "  ${GREEN}설치 완료!${NC}"
+-    echo "=========================================="
+-    echo ""
+-    info "Claude Code를 재시작하면 플러그인이 활성화됩니다."
+-    info "사용 가능한 기능:"
+-    echo "  - /issue-tracker      : Plane 이슈 트래커 연동"
+-    echo "  - /document-lastest   : Outline 위키 자동 문서화"
+-    echo "  - /tdd                : TDD 워크플로우"
+-    echo "  - /arch-review        : 아키텍처 리뷰"
+-    echo "  - /perf-review        : 성능 리뷰"
+-    echo "  - /e2e                : E2E 테스트"
+-    echo "  - MCP: plane, outline, grafana 서버 연동"
+-    echo ""
+-}
+-
+-main "$@"
+diff --git a/script/uninstall.sh b/script/uninstall.sh
+deleted file mode 100755
+index 3ff4550..0000000
+--- a/script/uninstall.sh
++++ /dev/null
+@@ -1,297 +0,0 @@
+-#!/bin/bash
+-set -euo pipefail
+-
+-# ============================================================
+-# Cowave Claude Plugin 제거 스크립트
+-# setup.sh로 설치된 플러그인을 정리하고 제거합니다.
+-# ============================================================
+-
+-PLUGIN_NAME="agents-utils"
+-MARKETPLACE_NAME="cowave-plugins"
+-CLAUDE_DIR="$HOME/.claude"
+-PLUGINS_DIR="$CLAUDE_DIR/plugins"
+-MARKETPLACE_DIR="$PLUGINS_DIR/marketplaces/$MARKETPLACE_NAME"
+-CACHE_DIR="$PLUGINS_DIR/cache/$MARKETPLACE_NAME/$PLUGIN_NAME"
+-KNOWN_MARKETPLACES="$PLUGINS_DIR/known_marketplaces.json"
+-INSTALLED_PLUGINS="$PLUGINS_DIR/installed_plugins.json"
+-SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+-HOOKS_JSON=""
+-
+-RED='\033[0;31m'
+-GREEN='\033[0;32m'
+-YELLOW='\033[1;33m'
+-BLUE='\033[0;34m'
+-NC='\033[0m'
+-
+-info()  { echo -e "${BLUE}[INFO]${NC} $1"; }
+-ok()    { echo -e "${GREEN}[OK]${NC} $1"; }
+-warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
+-error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+-
+-# --- 사전 조건 확인 ---
+-check_prerequisites() {
+-    if ! command -v jq &>/dev/null; then
+-        error "jq가 설치되어 있지 않습니다. brew install jq 로 설치해주세요."
+-    fi
+-}
+-
+-# --- hooks.json 경로 탐색 ---
+-find_hooks_json() {
+-    # 캐시에서 먼저 찾고, 없으면 마켓플레이스 디렉토리, 없으면 스크립트 옆 경로에서 탐색
+-    local script_dir
+-    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+-
+-    local candidates=(
+-        "$CACHE_DIR/claude/hooks/hooks.json"
+-        "$CACHE_DIR/.claude-plugin/../claude/hooks/hooks.json"
+-        "$MARKETPLACE_DIR/claude/hooks/hooks.json"
+-        "$script_dir/claude/hooks/hooks.json"
+-    )
+-
+-    for candidate in "${candidates[@]}"; do
+-        if [ -f "$candidate" ]; then
+-            HOOKS_JSON="$candidate"
+-            return
+-        fi
+-    done
+-}
+-
+-# --- 캐시 디렉토리 제거 ---
+-remove_cache() {
+-    if [ -d "$CACHE_DIR" ]; then
+-        rm -rf "$CACHE_DIR"
+-        ok "캐시 디렉토리 제거 완료: $CACHE_DIR"
+-    else
+-        warn "캐시 디렉토리가 존재하지 않습니다: $CACHE_DIR"
+-    fi
+-
+-    # 상위 마켓플레이스 캐시 디렉토리가 비었으면 정리
+-    local cache_marketplace_dir="$PLUGINS_DIR/cache/$MARKETPLACE_NAME"
+-    if [ -d "$cache_marketplace_dir" ] && [ -z "$(ls -A "$cache_marketplace_dir" 2>/dev/null)" ]; then
+-        rmdir "$cache_marketplace_dir"
+-        info "빈 캐시 마켓플레이스 디렉토리 정리: $cache_marketplace_dir"
+-    fi
+-}
+-
+-# --- 마켓플레이스 디렉토리 제거 ---
+-remove_marketplace() {
+-    if [ -d "$MARKETPLACE_DIR" ]; then
+-        rm -rf "$MARKETPLACE_DIR"
+-        ok "마켓플레이스 디렉토리 제거 완료: $MARKETPLACE_DIR"
+-    else
+-        warn "마켓플레이스 디렉토리가 존재하지 않습니다: $MARKETPLACE_DIR"
+-    fi
+-}
+-
+-# --- installed_plugins.json에서 항목 제거 ---
+-remove_installed_plugin() {
+-    local plugin_key="${PLUGIN_NAME}@${MARKETPLACE_NAME}"
+-
+-    if [ ! -f "$INSTALLED_PLUGINS" ]; then
+-        warn "installed_plugins.json이 존재하지 않습니다."
+-        return
+-    fi
+-
+-    local has_key
+-    has_key=$(jq -r --arg key "$plugin_key" '.plugins[$key] // empty' "$INSTALLED_PLUGINS" 2>/dev/null)
+-
+-    if [ -z "$has_key" ]; then
+-        warn "installed_plugins.json에 $plugin_key 항목이 없습니다."
+-        return
+-    fi
+-
+-    local updated
+-    updated=$(jq --arg key "$plugin_key" 'del(.plugins[$key])' "$INSTALLED_PLUGINS")
+-    echo "$updated" > "$INSTALLED_PLUGINS"
+-    ok "installed_plugins.json에서 $plugin_key 제거 완료"
+-}
+-
+-# --- known_marketplaces.json에서 항목 제거 ---
+-remove_known_marketplace() {
+-    if [ ! -f "$KNOWN_MARKETPLACES" ]; then
+-        warn "known_marketplaces.json이 존재하지 않습니다."
+-        return
+-    fi
+-
+-    local has_key
+-    has_key=$(jq -r --arg name "$MARKETPLACE_NAME" '.[$name] // empty' "$KNOWN_MARKETPLACES" 2>/dev/null)
+-
+-    if [ -z "$has_key" ]; then
+-        warn "known_marketplaces.json에 $MARKETPLACE_NAME 항목이 없습니다."
+-        return
+-    fi
+-
+-    local updated
+-    updated=$(jq --arg name "$MARKETPLACE_NAME" 'del(.[$name])' "$KNOWN_MARKETPLACES")
+-    echo "$updated" > "$KNOWN_MARKETPLACES"
+-    ok "known_marketplaces.json에서 $MARKETPLACE_NAME 제거 완료"
+-}
+-
+-# --- settings.json에서 플러그인 비활성화 ---
+-deactivate_plugin() {
+-    local plugin_key="${PLUGIN_NAME}@${MARKETPLACE_NAME}"
+-
+-    if [ ! -f "$SETTINGS_FILE" ]; then
+-        warn "settings.json이 존재하지 않습니다."
+-        return
+-    fi
+-
+-    local has_key
+-    has_key=$(jq -r --arg key "$plugin_key" '.plugins[$key] // empty' "$SETTINGS_FILE" 2>/dev/null)
+-
+-    if [ -z "$has_key" ]; then
+-        warn "settings.json에 플러그인 $plugin_key 항목이 없습니다."
+-        return
+-    fi
+-
+-    local updated
+-    updated=$(jq --arg key "$plugin_key" 'del(.plugins[$key])' "$SETTINGS_FILE")
+-    echo "$updated" > "$SETTINGS_FILE"
+-    ok "settings.json에서 플러그인 비활성화 완료"
+-}
+-
+-# --- settings.json에서 플러그인이 등록한 hooks 제거 ---
+-remove_hooks() {
+-    if [ ! -f "$SETTINGS_FILE" ]; then
+-        warn "settings.json이 존재하지 않습니다."
+-        return
+-    fi
+-
+-    if [ -z "$HOOKS_JSON" ] || [ ! -f "$HOOKS_JSON" ]; then
+-        warn "hooks.json을 찾을 수 없습니다. hooks 제거를 건너뜁니다."
+-        return
+-    fi
+-
+-    # hooks.json에서 모든 description 목록을 추출
+-    local descriptions
+-    descriptions=$(jq '[.hooks | to_entries[] | .value[] | .description]' "$HOOKS_JSON")
+-
+-    local updated
+-    updated=$(jq --argjson descs "$descriptions" '
+-        if .hooks then
+-            .hooks |= with_entries(
+-                .value |= map(select(.description as $d | ($descs | index($d)) | not))
+-            )
+-            | .hooks |= with_entries(select(.value | length > 0))
+-        else
+-            .
+-        end
+-    ' "$SETTINGS_FILE")
+-
+-    echo "$updated" > "$SETTINGS_FILE"
+-    ok "settings.json에서 플러그인 hooks 제거 완료"
+-}
+-
+-# --- output-styles 파일 제거 ---
+-remove_output_styles() {
+-    local styles_dir="$CLAUDE_DIR/output-styles"
+-    local target_file="$styles_dir/learning-plus.md"
+-
+-    if [ -f "$target_file" ]; then
+-        rm -f "$target_file"
+-        ok "output-styles 파일 제거 완료: learning-plus.md"
+-    else
+-        warn "output-styles 파일이 존재하지 않습니다: $target_file"
+-    fi
+-
+-    # output-styles 디렉토리가 비었으면 정리
+-    if [ -d "$styles_dir" ] && [ -z "$(ls -A "$styles_dir" 2>/dev/null)" ]; then
+-        rmdir "$styles_dir"
+-        info "빈 output-styles 디렉토리 정리"
+-    fi
+-}
+-
+-# --- CLAUDE.md에서 플러그인 마커 블록 제거 ---
+-remove_claude_md_block() {
+-    local target_md="$CLAUDE_DIR/CLAUDE.md"
+-    local start_marker="# --- agents-utils plugin start ---"
+-    local end_marker="# --- agents-utils plugin end ---"
+-
+-    if [ ! -f "$target_md" ]; then
+-        warn "CLAUDE.md가 존재하지 않습니다."
+-        return
+-    fi
+-
+-    if ! grep -qF "$start_marker" "$target_md"; then
+-        warn "CLAUDE.md에 플러그인 마커 블록이 없습니다."
+-        return
+-    fi
+-
+-    local tmp_out
+-    tmp_out=$(mktemp)
+-
+-    awk -v start="$start_marker" -v end="$end_marker" '
+-        BEGIN { skip=0 }
+-        $0 == start { skip=1; next }
+-        $0 == end   { skip=0; next }
+-        !skip       { print }
+-    ' "$target_md" > "$tmp_out"
+-
+-    # 마커 블록 앞에 추가된 빈 줄 정리 (파일 끝 연속 빈 줄 제거)
+-    sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$tmp_out" > "$target_md"
+-    rm -f "$tmp_out"
+-
+-    # CLAUDE.md가 비었으면 파일 자체를 제거하지 않음 (사용자 콘텐츠가 있을 수 있음)
+-    ok "CLAUDE.md에서 플러그인 마커 블록 제거 완료"
+-}
+-
+-# --- 메인 ---
+-main() {
+-    echo ""
+-    echo "=========================================="
+-    echo "  Cowave Claude Plugin 제거"
+-    echo "=========================================="
+-    echo ""
+-
+-    check_prerequisites
+-
+-    info "다음 항목이 제거됩니다:"
+-    echo "  - 캐시 디렉토리: $CACHE_DIR"
+-    echo "  - 마켓플레이스 디렉토리: $MARKETPLACE_DIR"
+-    echo "  - installed_plugins.json의 ${PLUGIN_NAME}@${MARKETPLACE_NAME} 항목"
+-    echo "  - known_marketplaces.json의 $MARKETPLACE_NAME 항목"
+-    echo "  - settings.json의 플러그인 활성화 항목"
+-    echo "  - settings.json의 플러그인 hooks"
+-    echo "  - CLAUDE.md의 플러그인 마커 블록"
+-    echo "  - output-styles/learning-plus.md"
+-    echo ""
+-    warn "statusline-command.sh 및 statusLine 설정은 유지됩니다."
+-    echo ""
+-
+-    read -rp "계속 진행하시겠습니까? (y/N): " confirm
+-    if [[ ! "$confirm" =~ ^[yY]$ ]]; then
+-        info "제거를 취소합니다."
+-        exit 0
+-    fi
+-
+-    echo ""
+-
+-    # hooks.json 경로를 미리 탐색 (캐시 제거 전에 수행)
+-    find_hooks_json
+-
+-    # settings.json 백업
+-    if [ -f "$SETTINGS_FILE" ]; then
+-        local backup="${SETTINGS_FILE}.bak.$(date +%s)"
+-        cp "$SETTINGS_FILE" "$backup"
+-        ok "설정 백업 완료: $backup"
+-    fi
+-
+-    remove_hooks
+-    deactivate_plugin
+-    remove_installed_plugin
+-    remove_known_marketplace
+-    remove_output_styles
+-    remove_claude_md_block
+-    remove_cache
+-    remove_marketplace
+-
+-    echo ""
+-    echo "=========================================="
+-    echo -e "  ${GREEN}제거 완료!${NC}"
+-    echo "=========================================="
+-    echo ""
+-    info "Claude Code를 재시작하면 변경사항이 적용됩니다."
+-    echo ""
+-}
+-
+-main "$@"

@@ -1,0 +1,41 @@
+{
+  "session_id": "1a03dace-0029-408d-8d3e-2cdaf36e5055",
+  "project_path": "/Users/admin/project/admin/ui",
+  "start_time": "2026-03-03T04:06:22.919Z",
+  "duration_minutes": 149,
+  "user_message_count": 4,
+  "assistant_message_count": 4,
+  "tool_counts": {},
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "first_prompt": "오른쪽 상단에 '통합검색개발팀_장민규' 이거는 원래 다른 관리자 페이지에서 SSO 로그인하고 그 다음에 해당 페이지에서 이 검색 관리자로 넘어올떄 계정 정보를 받아 올꺼라   추상화 해줘",
+  "user_interruptions": 0,
+  "user_response_times": [
+    32.207,
+    1754.718
+  ],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    13,
+    13,
+    13,
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-03T04:06:27.928Z",
+    "2026-03-03T04:07:14.317Z",
+    "2026-03-03T04:36:29.402Z",
+    "2026-03-03T06:35:16.716Z"
+  ]
+}

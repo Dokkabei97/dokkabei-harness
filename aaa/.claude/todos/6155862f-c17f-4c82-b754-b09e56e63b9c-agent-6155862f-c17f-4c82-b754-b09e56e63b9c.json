@@ -1,0 +1,38 @@
+[
+  {
+    "content": "MVP 아키텍처 설계 및 프로젝트 구조 생성",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "핵심 기능 구현 - 이메일 자동 분류",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "핵심 기능 구현 - 일정 관리 기능",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "CLI 인터페이스 구현",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "기본 AI 모델 연동 (Gemini/OpenAI)",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  },
+  {
+    "content": "베타 테스트용 빌드 및 문서화",
+    "status": "completed",
+    "priority": "low",
+    "id": "6"
+  }
+]

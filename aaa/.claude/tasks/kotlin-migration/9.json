@@ -1,0 +1,14 @@
+{
+  "id": "9",
+  "subject": "Phase 7: Tests 마이그레이션 (8 files)",
+  "description": "JUnit 4 테스트 8개 파일 Kotlin 전환:\n- TestUtil.java\n- ProductNameAnalysisFilterTest.java\n- KoreanWordExtractorTest.java\n- HighlighterTest.java\n- ProductNameTokenizerTest.java\n- ProductNameAnalysisActionTest.java\n- ProductNameAnalyzerTest.java\n- DictionaryScanTest.java",
+  "activeForm": "테스트 마이그레이션 중",
+  "status": "pending",
+  "blocks": [
+    "10",
+    "11"
+  ],
+  "blockedBy": [
+    "8"
+  ]
+}

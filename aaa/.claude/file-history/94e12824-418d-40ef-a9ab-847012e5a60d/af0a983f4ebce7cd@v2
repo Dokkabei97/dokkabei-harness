@@ -1,0 +1,33 @@
+package models
+
+// State represents a workflow state in a project.
+type State struct {
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Color       string  `json:"color"`
+	Group       string  `json:"group"` // backlog, unstarted, started, completed, cancelled
+	Description string  `json:"description,omitempty"`
+	Sequence    float64 `json:"sequence"`
+	IsDefault   bool    `json:"is_default"`
+	Project     string  `json:"project"`
+	Workspace   string  `json:"workspace"`
+	Timestamps
+}
+
+// CreateStateRequest is the request body for creating a state.
+type CreateStateRequest struct {
+	Name        string  `json:"name"`
+	Color       string  `json:"color"`
+	Group       string  `json:"group"`
+	Description string  `json:"description,omitempty"`
+	Sequence    float64 `json:"sequence,omitempty"`
+}
+
+// UpdateStateRequest is the request body for updating a state.
+type UpdateStateRequest struct {
+	Name        *string  `json:"name,omitempty"`
+	Color       *string  `json:"color,omitempty"`
+	Group       *string  `json:"group,omitempty"`
+	Description *string  `json:"description,omitempty"`
+	Sequence    *float64 `json:"sequence,omitempty"`
+}

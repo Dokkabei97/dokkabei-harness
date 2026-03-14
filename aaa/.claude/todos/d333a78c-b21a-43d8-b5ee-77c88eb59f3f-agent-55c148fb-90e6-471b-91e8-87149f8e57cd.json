@@ -1,0 +1,42 @@
+[
+  {
+    "content": "Create TypeScript interfaces for all dictionary types and their data structures",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Update API client to support all dictionary types and operations",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Create dynamic table components for different dictionary data structures",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Create add/edit modal components with forms specific to each dictionary type",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Implement proper CRUD permissions (read-only vs full CRUD by dictionary type)",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "Update main dictionary page with new components and comprehensive functionality",
+    "status": "completed",
+    "id": "6"
+  },
+  {
+    "content": "Add proper error handling, loading states, and responsive design",
+    "status": "completed",
+    "id": "7"
+  },
+  {
+    "content": "Create missing UI components (modal, loading spinner enhancements)",
+    "status": "completed",
+    "id": "8"
+  }
+]

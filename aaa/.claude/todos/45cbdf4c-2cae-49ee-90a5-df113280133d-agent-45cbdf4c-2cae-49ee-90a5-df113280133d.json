@@ -1,0 +1,50 @@
+[
+  {
+    "content": "회원 관련 코드 구조 파악 및 전체 검토",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "회원 코드에서 발견된 에러 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Member 엔티티에 password 필드 추가 (소셜 로그인에서 nullable)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2a"
+  },
+  {
+    "content": "MemberController updateMember 보안 문제 수정",
+    "status": "completed",
+    "priority": "high",
+    "id": "2b"
+  },
+  {
+    "content": "AuthService에서 중복 메서드 제거",
+    "status": "completed",
+    "priority": "medium",
+    "id": "2c"
+  },
+  {
+    "content": "회원 기능에 대한 테스트 코드 작성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "Gemini와 협업하여 코드 품질 검증",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "빌드 및 테스트 실행 검증",
+    "status": "completed",
+    "priority": "high",
+    "id": "5"
+  }
+]

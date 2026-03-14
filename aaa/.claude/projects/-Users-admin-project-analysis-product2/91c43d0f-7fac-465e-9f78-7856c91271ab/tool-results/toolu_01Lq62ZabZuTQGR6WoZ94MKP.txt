@@ -1,0 +1,2 @@
+/Users/admin/project/analysis-product2/src/main/kotlin/com/danawa/search/analysis/dict/ProductNameDictionary.kt
+/Users/admin/project/analysis-product2/build/classes/kotlin/main/com/danawa/search/analysis/dict/ProductNameDictionary.class

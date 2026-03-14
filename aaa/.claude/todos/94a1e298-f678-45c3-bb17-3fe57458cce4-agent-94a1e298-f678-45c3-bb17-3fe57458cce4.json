@@ -1,0 +1,38 @@
+[
+  {
+    "content": "현재 프로젝트 구조 파악 및 기본 설정 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Protocol Buffers 스키마 정의 (proto/agent_communication.proto)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Go 모듈 초기화 및 gRPC 의존성 추가",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "gRPC 서버 및 클라이언트 기본 구조 구현",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Docker 컨테이너화 설정",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "에이전트 간 통신 테스트",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  }
+]

@@ -1,0 +1,56 @@
+image:
+  pullPolicy: Always
+  tag: "1.0211.73"
+
+nameOverride: "cmn-search-api"
+fullnameOverride: "cmn-search-api"
+otelServiceName: "backend-was.cmn-search.cmn-search-api"
+
+envFrom:
+  # 공통 ConfigMap 참조
+  - configMapRef:
+      name: cmn-search-config
+  # 서비스 특화 ConfigMap 참조
+  - configMapRef:
+      name: cmn-search-api-config
+  # secret 참조
+  - secretRef:
+      name: "cmn-search-credentials"
+
+# 서비스 특화 ConfigMap 설정
+config:
+  index:
+    adminCatalog: catalogs
+    adminProduct: products
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: cmn-search-api.danuricorp.com
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8080
+  tls: [ ]
+
+resources:
+  limits:
+    memory: 24Gi
+    cpu: 12
+  requests:
+    memory: 16Gi
+    cpu: 8
+
+replicaCount: 5
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+podAnnotations:
+  grafana.danuricorp.com/app: backend-was.cmn-search.cmn-search-api
+  prometheus.io/interval: 30s

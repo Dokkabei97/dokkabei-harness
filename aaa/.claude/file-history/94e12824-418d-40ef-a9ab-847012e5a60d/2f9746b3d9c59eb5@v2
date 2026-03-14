@@ -1,0 +1,44 @@
+package user
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/plane-cli/plane-cli/internal/cmdutil"
+	"github.com/plane-cli/plane-cli/internal/output"
+)
+
+// NewCmd creates the user command.
+func NewCmd(f *cmdutil.Factory) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user",
+		Short: "Manage user information",
+	}
+
+	cmd.AddCommand(newMeCmd(f))
+	return cmd
+}
+
+func newMeCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "me",
+		Short: "Show current authenticated user",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get("users/me/")
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, []output.Column{
+				{Header: "ID", Field: "id"},
+				{Header: "EMAIL", Field: "email"},
+				{Header: "DISPLAY NAME", Field: "display_name"},
+				{Header: "USERNAME", Field: "username"},
+			})
+		},
+	}
+}

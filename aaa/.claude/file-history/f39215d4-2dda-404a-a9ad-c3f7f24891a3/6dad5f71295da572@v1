@@ -1,0 +1,164 @@
+---
+title: "3-4 문서 청킹 전략 심화"
+aliases:
+  - 문서 청킹 전략
+  - Chunking Deep Dive
+tags:
+  - llm-rag
+  - phase3
+  - chunking
+  - korean-nlp
+created: ""
+updated: ""
+phase: "3-4"
+status: "todo"
+difficulty: "고급"
+---
+
+> [!summary]
+> 청킹은 RAG 성능의 1차 결정요인이다.  
+> Fixed, Recursive, Semantic, Document-Structure, Agentic chunking의 특성 이해가 필요하다.  
+> 특히 한국어에서는 조사/어미/어절 경계를 고려한 청크 분할이 검색 정합성과 모순 억제에 큰 영향을 준다.
+
+## 관련 노트
+[[3-1 Naive RAG]]
+[[3-2 Advanced RAG]]
+[[3-5 Milvus 벡터 스토어 실전 연동]]
+[[3-7 Retrieval 품질 개선 기법]]
+[[3-8 RAG 평가 프레임워크]]
+
+## 개념 설명
+문서를 어떻게 잘라낼지에 따라 임베딩 품질, 검색 recall, 생성 정확도가 달라진다.  
+청크가 너무 크면 컨텍스트를 낭비하고, 너무 작으면 맥락이 사라진다.
+
+### Fixed Chunking
+길이 기반으로 균등 분할한다.  
+구현이 쉬우며 초기 실험 속도가 빠르다.  
+하지만 문장 단위 경계가 깨지면 의미 유실이 크다.
+
+### Recursive Chunking
+문단/문장/문자 단위로 재귀적으로 분할하여 자연 경계를 존중한다.  
+문법 구조를 많이 보존한다.  
+다만 파라미터(분할 크기/오버랩) 튜닝이 필수다.
+
+### Semantic Chunking
+문장 간 의미 변화 지점에 따라 chunk boundary를 잡는다.  
+토픽 전환이 명확한 문서에서 유효하다.  
+문장 임베딩 계산 비용이 추가된다.
+
+### Document-Structure Chunking
+헤더, 소제목, 표, 코드블록, 리스트 구조를 사용한다.  
+기술문서에서 가장 실무성이 높다.  
+문서 parser 의존성이 증가한다.
+
+### Agentic Chunking
+LLM/규칙이 문서 의미를 읽고 청크 단위를 동적으로 제안한다.  
+정밀도가 높지만 비용과 지연이 크다.  
+고난도 도메인(정책, 법률, 규정)에서 유리하다.
+
+### 청크 간 관계 유지
+`부모-자식`은 긴 문단을 상위-하위로 분해하고 추적할 수 있게 한다.  
+`이전-다음`은 순차 질의에서 흐름을 이어준다.  
+`교차참조`는 그림, 표, 각주가 참조하는 위치를 연결한다.  
+RAG에선 단순 chunk text보다 관계 메타데이터가 중요하다.
+
+### 한국어 특수 고려사항
+한국어는 조사와 어미가 결합되어 형태론적 정보가 밀집한다.  
+형태소 단위 분할은 검색 recall을 높일 수 있으나 오버-분리 위험이 있다.  
+띄어쓰기 오류/맞춤법 변형은 같은 의미를 다른 벡터로 분산시킨다.  
+문장 끝 종결어미가 바뀌어도 핵심 명사군이 유지되는지 체크해야 한다.  
+한글 번호형, 법령 조문, 표기 규칙은 구조 기반 chunk가 유리하다.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart TB
+    A[문서 원본] --> B[Tokenizer]
+    B --> C1[Fixed]
+    B --> C2[Recursive]
+    B --> C3[Semantic]
+    B --> C4[Document Structure]
+    B --> C5[Agentic]
+    C1 --> D[Chunk Pool]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    C5 --> D
+    D --> E[Parent-Child 메타]
+    E --> F[Retriever]
+    F --> G[Context Builder]
+    G --> H[LLM]
+```
+
+## Python 코드 예제 (Grid Search로 청크 파라미터 탐색)
+```python
+from itertools import product
+from sklearn.model_selection import ParameterGrid
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from collections import defaultdict
+
+docs = [
+    "RAG 시스템은 ...", 
+    "한국어 텍스트는 ...",
+]
+
+def build_chunks(text, size, overlap, strategy="recursive"):
+    if strategy == "recursive":
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=size,
+            chunk_overlap=overlap
+        )
+        return splitter.split_text(text)
+    raise ValueError("추후 다른 전략 추가")
+
+def simple_score(chunks, query="한국어 검색 품질"):
+    # 실제론 retrieval recall/precision로 대체
+    return min(1.0, len(chunks) / 10.0) if chunks else 0.0
+
+grid = {
+    "chunk_size": [256, 384, 512, 768],
+    "overlap": [0, 64, 128],
+    "strategy": ["recursive"]
+}
+results = []
+for params in ParameterGrid(grid):
+    all_chunks = []
+    for d in docs:
+        chunks = build_chunks(d, params["chunk_size"], params["overlap"], params["strategy"])
+        all_chunks.extend(chunks)
+    score = simple_score(all_chunks)
+    results.append((params, len(all_chunks), score))
+
+best = sorted(results, key=lambda x: x[2], reverse=True)[0]
+print("best", best)
+```
+
+## 표: 청킹 방식 비교
+|방식|의미 보존|구현 난이도|한국어 적합성|권장 사용처|
+|---|---|---|---|---|
+|Fixed|낮음|낮음|보통|빠른 PoC|
+|Recursive|중간|중간|높음|일반 문서|
+|Semantic|높음|높음|높음|긴 설명서/논문|
+|Structure|매우 높음|높음|매우 높음|규격서, API 문서|
+|Agentic|최고|높음|최고|고가치 질의, 규정 문서|
+
+## 실습 체크리스트
+- [ ] 문서 3종류(매뉴얼, FAQ, 법규/정책) 샘플 확보
+- [ ] chunk_size, overlap, strategy 조합을 12개 이상 테스트
+- [ ] 부모-자식 관계 메타데이터 필드 설계
+- [ ] previous_id, next_id, parent_id를 청크에 저장
+- [ ] 한국어 조사/어미 보존 지표를 만들고 분할률 분석
+- [ ] 단락 단위 손실률(원문 1개 문장 분할 비율) 계산
+- [ ] semantic 방식에서 boundary threshold 실험
+- [ ] 구조 기반 parser에서 헤더/표 인식률 계산
+- [ ] agentic 방식 샘플 비용/응답시간 측정
+- [ ] grid_search 로그를 JSONL로 저장
+- [ ] 각 파라미터별 top-k retrieval recall 추정
+- [ ] 너무 긴 청크로 인한 truncation 빈도 측정
+- [ ] 관계 유지 메타 없이/있음 비교 실험
+- [ ] 문서 유형별 최적치 분리 저장
+- [ ] 3-5에서 Milvus 임베딩 업로드 전 chunk 메타 확정
+
+## 체크 메모
+청킹 정책은 벡터 스토어 이전에 먼저 결정되어야 한다.  
+특히 한글 조항/법령 텍스트는 구조와 구문을 함께 보존하지 않으면 오답 확률이 증가한다.  
+메타데이터 기반 재조합은 답변 신뢰도를 높인다.

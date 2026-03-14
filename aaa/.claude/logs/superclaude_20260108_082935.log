@@ -1,0 +1,92 @@
+2026-01-08 08:29:35 | DEBUG    | superclaude | SuperClaude called with operation: uninstall
+2026-01-08 08:29:35 | DEBUG    | superclaude | Arguments: {'verbose': False, 'quiet': False, 'install_dir': PosixPath('/Users/admin/.claude'), 'dry_run': False, 'force': False, 'yes': False, 'no_update_check': False, 'auto_update': False, 'authors': False, 'operation': 'uninstall', 'components': None, 'complete': False, 'keep_backups': False, 'keep_logs': False, 'keep_settings': False, 'no_confirm': False, 'cleanup_env': False, 'no_restore_script': False}
+2026-01-08 08:29:35 | INFO     | superclaude | Executing operation: uninstall
+2026-01-08 08:29:35 | INFO     | superclaude | Starting uninstall operation
+2026-01-08 08:29:35 | INFO     | superclaude.security | [ALLOW] Claude directory installation validated: /Users/admin/.claude (PID: 34771)
+2026-01-08 08:29:37 | INFO     | superclaude | Creating uninstall backup: /Users/admin/.claude/backups/pre_uninstall_20260108_082937.tar.gz
+2026-01-08 08:29:37 | INFO     | superclaude | Backup created: /Users/admin/.claude/backups/pre_uninstall_20260108_082937.tar.gz
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 6 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/core
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['BUSINESS_PANEL_EXAMPLES.md', 'BUSINESS_SYMBOLS.md', 'FLAGS.md', 'PRINCIPLES.md', 'RESEARCH_CONFIG.md', 'RULES.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 7 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/modes
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['MODE_Brainstorming.md', 'MODE_Business_Panel.md', 'MODE_DeepResearch.md', 'MODE_Introspection.md', 'MODE_Orchestration.md', 'MODE_Task_Management.md', 'MODE_Token_Efficiency.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 17 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/agents
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['backend-architect.md', 'business-panel-experts.md', 'deep-research-agent.md', 'devops-architect.md', 'frontend-architect.md', 'learning-guide.md', 'performance-engineer.md', 'pm-agent.md', 'python-expert.md', 'quality-engineer.md', 'refactoring-expert.md', 'requirements-analyst.md', 'root-cause-analyst.md', 'security-engineer.md', 'socratic-mentor.md', 'system-architect.md', 'technical-writer.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 26 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/commands
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['analyze.md', 'brainstorm.md', 'build.md', 'business-panel.md', 'cleanup.md', 'design.md', 'document.md', 'estimate.md', 'explain.md', 'git.md', 'help.md', 'implement.md', 'improve.md', 'index.md', 'load.md', 'pm.md', 'reflect.md', 'research.md', 'save.md', 'select-tool.md', 'spawn.md', 'spec-panel.md', 'task.md', 'test.md', 'troubleshoot.md', 'workflow.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 17 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/agents
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['backend-architect.md', 'business-panel-experts.md', 'deep-research-agent.md', 'devops-architect.md', 'frontend-architect.md', 'learning-guide.md', 'performance-engineer.md', 'pm-agent.md', 'python-expert.md', 'quality-engineer.md', 'refactoring-expert.md', 'requirements-analyst.md', 'root-cause-analyst.md', 'security-engineer.md', 'socratic-mentor.md', 'system-architect.md', 'technical-writer.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 26 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/commands
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['analyze.md', 'brainstorm.md', 'build.md', 'business-panel.md', 'cleanup.md', 'design.md', 'document.md', 'estimate.md', 'explain.md', 'git.md', 'help.md', 'implement.md', 'improve.md', 'index.md', 'load.md', 'pm.md', 'reflect.md', 'research.md', 'save.md', 'select-tool.md', 'spawn.md', 'spec-panel.md', 'task.md', 'test.md', 'troubleshoot.md', 'workflow.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 6 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/core
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['BUSINESS_PANEL_EXAMPLES.md', 'BUSINESS_SYMBOLS.md', 'FLAGS.md', 'PRINCIPLES.md', 'RESEARCH_CONFIG.md', 'RULES.md']
+2026-01-08 08:29:37 | DEBUG    | superclaude | Discovered 7 .md files in /Users/admin/.local/pipx/venvs/superclaude/lib/python3.14/site-packages/superclaude/modes
+2026-01-08 08:29:37 | DEBUG    | superclaude | Files found: ['MODE_Brainstorming.md', 'MODE_Business_Panel.md', 'MODE_DeepResearch.md', 'MODE_Introspection.md', 'MODE_Orchestration.md', 'MODE_Task_Management.md', 'MODE_Token_Efficiency.md']
+2026-01-08 08:29:37 | INFO     | superclaude | Uninstalling 6 components...
+2026-01-08 08:29:37 | INFO     | superclaude | Uninstalling SuperClaude agents component...
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: backend-architect.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: business-panel-experts.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: deep-research-agent.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: devops-architect.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: frontend-architect.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: learning-guide.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: performance-engineer.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: pm-agent.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: python-expert.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: quality-engineer.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: refactoring-expert.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: requirements-analyst.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: root-cause-analyst.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: security-engineer.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: socratic-mentor.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: system-architect.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed agent: technical-writer.md
+2026-01-08 08:29:37 | INFO     | superclaude | Removed agents component from metadata
+2026-01-08 08:29:37 | INFO     | superclaude | Agents component uninstalled (17 agents removed)
+2026-01-08 08:29:37 | DEBUG    | superclaude | Successfully uninstalled agents
+2026-01-08 08:29:37 | INFO     | superclaude | Uninstalling SuperClaude commands component...
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed analyze.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed brainstorm.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed build.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed business-panel.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed cleanup.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed design.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed document.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed estimate.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed explain.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed git.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed help.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed implement.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed improve.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed index.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed load.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed pm.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed reflect.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed research.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed save.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed select-tool.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed spawn.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed spec-panel.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed task.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed test.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed troubleshoot.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed workflow.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed empty sc commands directory
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed empty parent commands directory
+2026-01-08 08:29:37 | INFO     | superclaude | Removed commands component from metadata
+2026-01-08 08:29:37 | INFO     | superclaude | Commands component uninstalled (26 files removed)
+2026-01-08 08:29:37 | DEBUG    | superclaude | Successfully uninstalled commands
+2026-01-08 08:29:37 | INFO     | superclaude | Uninstalling SuperClaude core component...
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed BUSINESS_PANEL_EXAMPLES.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed BUSINESS_SYMBOLS.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed FLAGS.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed PRINCIPLES.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed RESEARCH_CONFIG.md
+2026-01-08 08:29:37 | DEBUG    | superclaude | Removed RULES.md
+2026-01-08 08:29:37 | INFO     | superclaude | Removed core component from metadata
+2026-01-08 08:29:37 | INFO     | superclaude | Core component uninstalled (6 files removed)
+2026-01-08 08:29:37 | DEBUG    | superclaude | Successfully uninstalled core
+2026-01-08 08:29:38 | INFO     | superclaude | Uninstalling SuperClaude MCP servers...
+2026-01-08 08:29:38 | INFO     | superclaude | Uninstalling MCP server: sequential-thinking
+2026-01-08 08:30:19 | DEBUG    | superclaude | Running: claude mcp remove sequential-thinking (auto-detect scope)
+2026-01-08 08:30:20 | INFO     | superclaude | Successfully uninstalled MCP server: sequential-thinking
+2026-01-08 08:30:20 | INFO     | superclaude | Uninstalling MCP server: context7

@@ -1,0 +1,32 @@
+[
+  {
+    "content": "index-report.md 파일 작성 - 검색 색인 파이프라인 구축 가이드",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "pipeline-definition.yaml 파일 작성 - YAML 기반 파이프라인 정의 스키마",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Domain 헥사곤 개선 - IndexingJob 관련 엔티티 추가",
+    "status": "pending",
+    "id": "3"
+  },
+  {
+    "content": "Application 헥사곤 - IndexingPipelineUseCase 및 Port 인터페이스 정의",
+    "status": "pending",
+    "id": "4"
+  },
+  {
+    "content": "Framework 헥사곤 - CodeGenerationEngine 구현",
+    "status": "pending",
+    "id": "5"
+  },
+  {
+    "content": "기존 코드 개선 - 헥사고날 아키텍처 위반사항 수정",
+    "status": "pending",
+    "id": "6"
+  }
+]

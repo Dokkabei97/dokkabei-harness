@@ -1,0 +1,13 @@
+{
+  "id": "4",
+  "subject": "Kotlin 코드 성능 리뷰 및 리팩토링",
+  "description": "마이그레이션된 Kotlin 코드를 성능 관점에서 철저히 리뷰하고 리팩토링합니다.\n\n리뷰 기준:\n1. 시간 복잡도 분석: O(n) 이상의 불필요한 복잡도가 있는 코드 식별\n2. Kotlin 컬렉션 API 성능:\n   - Sequence vs Iterable 사용 적절성\n   - map/filter 체이닝에서의 중간 컬렉션 생성 최소화\n   - toList()/toSet() 불필요한 복사 제거\n3. 문자열 처리 성능:\n   - String concatenation vs StringBuilder\n   - Regex 컴파일 캐싱 (companion object에서 미리 컴파일)\n   - CharArray vs String 변환 비용\n4. 메모리 효율:\n   - Boxing/Unboxing (Int vs int) 주의\n   - inline 함수 활용\n   - 불필요한 객체 생성 방지\n5. 형태소분석 전문가가 식별한 이슈에 대한 검토:\n   - 형태소분석 전문가가 보고한 패턴/공백 처리 이슈가 코드에 문제없이 반영되었는지 확인\n   - 문제가 있다면 수정\n\n의존: Task #2(형태소분석 이슈 분석), Task #3(Kotlin 마이그레이션) 완료 후 진행\n\n결과물: 리팩토링된 Kotlin 코드 + 변경 사항 보고서",
+  "activeForm": "Kotlin 코드 성능 리뷰 및 리팩토링 중",
+  "owner": "kotlin-expert",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": [
+    "2",
+    "3"
+  ]
+}

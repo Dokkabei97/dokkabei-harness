@@ -1,0 +1,24 @@
+package models
+
+// Initiative represents a workspace-level initiative.
+type Initiative struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Status      string `json:"status,omitempty"`
+	Workspace   string `json:"workspace"`
+	Timestamps
+}
+
+// CreateInitiativeRequest is the request body for creating an initiative.
+type CreateInitiativeRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+}
+
+// UpdateInitiativeRequest is the request body for updating an initiative.
+type UpdateInitiativeRequest struct {
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Status      *string `json:"status,omitempty"`
+}

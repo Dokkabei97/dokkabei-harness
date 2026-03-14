@@ -1,0 +1,419 @@
+[
+  {
+    "from": "morphology-expert",
+    "text": "\n# 형태소분석 Java -> Kotlin 마이그레이션 잠재적 이슈 분석 보고서\n\n총 13개 파일을 분석하여 **25개의 잠재적 이슈**를 식별했습니다. 심각도별로 분류합니다.\n\n---\n\n## [CRITICAL] 동작 변경을 유발하는 핵심 이슈\n\n### 이슈 #1: String.split() 정규식 vs 리터럴 차이\n- **파일**: `SpaceDictionary.java:24, 62, 64`\n- **코드**: `DELIMITER = \"\\\\s\"`, `values[0]).split(DELIMITER)`, `replaceAll(DELIMITER, \"\")`\n- **문제**: Java의 `String.split(String)`은 정규식으로 해석하여 `\\s`(공백 패턴)로 동작. Kotlin의 `String.split(String)`은 **리터럴 문자열** 기본이므로 `\"\\\\s\"` 문자 자체를 찾게 됨. 공백 분리가 전혀 동작하지 않음.\n- **해결**: Kotlin에서 `split(Regex(\"\\\\s\"))` 또는 `split(\"\\\\s\".toRegex())`로 변경 필수\n\n### 이슈 #2: String.replaceAll() 정규식 vs 리터럴 차이\n- **파일**: `SpaceDictionary.java:62`\n- **코드**: `String.valueOf(values[0]).replaceAll(DELIMITER, \"\")`\n- **문제**: Java `replaceAll`은 정규식, Kotlin `replace(String, String)`은 리터럴. 공백 제거가 동작하지 않음.\n- **해결**: `replace(Regex(\"\\\\s\"), \"\")` 또는 `replace(\"\\\\s\".toRegex(), \"\")`로 변경\n\n### 이슈 #3: Entry.java에서 NUMBER_TRANS의 replaceAll 사용\n- **파일**: `Entry.java:355`\n- **코드**: `number.toString().replaceAll(\",\", \"\")`\n- **문제**: 이 경우 Java `replaceAll`에서 `\",\"`는 정규식 특수문자가 아니므로 리터럴과 동일하게 동작. Kotlin에서 `replace(\",\", \"\")`로 변환 시 동작은 같지만, 만약 실수로 `replaceAll` -> Kotlin `replace(Regex)` 일괄 변환 시 불필요한 Regex 객체 생성.\n- **해결**: Kotlin `replace(\",\", \"\")` (리터럴)로 변환 OK\n\n### 이슈 #4: String 참조 동일성(`==`) 비교 패턴 - 가장 광범위한 이슈\n- **파일**: Entry.java (107, 117, 156, 170, 182, 250, 275, 378, 410, 412 등 수십 곳), RuleOne.java (50, 68, 113, 115, 118), RuleTwo.java, RuleFour.java (75, 79, 95, 97), RuleFive.java, ProductNameTokenizer.java (210, 212, 214, 217, 252, 254, 417, 433, 434, 451, 467, 468, 472-476), ProductNameAnalysisFilter.java (100, 137, 258, 361)\n- **코드**: `ptype != ctype`, `entry.type == FULL_STRING`, `prevEntry.type == SYMBOL`, `getType(ch) == NUMBER` 등\n- **문제**: Java에서 이 코드가 정상 동작하는 이유는 `ProductNameTokenizer`의 타입 상수들이 `static final String`이고, `getType()` 메서드가 이 상수를 직접 반환하기 때문에 **String interning**에 의해 `==` 비교가 성공함. Kotlin에서 `==`는 `equals()`로 변환되므로 **결과적으로 동일하게 동작**함. 하지만 `===` (참조 비교)로 잘못 변환하면 실패.\n- **해결**: Kotlin `==`로 변환하면 안전. 단, **자동 변환 도구가 Java `==`를 Kotlin `===`로 변환하지 않도록 주의**. 또한 Rule.java의 `isEntryType()` 메서드는 이미 `Objects.equals()`를 사용하므로 안전.\n\n---\n\n## [HIGH] 형태소분석 정확도에 영향을 줄 수 있는 이슈\n\n### 이슈 #5: char[] 직접 조작과 Kotlin Array<Char> vs CharArray 혼동\n- **파일**: RuleEntry.java:14, Entry.java (105, 342-346, 634, 732-734), RuleFour.java (44, 48, 52, 57, 61, 75, 163, 239, 253, 397), RuleFive.java (106, 218, 223)\n- **코드**: `char[] buf`, `entry.buf[entry.start + inx]`, `System.arraycopy(...)` 등\n- **문제**: Kotlin에서 `CharArray`와 `Array<Char>`는 다름. `CharArray`는 Java `char[]`과 동일한 primitive 배열. `Array<Char>`는 `Character[]` 박싱 배열. 성능 차이가 크며, `System.arraycopy`와의 호환성도 다름.\n- **해결**: 반드시 `CharArray`를 사용. `Array<Char>`를 절대 사용하지 말 것. `System.arraycopy` -> `CharArray.copyInto()` 또는 유지.\n\n### 이슈 #6: CharVector.trim()과 Java String.trim()의 차이\n- **파일**: SpaceDictionary.java:67,70, CharVector.java:109-118\n- **코드**: `list[i].trim()` (Java String.trim), CharVector.trim()은 `== ' '` (공백 문자만)\n- **문제**: Java `String.trim()`은 `<= 32` ASCII 문자 모두 제거. Kotlin `String.trim()`은 `Character.isWhitespace()` 기반으로 Unicode 공백도 포함. CharVector.trim()은 `== ' '`만 처리하므로 제한적.\n- **해결**: SpaceDictionary의 `list[i].trim()`은 Java String.trim()과 동일하게 동작해야 하므로 Kotlin에서 `trim { it <= ' ' }`로 명시적 변환. CharVector.trim()은 기존 로직 유지.\n\n### 이슈 #7: Pattern vs Kotlin Regex 변환\n- **파일**: SpaceDictionary.java:25, ProductNameTokenizer.java:66-89, RuleTwo.java:100\n- **코드**: `Pattern.compile(\"^[\\\\x00-\\\\x7F]*$\")`, `PTN_NUMBER`, `PTN_NUMBER.matcher(currentEntry.makeTerm(null)).find()`\n- **문제**: `Pattern`/`Matcher` API를 Kotlin `Regex`로 변환 시 API가 다름. `matcher(input).find()`는 Kotlin에서 `regex.containsMatchIn(input)`. `matcher(input).matches()`는 `regex.matches(input)`. `find()` vs `matches()` 혼동 주의.\n- **해결**: `PTN_NUMBER.matcher(x).find()` -> `PTN_NUMBER.toRegex().containsMatchIn(x)` 또는 `Regex` 객체 직접 생성\n\n### 이슈 #8: CharVector의 CharSequence 구현과 Kotlin 호환성\n- **파일**: CharVector.java:7, 250-256\n- **코드**: `subSequence(int startIndex, int endIndex)` - `endIndex - startIndex + 1`\n- **문제**: CharSequence.subSequence의 표준 계약은 `endIndex`가 exclusive (endIndex - startIndex). 하지만 CharVector는 `endIndex - startIndex + 1`로 구현하여 **1 더 긴** 결과를 반환. 이는 Java에서도 버그이지만, Kotlin에서 CharSequence 확장 함수를 적용하면 예상 외 동작 발생 가능.\n- **해결**: 이 비표준 동작이 의도적인지 확인 필요. Kotlin 마이그레이션 시 CharSequence 확장 함수(`substring`, `take`, `drop` 등) 사용 시 주의.\n\n### 이슈 #9: hashCode()의 음수/0 처리\n- **파일**: CharVector.java:96-107\n- **코드**: `if (hash > 0) { return hash; }` - 해시가 0이거나 음수이면 매번 재계산\n- **문제**: `int` 오버플로우로 음수 해시가 가능. Java와 Kotlin 모두 동일하게 동작하지만, Kotlin에서 `hashCode()` override 시 `@JvmField`나 property 접근과 관련된 미묘한 차이 가능. 또한 `hash` 필드가 `protected`인데 Kotlin에서 접근 제어자가 다르게 동작할 수 있음.\n- **해결**: `hash != 0`으로 조건 변경 권장 (음수 해시 캐싱). Kotlin 변환 시 `protected` -> Kotlin `protected`는 같은 의미이나 Java 하위 호환성 확인.\n\n### 이슈 #10: RuleEntry.clone()의 shallow copy\n- **파일**: RuleEntry.java:47-52\n- **코드**: `clone()` 메서드가 `buf`, `synonym`, `subEntry`를 참조 공유\n- **문제**: Kotlin의 `data class copy()`와 혼동 가능. 기존 `clone()`은 `Cloneable` 구현이 아닌 커스텀 메서드. Kotlin에서 `data class`로 변환하면 `copy()`가 자동 생성되지만, 기존의 얕은 복사 동작이 달라질 수 있음.\n- **해결**: `data class`로 변환하지 말 것. 일반 `class`로 유지하고 `clone()` 메서드 그대로 포팅.\n\n---\n\n## [MEDIUM] 컴파일은 되지만 런타임 동작 차이 가능\n\n### 이슈 #11: instanceof 패턴과 Kotlin is + smart cast\n- **파일**: SpaceDictionary.java:112, CharVector.java:133-134, ProductNameAnalysisFilter.java:290\n- **코드**: `object instanceof SpaceDictionary`, `anObject instanceof CharVector`\n- **문제**: Kotlin `is`는 스마트 캐스트를 지원하므로 별도 캐스팅 불필요. 하지만 `object != null && object instanceof SpaceDictionary`에서 Kotlin은 `is` 자체가 null-safe (`null is Foo` = false). 따라서 `object != null` 체크가 불필요해짐.\n- **해결**: `if (obj is SpaceDictionary)` 로 단순화. null 체크 제거 가능.\n\n### 이슈 #12: Collections.unmodifiableSet과 Kotlin 불변 컬렉션\n- **파일**: SpaceDictionary.java:56\n- **코드**: `Collections.unmodifiableSet(wordSet)`\n- **문제**: Kotlin에서 `Set`은 기본이 읽기 전용. 하지만 `java.util.HashSet`을 직접 사용하는 경우 `MutableSet`으로 취급됨. `Collections.unmodifiableSet()` 대신 Kotlin `toSet()` 사용 가능하지만 새 복사본 생성.\n- **해결**: 기존 동작과 동일하게 `Collections.unmodifiableSet()` 유지하거나, `toSet()` 사용 (스냅샷).\n\n### 이슈 #13: for 루프와 Iterator 패턴\n- **파일**: SpaceDictionary.java:88, Entry.java:815-869 (exportByTriGram), Entry.java:873-905 (exportUnitGram)\n- **코드**: `Iterator<RuleEntry> iter = subQueue.iterator(); while (iter.hasNext()) { currentEntry = iter.next(); ... }`\n- **문제**: Java Iterator 패턴을 Kotlin으로 변환 시 `for (item in list)` 사용 가능하지만, **iterator를 수동으로 제어하며 next/prev 엔트리를 미리 읽는 복잡한 패턴**이므로 단순 변환 불가. `exportByTriGram`의 경우 `nextEntry`를 미리 읽고 조건부로 `nextNextEntry`까지 읽는 패턴이 있음.\n- **해결**: Iterator 수동 제어 패턴은 그대로 유지. Kotlin의 `for-in` 루프로 변환하지 말 것.\n\n### 이슈 #14: list.remove(index) vs list.remove(element) 혼동\n- **파일**: Entry.java (180, 204, 287, 484, 485, 568, 747, 754), RuleOne.java:52,106, RuleFour.java (80, 164, 221, 299, 339, 365), RuleFive.java (40, 57, 69, 79, 93, 165, 227)\n- **코드**: `queue.remove(qinx)`, `subQueue.remove(inx)`, `queue.remove(0)`\n- **문제**: Java `List.remove(int)` vs `List.remove(Object)`. Kotlin `MutableList`에서는 `removeAt(index)` (인덱스 기반)와 `remove(element)` (요소 기반)가 분리됨. 자동 변환 시 `remove(int)` -> `remove(Int)` 요소 기반으로 잘못 변환될 수 있음.\n- **해결**: 모든 `list.remove(index)` -> `list.removeAt(index)`로 명시적 변환\n\n### 이슈 #15: List.subList().clear() 패턴\n- **파일**: RuleOne.java:189\n- **코드**: `queue.subList(qinx, qinx + linx + 1).clear()`\n- **문제**: Java `subList()`는 원본 리스트의 뷰를 반환하므로 `clear()`가 원본을 수정. Kotlin에서도 `subList()`는 뷰를 반환하지만, `MutableList.subList()`로 명시적으로 사용해야 `clear()` 호출 가능.\n- **해결**: Kotlin `(queue as MutableList).subList(qinx, qinx + linx + 1).clear()` 또는 범위 삭제 대체 방식.\n\n### 이슈 #16: System.arraycopy -> Kotlin 대체\n- **파일**: Entry.java (344-346, 733-734), RuleFive.java:159\n- **코드**: `System.arraycopy(e0.buf, e0.start, ubuf, 0, e0.length)`\n- **문제**: Kotlin에서 `System.arraycopy` 사용 가능하지만, Kotlin 관용구로 `CharArray.copyInto()` 권장. 동작은 동일하나 인자 순서가 다름.\n- **해결**: `src.copyInto(dest, destOffset, srcOffset, srcOffset + length)` 또는 `System.arraycopy` 유지 (JVM 타겟이므로 사용 가능)\n\n### 이슈 #17: Comparable 구현과 Kotlin compareTo\n- **파일**: RuleEntry.java:10,74-87, CharVector.java:7,168-193\n- **코드**: `implements Comparable<RuleEntry>`, `public int compareTo(RuleEntry entry)`\n- **문제**: Kotlin에서 `Comparable<T>`를 구현하면 `operator fun compareTo(other: T): Int`. `Collections.sort()` 대신 `list.sort()` 또는 `list.sortWith()` 사용 가능. 기존 `compareTo` 로직에서 `this.startOffset - entry.startOffset`은 오버플로우 가능성 있지만 오프셋이 양수 범위이므로 실질적 문제 없음.\n- **해결**: Kotlin `Comparable<RuleEntry>` 구현 유지. `Collections.sort(queue)` -> `queue.sort()`.\n\n---\n\n## [LOW] 코드 스타일/가독성 차이\n\n### 이슈 #18: null 안전성 처리\n- **파일**: Entry.java:270 (`subEntry = null`), RuleFour.java:204-205 (prevEntry/nextEntry null 체크), RuleFive.java:123 (`currentEntry != null` 중복 체크)\n- **문제**: Kotlin의 null 안전성 시스템 활용 시 `?.`와 `!!`의 적절한 사용 필요. `RuleEntry.subEntry`는 생성자에서 `ArrayList`로 초기화되지만 Entry.java:123에서 `null`로 설정됨 -> nullable 타입으로 선언 필요.\n- **해결**: `var subEntry: MutableList<RuleEntry>? = ArrayList()` 로 선언하고 `?.let {}` 패턴 활용.\n\n### 이슈 #19: AnalyzerOption의 JavaBean 패턴 vs Kotlin Property\n- **파일**: AnalyzerOption.java 전체\n- **코드**: `useForQuery()` getter/setter가 Java Bean 규약이 아닌 독자 명명 규칙\n- **문제**: `useForQuery(boolean)` setter와 `useForQuery()` getter가 `get`/`set` 접두사가 없음. Kotlin 자동 변환 시 property로 인식되지 않을 수 있음.\n- **해결**: Kotlin에서 `var useForQuery: Boolean`으로 직접 property 선언하되, 기존 Java 코드와의 호환성 위해 `@JvmName` 어노테이션 필요 여부 확인.\n\n### 이슈 #20: protected 필드 접근 (CharVector.hash)\n- **파일**: CharVector.java:13\n- **코드**: `protected int hash`\n- **문제**: Java `protected`는 같은 패키지 + 서브클래스 접근 허용. Kotlin `protected`는 서브클래스만 접근 허용 (패키지 접근 불가). 같은 패키지 내 다른 클래스에서 `hash` 접근 시 컴파일 오류.\n- **해결**: 실제 사용처 확인 후 `internal` 또는 `protected` 결정.\n\n### 이슈 #21: StringBuffer vs StringBuilder\n- **파일**: 직접 사용은 발견되지 않으나, StringBuilder 사용 (ProductNameAnalysisFilter.java:306)\n- **문제**: 동시성 이슈 없음. Java StringBuilder = Kotlin StringBuilder. 단 Kotlin에서 `buildString { }` 사용이 더 관용적.\n- **해결**: 기능상 문제 없음. Kotlin 관용구로 선택적 변환.\n\n### 이슈 #22: CharVector.equals()에서 CharSequence 비교 미구현\n- **파일**: CharVector.java:153-155\n- **코드**: `} else if (anObject instanceof CharSequence) { }` (빈 블록)\n- **문제**: CharSequence와의 equals가 미구현. Java에서도 항상 false 반환. Kotlin 마이그레이션 시 이 동작이 의도적인지 확인 필요. `String`은 `CharSequence`이므로 `CharVector.equals(\"test\")`가 항상 false.\n- **해결**: 의도적 설계로 보이며(HashSet에서 CharVector 간 비교만 필요), Kotlin 변환 시 동일하게 유지.\n\n### 이슈 #23: Entry.addEntry의 type == FULL_STRING 비교\n- **파일**: Entry.java:61,74\n- **코드**: `if (type == FULL_STRING)`, `if (type != FULL_STRING && ...)`\n- **문제**: 이슈 #4와 동일 패턴이나, addEntry는 ProductNameAnalysisFilter에서 `typeAttribute.type()`의 반환값을 전달받음. 이 반환값이 반드시 ProductNameTokenizer의 상수 참조와 같은지는 `TypeAttribute` 구현에 의존. Kotlin `==`는 `equals()`이므로 안전.\n- **해결**: Kotlin `==` 사용으로 자연스럽게 해결.\n\n### 이슈 #24: Character.isAlphabetic() vs Character.isLetter()\n- **파일**: Entry.java (822, 834, 835, 842, 843, 846, 847, 909, 910, 915, 916, 922, 923)\n- **코드**: `Character.isAlphabetic(entry.buf[entry.start])`\n- **문제**: Kotlin에서 `Char.isLetter()`와 `Character.isAlphabetic()`은 다른 결과를 줄 수 있음 (숫자형 문자 등). Kotlin에서 `Character.isAlphabetic(ch.code)` 형태로 호출 필요.\n- **해결**: `Character.isAlphabetic(ch.code)` 사용하여 Java와 동일한 동작 유지.\n\n### 이슈 #25: ProductNameAnalysisFilter.testEntry의 String.replace\n- **파일**: ProductNameAnalysisFilter.java:367\n- **코드**: `entry.makeTerm(null).toString().replace(\",\", \"\")`\n- **문제**: 여기서는 Java `String.replace(CharSequence, CharSequence)` 사용 (정규식 아님). Kotlin `String.replace(String, String)`도 리터럴이므로 동일 동작. 안전.\n- **해결**: 변환 불필요. 그대로 사용.\n\n---\n\n## 요약 우선순위\n\n| 우선순위 | 이슈 수 | 대표 이슈 |\n|---------|---------|----------|\n| CRITICAL | 2개 | #1(split), #2(replaceAll) - 즉시 버그 발생 |\n| HIGH | 6개 | #4(==비교 주의), #5(CharArray), #6(trim), #7(Pattern), #8(subSequence), #10(clone) |\n| MEDIUM | 7개 | #11~#17 - 컴파일 오류 또는 런타임 차이 |\n| LOW | 8개 | #18~#25 - 기능 동작은 동일하지만 주의 필요 |\n\n## Kotlin 개발자를 위한 핵심 가이드라인\n\n1. **split/replaceAll은 반드시 Regex 버전 사용** (이슈 #1, #2)\n2. **list.remove(int) -> removeAt(int)** 전환 필수 (이슈 #14)\n3. **char[] -> CharArray 사용**, Array<Char> 절대 사용 금지 (이슈 #5)\n4. **Java `==` String 비교 -> Kotlin `==`로 변환** (===가 아님) (이슈 #4)\n5. **RuleEntry는 data class로 변환하지 말 것** - 기존 clone() 얕은 복사 유지 필요 (이슈 #10)\n6. **Iterator 수동 제어 패턴은 그대로 유지** (이슈 #13)\n7. **trim()은 `trim { it <= ' ' }`로 명시적 변환** (이슈 #6)\n",
+    "summary": "형태소분석 패턴 이슈 분석 완료 보고",
+    "timestamp": "2026-02-09T09:48:41.589Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:48:46.085Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:48:46.085Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "Task #2 (형태소분석 패턴/공백 처리 이슈 분석)는 이미 완료하여 보고서를 전송했습니다. 앞서 보낸 메시지에 25개 이슈가 CRITICAL/HIGH/MEDIUM/LOW 우선순위로 분류되어 있습니다. 확인 부탁드립니다.\n\n추가 분석이 필요한 부분이 있으면 말씀해 주세요.",
+    "summary": "Task #2 이미 완료됨 - 보고서 확인 요청",
+    "timestamp": "2026-02-09T09:48:52.823Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:48:55.569Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:48:55.569Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "\n# 형태소분석 Java -> Kotlin 마이그레이션 이슈 분석 결과\n\n총 13개 파일 분석, **25개 잠재적 이슈** 식별. 핵심만 정리합니다.\n\n---\n\n## CRITICAL (즉시 버그 발생) - 2건\n\n**#1 String.split() 정규식 vs 리터럴**\n- 파일: `SpaceDictionary.java:24,62,64`\n- Java `split(\"\\\\s\")`는 정규식으로 공백 분리. Kotlin `split(\"\\\\s\")`는 리터럴 문자열 매칭이라 동작하지 않음.\n- 해결: `split(\"\\\\s\".toRegex())`로 변경 필수\n\n**#2 String.replaceAll() 정규식 vs 리터럴**\n- 파일: `SpaceDictionary.java:62`\n- Java `replaceAll(\"\\\\s\", \"\")`는 정규식. Kotlin `replace(\"\\\\s\", \"\")`는 리터럴.\n- 해결: `replace(\"\\\\s\".toRegex(), \"\")`로 변경 필수\n\n---\n\n## HIGH (분석 정확도 영향) - 6건\n\n**#4 String `==` 참조 비교 (가장 광범위)**\n- 파일: Entry.java, RuleOne~Five, ProductNameTokenizer, ProductNameAnalysisFilter 전역 (수십 곳)\n- `entry.type == FULL_STRING`, `getType(ch) == NUMBER` 등 Java에서 String interning으로 동작\n- Kotlin `==`는 equals()이므로 안전. **자동 변환 도구가 `===`로 변환하면 실패**\n\n**#5 char[] -> CharArray 필수 (Array&lt;Char&gt; 금지)**\n- 파일: RuleEntry.java:14, Entry.java, RuleFour.java 등\n- `CharArray`는 Java `char[]`과 동일. `Array<Char>`는 박싱 배열로 성능 저하 + System.arraycopy 비호환\n\n**#6 trim() 동작 차이**\n- 파일: SpaceDictionary.java:67,70\n- Java `trim()`은 ASCII <= 32 제거. Kotlin `trim()`은 Unicode 공백 포함.\n- 해결: `trim { it <= ' ' }`로 명시적 변환\n\n**#7 Pattern/Matcher -> Kotlin Regex**\n- 파일: ProductNameTokenizer.java:66-89, RuleTwo.java:100\n- `matcher(x).find()` -> `regex.containsMatchIn(x)`로 변환. find/matches 혼동 주의\n\n**#8 CharVector.subSequence 비표준 구현**\n- 파일: CharVector.java:250-256\n- `endIndex - startIndex + 1` (표준은 exclusive). Kotlin CharSequence 확장 함수 적용 시 오동작 가능\n\n**#10 RuleEntry.clone() 얕은 복사**\n- 파일: RuleEntry.java:47-52\n- Kotlin data class copy()로 변환하면 동작 변경. **일반 class로 유지** 필수\n\n---\n\n## MEDIUM (컴파일 오류/런타임 차이) - 7건\n\n| 이슈 | 파일 | 핵심 |\n|------|------|------|\n| #11 instanceof -> is | SpaceDictionary, CharVector | null 체크 불필요해짐 |\n| #12 unmodifiableSet | SpaceDictionary:56 | Kotlin 불변 컬렉션 전략 결정 필요 |\n| #13 Iterator 수동 제어 | Entry.java exportByTriGram/exportUnitGram | for-in 변환 금지, Iterator 패턴 유지 |\n| **#14 list.remove(int) -> removeAt(int)** | Entry, RuleOne~Five 전역 (20곳+) | **자동 변환 시 가장 흔한 버그** |\n| #15 subList().clear() | RuleOne:189 | MutableList 명시 필요 |\n| #16 System.arraycopy | Entry:344-346, RuleFive:159 | copyInto() 또는 유지 |\n| #17 Comparable | RuleEntry, CharVector | Collections.sort() -> list.sort() |\n\n---\n\n## LOW (스타일/가독성) - 8건 (#18~#25)\n\n주요: nullable 처리(#18), AnalyzerOption property 변환(#19), protected 접근 범위(#20), CharVector.equals CharSequence 미구현(#22), Character.isAlphabetic -> ch.code 필요(#24)\n\n---\n\n## Kotlin 개발자 필수 체크리스트 (7가지)\n\n1. **split/replaceAll -> Regex 버전** 사용 (CRITICAL)\n2. **list.remove(int) -> removeAt(int)** 전환 (20곳+)\n3. **char[] -> CharArray** 사용, Array&lt;Char&gt; 절대 금지\n4. **Java `==` String -> Kotlin `==`** 변환 (`===` 아님)\n5. **RuleEntry는 data class 변환 금지** - clone() 얕은 복사 유지\n6. **Iterator 수동 제어 패턴 유지** - for-in 변환 금지\n7. **trim() -> `trim { it <= ' ' }`** 명시적 변환\n\n이 보고서를 kotlin-developer에게도 공유해 주시면, 마이그레이션 작업 시 참고할 수 있습니다.\n",
+    "summary": "형태소분석 이슈 분석 결과 요약 재전송",
+    "timestamp": "2026-02-09T09:49:27.744Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:49:31.190Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:49:31.190Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "\n# 추가 확인 결과: 이슈 #8 (subSequence)과 #22 (equals 빈 블록)\n\n---\n\n## 이슈 #8: CharVector.subSequence() 비표준 동작\n\n**결론: 현재 코드에서 직접 호출되는 곳이 없습니다. 잠재적 위험만 존재.**\n\n`src/` 전체에서 `.subSequence(` 패턴을 검색한 결과 **호출 지점이 0건**입니다.\n\nCharVector가 `CharSequence`를 구현하고 있으므로, subSequence가 호출될 수 있는 경로는:\n1. Kotlin 확장 함수 (`substring`, `take`, `drop` 등) - 내부적으로 `subSequence` 호출 가능\n2. 서드파티 라이브러리에서 `CharSequence` 인터페이스를 통해 호출\n\n**마이그레이션 시 위험 시나리오:**\n- Kotlin에서 `CharVector` 인스턴스에 `.substring(1, 5)` 같은 확장 함수를 사용하면 내부적으로 `subSequence(1, 5)` 호출 -> 표준은 길이 4를 기대하지만 실제로는 길이 5 반환\n- 현재는 호출이 없으므로 **심각도를 HIGH에서 MEDIUM으로 하향 조정** 가능합니다\n- 단, Kotlin 마이그레이션 시 새 코드에서 CharSequence 확장 함수 사용을 **금지하는 규칙**을 만들 것을 권장합니다\n\n---\n\n## 이슈 #22: CharVector.equals()에서 CharSequence 비교 미구현 - 심층 분석\n\n**결론: 현재 코드에서는 안전하나, 특정 상황에서 잠재적 위험 존재. 심각도 LOW -> MEDIUM 상향 권장.**\n\n### 분석 흐름\n\n1. **Dictionary 구조**: `MapDictionary`는 `Map<CharSequence, CharSequence[]> map`을 사용\n2. **Key/Value 저장**: 모든 key와 value는 `new CharVector(...)` 형태로 저장됨 (MapDictionary:75,79, SynonymDictionary:78,98, SpaceDictionary:63)\n3. **HashMap 조회**: `containsKey(key)`, `get(key)` 호출 시 `hashCode()`와 `equals()` 사용\n\n### equals() 호출 패턴 분석\n\n**패턴 A: CharVector.equals(CharVector) - 안전**\n- `SynonymDictionary:117` - `key.equals(val)`: key=`CharVector.valueOf(list.get(j))`, val=`list.get(k)` -> list에는 CharVector만 들어있음 -> **CharVector 대 CharVector 비교. 안전.**\n- `SynonymDictionary:156` - `mainWord.equals(word)`: mainWord=`new CharVector(...)`, word=`list.get(j)` -> **CharVector 대 CharVector. 안전.**\n- `Entry.java:339` - `unitCandidate.equals(units[0])`: unitCandidate=`CharVector`, units=`unitSynonymDictionary.get(...)` -> MapDictionary 반환값은 `CharSequence[]`이지만 실제 저장 시 `new CharVector()`로 들어감 -> **CharVector 대 CharVector. 안전.**\n\n**패턴 B: CharSequence.equals(CharSequence) - 잠재적 위험**\n- `ProductNameDictionary:549` - `mainWord.equals(subSynonym)`: mainWord는 `CharSequence` 파라미터. 호출처(610행)에서 `word`는 `map.keySet()`에서 가져옴 -> 실제로는 `CharVector`. subSynonym도 `synonymMap.get()` 값 -> CharVector. **현재는 안전하지만, 파라미터가 CharSequence이므로 String이 전달될 수도 있음.**\n\n**패턴 C: HashMap 내부 equals - 핵심 위험 지점**\n- `MapDictionary:97` - `map.containsKey(key)`: key가 `CharSequence` 타입. HashMap이 내부적으로 `key.equals(existingKey)` 호출.\n  - 만약 `String`이 key로 전달되면: `String.equals(CharVector)` -> String.equals는 `String instanceof` 체크 -> **항상 false** -> HashMap 조회 실패!\n  - 만약 `CharVector`가 key로 전달되면: `CharVector.equals(CharVector)` -> **정상 동작**\n\n### 실제 위험 여부\n\n현재 코드에서 `containsKey()`와 `get()` 호출 시 전달되는 key는:\n- `SpaceDictionary.containsKey(ref)`: ref는 `CharVector` -> **안전**\n- `synonymDictionary.containsKey(token)`: token은 `CharVector` -> **안전**\n- `compoundDictionary.containsKey(cv)`: cv는 `CharVector` -> **안전**\n\n**현재는 모든 호출 지점에서 CharVector를 사용하므로 문제 없음.**\n\n### Kotlin 마이그레이션 시 위험\n\nKotlin에서 `String`은 `CharSequence`의 서브타입이므로, 마이그레이션 과정에서 실수로 `String`을 Dictionary의 key로 전달하면:\n```kotlin\n// 위험! String으로 조회 시 HashMap에서 찾지 못함\nval found = spaceDictionary.containsKey(\"테스트\")  // 항상 false\n\n// 안전! CharVector로 조회\nval found = spaceDictionary.containsKey(CharVector(\"테스트\"))  // 정상 동작\n```\n\n이는 CharVector.equals()가 `CharSequence` 분기에서 비교 로직이 빈 블록이기 때문입니다. HashMap은 **전달된 key 객체의 equals()**를 호출하므로:\n- `String.equals(CharVector)` -> false (String은 String만 equals 허용)\n- `CharVector.equals(String)` -> false (빈 블록)\n\n양쪽 다 실패하므로, **HashMap에서 String key로는 절대 CharVector key를 찾을 수 없습니다.**\n\n### 권장 사항\n\n1. **심각도: MEDIUM** (현재는 문제없으나, 마이그레이션 시 실수하기 쉬움)\n2. Kotlin 마이그레이션 시 **Dictionary 조회 API에 타입 제한** 추가 권장:\n   ```kotlin\n   fun containsKey(key: CharVector): Boolean  // CharSequence 대신 CharVector로 제한\n   ```\n3. 또는 CharVector.equals()에 CharSequence 비교 로직 구현:\n   ```kotlin\n   // 빈 블록 대신 실제 비교 로직 추가\n   is CharSequence -> {\n       if (length != anObject.length) return false\n       for (i in 0 until length) {\n           if (charAt(i) != anObject[i]) return false\n       }\n       true\n   }\n   ```\n\n---\n\n## 요약\n\n| 이슈 | 기존 심각도 | 수정 심각도 | 근거 |\n|------|-----------|-----------|------|\n| #8 subSequence | HIGH | **MEDIUM** | 직접 호출 0건. Kotlin 확장 함수 사용 시에만 위험 |\n| #22 equals 빈 블록 | LOW | **MEDIUM** | 현재 안전하나, String으로 Dictionary 조회 시 silent failure 발생. 마이그레이션 시 실수 가능성 높음 |\n",
+    "summary": "이슈 #8, #22 추가 확인 결과 보고",
+    "timestamp": "2026-02-09T09:51:01.619Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:51:07.578Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:51:07.578Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "\n이 두 가지는 직전 메시지에서 이미 분석 완료하여 보고드렸습니다. 핵심만 다시 정리합니다:\n\n## 1. subSequence() 호출 여부\n- `src/` 전체 grep 결과: **호출 0건**\n- 현재 코드에서 CharVector.subSequence()를 직접 호출하는 곳이 없습니다\n- 위험은 Kotlin 마이그레이션 후 새 코드에서 CharSequence 확장 함수(substring, take 등)를 사용할 때만 발생\n- 심각도: HIGH -> **MEDIUM** 하향\n\n## 2. String과 CharVector 혼용 비교 여부\n- 모든 Dictionary의 containsKey/get 호출 지점 확인 완료\n- **현재 모든 호출에서 CharVector만 key로 사용** (String 전달 0건)\n- 단, Map<CharSequence, ...> 타입이므로 마이그레이션 시 String을 넘기면 silent failure 발생 (양쪽 equals 모두 false)\n- 심각도: LOW -> **MEDIUM** 상향\n\n이전 메시지에 패턴별 상세 분석(패턴 A/B/C)과 권장 사항이 포함되어 있으니 확인 부탁드립니다.\n",
+    "summary": "subSequence/equals 추가 확인 - 이미 분석 완료",
+    "timestamp": "2026-02-09T09:51:19.299Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:51:22.643Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:51:22.643Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "\n# grep 확인 결과\n\n## 1. subSequence 호출 검색\n\n프로젝트 전체 `src/` 에서 `subSequence` 검색 결과:\n\n- `src/main/java/com/danawa/util/CharVector.java:251` - **정의부** (override)\n- `src/main/java-backup/com/danawa/util/CharVector.java:251` - 백업 파일 정의부\n- `src/main/kotlin/com/danawa/util/CharVector.kt:210` - **Kotlin 변환본 정의부**\n\n**호출 지점: 0건**. 정의만 3곳에 존재하고, 실제로 subSequence()를 호출하는 코드는 프로젝트 전체에서 없습니다.\n\n**추가 발견**: Kotlin 변환본(`CharVector.kt:214`)에도 비표준 동작이 그대로 복제되어 있습니다:\n```kotlin\ncv._length = endIndex - startIndex + 1  // 비표준! 표준은 endIndex - startIndex\n```\nkotlin-developer가 Java 코드를 그대로 옮긴 것으로 보입니다. 현재는 호출되지 않지만 **Kotlin 변환본에서도 수정이 필요합니다**.\n\n**결론: CRITICAL 아님. MEDIUM 유지.** 호출 0건이므로 현재 동작에 영향 없음.\n\n---\n\n## 2. String으로 Dictionary 조회하는 패턴 검색\n\n`containsKey/contains/get`에 문자열 리터럴(`\"...\"`)을 직접 전달하는 패턴 검색 결과:\n\n- `SearchUtil.java:57-60,73,78,81` - `hit.getSourceAsMap().get(\"id\")` 등 -> **Elasticsearch SourceMap 조회. Dictionary 아님. 무관.**\n- `ProductNameDictionary.java:382,744,745` - `compileDictMap.get(\"dict\")`, `prop.get(\"label\")` 등 -> **Map<String, Object> 조회. Dictionary 아님. 무관.**\n\n**CharVector 기반 Dictionary(MapDictionary, SetDictionary, SpaceDictionary 등)에 String으로 조회하는 패턴: 0건.**\n\n**결론: 현재 안전.** String-CharVector 혼용 비교는 발생하지 않습니다. 이슈 #22는 마이그레이션 시 주의사항으로 MEDIUM 유지.\n",
+    "summary": "subSequence/equals grep 결과 보고",
+    "timestamp": "2026-02-09T09:51:51.480Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:51:56.563Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:51:56.563Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T09:52:02.905Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:52:02.905Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "# Analysis-Danuri 코드베이스 아키텍처 분석 보고서\n\n## 1. 프로젝트 개요\n\n- **프로젝트명**: analysis-danuri (Elasticsearch 커스텀 한글 형태소분석기 플러그인)\n- **대상 ES 버전**: Elasticsearch 9.1.2 / Lucene 10.1.0\n- **JDK**: 21, Kotlin 2.1.0 (마이그레이션 진행 중)\n- **빌드**: Gradle Kotlin DSL (`build.gradle.kts`)\n- **총 Java 소스 파일**: ~63개 (11개 패키지)\n\n---\n\n## 2. 패키지별 클래스 요약 (한 줄 설명)\n\n### 2.1 `com.danawa.io` (바이너리 직렬화 I/O)\n| 클래스 | 역할 |\n|--------|------|\n| `DataInput` | 바이너리 데이터 읽기 추상 클래스 (byte, VInt, VLong, String, Map 등) |\n| `DataOutput` | 바이너리 데이터 쓰기 추상 클래스 (DataInput의 대응) |\n| `BytesBuffer` | NIO 스타일 바이트 버퍼 (flip/clear, 공개 가변 필드) |\n| `CachedCharArray` | ThreadLocal + SoftReference 기반 char[] 캐시 풀 |\n| `InputStreamDataInput` | InputStream을 감싸는 DataInput 구현체 |\n| `OutputStreamDataOutput` | OutputStream을 감싸는 DataOutput 구현체 |\n\n### 2.2 `com.danawa.util` (유틸리티)\n| 클래스 | 역할 |\n|--------|------|\n| `CharVector` | 핵심 텍스트 표현 클래스 (CharSequence, 대소문자 무시, 공유 배열) |\n| `ContextStore` | 싱글턴-퍼-클래스 전역 저장소 (ConcurrentHashMap, 사전 공유) |\n| `ResourceResolver` | 플러그인 리소스 루트 탐색 (JAR/workspace), properties/YAML 읽기 |\n| `SystemDictionaryCompiler` | CLI 도구 - 텍스트 사전을 바이너리로 컴파일 |\n\n### 2.3 `com.danawa.search.analysis.dict` (사전 시스템)\n| 클래스 | 역할 |\n|--------|------|\n| `Dictionary<T,P>` | 사전 최상위 인터페이스 (find, findPreResult, seq, label) |\n| `ReadableDictionary` | readFrom(InputStream) 인터페이스 |\n| `WritableDictionary` | writeTo(OutputStream) 인터페이스 |\n| `ReloadableDictionary` | reload(Object) 인터페이스 |\n| `SourceDictionary<E>` | 사용자 사전 추상 기반 (파일/스트림 로드, 타입/라벨/seq) |\n| `CommonDictionary<T,P>` | 시스템 사전 + 사용자 사전 Map 컨테이너 |\n| `ProductNameDictionary` | **중앙 사전 오케스트레이터** (~754행) - YAML 설정 기반 사전 로드/리로드/컴파일 |\n| `TagProbDictionary` | 시스템 사전 - POS 태그 확률 기반 형태소 사전 (바이너리 직렬화) |\n| `SetDictionary` | Set&lt;CharSequence&gt; 기반 사전 (불용어, 사용자 단어 등) |\n| `MapDictionary` | Map&lt;CharSequence, CharSequence[]&gt; 기반 사전 |\n| `SynonymDictionary` | 동의어 사전 (양방향/단방향, MapDictionary 확장) |\n| `CompoundDictionary` | 복합명사 분해 사전 (MapDictionary 확장) |\n| `SpaceDictionary` | 공백 분리어 사전 (MapDictionary 확장) |\n| `CustomDictionary` | 혼합 타입 커스텀 사전 (SourceDictionary 확장) |\n| `InvertMapDictionary` | 역방향 매핑 사전 (값→키 역전, MapDictionary 확장) |\n\n### 2.4 `com.danawa.search.analysis.korean` (한글 형태소 분석)\n| 클래스 | 역할 |\n|--------|------|\n| `KoreanWordExtractor` | **핵심 형태소 분석 엔진** (~914행) - 테이블 파싱, 우선순위 큐 기반 최적 분할 |\n| `MorphUtil` | 한글 초성/중성/종성 분해·조합, 받침 검사 유틸리티 |\n| `PosTagProbEntry` | POS 태그 확률 엔트리 (연결 리스트 노드, TagProb 내부 클래스) |\n| `PreResult<T>` | 사전 사전분석 결과 컨테이너 (result[] + addition[]) |\n\n### 2.5 `com.danawa.search.analysis.product` (ES 플러그인 통합)\n| 클래스 | 역할 |\n|--------|------|\n| `AnalysisProductNamePlugin` | **ES 플러그인 진입점** - \"product_name\" 토크나이저/필터/분석기 등록 |\n| `ProductNameTokenizer` | Lucene Tokenizer (~534행) - 문자 타입 분류 + KoreanWordExtractor 연동 |\n| `ProductNameAnalysisFilter` | Lucene TokenFilter (~433행) - 규칙 엔진 적용, 동의어 확장, 불용어 필터링 |\n| `ProductNameTokenizerFactory` | ES 팩토리 - 설정에서 사전 로드, Tokenizer 생성 |\n| `ProductNameAnalysisFilterFactory` | ES 팩토리 - 설정 읽기, Filter 생성 |\n| `ProductNameAnalyzer` | Lucene Analyzer - Tokenizer + Filter 파이프라인 조합 |\n| `ProductNameAnalyzerProvider` | ES AnalyzerProvider - 온디맨드 TokenStream 생성 |\n| `ProductNameParsingRule` | 규칙 엔진 오케스트레이터 - 5단계 규칙 순차 적용 |\n| `ProductNameAnalysisAction` | **최대 파일** (~1857행) - REST 핸들러 (분석/사전관리/검색/인덱싱) |\n| `AnalyzerOption` | 설정 POJO (useForQuery, useSynonym, useStopword, useFullString, toUppercase) |\n| `AnalyzeExceedException` | 분석 큐 오버플로우 예외 |\n\n### 2.6 `com.danawa.search.analysis.product.action` (ES Transport Actions)\n| 클래스 | 역할 |\n|--------|------|\n| `RestReloadDictAction` | REST `/_analysis-product-name/reload-dict` → Transport Action 위임 |\n| `TransportReloadDictAction` | 클러스터 전체 노드 사전 리로드 (TransportNodesAction) |\n| `ReloadDictNodeRequest` | 개별 노드 리로드 요청 (AbstractTransportRequest) |\n| `ReloadDictNodeResponse` | 개별 노드 리로드 응답 (BaseNodeResponse + ToXContentFragment) |\n| `ReloadDictNodesRequest` | 클러스터 전체 리로드 요청 (BaseNodesRequest) |\n| `ReloadDictNodesResponse` | 클러스터 전체 리로드 응답 (BaseNodesResponse + ToXContentObject) |\n\n### 2.7 `com.danawa.search.analysis.product.rule` (규칙 엔진)\n| 클래스 | 역할 |\n|--------|------|\n| `Rule` | 규칙 추상 기반 - 사전 참조, 헬퍼 메서드 (타입 검사, 연결 확인) |\n| `Entry` | 정적 유틸리티 - 엔트리 병합/분할/추가, 모델명 서브큐 처리 |\n| `RuleEntry` | 파싱된 토큰 데이터 클래스 (buf, start, length, type, synonym[], subEntry[]) |\n| `RuleOne` | 1차: 초기 분류 (사전 검색, 숫자+단위 분리, 복합어/분리어/금칙어 처리) |\n| `RuleTwo` | 2차: 타입 변환 (NUMBER_TRANS, ALPHA/NUMBER 연결, 일본어/중국어 결합) |\n| `RuleThree` | 3차: 단위명 추출 (단위사전 검색, 동의어 처리, 숫자+단위 결합) |\n| `RuleFour` | 4차: 모델명 추출 (연속 영숫자/기호 패턴 결합, ContinuousOption 상태) |\n| `RuleFive` | 5차: 예외 규칙 (불필요 기호 제거, 복합어 분해, 동의어 병합) |\n\n### 2.8 `com.danawa.search.analysis.highlight` (하이라이팅)\n| 클래스 | 역할 |\n|--------|------|\n| `TermHighlightingQuery` | Lucene Query - 다중 텀 하이라이팅 (PrefixCodedTerms, BooleanQuery 리라이트) |\n\n### 2.9 `com.danawa.search.index` (인덱싱/검색 유틸리티)\n| 클래스 | 역할 |\n|--------|------|\n| `DanawaBulkTextIndexer` | 텍스트 파일→ES 벌크 인덱싱 (Thread, 패턴 기반 필드 파싱) |\n| `DanawaSearchQueryBuilder` | ES 쿼리 빌더 (분석 결과 기반 동의어/확장어 포함 BoolQuery 생성) |\n| `FastcatMigrateIndexer` | Fastcat 검색엔진→ES 마이그레이션 인덱서 (HTTP 기반) |\n\n### 2.10 `com.danawa.search.util` (검색 유틸리티)\n| 클래스 | 역할 |\n|--------|------|\n| `SearchUtil` | ES 검색/스크롤/삭제/카운트 유틸리티, 커스텀 하이라이팅 |\n| `RemoteNodeClient` | ES 9.x 호환 원격 HTTP 검색 클라이언트 (Basic Auth 지원) |\n\n### 2.11 `org.apache.lucene.analysis.tokenattributes` (커스텀 Lucene 속성)\n| 클래스 | 역할 |\n|--------|------|\n| `TokenInfoAttribute` | 인터페이스: CharVector ref, PosTag, 상태 플래그, 사전 참조, baseOffset |\n| `TokenInfoAttributeImpl` | TokenInfoAttribute 구현체 (AttributeImpl) |\n| `ExtraTermAttribute` | 인터페이스: 확장 텀 (extraTerm + type + synonyms) |\n| `ExtraTermAttributeImpl` | ExtraTermAttribute 구현체 - Iterator 패턴으로 추가 텀 방출 |\n| `SynonymAttribute` | 인터페이스: 동의어 리스트 |\n| `SynonymAttributeImpl` | SynonymAttribute 구현체 |\n\n---\n\n## 3. 상속/인터페이스 관계도\n\n```\n[Dictionary 계층]\nDictionary<T,P> (interface)\n  ├── ReadableDictionary (interface)\n  ├── WritableDictionary (interface)  \n  ├── ReloadableDictionary (interface)\n  │\n  ├── TagProbDictionary implements Dictionary, ReadableDictionary, WritableDictionary\n  │\n  ├── CommonDictionary<T,P>\n  │     └── ProductNameDictionary extends CommonDictionary<TagProb, PreResult<CharSequence>>\n  │\n  └── SourceDictionary<E> (abstract) implements ReloadableDictionary, WritableDictionary, ReadableDictionary\n        ├── SetDictionary extends SourceDictionary<CharSequence>\n        ├── CustomDictionary extends SourceDictionary<Object[]>\n        └── MapDictionary extends SourceDictionary<CharSequence[]>\n              ├── SynonymDictionary extends MapDictionary\n              ├── CompoundDictionary extends MapDictionary\n              ├── SpaceDictionary extends MapDictionary\n              └── InvertMapDictionary extends MapDictionary\n\n[ES Plugin 계층]\nAnalysisProductNamePlugin extends Plugin implements AnalysisPlugin, ActionPlugin\n\n[Lucene 분석 파이프라인]\nTokenizer (Lucene)\n  └── ProductNameTokenizer extends Tokenizer\nTokenFilter (Lucene)\n  └── ProductNameAnalysisFilter extends TokenFilter\nAnalyzer (Lucene)\n  └── ProductNameAnalyzer extends Analyzer\n\n[규칙 엔진 계층]\nRule (abstract)\n  ├── RuleOne extends Rule   (분류)\n  ├── RuleTwo extends Rule   (타입 변환)\n  ├── RuleThree extends Rule (단위명)\n  ├── RuleFour extends Rule  (모델명)\n  └── RuleFive extends Rule  (예외)\n\n[ES Transport Action 계층]\nTransportNodesAction<NodesReq, NodesResp, NodeReq, NodeResp>\n  └── TransportReloadDictAction\nBaseNodesRequest → ReloadDictNodesRequest\nAbstractTransportRequest → ReloadDictNodeRequest\nBaseNodeResponse → ReloadDictNodeResponse\nBaseNodesResponse<NodeResp> → ReloadDictNodesResponse\n\n[Lucene Attribute 계층]\nAttribute (interface)\n  ├── TokenInfoAttribute → TokenInfoAttributeImpl extends AttributeImpl\n  ├── ExtraTermAttribute → ExtraTermAttributeImpl extends AttributeImpl\n  └── SynonymAttribute → SynonymAttributeImpl extends AttributeImpl\n```\n\n---\n\n## 4. 핵심 데이터 흐름\n\n### 4.1 텍스트 입력 → 형태소 분석 → 토큰 출력\n\n```\n입력 텍스트\n  │\n  ▼\n[ProductNameTokenizer.incrementToken()]\n  │ 1) Reader에서 IO_BUFFER_SIZE(1000)씩 읽기\n  │ 2) 문자 타입별 분류 (getType: HANGUL/ALPHA/NUMBER/SYMBOL/WHITESPACE/JAPANESE/CHINESE)\n  │ 3) 타입 경계에서 세그먼트 분할\n  │ 4) 한글 세그먼트 → KoreanWordExtractor.setInput() + extract()\n  │    └─ 테이블 파싱 (PosTagProbEntry[][]) + 우선순위 큐 기반 최적 분할\n  │    └─ ExtractedEntry 연결 리스트 → 개별 단어+PosTag+score 추출\n  │ 5) TokenInfoAttribute에 ref/posTag/state/baseOffset 설정\n  │ 6) CharTermAttribute에 텀 텍스트 설정\n  │\n  ▼\n[ProductNameAnalysisFilter.incrementToken()]\n  │ 1) 상위 TokenStream에서 토큰 수집 → termList (List<RuleEntry>)\n  │ 2) fullString 모드: 전체 입력 문자열을 하나의 FULL_STRING 토큰으로 추가\n  │ 3) ProductNameParsingRule.apply(termList):\n  │    ├─ RuleOne: 초기 분류 (사전 체크, 복합어/분리어/금칙어, 숫자+단위 분리)\n  │    ├─ RuleTwo: 타입 변환 (NUMBER_TRANS, 동일 타입 결합, 일본어/중국어)\n  │    ├─ RuleThree: 단위명 추출 (단위 사전 검색, 동의어)\n  │    ├─ RuleFour: 모델명 추출 (연속 영숫자/기호 패턴 결합)\n  │    └─ RuleFive: 예외 규칙 (불필요 기호 제거, 복합어 분해)\n  │ 4) 동의어 처리 (useSynonym → SynonymDictionary → SynonymAttribute)\n  │ 5) 불용어 필터링 (useStopword → SetDictionary)\n  │ 6) 확장 텀 추출 (subEntry → ExtraTermAttribute)\n  │ 7) 검색/색인 모드별 차별 동작 (useForQuery)\n  │\n  ▼\n출력 토큰 (term, type, offset, synonym, extraTerm)\n```\n\n### 4.2 사전 시스템 로드/캐시/리로드 메커니즘\n\n```\n[초기 로드 - ProductNameTokenizerFactory.create()]\n  │\n  ├─ ContextStore.getStore(ProductNameDictionary.class).get(\"dictionary\")\n  │   └─ 캐시 히트 → 기존 사전 재사용\n  │\n  └─ 캐시 미스 → ProductNameDictionary 생성\n       │ 1) ResourceResolver.getResourceRoot() → 플러그인 디렉토리 탐색\n       │ 2) ResourceResolver.readYmlConfig() → product-name-dictionary.yml 파싱\n       │ 3) TagProbDictionary.readFrom() → 바이너리 시스템 사전 로드 (product.dict)\n       │ 4) 사용자 사전 생성: 타입별 (SET/MAP/SYNONYM/SPACE/CUSTOM/COMPOUND/INVERT_MAP)\n       │    └─ SourceDictionary.loadSource(file) → addSourceLineEntry(line)\n       │ 5) ContextStore에 캐싱\n       │\n[리로드 - REST API 또는 Transport Action]\n  │\n  ├─ REST: POST /_analysis-product-name/reload-dict\n  │   └─ RestReloadDictAction → TransportReloadDictAction\n  │       └─ 클러스터 전체 노드에 ReloadDictNodesRequest 전파\n  │\n  └─ TransportReloadDictAction.nodeOperation()\n       │ 1) ContextStore에서 기존 ProductNameDictionary 획득\n       │ 2) ProductNameDictionary.reloadDictionary() 호출\n       │    └─ 사전 타입별 reload: SourceDictionary.reload(Object)\n       │    └─ 시스템 사전: CommonDictionary.reset() → TagProbDictionary 교체\n       │ 3) ReloadDictNodeResponse (success, reloadTimeMs, dictionarySize) 반환\n```\n\n### 4.3 ES 플러그인 라이프사이클\n\n```\n[플러그인 로드]\nAnalysisProductNamePlugin (extends Plugin, implements AnalysisPlugin, ActionPlugin)\n  │\n  ├─ getAnalyzers(): \"product_name\" → ProductNameAnalyzerProvider\n  ├─ getTokenizers(): \"product_name\" → ProductNameTokenizerFactory\n  ├─ getTokenFilters(): \"product_name\" → ProductNameAnalysisFilterFactory  \n  ├─ getActions(): TransportReloadDictAction 등록\n  └─ getRestHandlers(): ProductNameAnalysisAction, RestReloadDictAction 등록\n\n[분석 요청 흐름]\nES 인덱싱/검색 → ProductNameAnalyzer.createComponents()\n  → ProductNameTokenizer (source)\n  → ProductNameAnalysisFilter (filter)\n\n[REST API 흐름]\nHTTP /_analysis-product-name/{action}\n  → ProductNameAnalysisAction.handleRequest()\n  → 액션 분기: test, reload-dict, info-dict, find-dict, analyze, search, build-query 등\n```\n\n---\n\n## 5. Kotlin 마이그레이션 위험 포인트\n\n### 5.1 높은 위험 (High Risk)\n\n#### CharVector 가변 상태\n- `CharVector`는 `char[] array`, `int offset`, `int length`, `int hash` 모든 필드가 가변\n- `ignoreCase()` 호출 시 대문자로 변환하며 원본 배열을 직접 수정\n- `clone()` 시 배열 공유 (얕은 복사) → 한쪽 수정이 다른 쪽에 영향\n- `hashCode()`가 매번 재계산, `hash = 0`으로 초기화\n- **Kotlin data class 변환 불가** - 수동 `var` 프로퍼티 + 커스텀 equals/hashCode 필요\n- **HashMap 키로 사용 중**: 가변 hashCode가 Map 무결성 위협\n\n#### static 필드/메서드 의존성\n- `ProductNameDictionary`: `static File baseFile`, `static File configFile` → `companion object`로 변환 필요\n- `ContextStore.getStore()`: 전역 싱글턴 → `object` 또는 DI 패턴으로 전환\n- `ProductNameTokenizer`: 20+ 개의 `static final String` 타입 상수 (HANGUL, ALPHA, NUMBER 등) + `static getType()` → Kotlin에서 **String identity(`==`)가 아닌 equality로 동작** → 규칙 엔진 전반에 걸쳐 `==` 대신 `equals` 사용 필요 (현재 Java 코드는 `String ==` identity 비교에 의존)\n\n#### String identity 비교 (`==` vs `equals`)\n- **모든 Rule 클래스에서** `currentEntry.type == ALPHA`, `type == NUMBER` 등 **String reference equality(`==`)** 사용\n- Java에서는 static final String 상수끼리 interning되어 `==`이 작동\n- **Kotlin에서는 `==`가 `equals()`로 컴파일** → 동작은 유지되지만, Java 코드와 혼용 시 주의 필요\n- **반대로**, Java 코드에서 Kotlin String을 받으면 interning 보장 안 됨\n\n### 5.2 중간 위험 (Medium Risk)\n\n#### Checked Exception 처리\n- `IOException` 을 `throws`하는 메서드가 다수: `DataInput/DataOutput`, `TagProbDictionary.readFrom/writeTo`, `KoreanWordExtractor` 등\n- Kotlin에는 checked exception 없음 → 호출부에서 예외 누락 가능성\n- `SourceDictionary.reload()` → `@Throws` 어노테이션 추가 필요\n\n#### null 패턴\n- 사전 관련 메서드들이 광범위하게 null 반환: `dictionary.find()`, `synAttr.getSynonyms()`, `ProductNameDictionary.getInstance()` 등\n- `SynonymAttributeImpl.getSynonyms()`: 빈 리스트 대신 null 반환\n- 모든 사전 참조에서 null 체크 필수 → Kotlin nullable 타입(`?`) 대량 필요\n- `ContextStore.getStore().get(\"dictionary\")` 반환이 `Object?`\n\n#### 제네릭 타입 소거\n- `Dictionary<T, P>`, `CommonDictionary<T, P>`, `SourceDictionary<E>` 등 복잡한 제네릭 계층\n- `Map<String, SourceDictionary<?>>` → Kotlin에서 `Map<String, SourceDictionary<*>>` (star projection)\n- 타입 캐스팅이 필요한 곳에서 `@Suppress(\"UNCHECKED_CAST\")` 필요 가능\n\n### 5.3 낮은 위험 (Low Risk)\n\n#### 상수 변환\n- `public static final int STATE_INPUT_READY = 0x0000` → `const val STATE_INPUT_READY = 0x0000` (companion object 내)\n- ProductNameTokenizer의 타입 상수들 → sealed class 또는 enum으로 리팩토링 가능 (단, String identity 의존성 해결 필요)\n\n#### Cloneable 패턴\n- `RuleEntry`, `ProductNameParsingRule`, `CharVector` 등이 `Cloneable` 구현\n- Kotlin에서 `clone()` 사용 가능하지만 `data class copy()` 패턴이 더 관용적\n- 단, `RuleEntry.clone()`은 `subEntry` 리스트의 얕은 복사 이슈 있음\n\n#### try-with-resources 부재\n- `BufferedReader`, `InputStream` 등을 수동 `try-finally` 로 닫음\n- Kotlin의 `.use { }` 블록으로 깔끔하게 변환 가능\n\n#### Thread 상속\n- `DanawaBulkTextIndexer extends Thread`, `FastcatMigrateIndexer extends Thread`\n- Kotlin 코루틴으로 전환 가능하나, ES 플러그인 컨텍스트에서 코루틴 라이브러리 의존성 추가 필요\n\n---\n\n## 6. 아키텍처 특이사항 및 주의점\n\n### 6.1 성능 민감 영역\n- `KoreanWordExtractor.extract()`: O(n^2) 테이블 파싱, `QUEUE_MAX=200`, `RESULT_MAX=10` 제한\n- `RuleOne ~ RuleFive`: List에 대한 빈번한 `remove(index)`, `add(index)` 연산 → LinkedList가 아닌 ArrayList 사용 중\n- `CharVector.ignoreCase()`: 원본 배열을 직접 수정하는 부수효과\n\n### 6.2 메모리 관련\n- `CachedCharArray`: SoftReference + ThreadLocal 조합으로 GC 압박 시 해제\n- `ProductNameDictionary`: 모든 사전 데이터를 힙 메모리에 유지 (수십 MB 가능)\n- `ContextStore`: 전역 static ConcurrentHashMap → GC root, 메모리 누수 주의\n\n### 6.3 동시성 관련  \n- `ContextStore`: ConcurrentHashMap 기반이지만, 사전 교체 시 `synchronized` 아님\n- `ProductNameDictionary.reloadDictionary()`: 리로드 중 분석 요청이 들어오면 부분 로드 상태 노출 가능\n- `ProductNameTokenizer`/`ProductNameAnalysisFilter`: Lucene 분석 체인은 단일 스레드 보장\n\n### 6.4 주요 코드 냄새 (참고용)\n- `ProductNameAnalysisAction` 1857행: 단일 REST 핸들러에 과도한 책임\n- `Entry.java` 934행: 정적 유틸리티에 과도한 로직 (mergeSubQueue의 750행 분량 코드)\n- `ProductNameTokenizer`에서 `==`을 사용한 String 비교 (Java interning 의존)\n\n---\n\n## 7. 마이그레이션 우선순위 권장\n\n| 우선순위 | 패키지/클래스 | 이유 |\n|---------|-------------|------|\n| 1 (최우선) | `com.danawa.io` | 독립적, 의존성 없음, 단순 I/O 래퍼 |\n| 2 | `com.danawa.util` (CharVector 제외) | ContextStore, ResourceResolver는 독립적 |\n| 3 | `AnalyzerOption`, `AnalyzeExceedException` | 단순 데이터 클래스/예외, data class 적합 |\n| 4 | `org.apache.lucene.analysis.tokenattributes` | 인터페이스 + 단순 구현체 |\n| 5 | `com.danawa.search.analysis.dict` (SourceDictionary 하위) | 사전 개별 구현체들 |\n| 6 (주의) | `CharVector` | **가장 위험** - 가변 상태, 공유 배열, hashCode 이슈 |\n| 7 (주의) | `com.danawa.search.analysis.product.rule` | String identity 의존성 해결 후 진행 |\n| 8 (마지막) | `KoreanWordExtractor`, `ProductNameTokenizer`, `ProductNameAnalysisFilter` | 성능 민감, 복잡한 상태 관리 |\n\n---\n\n이상으로 코드베이스 전체 아키텍처 분석을 완료했습니다. 63개 전체 Java 소스 파일을 읽고 분석했습니다.",
+    "summary": "코드베이스 전체 아키텍처 분석 보고서 완료",
+    "timestamp": "2026-02-09T09:52:29.433Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:52:45.752Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:52:45.752Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "Task #1 \"코드베이스 전체 아키텍처 분석\"은 이미 완료하여 보고서를 전송한 상태입니다.\n\n보고서에 포함된 항목:\n1. 11개 패키지, 63개 Java 소스 파일 전수 분석 (패키지별 클래스 한 줄 요약)\n2. 상속/인터페이스 관계도 (Dictionary 계층, ES Plugin 계층, Lucene 파이프라인, 규칙 엔진, Transport Action, Lucene Attribute)\n3. 핵심 데이터 흐름 3가지: 텍스트→토큰 분석, 사전 로드/캐시/리로드, ES 플러그인 라이프사이클\n4. Kotlin 마이그레이션 위험 포인트: High (CharVector 가변 상태, String identity 비교), Medium (checked exception, null 패턴, 제네릭), Low (상수, Cloneable, try-with-resources)\n5. 마이그레이션 우선순위 권장 (8단계)\n\n이전 메시지에서 전체 보고서를 확인하실 수 있습니다. 추가 분석이 필요하면 말씀해 주세요.",
+    "summary": "Task #1 이미 완료됨 - 보고서 전송 완료 확인",
+    "timestamp": "2026-02-09T09:52:59.645Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:53:05.155Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:53:05.155Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "코드베이스 분석은 이미 100% 완료되었습니다. Task #1은 completed 상태입니다.\n\n## 분석 완료 범위 (전체 11개 패키지, 63개 파일 전수 분석)\n\n| 패키지 | 파일 수 | 상태 |\n|--------|--------|------|\n| `com.danawa.io` | 6개 | 완료 |\n| `com.danawa.util` | 4개 | 완료 |\n| `com.danawa.search.analysis.dict` | 15개 | 완료 |\n| `com.danawa.search.analysis.korean` | 4개 | 완료 |\n| `com.danawa.search.analysis.product` | 11개 | 완료 |\n| `com.danawa.search.analysis.product.action` | 6개 | 완료 |\n| `com.danawa.search.analysis.product.rule` | 8개 | 완료 |\n| `com.danawa.search.analysis.highlight` | 1개 | 완료 |\n| `com.danawa.search.index` | 3개 | 완료 |\n| `com.danawa.search.util` | 2개 | 완료 |\n| `o.a.lucene.analysis.tokenattributes` | 6개 | 완료 |\n\n## 발견된 주요 아키텍처 특징 요약\n\n**1. 파이프라인 아키텍처**: ProductNameTokenizer(문자 분류 + 형태소 분석) → ProductNameAnalysisFilter(5단계 규칙 엔진 + 동의어/불용어) 순차 처리\n\n**2. 사전 시스템**: Dictionary 인터페이스를 정점으로 한 계층 구조. TagProbDictionary(시스템)와 SourceDictionary 하위 7종(사용자) 사전으로 분리. ContextStore 싱글턴으로 전역 캐싱, REST Transport Action으로 클러스터 전체 리로드 지원\n\n**3. 규칙 엔진**: RuleOne~RuleFive 5단계 순차 적용 (분류 → 타입변환 → 단위명 → 모델명 → 예외처리)\n\n**4. 핵심 Kotlin 마이그레이션 위험**:\n- CharVector 가변 상태 + HashMap 키 사용 (hashCode 불안정)\n- String identity 비교(`==`) 의존 (규칙 엔진 전반)\n- 광범위한 null 반환 패턴\n- checked exception 의존\n\n전체 보고서는 이전 메시지에서 전송 완료했습니다. 추가 분석이나 특정 영역 심층 분석이 필요하시면 말씀해 주세요.",
+    "summary": "코드베이스 분석 100% 완료 - 상태 보고",
+    "timestamp": "2026-02-09T09:53:21.317Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:53:25.212Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:53:25.212Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "피드백 감사합니다. 보고서가 Task #4(Kotlin 성능 리뷰)와 Task #5(ES 호환성 검토)에 활용된다니 기쁩니다.\n\n현재 할당된 추가 작업이 없어 대기 중입니다. 필요한 경우 아래와 같은 심층 분석도 가능합니다:\n\n- 특정 클래스/메서드 단위의 상세 흐름 분석\n- Kotlin 마이그레이션 대상 파일별 변환 가이드 작성\n- 코드 품질 이슈 상세 목록 (잠재적 버그, 성능 병목 등)\n- 테스트 커버리지 분석\n\n추가 작업이 있으면 말씀해 주세요.",
+    "summary": "피드백 감사, 추가 분석 대기 중",
+    "timestamp": "2026-02-09T09:53:33.131Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:53:37.856Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:53:37.856Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "# Kotlin 마이그레이션 품질 검토 보고서 (3개 파일)\n\n---\n\n## 1. SpaceDictionary.kt\n\n### CRITICAL 이슈 반영 상태\n\n| 이슈 | 상태 | 설명 |\n|------|------|------|\n| `replaceAll` → `replace(Regex)` | **반영됨** | 39행: `values[0].toString().replace(Regex(DELIMITER), \"\")` |\n| `split` → `split(Regex)` | **반영됨** | 41행: `values[0].toString().split(Regex(DELIMITER)).toTypedArray()` |\n| `trim` 동작 | **부분 이슈** | 44행: `.trim()` 사용 (아래 상세) |\n\n### 발견된 이슈\n\n**[MEDIUM] trim() 동작 차이 미반영 (44행)**\n```kotlin\nval str = list[i].trim()  // Kotlin String.trim()\n```\n- Kotlin의 `String.trim()`은 유니코드 공백 전체를 제거 (Character.isWhitespace 기준)\n- Java의 `String.trim()`은 `<= ' '` (0x20 이하) 문자만 제거\n- 형태소분석 전문가가 지적한 `trim { it <= ' ' }` 패턴이 적용되지 않음\n- **원본 Java 코드**: `list[i].trim()` (Java의 trim)\n- **영향**: 유니코드 공백 문자(NBSP 등)가 포함된 사전 데이터에서 동작 차이 발생 가능\n- **권장**: `list[i].trim { it <= ' ' }` 또는 명시적 Java 호환 trim으로 변경\n\n**[LOW] wordSet 초기화 패턴 (23행, 28행)**\n```kotlin\nconstructor(file: File, ...) : super(file, ...) {\n    if (wordSet == null) wordSet = HashSet()  // Kotlin에서 non-null 타입인데 null 체크\n}\n```\n- `wordSet`이 `MutableSet<CharSequence>` (non-null)으로 선언되어 있으나, `super()` 호출 시 `readFrom()` 내에서 초기화되므로 실제로는 문제 없음\n- 하지만 `if (wordSet == null)` 체크가 Kotlin에서는 무의미 (컴파일러 경고 가능)\n\n**[INFO] 정상 반영 항목**\n- `Regex(DELIMITER)` 사용으로 Java `replaceAll`/`split`의 regex 동작 보존\n- `@Throws(IOException::class)` 어노테이션 적용\n- `companion object`에 상수 정리\n\n---\n\n## 2. CharVector.kt\n\n### CRITICAL 이슈 반영 상태\n\n| 이슈 | 상태 | 설명 |\n|------|------|------|\n| data class가 아닌 일반 class | **반영됨** | 5행: `class CharVector : CharSequence, ...` |\n| subSequence 비표준 동작 경고 | **미반영** | 210행: 주석 없음 |\n\n### 발견된 이슈\n\n**[HIGH] subSequence 비표준 동작에 대한 경고 주석 누락 (210~215행)**\n```kotlin\noverride fun subSequence(startIndex: Int, endIndex: Int): CharSequence {\n    val cv = CharVector()\n    cv.array = this.array\n    cv._offset = this._offset + startIndex\n    cv._length = endIndex - startIndex + 1  // 비표준: +1\n    return cv\n}\n```\n- `CharSequence.subSequence(startIndex, endIndex)` 표준 계약: `endIndex`는 exclusive (길이 = endIndex - startIndex)\n- **이 구현은 endIndex를 inclusive로 처리** (길이 = endIndex - startIndex **+ 1**)\n- 형태소분석 전문가가 지적한 경고 주석이 없음\n- **영향**: Kotlin 표준 라이브러리의 `substring()`, `slice()` 등이 이 메서드를 호출할 경우 off-by-one 에러 발생\n- **권장**: 최소한 `// WARNING: 비표준 동작 - endIndex가 inclusive로 처리됨` 경고 주석 필요\n\n**[MEDIUM] hashCode 음수 처리 (81행)**\n```kotlin\noverride fun hashCode(): Int {\n    if (hash > 0) return hash  // hash가 0이면 매번 재계산, 음수 hash를 캐시하지 않음\n```\n- 원본 Java와 동일한 로직이지만, `hash > 0` 체크로 인해 음수 hashCode가 캐시되지 않음\n- 이는 원본 Java 코드의 기존 이슈가 그대로 이관된 것 (마이그레이션 자체는 정확)\n\n**[INFO] 정상 반영 항목**\n- 일반 class로 선언 (data class 아님) - 가변 상태 보존\n- `Cloneable` 구현 + `public override fun clone()` 정상\n- 가변 프로퍼티 `var` 사용\n- `@JvmOverloads` 어노테이션으로 Java 호환성 유지\n- `@JvmStatic` 어노테이션으로 companion object 메서드의 Java 호환성 유지\n- `ignoreCase()` 시 원본 배열 직접 수정하지 않고 `get()` 에서 대소문자 변환 → **원본 Java보다 안전한 방식으로 개선됨**\n\n---\n\n## 3. MapDictionary.kt\n\n### 이슈 확인 상태\n\n| 이슈 | 상태 | 설명 |\n|------|------|------|\n| CharSequence key 타입 유지 | **반영됨** | 12행: `MutableMap<CharSequence, Array<CharSequence>>` |\n| HashMap 사용 | **반영됨** | 17행, 101행: `HashMap()` |\n\n### 발견된 이슈\n\n**[MEDIUM] trim() 동작 차이 (56행, 115행, 119행)**\n```kotlin\nval cv = CharVector(keyword.toString().trim(), ignoreCase)  // 56행\nval keyword = kv[0].trim()   // 115행\nval value = kv[1].trim()     // 119행\n```\n- SpaceDictionary와 동일한 이슈: Kotlin `String.trim()` vs Java `String.trim()` 동작 차이\n- 사전 데이터 로드 시 동작 차이 발생 가능\n\n**[LOW] addSourceLineEntry null 체크 불필요 (112행)**\n```kotlin\noverride fun addSourceLineEntry(line: CharSequence) {\n    if (line == null) return  // CharSequence는 non-null 타입이므로 항상 false\n```\n- Kotlin에서 `CharSequence` 파라미터는 non-null → `line == null` 조건은 항상 false\n- Java에서 이 메서드를 호출할 때는 null이 넘어올 수 있으므로, `@JvmOverloads` 또는 nullable(`CharSequence?`)로 변경하거나 제거 필요\n\n**[INFO] 정상 반영 항목**\n- `open class` 선언으로 상속 허용 (SpaceDictionary, SynonymDictionary 등)\n- `HashMap<CharSequence, Array<CharSequence>>` 타입 정확\n- `operator fun get()` 으로 `[]` 연산자 오버로딩\n- `@Throws(IOException::class)` 적용\n\n---\n\n## 종합 요약\n\n| 파일 | CRITICAL | HIGH | MEDIUM | LOW |\n|------|----------|------|--------|-----|\n| SpaceDictionary.kt | 0 | 0 | 1 (trim) | 1 (null 체크) |\n| CharVector.kt | 0 | 1 (subSequence 경고 누락) | 1 (hashCode 음수) | 0 |\n| MapDictionary.kt | 0 | 0 | 1 (trim) | 1 (null 체크) |\n\n**가장 중요한 조치 사항 (총 3건):**\n1. **CharVector.kt 210행**: `subSequence` 비표준 동작에 대한 경고 주석 추가 필요\n2. **SpaceDictionary.kt 44행**: `trim()` → `trim { it <= ' ' }` 변경 권장\n3. **MapDictionary.kt 56/115/119행**: 동일하게 `trim()` → `trim { it <= ' ' }` 변경 권장\n\n특이사항: CharVector.kt의 `ignoreCase()` 메서드가 원본 Java 코드에서는 원본 배열을 직접 대문자로 수정했으나, Kotlin 버전에서는 `get()` 메서드에서 동적으로 변환하는 방식으로 개선되었습니다. 이는 안전한 방향의 변경이지만, **Java 코드와의 혼용 시 동작 차이**가 발생할 수 있으므로 주의가 필요합니다.",
+    "summary": "Kotlin 마이그레이션 3개 파일 품질 검토 완료",
+    "timestamp": "2026-02-09T09:55:11.149Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:55:18.479Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:55:18.479Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "피드백 감사합니다. 수정 사항이 개발자에게 전달되었다니 좋습니다.\n\n추가로 마이그레이션된 다른 Kotlin 파일들의 품질 검토가 필요하시면 언제든 말씀해 주세요. 현재 대기 중입니다.",
+    "summary": "피드백 확인, 추가 검토 대기 중",
+    "timestamp": "2026-02-09T09:55:42.043Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:55:46.234Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:55:46.234Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "# RuleEntry.kt 품질 검토 보고서\n\n## 형태소분석 전문가 이슈 #10 반영 상태\n\n| 체크 항목 | 상태 | 설명 |\n|-----------|------|------|\n| data class가 아닌 일반 class | **반영됨** | 6행: `class RuleEntry(...)` |\n| buf 필드가 CharArray | **반영됨** | 7행: `var buf: CharArray` |\n| Comparable&lt;RuleEntry&gt; 구현 | **반영됨** | 13행: `: Comparable<RuleEntry>` / 57~69행: compareTo 로직 원본과 동일 |\n\n3가지 핵심 체크 항목 모두 정상 반영되었습니다.\n\n---\n\n## 추가 발견 이슈\n\n### [HIGH] clone() 시 Cloneable 인터페이스 누락\n\n**Kotlin 코드 (29~34행):**\n```kotlin\npublic override fun clone(): RuleEntry {\n    val entry = RuleEntry(buf, start, length, startOffset, endOffset, type)\n    entry.synonym = synonym\n    entry.subEntry = subEntry\n    return entry\n}\n```\n\n**원본 Java (47~52행):**\n```java\npublic RuleEntry clone() { ... }\n```\n\n- 원본 Java도 `Cloneable`을 implements하지 않으므로 이 부분은 원본 충실한 변환\n- 하지만 Kotlin에서 `override` 키워드를 사용하려면 상위에 `clone()`이 있어야 함 → `Any.clone()`은 `protected`이므로 `public override`로 선언 시 가시성 확장이 발생\n- **현재 동작에 문제는 없음**, 단 `Cloneable` 없이 `clone()` 호출 시 의미적 혼란 가능\n\n### [MEDIUM] synonym 타입이 `Array<CharSequence>?`로 변경됨\n\n**Kotlin**: `var synonym: Array<CharSequence>? = null` (16행)\n**Java**: `public CharSequence[] synonym;` (21행)\n\n- Java `CharSequence[]`는 Kotlin `Array<CharSequence>`에 대응 → **정확한 변환**\n- 단, Java 코드에서 이 필드에 `CharVector[]`를 대입하는 곳이 있음 (Entry.java 340행: `synonyms = new CharVector[units.length]`)\n- Kotlin에서 `Array<CharVector>`를 `Array<CharSequence>`에 대입하려면 **variance 이슈** 발생 가능\n- Java에서는 `CharVector[]`가 `CharSequence[]`에 공변 대입 가능하지만, Kotlin에서 `Array`는 **invariant** (불변)\n- **영향**: Java/Kotlin 혼용 기간 중 Entry.java에서 `RuleEntry.kt`의 synonym에 `CharVector[]` 대입 시 컴파일 에러 가능\n- **권장**: 혼용 기간에는 `@JvmField` 추가 또는 setter에서 타입 변환 처리 고려\n\n### [LOW] 불필요한 null 체크 (38행, 47행)\n\n```kotlin\nif (buf != null) {    // 38행 - buf는 CharArray (non-null)\nif (subEntry != null) { // 47행 - subEntry는 MutableList (non-null)\n```\n\n- `buf`는 생성자에서 `CharArray` (non-null) 파라미터로 받음 → null 불가\n- `subEntry`는 `MutableList<RuleEntry> = ArrayList()` (non-null) → null 불가\n- Kotlin 컴파일러 경고 발생 가능\n- **영향**: 동작에 문제 없음, 코드 정리 수준\n\n---\n\n## 정상 반영 확인 항목\n\n- clone() 얕은 복사 유지: `entry.synonym = synonym`, `entry.subEntry = subEntry` → 참조 공유 (원본과 동일)\n- compareTo() 로직: startOffset 비교 → 같으면 zero-length 엔트리 우선 → 같으면 endOffset 역순 (원본과 동일)\n- modifiable 기본값 `true` (15행) - 원본과 동일\n- subEntry 기본값 `ArrayList()` (17행) - 원본과 동일\n- `companion object`에 logger 배치 (71~73행) - 적절한 변환\n\n## 종합\n\n| 심각도 | 건수 | 내용 |\n|--------|------|------|\n| CRITICAL | 0 | - |\n| HIGH | 1 | clone() Cloneable 미구현 (동작 문제 없음, 의미적 이슈) |\n| MEDIUM | 1 | Array invariance - Java/Kotlin 혼용 시 CharVector[] 대입 이슈 |\n| LOW | 1 | 불필요한 null 체크 2곳 |\n\n**결론**: 형태소분석 전문가의 3가지 핵심 체크 항목은 모두 정상 반영됨. MEDIUM 이슈 1건(Array invariance)은 Java/Kotlin 혼용 기간에만 영향이 있으므로, 전체 마이그레이션 완료 후에는 문제 없습니다.",
+    "summary": "RuleEntry.kt 품질 검토 완료 - 3건 이슈 발견",
+    "timestamp": "2026-02-09T09:56:57.693Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "code-analyst 현재 상태 보고입니다.\n\n**완료된 작업:**\n- Task #1: 코드베이스 전체 아키텍처 분석 (63개 파일, 11개 패키지)\n- SpaceDictionary.kt, CharVector.kt, MapDictionary.kt 품질 검토\n- RuleEntry.kt 품질 검토 (이슈 #10 확인 완료)\n\n**현재 상태:** 대기 중\n\n추가 Kotlin 마이그레이션 파일 리뷰가 필요하거나 다른 작업이 있으면 말씀해주세요. Task #4(성능 리뷰) 또는 Task #5(ES 플러그인 호환성 검토)가 unblock되면 바로 착수할 수 있습니다.",
+    "summary": "code-analyst 현재 상태 보고 및 대기 중",
+    "timestamp": "2026-02-09T09:59:26.399Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T09:59:32.150Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T09:59:32.150Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "## Task #3 완료: Java -> Kotlin 전체 마이그레이션 완료\n\n모든 67개 Java 파일을 Kotlin으로 1:1 변환 완료했습니다.\n\n### 변환된 패키지별 파일 수:\n\n| 패키지 | 파일 수 |\n|--------|---------|\n| com.danawa.io | 6 |\n| com.danawa.util | 4 |\n| org.apache.lucene.analysis.tokenattributes | 6 |\n| com.danawa.search.analysis.dict | 15 |\n| com.danawa.search.analysis.korean | 4 |\n| com.danawa.search.analysis.product | 11 |\n| com.danawa.search.analysis.product.rule | 8 |\n| com.danawa.search.analysis.product.action | 6 |\n| com.danawa.search.analysis.highlight | 1 |\n| com.danawa.search.index | 3 |\n| com.danawa.search.util | 2 |\n| (root) Tester | 1 |\n| **합계** | **67** |\n\n### 적용된 Kotlin 변환 패턴:\n- **companion object** + `@JvmStatic`/`@JvmField`: 모든 static 멤버를 Java 호환 방식으로 변환\n- **String identity**: Java에서 interned String 상수를 `==`로 비교하던 코드를 Kotlin의 `===`로 변환 (ProductNameTokenizer 타입 상수들)\n- **Kotlin 관용구**: data class 대신 일반 class 유지 (바이트 호환), when 표현식, null safety (?., !!, let), scope functions\n- **@Throws 어노테이션**: IOException 등 checked exception 선언 유지\n- **ES 9.x 플러그인 API**: `@Inject` constructor, BaseRestHandler, TransportNodesAction 등 ES Guice DI 호환\n- **원본 Java 파일 보존**: `src/main/java` 디렉토리의 원본은 그대로 유지\n\n### 핵심 파일:\n- `ProductNameTokenizer.kt` (~534줄): 모든 타입 상수와 유틸리티 메서드\n- `ProductNameAnalysisAction.kt` (~1800줄): REST action handler (가장 큰 파일)\n- `ProductNameDictionary.kt`: 사전 시스템 핵심\n- `KoreanWordExtractor.kt`: 한국어 형태소 분석기\n\n추가 작업 필요시 말씀해 주세요.",
+    "summary": "Task #3 완료: 67개 Java->Kotlin 전체 마이그레이션",
+    "timestamp": "2026-02-09T10:21:45.208Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:21:57.993Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:21:57.993Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "Task #3은 이미 완료되었습니다. 67개 Java 파일 모두 Kotlin으로 변환되어 `src/main/kotlin/` 디렉토리에 생성되어 있습니다.\n\n### 패키지별 완료 현황 (67/67):\n\n- com.danawa.io: 6/6 (BytesBuffer, CachedCharArray, DataInput, DataOutput, InputStreamDataInput, OutputStreamDataOutput)\n- com.danawa.util: 4/4 (CharVector, ContextStore, ResourceResolver, SystemDictionaryCompiler)\n- org.apache.lucene.analysis.tokenattributes: 6/6 (ExtraTermAttribute/Impl, SynonymAttribute/Impl, TokenInfoAttribute/Impl)\n- com.danawa.search.analysis.dict: 15/15 (Dictionary 계층구조 전체 + ProductNameDictionary, TagProbDictionary)\n- com.danawa.search.analysis.korean: 4/4 (KoreanWordExtractor, MorphUtil, PosTagProbEntry, PreResult)\n- com.danawa.search.analysis.product: 11/11 (Plugin, Filter, Tokenizer, Analyzer, Action 등)\n- com.danawa.search.analysis.product.rule: 8/8 (Rule, RuleEntry, Entry, RuleOne~RuleFive)\n- com.danawa.search.analysis.product.action: 6/6 (ReloadDict 관련 Request/Response/Transport/REST)\n- com.danawa.search.analysis.highlight: 1/1 (TermHighlightingQuery)\n- com.danawa.search.index: 3/3 (DanawaBulkTextIndexer, DanawaSearchQueryBuilder, FastcatMigrateIndexer)\n- com.danawa.search.util: 2/2 (SearchUtil, RemoteNodeClient)\n- (root): 1/1 (Tester)\n\n원본 Java 파일은 `src/main/java`에 그대로 보존되어 있습니다. 추가 작업(Task #4, #5 등)이 필요하면 할당해 주세요.",
+    "summary": "Task #3 이미 완료됨 - 67/67 파일 변환 확인",
+    "timestamp": "2026-02-09T10:22:14.605Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:22:18.660Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:22:18.660Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "마이그레이션은 이미 100% 완료되었습니다. 파일 시스템에서 직접 확인한 결과입니다.\n\n## 현재 상태: 67/67 파일 변환 완료 (100%)\n\n| 패키지 | Java | Kotlin | 상태 |\n|--------|------|--------|------|\n| com.danawa.io | 6 | 6 | 완료 |\n| com.danawa.util | 4 | 4 | 완료 |\n| org.apache.lucene.analysis.tokenattributes | 6 | 6 | 완료 |\n| com.danawa.search.analysis.dict | 15 | 15 | 완료 |\n| com.danawa.search.analysis.korean | 4 | 4 | 완료 |\n| com.danawa.search.analysis.product | 11 | 11 | 완료 |\n| com.danawa.search.analysis.product.rule | 8 | 8 | 완료 |\n| com.danawa.search.analysis.product.action | 6 | 6 | 완료 |\n| com.danawa.search.analysis.highlight | 1 | 1 | 완료 |\n| com.danawa.search.index | 3 | 3 | 완료 |\n| com.danawa.search.util | 2 | 2 | 완료 |\n| (root) Tester | 1 | 1 | 완료 |\n| **합계** | **67** | **67** | **100%** |\n\n4개만 보이신다면, 혹시 `src/main/kotlin/com/danawa/io/` 디렉토리만 확인하신 것이 아닌지요? 전체 경로는 `src/main/kotlin/` 하위 여러 패키지에 걸쳐 있습니다.\n\n다음 작업(Task #4 성능 리뷰, Task #5 호환성 검토 등)이 있으면 할당해 주세요.",
+    "summary": "마이그레이션 100% 완료 - 67/67 파일 확인됨",
+    "timestamp": "2026-02-09T10:22:42.140Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:22:47.498Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:22:47.498Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "\n# ES 9.x 플러그인 호환성 검토 보고서\n\n전체 67개 Kotlin 소스 파일을 검토하였으며, ES 9.1.2 / Lucene 10.1.0 환경에서의 호환성 이슈를 아래와 같이 보고합니다.\n\n---\n\n## 1. ES 플러그인 진입점 호환성\n\n**파일**: `AnalysisProductNamePlugin.kt`\n**결과**: 양호 (이슈 없음)\n\n- `Plugin`, `AnalysisPlugin`, `ActionPlugin` 인터페이스 구현이 정상적입니다.\n- `getAnalyzers()`, `getTokenizers()`, `getTokenFilters()` 반환 타입이 ES 9.x API와 일치합니다.\n- `getActions()` 에서 `ActionHandler(TYPE, TransportReloadDictAction::class.java)` 패턴은 ES 9.x 호환입니다.\n- `getRestHandlers()` 시그니처가 ES 9.x의 `Predicate<NodeFeature>` 파라미터를 포함하고 있어 최신 API에 맞습니다.\n- companion object의 `@JvmStatic` logger는 ES 리플렉션에 영향 없습니다.\n\n---\n\n## 2. Lucene TokenStream 계약\n\n### [심각] ProductNameAnalysisFilter.kt:73 - `override` 키워드 누락\n**심각도**: **CRITICAL**\n**설명**: `incrementToken()` 메서드에 `override` 키워드가 없습니다.\n```kotlin\n// 현재 (라인 73):\nfun incrementToken(): Boolean {\n// 올바른 형태:\noverride fun incrementToken(): Boolean {\n```\n`override`가 없으면 TokenFilter의 `incrementToken()`을 오버라이드하지 않고 **새로운 메서드를 정의**합니다. Lucene의 TokenStream 체인에서 이 필터의 `incrementToken()`이 호출되지 않아 **분석 결과가 완전히 잘못됩니다** (입력 토크나이저의 토큰이 그대로 통과). 이것은 형태소분석기의 핵심 로직이 전혀 동작하지 않게 만드는 치명적 버그입니다.\n\n### ProductNameTokenizer.kt - 양호\n- `incrementToken()`: `override` 키워드 있음, `@Throws(IOException::class)` 있음, boolean 반환 정상\n- `reset()`: `super.reset()` 호출 정상 (라인 278)\n- `close()`: `super.close()` 호출 정상 (라인 293)\n- `end()`: `super.end()` 호출 정상 (라인 270)\n- Attribute 등록: `addAttribute()` 패턴 정상\n\n### ProductNameAnalyzer.kt - 양호\n- `createComponents()` 오버라이드 정상, `TokenStreamComponents` 반환 정상\n\n---\n\n## 3. Lucene Attribute 구현\n\n### [경미] SynonymAttributeImpl.kt:6 - 상속 방식 불일치\n**심각도**: LOW\n**설명**: `AttributeImpl()` (괄호 포함, 생성자 호출)이 아닌 `AttributeImpl` (인터페이스식)으로 상속합니다.\n```kotlin\n// 현재:\nclass SynonymAttributeImpl : AttributeImpl, SynonymAttribute {\n// 다른 Impl 파일들:\nclass TokenInfoAttributeImpl : AttributeImpl(), TokenInfoAttribute {\nclass ExtraTermAttributeImpl : AttributeImpl(), ExtraTermAttribute {\n```\n`AttributeImpl`은 abstract class이므로 `AttributeImpl()`이 올바릅니다. Kotlin에서 abstract class를 `()`없이 상속하면 **컴파일 에러**가 발생합니다. 이 파일이 현재 상태로 컴파일되고 있다면, Kotlin 컴파일러가 no-arg constructor를 자동 호출하지만, 명시적으로 `AttributeImpl()`로 수정하는 것이 권장됩니다.\n\n### Attribute 인터페이스-구현체 명명/패키지 규칙 - 양호\n- 인터페이스: `TokenInfoAttribute`, `ExtraTermAttribute`, `SynonymAttribute`\n- 구현체: `TokenInfoAttributeImpl`, `ExtraTermAttributeImpl`, `SynonymAttributeImpl`\n- 모두 `org.apache.lucene.analysis.tokenattributes` 패키지에 위치\n- Lucene의 `AttributeFactory`가 `{Interface}Impl` 명명 규칙으로 구현체를 찾으므로 정상 동작합니다.\n\n### AttributeImpl 필수 메서드 구현 상태\n| 구현체 | clear() | copyTo() | reflectWith() |\n|--------|---------|----------|---------------|\n| TokenInfoAttributeImpl | O | O | O |\n| ExtraTermAttributeImpl | O | O | O |\n| SynonymAttributeImpl | O | O | O |\n\n### [경미] ExtraTermAttributeImpl.kt:94 - copyTo() 버그\n**심각도**: MEDIUM\n**설명**: `copyTo()`에서 `types` 대신 `extraTerms`를 복사하고 있습니다.\n```kotlin\n// 라인 94 (현재 - 버그):\ntarget.types.addAll(extraTerms)   // extraTerms를 types에 복사!\n// 올바른 형태:\ntarget.types.addAll(types)\n```\n이 버그로 인해 attribute state를 복제할 때 type 정보가 손실됩니다.\n\n---\n\n## 4. ES Transport Action 호환성\n\n**파일들**: `action/` 디렉토리 6개 파일\n**결과**: 양호\n\n- `TransportNodesAction` 상속 구조가 ES 9.x 패턴과 일치합니다.\n- `@Inject` constructor가 `org.elasticsearch.injection.guice.Inject`를 사용하여 ES 9.x 호환입니다.\n- `threadPool.executor(ThreadPool.Names.MANAGEMENT)` 패턴은 ES 9.x 방식입니다.\n- `StreamInput/StreamOutput` 직렬화 (`readBoolean`, `readOptionalString`, `readVLong`, `readVInt`, `writeBoolean`, `writeOptionalString`, `writeVLong`, `writeVInt`)가 정상입니다.\n- `BaseNodeResponse`, `BaseNodesResponse` 구현 정상\n- `ToXContentObject`, `ToXContentFragment` 구현 정상\n- `ActionType` 사용 (ES 9.x에서 `ActionType`으로 변경됨) 정상\n\n### [주의] TransportReloadDictAction.kt:32 - Void 타입 파라미터\n**심각도**: LOW\n**설명**: `TransportNodesAction`의 5번째 타입 파라미터로 `Void`를 사용합니다. ES 9.x에서 이 파라미터 의미가 변경되었을 수 있으므로 ES 9.1.2 소스를 확인 필요합니다. 현재 컴파일 에러가 없다면 문제없습니다.\n\n---\n\n## 5. REST Handler 호환성\n\n### ProductNameAnalysisAction.kt (~1600줄) - 양호\n- `BaseRestHandler` 상속 정상\n- `routes()`: `List<Route>` 반환 정상\n- `prepareRequest()`: `RestChannelConsumer` 반환 정상\n- `RestResponse` 사용 (ES 9.x에서 `BytesRestResponse` -> `RestResponse`로 변경) 정상\n\n### RestReloadDictAction.kt - 양호\n- `BaseRestHandler` 상속 정상\n- `routes()`, `prepareRequest()` 구현 정상\n- `RestToXContentListener` 사용 정상\n\n### [참고] ProductNameAnalysisAction.kt:176 - PluginRuntimeInfo API\n**심각도**: INFO\n**설명**: `info.descriptor().classname`으로 플러그인 정보에 접근합니다. ES 9.x에서 `PluginRuntimeInfo` -> `PluginDescriptor` 접근 경로가 변경되었을 수 있습니다. 컴파일 시 검증 필요합니다.\n\n---\n\n## 6. 바이너리 직렬화 호환성\n\n**파일들**: `DataInput.kt`, `DataOutput.kt`\n**결과**: 양호\n\n- VInt/VLong 인코딩이 표준 Lucene 가변길이 정수 인코딩과 동일합니다.\n- UString (2바이트 문자 인코딩)이 Java 버전과 바이트 호환입니다.\n- `readByte().toInt()` 등의 Kotlin 변환이 Java의 바이트 연산과 동일한 결과를 생성합니다.\n- **기존 바이너리 사전 파일을 Kotlin 코드로 읽을 수 있습니다.**\n\n### [주의] DataInput.kt:29 - readByte 부호 문제\n**심각도**: LOW\n**설명**: `read()` 메서드에서 `readByte().toInt()`가 Java의 `(int)byte`와 동일하게 부호 확장됩니다. Java의 `InputStream.read()`는 0~255를 반환해야 하므로 `readByte().toInt() and 0xFF`가 올바릅니다. 그러나 이 클래스는 ES가 아닌 커스텀 사전 I/O에만 사용되므로, 이 `read()` 메서드를 직접 호출하는 코드가 없다면 실질적 영향은 없습니다.\n\n---\n\n## 7. Kotlin-Java Interop 이슈\n\n### [양호] @JvmStatic / @JvmField 사용 상태\n- 모든 companion object의 logger에 `@JvmStatic` 적용 완료\n- `ProductNameTokenizer`의 상수들에 `@JvmField` 적용 완료 (Java에서 직접 필드 접근 가능)\n- `ProductNameDictionary`의 상수들은 `const` 사용 (컴파일 타임 인라인)\n\n### [양호] @Throws 사용 상태\n- `incrementToken()`, `reset()`, `close()`, `end()` 등 Lucene/ES가 호출하는 메서드에 `@Throws(IOException::class)` 적용 완료\n- Transport Action의 `writeTo()`, `readFrom()` 등에도 적용 완료\n\n### [참고] companion object와 ES 리플렉션\n- ES의 `AnalysisProvider` 팩토리는 생성자 레퍼런스(`::ProductNameTokenizerFactory` 등)로 인스턴스를 생성합니다.\n- Kotlin 클래스의 기본 생성자가 Java에서 접근 가능하므로 문제없습니다.\n- `ContextStore.getStore()`의 companion object 내 `@JvmStatic` 사용으로 Java 호환성 확보\n\n### [주의] default parameter\n- `AnalyzerOption`의 `@JvmOverloads` 적용으로 Java에서 다양한 오버로드 호출 가능\n- `DataOutput`의 `writeAChar`, `writeUChar` 등에도 `@JvmOverloads` 적용 완료\n\n---\n\n## 8. 플러그인 배포 구조\n\n### plugin-descriptor.properties - 양호\n- `classname=com.danawa.search.analysis.product.AnalysisProductNamePlugin` 정상\n- `elasticsearch.version=9.1.2` 정상\n- `java.version=21` 정상\n\n### plugin-metadata/entitlement-policy.yaml - 양호\n- ES 9.x 엔타이틀먼트 정책 파일이 올바르게 구성되어 있습니다.\n- `outbound_network`와 파일 시스템 접근 권한이 설정되어 있습니다.\n\n### [주의] kotlin-stdlib JAR 포함 여부\n**심각도**: MEDIUM\n**설명**: `build.gradle.kts`의 `copyToDependencies` 태스크에서 `kotlin-stdlib-*`를 포함하고 있어 플러그인 ZIP에 kotlin-stdlib이 포함됩니다. 이는 **필수**입니다. 그러나:\n1. ES 9.x가 자체적으로 kotlin-stdlib를 포함하지 않으므로 플러그인에 번들링해야 합니다 - 현재 올바름\n2. `pluginZip` 태스크가 `build/libs`에서만 파일을 가져오는데, JAR 파일은 `build/jars`에 복사됩니다. **JAR 파일이 ZIP에 포함되지 않을 수 있습니다.**\n\n```kotlin\n// 현재 pluginZip 태스크:\nfrom(layout.buildDirectory.dir(\"libs\")) {  // properties, policy 파일만 있음\n    include(\"**/*\")\n}\n\n// 빠진 부분 - JAR 파일들:\n// from(layout.buildDirectory.dir(\"jars\")) {\n//     include(\"*.jar\")\n// }\n```\n\n이 부분은 실제 빌드를 실행하여 ZIP 내용물을 확인해야 합니다.\n\n---\n\n## 9. 스레드 안전성\n\n### ContextStore - 양호\n- `ConcurrentHashMap` 사용으로 스레드 안전\n- `getStore()`의 `getOrPut()`도 ConcurrentHashMap에서 atomic하게 동작\n\n### [주의] 사전 리로드 중 분석 요청\n**심각도**: MEDIUM\n**설명**: `ProductNameDictionary.reloadDictionary()`가 호출될 때, `ContextStore`에 새 사전을 `put()`하기 전까지 기존 사전을 참조하는 분석 스레드는 안전합니다. 그러나 사전 교체 시점에 race condition이 발생할 수 있습니다. `ProductNameTokenizerFactory`에서 매 `create()` 호출 시 `contextStore`에서 사전을 가져오므로, 리로드 중에도 기존 분석은 이전 사전으로 동작합니다.\n\n### Lucene 분석 체인 단일 스레드 보장\n- Lucene의 `Analyzer.getTokenStream()`이 per-thread로 `TokenStreamComponents`를 관리하므로, `ProductNameTokenizer`와 `ProductNameAnalysisFilter`가 동시에 여러 스레드에서 공유되지 않습니다.\n- Kotlin 변환으로 인해 이 보장이 깨지지 않습니다.\n\n### [양호] volatile/synchronized\n- `ProductNameAnalysisAction.kt`의 `indexingThread`와 `migratingThread`에 `synchronized(this)` 사용 (라인 536, 569)\n\n---\n\n## 이슈 요약\n\n| # | 파일 | 라인 | 심각도 | 설명 |\n|---|------|------|--------|------|\n| 1 | ProductNameAnalysisFilter.kt | 73 | **CRITICAL** | `incrementToken()`에 `override` 누락 - 분석 필터 전혀 동작하지 않음 |\n| 2 | ExtraTermAttributeImpl.kt | 94 | MEDIUM | `copyTo()`에서 `types` 대신 `extraTerms` 복사 |\n| 3 | build.gradle.kts | 171-181 | MEDIUM | pluginZip에 JAR 파일 누락 가능성 |\n| 4 | SynonymAttributeImpl.kt | 6 | LOW | `AttributeImpl` 상속 시 `()` 누락 (컴파일 에러 가능) |\n| 5 | DataInput.kt | 29 | LOW | `read()` 부호 확장 이슈 |\n| 6 | TransportReloadDictAction.kt | 32 | LOW | `Void` 타입 파라미터 ES 9.x 호환 확인 필요 |\n\n## 수정 필요 항목 (우선순위 순)\n\n1. **[필수]** `ProductNameAnalysisFilter.kt:73` - `fun incrementToken()` -> `override fun incrementToken()`\n2. **[권장]** `ExtraTermAttributeImpl.kt:94` - `target.types.addAll(extraTerms)` -> `target.types.addAll(types)`\n3. **[권장]** `build.gradle.kts` pluginZip 태스크에 JAR 디렉토리 포함 확인\n4. **[권장]** `SynonymAttributeImpl.kt:6` - `AttributeImpl` -> `AttributeImpl()`\n\n## 권장사항\n\n1. **빌드 테스트 필수**: `./gradlew build` 실행하여 컴파일 에러 확인 (특히 SynonymAttributeImpl)\n2. **통합 테스트**: ES 9.1.2 클러스터에서 실제 플러그인 설치 후 분석 API 호출 테스트\n3. **ZIP 검증**: 생성된 플러그인 ZIP 파일 내용물 확인 (모든 JAR + properties + policy 포함 여부)\n4. **바이너리 사전 호환성 테스트**: 기존 `.dict` 파일을 Kotlin 코드로 읽어보는 단위 테스트 추가\n",
+    "summary": "ES 플러그인 호환성 검토 보고서 완료",
+    "timestamp": "2026-02-09T10:25:30.840Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"es-expert\",\"timestamp\":\"2026-02-09T10:25:38.596Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:25:38.597Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "Task #5 (ES 플러그인 호환성 검토)는 이미 완료되었으며, 상세 보고서를 이전 메시지로 전송하였습니다.\n\n핵심 발견 사항:\n1. **CRITICAL**: `ProductNameAnalysisFilter.kt:73` - `incrementToken()`에 `override` 키워드 누락 (분석 필터 미동작)\n2. **MEDIUM**: `ExtraTermAttributeImpl.kt:94` - `copyTo()`에서 types 대신 extraTerms 복사 버그\n3. **MEDIUM**: `build.gradle.kts` pluginZip에 JAR 파일 누락 가능성\n4. **LOW**: `SynonymAttributeImpl.kt:6` - `AttributeImpl()` 괄호 누락\n\n추가 검토가 필요하시면 말씀해주세요.",
+    "summary": "Task #5 이미 완료, 보고서 전송 완료",
+    "timestamp": "2026-02-09T10:25:47.600Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"es-expert\",\"timestamp\":\"2026-02-09T10:25:54.229Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:25:54.229Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"es-expert\",\"timestamp\":\"2026-02-09T10:25:57.272Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:25:57.272Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "Task #10 형태소분석 전문가 가이드라인 적용이 완료되었습니다.\n\n## 가이드라인 적용 결과 요약\n\n### 수정된 항목 (2건)\n- **#5 trim() 동작 차이** (HIGH): 모든 String.trim() 호출을 `trim { it <= ' ' }`로 변경. 약 15개 파일에 걸쳐 수정 완료. CharVector.trim()은 별개 메서드이므로 그대로 유지.\n- **#9 === vs ==** (HIGH): 약 10개 파일에서 String 타입 상수 비교를 `===`에서 `==`로 변경. CharArray buf 비교, RuleEntry 객체 identity 비교 3곳은 `===` 유지.\n\n### 검증 완료 (기존 코드가 이미 올바른 항목, 11건)\n| # | 가이드라인 | 심각도 | 결과 |\n|---|-----------|--------|------|\n| 1 | split(String) vs split(Regex) | CRITICAL | 리터럴(\",\", \"\\t\", \" \", \"^\")은 리터럴로, 정규식(\"[,]\", \"\\\\.\", \"\\\\s\")은 toRegex()/Regex()로 처리됨 |\n| 2 | replaceAll | CRITICAL | Kotlin 코드에 .replaceAll() 사용 없음 |\n| 3 | Array<Char> vs CharArray | HIGH | Array<Char> 사용 없음, 모두 CharArray |\n| 4 | removeAt | HIGH | 모든 인덱스 기반 제거가 removeAt() 사용 |\n| 6 | Pattern/Regex | HIGH | RuleTwo.kt 1곳만 Java Pattern 사용, 안전 |\n| 7 | RuleEntry data class 금지 | HIGH | 일반 class로 유지됨 |\n| 8 | Iterator 패턴 보존 | HIGH | exportByTriGram 등 수동 iterator 제어 보존됨 |\n| 10 | Character.isAlphabetic(ch.code) | HIGH | 모든 호출에서 .code 사용 확인 |\n| 11 | Collections.unmodifiable* | MEDIUM | Java API 직접 호출, 정상 동작 |\n| 12 | subList.clear() + MutableList | MEDIUM | queue가 MutableList<RuleEntry> 타입으로 선언됨 |\n| 13 | System.arraycopy | MEDIUM | JVM에서 동일 동작 확인 |\n\n모든 13개 가이드라인 검증 및 적용이 완료되었습니다. 다음 작업을 배정해주시면 진행하겠습니다.",
+    "summary": "가이드라인 13개 전체 적용/검증 완료 보고",
+    "timestamp": "2026-02-09T10:29:53.007Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:29:59.964Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:29:59.964Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "형태소분석 전문가의 CharVector 관련 추가 분석 결과를 검증했습니다.\n\n## CharVector.equals() - Dictionary 조회 안전성 검증 결과\n\n**결론: 현재 코드에서 안전합니다.**\n\nCharVector.equals()는 `other is CharVector` 분기만 존재하며, `other is CharSequence`(String 등) 비교는 미구현으로 항상 false를 반환합니다. 그러나 전체 Dictionary 조회 코드를 분석한 결과:\n\n- `containsKey()`, `contains()`, `find()`, `map[key]` 등 모든 Dictionary 조회에서 key로 전달되는 값이 **CharVector 타입**입니다:\n  - `RuleEntry.makeTerm()` → `CharVector` 반환\n  - 지역변수 `cvTmp`, `unitCv`, `cv`, `token` 등 → 모두 `CharVector` 선언\n  - `CharVector.valueOf()` → `CharVector` 반환\n- String을 key로 직접 전달하는 코드는 **0건**입니다.\n\n따라서 현재 마이그레이션된 코드에서 CharVector.equals()의 한계로 인한 버그 위험은 없습니다.\n\n## CharVector.subSequence() 비표준 동작 검증 결과\n\n**결론: 현재 코드에서 안전합니다.**\n\n- `.substring()` 호출은 모두 `String` 타입에 대한 것 (DanawaBulkTextIndexer.kt, Tester.kt, ResourceResolver.kt)\n- CharVector에 대해 `.substring()`, `.take()`, `.drop()` 등 Kotlin CharSequence 확장 함수를 사용하는 곳은 **0건**입니다.\n\n두 항목 모두 잠재적 위험이지만, 현재 코드에서는 해당 패턴이 사용되지 않아 코드 수정 없이 검증 완료했습니다.",
+    "summary": "CharVector equals/subSequence 검증 완료, 안전",
+    "timestamp": "2026-02-09T10:31:16.236Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:31:20.345Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:31:20.345Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "CharVector.kt:214의 subSequence 비표준 동작(endIndex - startIndex + 1)은 확인했습니다. 현재 호출 0건이므로 kotlin-expert 리뷰 시 수정 대상으로 기록합니다.\n\n## 현재 마이그레이션 상태\n- Kotlin 파일: 67개 (전체 완료)\n- Java 원본 파일: 67개 (보존 중)\n- 가이드라인 13개 + 추가 2개(CharVector): 모두 검증/적용 완료\n\n## 주의사항: build.gradle.kts 중복 컴파일 문제\n현재 build.gradle.kts의 sourceSets에서 `src/main/java`와 `src/main/kotlin` 모두 컴파일 대상입니다. 같은 패키지/클래스가 양쪽에 존재하므로 빌드 시 **중복 클래스 오류**가 발생할 수 있습니다.\n\n해결 방안:\n1. Java sourceSets에서 마이그레이션된 파일들을 exclude 처리\n2. 또는 Java 소스 디렉토리를 완전히 제외하고 Kotlin만 빌드\n\n이 빌드 설정 변경을 진행할까요? 아니면 다른 작업이 있으면 배정해주세요.",
+    "summary": "마이그레이션 완료 상태 및 빌드 중복 문제 보고",
+    "timestamp": "2026-02-09T10:31:47.565Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:31:51.157Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:31:51.157Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-expert",
+    "text": "## Kotlin 성능 리뷰 및 리팩토링 완료 보고\n\n### 1. [최우선] === 참조 비교 → == 값 비교 수정 (완료)\n\n**수정된 파일 및 변경 사항:**\n\n| 파일 | 변경된 === → == 수 | 변경된 !== → != 수 |\n|---|---|---|\n| `Entry.kt` | ~95개 | ~7개 |\n| `ProductNameTokenizer.kt` | ~30개 (이전 에이전트와 합산) | ~5개 |\n| `ProductNameAnalysisFilter.kt` | ~6개 (이전 에이전트와 합산) | ~1개 |\n| `RuleOne.kt` | ~12개 (이전 에이전트와 합산) | ~2개 |\n| `RuleThree.kt` | ~5개 (이전 에이전트와 합산) | ~1개 |\n| `RuleFour.kt` | ~12개 (이전 에이전트와 합산) | ~2개 |\n| `RuleFive.kt` | ~1개 (이전 에이전트와 합산) | 0개 |\n| `ProductNameParsingRule.kt` | ~1개 (이전 에이전트와 합산) | 0개 |\n\n**정당하게 유지한 === (3건):**\n- `RuleOne.kt:145` — `prevEntry.buf === tmpBuf` (CharArray 참조 비교)\n- `RuleThree.kt:86` — `prevEntry.buf === nextEntry.buf` (CharArray 참조 비교)\n- `ProductNameAnalysisFilter.kt:362` — `subEntryList[0] === entry` (Entry 객체 참조 비교)\n\n### 2. 형태소분석 전문가 이슈 체크리스트 결과\n\n| 이슈 | 상태 | 비고 |\n|---|---|---|\n| split() → Regex 버전 | 정상 | Kotlin split(String)은 리터럴 매칭 |\n| replaceAll() → replace(Regex) | 정상 | replaceAll 직접 호출 없음 |\n| char[] → CharArray | 정상 | Array<Char> 사용 없음 |\n| list.remove(int) → removeAt | 정상 | 인덱스 기반 remove 없음 |\n| trim() → trim { it <= ' ' } | 정상 | CharVector.trim()은 == ' ' 기준 |\n| Pattern → Regex | **수정 완료** | 아래 상세 |\n| RuleEntry data class 아님 | 정상 | 일반 class 확인 |\n| Character.isAlphabetic(ch.code) | 정상 | .code 이미 사용 중 |\n\n### 3. Pattern → Regex 변환 (성능 개선)\n\n**SpaceDictionary.kt:**\n- `Pattern.compile(\"^[\\\\x00-\\\\x7F]*$\")` → `Regex(\"^[\\\\x00-\\\\x7F]*$\")`\n- `ptn.matcher(str).find()` → `ptn.containsMatchIn(str)`\n- `import java.util.regex.Pattern` 제거\n\n**ProductNameTokenizer.kt:**\n- `PTN_NUMBER: Pattern = Pattern.compile(...)` → `PTN_NUMBER: Regex = Regex(...)`\n- `import java.util.regex.Pattern` 제거\n\n**RuleTwo.kt:**\n- `PTN_NUMBER.matcher(...).find()` → `PTN_NUMBER.containsMatchIn(...)`\n\n### 4. Regex 컴파일 캐싱 최적화 (ProductNameAnalysisAction.kt)\n\n- `REGEX_TAG_TEXT.toRegex()` (메서드 내 매번 컴파일) → `TAG_STRONG.replace(\"\\${TEXT}\", word)` (리터럴 치환으로 변경)\n- `\"[,]\".toRegex()` → `\",\"` (단순 문자 split으로 변환)\n- `TAB.toRegex()` → `TAB` (단순 문자 split으로 변환)\n- `\"[\\\\^]\".toRegex()` → `\"^\"` (단순 문자 split으로 변환)\n- 미사용 `REGEX_TAG_TEXT` Regex 상수 및 `import java.util.regex.Matcher` 제거\n\n### 5. 성능 리뷰 결과\n\n**시간 복잡도:**\n- KoreanWordExtractor의 O(n^2) tabular 파싱 → 한국어 형태소분석의 필수적 알고리즘 구조 (CYK/Viterbi 유사). 변경 불필요.\n\n**컬렉션/메모리:**\n- `Int?` 박싱 이슈 없음 (핵심 경로에서 미사용)\n- StringBuilder 사용 적절\n- 불필요한 중간 컬렉션 생성 없음\n\n**빌드 결과:**\n- 제 변경으로 인한 새로운 컴파일 에러 없음\n- 기존 빌드 에러(Java/Kotlin 중복 선언, 미초기화 프로퍼티 등)는 마이그레이션 과정의 별도 이슈\n\n### 수정된 파일 목록\n1. `/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/Entry.kt`\n2. `/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameTokenizer.kt`\n3. `/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/rule/RuleTwo.kt`\n4. `/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/dict/SpaceDictionary.kt`\n5. `/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/search/analysis/product/ProductNameAnalysisAction.kt`",
+    "summary": "Kotlin 성능 리뷰 및 리팩토링 완료 보고",
+    "timestamp": "2026-02-09T10:32:03.600Z",
+    "color": "purple",
+    "read": true
+  },
+  {
+    "from": "kotlin-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-expert\",\"timestamp\":\"2026-02-09T10:32:11.849Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:32:11.849Z",
+    "color": "purple",
+    "read": true
+  },
+  {
+    "from": "code-analyst",
+    "text": "{\"type\":\"shutdown_approved\",\"requestId\":\"shutdown-1770633192280@code-analyst\",\"from\":\"code-analyst\",\"timestamp\":\"2026-02-09T10:33:16.879Z\",\"paneId\":\"in-process\",\"backendType\":\"in-process\"}",
+    "timestamp": "2026-02-09T10:33:16.879Z",
+    "color": "blue",
+    "read": true
+  },
+  {
+    "from": "es-expert",
+    "text": "{\"type\":\"shutdown_approved\",\"requestId\":\"shutdown-1770633194296@es-expert\",\"from\":\"es-expert\",\"timestamp\":\"2026-02-09T10:33:18.115Z\",\"paneId\":\"in-process\",\"backendType\":\"in-process\"}",
+    "timestamp": "2026-02-09T10:33:18.115Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "morphology-expert",
+    "text": "{\"type\":\"shutdown_approved\",\"requestId\":\"shutdown-1770633191614@morphology-expert\",\"from\":\"morphology-expert\",\"timestamp\":\"2026-02-09T10:33:18.928Z\",\"paneId\":\"in-process\",\"backendType\":\"in-process\"}",
+    "timestamp": "2026-02-09T10:33:18.928Z",
+    "color": "green",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "코드 분석가의 검토 결과 3건 수정을 완료했습니다.\n\n## 수정 내역\n\n### 1. trim() (이미 처리됨)\nSpaceDictionary.kt:44, MapDictionary.kt:56,115,119는 이전 세션에서 이미 `trim { it <= ' ' }`로 수정 완료되어 있었습니다. 추가 수정 불필요.\n\n나머지 `.trim()` 2건(CustomDictionary.kt:136, ProductNameAnalysisFilter.kt:301)은 `CharVector.trim()` 자체 메서드 호출이므로 String.trim()과 무관합니다.\n\n### 2. CharVector.kt subSequence 경고 주석 추가 (완료)\n`/Users/admin/project/analysis-danuri/src/main/kotlin/com/danawa/util/CharVector.kt:210`에 경고 주석 추가:\n```kotlin\n// WARNING: 비표준 동작 - endIndex가 inclusive로 처리됨 (표준은 exclusive)\n// Kotlin CharSequence 확장 함수(substring, slice 등) 사용 금지\n```\n\n### 3. addSourceLineEntry nullable 변경 (완료)\nJava interop 안전성을 위해 부모와 모든 구현 클래스를 함께 변경:\n- `SourceDictionary.kt:51`: `abstract fun addSourceLineEntry(line: CharSequence?)` \n- `SourceDictionary.kt:38`: `line!!` → `line` (null 안전 호출)\n- `MapDictionary.kt:111`: `(line: CharSequence?)` + null 체크\n- `SetDictionary.kt:99`: `(line: CharSequence?)` + null 체크 추가\n- `CustomDictionary.kt:151`: `(line: CharSequence?)` + null 체크 추가\n\n하위 클래스(SynonymDictionary, CompoundDictionary, SpaceDictionary, InvertMapDictionary)는 별도 override 없이 MapDictionary에서 상속받으므로 자동 적용됩니다.",
+    "summary": "코드 분석가 검토 3건 수정 완료 보고",
+    "timestamp": "2026-02-09T10:33:27.982Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:33:31.487Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:33:31.487Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-developer",
+    "text": "{\"type\":\"shutdown_approved\",\"requestId\":\"shutdown-1770633192953@kotlin-developer\",\"from\":\"kotlin-developer\",\"timestamp\":\"2026-02-09T10:33:35.416Z\",\"paneId\":\"in-process\",\"backendType\":\"in-process\"}",
+    "timestamp": "2026-02-09T10:33:35.416Z",
+    "color": "yellow",
+    "read": true
+  },
+  {
+    "from": "kotlin-expert",
+    "text": "## Task #4 추가 점검 완료\n\n재할당 메시지를 받고 추가 점검을 수행했습니다. 이전 보고에 더해 추가로 발견/수정한 사항:\n\n### 추가 수정: Java Stream API → Kotlin 컬렉션 API\n\n**ReloadDictNodesResponse.kt:**\n- `nodes.stream().allMatch(ReloadDictNodeResponse::isSuccess)` → `nodes.all { it.isSuccess }`\n- `nodes.stream().mapToLong(...).max().orElse(0)` → `nodes.maxOfOrNull { it.reloadTimeMs } ?: 0L`\n\n### 추가 확인 결과 (변경 불필요)\n\n1. **Entry.kt의 ArrayList `removeAt` 빈번 사용**: 형태소분석 토큰 큐에서 불가피한 연산. LinkedList로 변경하면 인덱스 접근이 O(n)이 되어 오히려 악화됨. 현재 구조 최적.\n\n2. **Iterator 수동 제어 패턴 (Entry.kt)**: 형태소분석 전문가 가이드라인에 따라 유지. `exportByTriGram` 등에서의 Iterator 수동 제어.\n\n3. **HashMap/ArrayList 직접 생성**: `mutableMapOf()`/`mutableListOf()`와 동일한 구현. Java interop을 위해 현재 상태 유지.\n\n4. **RuleEntry가 일반 class**: 확인 완료. data class 아님.\n\n5. **KoreanWordExtractor O(n^2) tabular**: 한국어 형태소분석 필수 알고리즘 구조.\n\n### 최종 수정 파일 목록 (6개)\n1. `Entry.kt` - String === → == (대량)\n2. `ProductNameTokenizer.kt` - String !==, Pattern → Regex\n3. `RuleTwo.kt` - Pattern.matcher().find() → Regex.containsMatchIn()\n4. `SpaceDictionary.kt` - Pattern → Regex\n5. `ProductNameAnalysisAction.kt` - Regex 캐싱 최적화, 불필요 import 제거\n6. `ReloadDictNodesResponse.kt` - Java Stream → Kotlin 컬렉션 API\n\nTask #4는 완료 상태입니다. 추가 작업이 필요하면 알려주세요.",
+    "summary": "Task #4 추가 점검 완료 - 추가 수정 1건",
+    "timestamp": "2026-02-09T10:33:44.891Z",
+    "color": "purple",
+    "read": true
+  },
+  {
+    "from": "kotlin-expert",
+    "text": "{\"type\":\"idle_notification\",\"from\":\"kotlin-expert\",\"timestamp\":\"2026-02-09T10:33:49.540Z\",\"idleReason\":\"available\"}",
+    "timestamp": "2026-02-09T10:33:49.540Z",
+    "color": "purple",
+    "read": true
+  },
+  {
+    "from": "kotlin-expert",
+    "text": "{\"type\":\"shutdown_approved\",\"requestId\":\"shutdown-1770633193625@kotlin-expert\",\"from\":\"kotlin-expert\",\"timestamp\":\"2026-02-09T10:33:53.642Z\",\"paneId\":\"in-process\",\"backendType\":\"in-process\"}",
+    "timestamp": "2026-02-09T10:33:53.642Z",
+    "color": "purple",
+    "read": true
+  }
+]

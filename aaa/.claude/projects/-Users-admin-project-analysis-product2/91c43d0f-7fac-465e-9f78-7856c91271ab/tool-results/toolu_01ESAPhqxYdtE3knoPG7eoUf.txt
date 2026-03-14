@@ -1,0 +1,69 @@
+     1→package com.danawa.search.analysis.product
+     2→
+     3→import com.danawa.search.analysis.dict.ProductNameDictionary
+     4→import com.danawa.util.ContextStore
+     5→import org.apache.lucene.analysis.Analyzer
+     6→import org.apache.lucene.analysis.TokenStream
+     7→import org.apache.lucene.analysis.Tokenizer
+     8→import org.elasticsearch.common.logging.Loggers
+     9→import org.elasticsearch.common.settings.Settings
+    10→import org.elasticsearch.env.Environment
+    11→import org.elasticsearch.index.IndexSettings
+    12→import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider
+    13→import java.io.StringReader
+    14→
+    15→class ProductNameAnalyzerProvider(
+    16→    indexSettings: IndexSettings,
+    17→    env: Environment,
+    18→    name: String,
+    19→    settings: Settings
+    20→) : AbstractIndexAnalyzerProvider<Analyzer>(name) {
+    21→
+    22→    companion object {
+    23→        private val logger = Loggers.getLogger(ProductNameAnalyzerProvider::class.java, "")
+    24→        private val contextStore = ContextStore.getStore(ProductNameDictionary.CONTEXT_STORE_KEY)
+    25→        private var dictionary: ProductNameDictionary? = null
+    26→
+    27→        @JvmStatic
+    28→        fun getAnalyzer(
+    29→            str: String,
+    30→            useForQuery: Boolean,
+    31→            useSynonym: Boolean,
+    32→            useStopword: Boolean,
+    33→            useFullString: Boolean,
+    34→            toUppercase: Boolean
+    35→        ): TokenStream {
+    36→            val option = AnalyzerOption(useForQuery, useSynonym, useStopword, useFullString, toUppercase)
+    37→            val reader = StringReader(str)
+    38→            val tokenizer: Tokenizer = ProductNameTokenizer(dictionary, false)
+    39→            tokenizer.setReader(reader)
+    40→            return ProductNameAnalysisFilter(tokenizer, dictionary, option)
+    41→        }
+    42→    }
+    43→
+    44→    private val analyzer: Analyzer
+    45→
+    46→    init {
+    47→        logger.trace("ProductNameAnalyzerProvider::self {}", this)
+    48→        dictionary = if (contextStore.containsKey(ProductNameDictionary.PRODUCT_NAME_DICTIONARY)) {
+    49→            contextStore.getAs(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, ProductNameDictionary::class.java)
+    50→        } else {
+    51→            val dict = ProductNameDictionary.loadDictionary(env)
+    52→            if (dict != null) {
+    53→                contextStore.put(ProductNameDictionary.PRODUCT_NAME_DICTIONARY, dict)
+    54→            }
+    55→            dict
+    56→        }
+    57→        analyzer = ProductNameAnalyzer(dictionary)
+    58→    }
+    59→
+    60→    override fun get(): Analyzer {
+    61→        logger.trace("ProductNameAnalyzerProvider::get {}", analyzer)
+    62→        return analyzer
+    63→    }
+    64→}
+    65→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

@@ -1,0 +1,147 @@
+---
+title: "2-4 Document Loaders"
+aliases:
+  - "2-4 Document Loader"
+  - "문서 로더"
+tags:
+  - llm-rag
+  - phase2
+  - document-loader
+  - ingestion
+  - metadata
+created: ""
+updated: ""
+phase: "phase2"
+status: "todo"
+difficulty: "중급"
+---
+
+# 2-4 Document Loaders
+
+> [!summary]
+> 다양한 소스 형식을 LangChain 문서 객체로 수집해 RAG 파이프라인에서 사용할 수 있게 만드는 단계가 Document Loader이다. WebBaseLoader/RecursiveUrlLoader/JSONLoader/CSVLoader/PyPDFLoader를 활용하고, ElasticsearchRetriever로 기존 ES 인덱스 문서를 재활용할 수 있다.
+
+## 관련 노트
+- [[2-5 Text Splitters]]
+- [[2-6 Retriever 패턴]]
+- [[2-2 Memory 시스템]]
+- [[Document 보강 전략]]
+- [[ES 인덱스 운영]]
+- [[메타데이터 스키마 관리]]
+
+## 개념 설명
+### WebBaseLoader
+- 단일 URL HTML을 markdown/text로 파싱
+- 간단한 뉴스, 블로그, API 문서 가져오기에 유리
+- 렌더링 기반 페이지에서 텍스트 추출 품질이 다를 수 있음
+
+### RecursiveUrlLoader
+- 시작 URL에서 링크를 재귀적으로 탐색해 문서군 수집
+- depth 및 filter를 조절해 크롤링 범위 관리
+- 내부 링크/외부 링크 정책이 핵심
+
+### JSONLoader
+- JSON 필드를 문서 텍스트 + 메타로 매핑
+- API 응답 캐시를 문서화할 때 유용
+- nested field path 지정이 필요
+
+### CSVLoader
+- 각 행을 문서 단위로 적재
+- 헤더 기반으로 metadata key를 자동 추출 가능
+- 숫자/날짜 컬럼 전처리 필요
+
+### PyPDFLoader
+- PDF 텍스트 추출/페이지 분할에 특화
+- 표, 그림, 다단 텍스트가 섞이면 정렬 이슈가 생길 수 있음
+- 추후 Splitter 단계에서 오버랩/크기 보정 필요
+
+### ElasticsearchRetriever와의 연동
+- 이미 ES에 색인된 문서는 재추출 없이 `ElasticsearchRetriever`로 바로 검색 대상화 가능
+- 장점: 크롤링 인프라를 재사용
+- 단점: 기존 인덱스 매핑 불일치 시 동적 검색결과 정합성 저하
+- 필드명 일치 여부를 loader 단계 이전/이후에 점검
+
+### 메타데이터 관리
+- 필수 메타: `source`, `path`, `chunk_id`, `language`, `category`, `created_at`
+- 선택 메타: `doc_hash`, `version`, `author`, `license`, `effective_date`
+- 중복 처리: `doc_hash` + `source` 기준으로 upsert 정책
+- 권한 관리: tenant/project 태그를 메타로 넣어 ACL 적용
+
+## Mermaid 다이어그램
+```mermaid
+flowchart LR
+  A[WebBase/Recursive/JSON/CSV/PDF] --> B[Document Loader]
+  B --> C[Document + Metadata]
+  D[ES 기존 인덱스] --> E[ElasticsearchRetriever]
+  C --> F[Splitters]
+  E --> F
+  F --> G[Vector/Keyword Index]
+```
+
+## Python 코드 예제
+```python
+from langchain_community.document_loaders import WebBaseLoader, RecursiveUrlLoader, JSONLoader, CSVLoader, PyPDFLoader
+from langchain_elasticsearch import ElasticsearchRetriever
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import ElasticsearchStore
+
+urls = ["https://example.com/docs/overview"]
+
+web_docs = WebBaseLoader(urls).load()
+
+rec = RecursiveUrlLoader(
+    "https://example.com/docs",
+    max_depth=2,
+    exclude_dirs=("/login", "/static", "/assets"),
+)
+recursive_docs = rec.load()
+
+json_loader = JSONLoader(
+    file_path="/tmp/items.json",
+    jq_schema="items[].text",
+    metadata_func=lambda _, doc: {"source": "json", "type": "api"},
+)
+json_docs = json_loader.load()
+
+csv_loader = CSVLoader(file_path="/tmp/products.csv", metadata_columns=["id", "category"])
+csv_docs = csv_loader.load()
+
+pdf_loader = PyPDFLoader("/tmp/spec.pdf")
+pdf_docs = pdf_loader.load()
+
+meta_docs = web_docs + recursive_docs + json_docs + csv_docs + pdf_docs
+for d in meta_docs:
+    d.metadata.setdefault("phase", "phase2")
+    d.metadata.setdefault("lang", "ko")
+
+es_retriever = ElasticsearchRetriever(
+    index_name="legacy-docs",
+    body_builder=lambda query: {"query": {"match": {"content": query}}}
+)
+
+es_retriever.add_documents(meta_docs)
+
+print(len(meta_docs), es_retriever._index_name)
+```
+
+## 비교 표
+| Loader | 장점 | 제한점 | 대표 용도 |
+|---|---|---|---|
+| WebBaseLoader | 빠른 단일 페이지 수집 | JS 렌더링 처리 약함 | 블로그/문서 페이지 |
+| RecursiveUrlLoader | 대규모 문서 구조 수집 | 깊이 과다 시 중복/스팸 | 위키/지식 베이스 |
+| JSONLoader | API/로그 데이터 구조화 | 스키마 불일치 처리 필요 | JSON 기반 사내 데이터 |
+| CSVLoader | 행 단위 매핑 용이 | 텍스트 길이 제약 | 제품 카탈로그 |
+| PyPDFLoader | PDF 내부 텍스트 추출 | 이미지 기반 PDF 한계 | 기술 문서, 매뉴얼 |
+
+## 실습 체크리스트
+- [ ] 수집 대상 사이트의 robots/라이선스를 확인
+- [ ] loader별 인코딩 문제를 UTF-8 기준으로 검증
+- [ ] `doc_id`/`source`를 재현 가능한 방식으로 생성
+- [ ] RecursiveUrlLoader에서 외부 도메인 차단 규칙 적용
+- [ ] JSONLoader jq 표현식이 null을 처리하는지 테스트
+- [ ] CSV 헤더 변경 시 로딩 실패 방지용 스키마 릴리즈 관리
+- [ ] PDF page 분할 오차를 샘플링으로 점검
+- [ ] ES 기존 인덱스와 새 인덱스의 field mapping 비교
+- [ ] 메타데이터 키 네이밍 규칙을 팀 컨벤션에 고정
+- [ ] 중복 문서 업서트 정책을 버전 기반으로 작성
+- [ ] 소스별 처리량 모니터링과 실패 재시도 백오프 구현

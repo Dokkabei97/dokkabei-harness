@@ -1,0 +1,13 @@
+{
+  "id": "11",
+  "subject": "Phase 8: ES Expert 검증",
+  "description": "검증 항목:\n- plugin-descriptor.properties classname 정합성\n- entitlement-policy.yaml 호환성\n- Plugin ZIP에 kotlin-stdlib 포함 확인\n- Transport action Guice injection 동작\n- REST handler 등록 정상 동작",
+  "activeForm": "ES 플러그인 호환성 검증 중",
+  "status": "pending",
+  "blocks": [
+    "12"
+  ],
+  "blockedBy": [
+    "9"
+  ]
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "content": "valkey-glide로 client.py 완전 마이그레이션 - GlideClient 사용",
+    "status": "completed",
+    "id": "migration_1"
+  },
+  {
+    "content": "config.py에서 valkey-glide 설정으로 업데이트",
+    "status": "completed",
+    "id": "migration_2"
+  },
+  {
+    "content": "OpenTelemetry 계측 유지 및 개선",
+    "status": "completed",
+    "id": "migration_3"
+  },
+  {
+    "content": "기존 메서드 시그니처 호환성 유지",
+    "status": "completed",
+    "id": "migration_4"
+  },
+  {
+    "content": "에러 처리 개선 및 성능 최적화",
+    "status": "completed",
+    "id": "migration_5"
+  }
+]

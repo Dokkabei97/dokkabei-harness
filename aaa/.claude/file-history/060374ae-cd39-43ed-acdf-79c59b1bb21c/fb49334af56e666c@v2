@@ -1,0 +1,14 @@
+# Cowave Claude Plugin 환경변수
+# ~/.zshrc 또는 ~/.bashrc에 추가하세요.
+
+# Plane 이슈 트래커 API 키
+# 발급: https://project.cowave.kr → 프로필 → API 토큰
+export PLANE_API_KEY=""
+
+# Outline 위키 API 키
+# 발급: https://cowave.wiki.cowave.kr → 설정 → API 토큰
+export OUTLINE_API_KEY=""
+
+# Grafana 서비스 계정 토큰
+# 발급: http://grafana.danuricorp.com → Administration → Service Accounts
+export GRAFANA_SERVICE_ACCOUNT_TOKEN=""

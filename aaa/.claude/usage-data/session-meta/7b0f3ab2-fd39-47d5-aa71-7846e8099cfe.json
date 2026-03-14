@@ -1,0 +1,39 @@
+{
+  "session_id": "7b0f3ab2-fd39-47d5-aa71-7846e8099cfe",
+  "project_path": "/Users/admin/project/agetns-utils",
+  "start_time": "2026-02-25T04:44:14.789Z",
+  "duration_minutes": 16,
+  "user_message_count": 1,
+  "assistant_message_count": 18,
+  "tool_counts": {
+    "Task": 3,
+    "EnterPlanMode": 1,
+    "AskUserQuestion": 1,
+    "Write": 1
+  },
+  "languages": {
+    "Markdown": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 1215,
+  "output_tokens": 168,
+  "first_prompt": "해당 레포는 내가 만든 커스텀 에이전트, 커맨드, 스킬 모음집이고   https://github.com/Dokkabei97/hardened-claude-code 해당 레포는 오픈소스 공개용   이거는 회사 전용이랑 outline, plane등 회사 전용 스킬이 존재해  근데 이것도 사내에서만 공유 가능하게 클로드코드 플러그인을 만들고 싶어",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 151,
+  "lines_removed": 0,
+  "files_modified": 1,
+  "message_hours": [
+    13
+  ],
+  "user_message_timestamps": [
+    "2026-02-25T04:45:28.327Z"
+  ]
+}

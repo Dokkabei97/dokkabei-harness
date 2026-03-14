@@ -1,0 +1,15 @@
+<h3>작업 개요 (Task Overview)</h3>
+<p>{{task_overview}}</p>
+
+<h3>상세 할 일 (To-Do List)</h3>
+<ul>
+{{#each todo_items}}
+  <li>{{this}}</li>
+{{/each}}
+</ul>
+
+<h3>일정 및 마감일 (Schedule & Due Date)</h3>
+<p><strong>목표 완료일:</strong> {{due_date}}</p>
+
+<h3>참고 사항 (Notes)</h3>
+<p>{{notes}}</p>

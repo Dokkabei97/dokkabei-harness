@@ -1,0 +1,82 @@
+
+containers:
+  # 첫 번째 컨테이너: search-admin
+  - name: dev-search-admin
+    image:
+      repository: harbor.cowave.kr/search/search-admin
+      pullPolicy: Always
+      tag: "latest"
+    ports:
+      - name: dev-admin-http
+        containerPort: 8080
+        protocol: TCP
+    envFrom:
+      # 서비스 특화 ConfigMap 참조
+      - configMapRef:
+          name: dev-cmn-search-admin-config
+      - secretRef:
+          name: "dev-cmn-search-credentials"
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    volumeMounts:
+      - name: search-dictionary
+        mountPath: /usr/share/elasticsearch/plugins/analysis-danuri/dict
+    livenessProbe: {}
+    readinessProbe: {}
+
+  # 두 번째 컨테이너: 사이드카 예시 (필요에 따라 수정)
+  - name: dev-search-admin-ui
+    image:
+      repository: harbor.cowave.kr/search/search-admin-ui
+      pullPolicy: Always
+      tag: "latest"
+    ports:
+      - name: dev-ui-http
+        containerPort: 3000
+        protocol: TCP
+    envFrom: []
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    volumeMounts: []
+    livenessProbe: {}
+    readinessProbe: {}
+
+# 서비스 특화 ConfigMap 설정
+config:
+  # 인프라 공통 설정 (shared-resources에서 이관)
+  elasticsearch:
+    urls: "http://dev-cmn-es-http:9200"
+    connectionTimeout: "5000"
+    socketTimeout: "5000"
+  valkey:
+    backend:
+      host: "dev-cmn-infra-valkey-cluster-headless.cmn-infra.svc.cluster.local"
+      port: "6379"
+      database: "0"
+      maxConnection: "10"
+      clusterMode: "true"
+  keywordAnalysis:
+    url: "http://dev-cmn-es-data:9200"
+    connectionTimeout: "5000"
+    socketTimeout: "5000"
+
+fullnameOverride: "dev-cmn-search-admin"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: dev-cmn-search-admin.danuricorp.com
+      paths:
+        - path: /
+          pathType: Prefix

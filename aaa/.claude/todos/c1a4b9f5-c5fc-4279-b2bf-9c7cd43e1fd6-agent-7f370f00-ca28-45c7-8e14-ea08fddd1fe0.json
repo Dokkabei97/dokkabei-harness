@@ -1,0 +1,27 @@
+[
+  {
+    "content": "Update tokenizer API client to correctly parse the wrapped response structure",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Fix single tokenization result processing to handle tokens array from API response",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Fix multi tokenization result processing to handle array of token arrays",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Update tokenizer page to properly display tokenized results instead of showing same text",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Remove unused analyze method from TokenizerApiClient to fix diagnostic warning",
+    "status": "completed",
+    "id": "5"
+  }
+]

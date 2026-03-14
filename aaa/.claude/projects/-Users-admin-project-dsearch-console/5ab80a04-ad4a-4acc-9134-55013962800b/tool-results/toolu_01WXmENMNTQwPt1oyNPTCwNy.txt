@@ -1,0 +1,58 @@
+     1→import { READ_SEARCH_QUERYS, CREATE_SEARCH_QUERY, DELETE_SEARCH_QUERY, UPDATE_SEARCH_QUERY, ANALYSIS_DOCUMENT, ANALYSIS_DOCUMENT_DETAIL } from "../constants";
+     2→import Client from '~/Client'
+     3→
+     4→const client = new Client()
+     5→
+     6→export const getSearchQueryList = (data) => dispatch => client.call({
+     7→    uri: "/document/searchQuery",
+     8→    method: 'GET'
+     9→}).then(response => {
+    10→    dispatch({type: READ_SEARCH_QUERYS, payload: response.data});})
+    11→
+    12→
+    13→export const createSearchQuery = (data) => dispatch => client.call({
+    14→    uri: "/document/searchQuery",
+    15→    method: 'POST',
+    16→    data: data
+    17→}).then(response => dispatch({type: CREATE_SEARCH_QUERY, payload: response.data}))
+    18→
+    19→
+    20→export const deleteSearchQeury = (id) => dispatch => client.call({
+    21→    uri: `/document/searchQuery?id=${id}`,
+    22→    method: 'DELETE',
+    23→}).then(response => dispatch({type: DELETE_SEARCH_QUERY, payload: response.data}))
+    24→
+    25→export const updateSearchQuery = (data) => dispatch => client.call({
+    26→    uri: "/document/searchQuery",
+    27→    method: 'PUT',
+    28→    data: data
+    29→}).then(response => dispatch({type: UPDATE_SEARCH_QUERY, payload: response.data}))
+    30→
+    31→
+    32→
+    33→export const analyzeDocument = (data) => dispatch => client.call({
+    34→    uri: "/document/analysis",
+    35→    method: 'POST',
+    36→    data: data
+    37→}).then(response => { 
+    38→    dispatch({type: ANALYSIS_DOCUMENT, payload: response.data})
+    39→})
+    40→
+    41→export const analyzeDocumentDetail = (data) => dispatch => client.call({
+    42→    uri: "/document/analysis/detail",
+    43→    method: 'POST',
+    44→    data: data
+    45→}).then(response => { 
+    46→    dispatch({type: ANALYSIS_DOCUMENT_DETAIL, payload: response.data})
+    47→})
+    48→
+    49→
+    50→// export const setDocumentList = (index, data) => dispatch => client.call({
+    51→//     uri: "/elasticsearch/"+ index+ "/_search",
+    52→//     method: 'POST',
+    53→//     data: data
+    54→// }).then(response => dispatch({type: SET_RANKING_TUNING_DOCUMENT, payload: response.data}))
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

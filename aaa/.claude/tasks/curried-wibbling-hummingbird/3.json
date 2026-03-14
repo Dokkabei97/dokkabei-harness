@@ -1,0 +1,13 @@
+{
+  "id": "3",
+  "subject": "Java → Kotlin 코드 마이그레이션",
+  "description": "프로젝트의 모든 Java 소스 파일을 Kotlin으로 마이그레이션합니다.\n\n마이그레이션 범위 (67개 Java 파일):\n- com.danawa.io (6개): BytesBuffer, CachedCharArray, DataInput, DataOutput, InputStreamDataInput, OutputStreamDataOutput\n- com.danawa.util (4개): CharVector, ContextStore, ResourceResolver, SystemDictionaryCompiler\n- com.danawa.search.analysis.dict (12개): Dictionary 계층구조 전체\n- com.danawa.search.analysis.korean (4개): KoreanWordExtractor, MorphUtil, PosTagProbEntry, PreResult\n- com.danawa.search.analysis.product (12개): Plugin, Filter, Tokenizer, Analyzer 등\n- com.danawa.search.analysis.product.action (6개): REST/Transport 액션\n- com.danawa.search.analysis.product.rule (8개): 분석 규칙 전체\n- com.danawa.search.analysis.highlight (1개): TermHighlightingQuery\n- com.danawa.search.index (3개): Indexer 관련\n- com.danawa.search.util (2개): SearchUtil, RemoteNodeClient\n- org.apache.lucene.analysis.tokenattributes (6개): Lucene 커스텀 속성\n\n마이그레이션 대상 디렉토리: src/main/kotlin (기존 Java는 src/main/java에 유지, Kotlin은 src/main/kotlin에 생성)\n\n마이그레이션 원칙:\n1. Java 코드의 동작을 100% 보존 (기능적 등가성)\n2. Kotlin 관용적 문법 사용 (data class, sealed class, extension 함수 등)\n3. null safety 적용 (nullable/non-nullable 타입 명시)\n4. build.gradle.kts는 이미 완성되어 있음 - 수정 불필요\n5. ES 플러그인 API와의 호환성 유지 (Java interop 필수)\n6. Lucene 커스텀 속성은 Java 인터페이스 구현 필수\n7. 테스트 코드는 마이그레이션 대상에서 제외\n\n결과물: src/main/kotlin/ 디렉토리에 모든 Kotlin 파일 생성",
+  "activeForm": "Java → Kotlin 코드 마이그레이션 중",
+  "owner": "kotlin-developer",
+  "status": "completed",
+  "blocks": [
+    "4",
+    "5"
+  ],
+  "blockedBy": []
+}

@@ -1,0 +1,24 @@
+package cmdutil
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/plane-cli/plane-cli/internal/api"
+)
+
+// CheckErr handles errors with actionable messages.
+func CheckErr(err error) {
+	if err == nil {
+		return
+	}
+
+	if apiErr, ok := err.(*api.APIError); ok {
+		fmt.Fprintf(os.Stderr, "Error: %s (%d)\n", apiErr.Error(), apiErr.StatusCode)
+		if help := apiErr.HelpText(); help != "" {
+			fmt.Fprintf(os.Stderr, "  %s\n", help)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+	}
+}

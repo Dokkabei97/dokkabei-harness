@@ -1,0 +1,10 @@
+{
+  "id": "10",
+  "subject": "형태소분석 전문가 가이드라인에 따른 Kotlin 코드 수정",
+  "description": "이미 변환된 67개 Kotlin 파일에 대해 형태소분석 전문가가 제시한 13개 가이드라인을 적용하여 수정합니다.\n\nCRITICAL: split(String) -> split(Regex), replaceAll -> replace(Regex)\nHIGH: char[] -> CharArray, remove(int) -> removeAt, trim 동작 차이, Pattern/Regex, RuleEntry clone, Iterator 패턴, String == vs ===, Character.isAlphabetic\nMEDIUM: unmodifiableSet, subList.clear, arraycopy",
+  "activeForm": "형태소분석 가이드라인 적용 중",
+  "owner": "kotlin-developer",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

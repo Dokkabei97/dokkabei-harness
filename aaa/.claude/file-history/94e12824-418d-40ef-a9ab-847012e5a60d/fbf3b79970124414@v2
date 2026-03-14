@@ -1,0 +1,74 @@
+package models
+
+// Issue represents a Plane work item (issue).
+type Issue struct {
+	ID             string      `json:"id"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description,omitempty"`
+	DescriptionHTML string     `json:"description_html,omitempty"`
+	State          string      `json:"state"`
+	StateDetail    *StateRef   `json:"state_detail,omitempty"`
+	Priority       string      `json:"priority"`
+	SequenceID     int         `json:"sequence_id"`
+	Project        string      `json:"project"`
+	ProjectDetail  *ProjectRef `json:"project_detail,omitempty"`
+	Workspace      string      `json:"workspace"`
+	Parent         *string     `json:"parent,omitempty"`
+	Assignees      []string    `json:"assignees"`
+	Labels         []string    `json:"labels"`
+	StartDate      *string     `json:"start_date,omitempty"`
+	TargetDate     *string     `json:"target_date,omitempty"`
+	Estimate       *float64    `json:"estimate_point,omitempty"`
+	SortOrder      float64     `json:"sort_order"`
+	Cycle          *string     `json:"cycle,omitempty"`
+	Module         *string     `json:"module,omitempty"`
+	CreatedBy      string      `json:"created_by"`
+	Timestamps
+}
+
+// StateRef is a lightweight state reference.
+type StateRef struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+	Group string `json:"group"`
+}
+
+// ProjectRef is a lightweight project reference.
+type ProjectRef struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Identifier string `json:"identifier"`
+}
+
+// CreateIssueRequest is the request body for creating an issue.
+type CreateIssueRequest struct {
+	Name            string   `json:"name"`
+	Description     string   `json:"description,omitempty"`
+	DescriptionHTML string   `json:"description_html,omitempty"`
+	State           string   `json:"state,omitempty"`
+	Priority        string   `json:"priority,omitempty"`
+	Assignees       []string `json:"assignees,omitempty"`
+	Labels          []string `json:"labels,omitempty"`
+	Parent          string   `json:"parent,omitempty"`
+	StartDate       string   `json:"start_date,omitempty"`
+	TargetDate      string   `json:"target_date,omitempty"`
+	Estimate        *float64 `json:"estimate_point,omitempty"`
+	Cycle           string   `json:"cycle,omitempty"`
+	Module          string   `json:"module,omitempty"`
+}
+
+// UpdateIssueRequest is the request body for updating an issue.
+type UpdateIssueRequest struct {
+	Name            *string  `json:"name,omitempty"`
+	Description     *string  `json:"description,omitempty"`
+	DescriptionHTML *string  `json:"description_html,omitempty"`
+	State           *string  `json:"state,omitempty"`
+	Priority        *string  `json:"priority,omitempty"`
+	Assignees       []string `json:"assignees,omitempty"`
+	Labels          []string `json:"labels,omitempty"`
+	Parent          *string  `json:"parent,omitempty"`
+	StartDate       *string  `json:"start_date,omitempty"`
+	TargetDate      *string  `json:"target_date,omitempty"`
+	Estimate        *float64 `json:"estimate_point,omitempty"`
+}

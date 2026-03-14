@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Read the current values.schema.json file to understand the structure",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Fix the missing 'Kind' field in values.schema.json",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Verify the schema is valid JSON Schema format",
+    "status": "pending",
+    "priority": "medium",
+    "id": "3"
+  }
+]

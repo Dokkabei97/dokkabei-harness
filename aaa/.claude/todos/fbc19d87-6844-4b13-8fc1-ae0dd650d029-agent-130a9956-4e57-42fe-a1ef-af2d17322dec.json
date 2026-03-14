@@ -1,0 +1,42 @@
+[
+  {
+    "content": "현재 파일 구조 및 컴포넌트 구조 파악",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Dictionary 페이지 메인 컴포넌트 분석",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "탭 전환 로직 및 데이터 흐름 분석",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "API 엔드포인트 및 서버 로직 분석",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "페이징 및 검색 기능 분석",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "문제점 식별 및 근본 원인 파악",
+    "status": "completed",
+    "id": "6"
+  },
+  {
+    "content": "단계별 수정 계획 수립",
+    "status": "completed",
+    "id": "7"
+  },
+  {
+    "content": "코드 수정 및 개선 실행",
+    "status": "completed",
+    "id": "8"
+  }
+]

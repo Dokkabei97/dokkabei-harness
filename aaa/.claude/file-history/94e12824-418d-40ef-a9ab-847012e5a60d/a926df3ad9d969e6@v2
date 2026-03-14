@@ -1,0 +1,75 @@
+package api
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+// APIError represents an error returned by the Plane API.
+type APIError struct {
+	StatusCode int
+	Status     string
+	Message    string
+	Detail     string
+	Raw        string
+}
+
+func (e *APIError) Error() string {
+	if e.Detail != "" {
+		return fmt.Sprintf("%s: %s", e.Status, e.Detail)
+	}
+	if e.Message != "" {
+		return fmt.Sprintf("%s: %s", e.Status, e.Message)
+	}
+	return e.Status
+}
+
+// HelpText returns actionable suggestions for common errors.
+func (e *APIError) HelpText() string {
+	switch e.StatusCode {
+	case http.StatusUnauthorized:
+		return "Your API key may be invalid or expired.\n" +
+			"  Run `plane config init` to set up a new API key.\n" +
+			"  Generate keys at your Plane instance settings."
+	case http.StatusForbidden:
+		return "You don't have permission for this action.\n" +
+			"  Check your role in the workspace/project."
+	case http.StatusNotFound:
+		return "The requested resource was not found.\n" +
+			"  Verify the workspace slug, project ID, and resource ID."
+	case http.StatusTooManyRequests:
+		return "Rate limit exceeded (60 req/min).\n" +
+			"  Wait a moment and try again."
+	case http.StatusUnprocessableEntity:
+		return "The request data is invalid.\n" +
+			"  Check the required fields and their formats."
+	default:
+		return ""
+	}
+}
+
+// parseAPIError parses an API error from an HTTP response.
+func parseAPIError(resp *http.Response, body []byte) *APIError {
+	apiErr := &APIError{
+		StatusCode: resp.StatusCode,
+		Status:     resp.Status,
+		Raw:        string(body),
+	}
+
+	// Try to parse JSON error response
+	var errResp map[string]interface{}
+	if err := json.Unmarshal(body, &errResp); err == nil {
+		if msg, ok := errResp["error"].(string); ok {
+			apiErr.Message = msg
+		}
+		if detail, ok := errResp["detail"].(string); ok {
+			apiErr.Detail = detail
+		}
+		if msg, ok := errResp["message"].(string); ok {
+			apiErr.Message = msg
+		}
+	}
+
+	return apiErr
+}

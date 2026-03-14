@@ -1,0 +1,311 @@
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-1133-			//정렬
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-1134-			if param["sort"] == "1" {
+handler/product-es.go:1135:				// 인기순 이미  정렬됨
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-1136-			} else if param["sort"] == "2" {
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-1137-				if len(makerBrandGroupList) > 0 {
+--
+handler/product-es.go-2852-			highlight := make(map[string]string, 0)
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-2853-
+handler/product-es.go:2854:			//묶음 구조일 때는 대표변경 함수 호출(우선순위, 인기순위에 따른 대표상품 변경)
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-2855-			if brpsFieldName != "SKIP" && data["packageYN"] == "Y" && element.InnerHits["_bundle"].Hits.TotalHits.Value > 1 {
+/Users/admin/project/legacy/searchapi-elastic/handler/product-es.go-2856-				resultData, highlight = utils.BrpsSettingEs2(element, brpsFieldName, 0, data["quickPriceYN"])
+--
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-33-// @Param limit query int false "검색 제한 갯수" default(20)
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-34-// @Param highlightYN query string false "<table><thead><tr><th colspan=2>검색결과 키워드 하이라이팅 처리 여부</th></tr></thead><tbody><tr><td>적용</td><td>Y</td></tr><tr><td>비적용</td><td>N</td></tr></tbody></table>" default(Y)  Enums(Y,N)
+controller/shopdnw.go:35:[Omitted long matching line]
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-36-// @Success 200 {object} response.Response
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-37-// @Router /shopdnw/product [get]
+--
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-235-// @Param sellerSeq query string false "판매자"
+/Users/admin/project/legacy/searchapi-elastic/controller/shopdnw.go-236-// @Param keyword query string false "키워드 <br>마켓명(registerSectionName), 판매점명(shopNameList), 상품명(ProductName), 주요사양(ItemValue), 상세사양(productDetailNameList)"
+controller/shopdnw.go:237:// @Param sort query string false "<table><thead><tr><th colspan=2>정렬 (필드|정렬방법) - [default : 1|1]</th></tr></thead><tbody><tr><td colspan=2>필드</td></tr><tr><td>가격순</td><td>1</td></tr><tr><td>인기순</td><td>2</td></tr><tr><td>신상품순</td><td>3</td></tr><tr><td colspan=2>정렬 방법</td></tr><tr><td>ASC</td><td>1</td></tr><tr><td>DESC</td><td>2</td></tr></tbody></table>" default(1|1)
+controller/shopdnw.go-238-/ @Param start query int false "검색 시작 위치 - [default : 1]" default(1)
+controller/shopdnw.go-239-/ @Param limit query int false "검색 제한 갯수 - [default : 20]" default(20)
+--
+apidoc/estimate.go-136-									"name":"sort",
+apidoc/estimate.go-137-									"defaultValue":"", 
+apidoc/estimate.go:138:[Omitted long matching line]
+apidoc/estimate.go-139-									"dataType":"string",
+apidoc/estimate.go-140-									"required":false,
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-114-	/*
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-115-		[FASTCAT-1055] ‘우선순위‘ 설정 카테고리 대표상품 정렬 기준 변경 요청
+manager/product/sortManager.go:116:		인기상품순일 때만 다르고 나머지는 '인기순위', '우선순위' 설정 카테고리 정렬동일하게 처리.
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-117-	*/
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-118-	//다중 정렬 조건 ex) 1|2,3|1
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-139-
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-140-			if barArray[0] == "1" {
+manager/product/sortManager.go:141:				fieldSort = "savePlusQ" // 수동 인기순위값 + 인기순위점수 (TSAVE_PLUS.SAVE_PLUS_Q + TPRODUCTCATEGORY.NCNTSAVE)
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-142-			} else if barArray[0] == "2" {
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-143-				//[FASTCAT-1266] 상품리스트 키워드 검색 가중치 추가 건
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-151-				}
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-152-
+manager/product/sortManager.go:153:				fieldSort = "cntSave" // 인기순위
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-154-				if idx == 0 {
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-155-					brpsFieldName = "bundleDisplaySequence"
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-226-
+manager/product/sortManager.go-227-	/golang - switch-case : break 생략 가능
+manager/product/sortManager.go:228:	//인기순 정렬 -> popularityScore 점수는 2순위 정렬로 추가
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-229-	switch sort {
+manager/product/sortManager.go-230-	case "1": //상품명순
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-250-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("shopQuantity").Desc())
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-251-		// fieldSorts = append(fieldSorts, elastic.NewFieldSort("registerDate").Desc())
+manager/product/sortManager.go:252:		// [FASTCAT-1217] 상품리스트,통검 인기순 및 판매점순 정렬조건 변경
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-253-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("_score").Desc())
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-254-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("productMaker.field").Asc())
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-264-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("productClassification").Asc())
+manager/product/sortManager.go-265-		/raParam = "productClassification:ASC"
+manager/product/sortManager.go:266:	case "9": //인기순
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-267-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("_score").Desc())
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-268-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("popularityScore").Desc())
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-269-		// fieldSorts = append(fieldSorts, elastic.NewFieldSort("manufactureDate").Desc())
+manager/product/sortManager.go:270:		// [FASTCAT-1217] 상품리스트,통검 인기순 및 판매점순 정렬조건 변경 - "modifyDateTime": {"copy_to": ["manufactureDateTime"]}
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-271-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("manufactureDateTime").Desc())
+manager/product/sortManager.go-272-		/raParam = "_score:DESC,registerDate:DESC"
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-275-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("_score").Desc())
+manager/product/sortManager.go-276-		/raParam = "writeCnt:DESC,_score:DESC"
+manager/product/sortManager.go:277:	case "11": //등록일순
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-278-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("registerDate").Desc())
+manager/product/sortManager.go-279-		/raParam = "registerDate:DESC"
+--
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-289-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("manufactureDate").Desc())
+manager/product/sortManager.go-290-		/raParam = "prodType:ASC,manufactureDate:DESC"
+manager/product/sortManager.go:291:	case "15": //링크상품의 인기순
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-292-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("_score").Desc())
+/Users/admin/project/legacy/searchapi-elastic/manager/product/sortManager.go-293-		fieldSorts = append(fieldSorts, elastic.NewFieldSort("cntSave").Desc())
+--
+/Users/admin/project/legacy/searchapi-elastic/controller/estimate.go-127-// @Param start query string false "검색 시작 위치 지정" default(1)
+/Users/admin/project/legacy/searchapi-elastic/controller/estimate.go-128-// @Param limit query string false "검색 결과 갯수 제한" default(20)
+controller/estimate.go:129:[Omitted long matching line]
+/Users/admin/project/legacy/searchapi-elastic/controller/estimate.go-130-// @Param excludeReadyProduct query string false "판매준비 상품 제외"
+/Users/admin/project/legacy/searchapi-elastic/controller/estimate.go-131-// @Param priceType query string false "<table><thead><tr><th colspan=2>가격 조회 유형</th></tr></thead><tbody><tr><td>cash</td><td>현금</td></tr><tr><td>card</td><td>카드</td></tr></tbody></table>"
+--
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-500-
+handler/product.go-501-		case "1":
+handler/product.go:502:			//[FASTCAT-941] 상품리스트 검색옵션 내 '제조사별'의 '인기순' 정렬 변경 요청건으로 인한 임시 기능확인용
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-503-			//점수가 있는 값들을 먼저 고른 후 나머지는 한/영/숫/특수문자로 정렬
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-504-			//기능 확인시 이름순 정렬 코드쪽 정리 예정
+--
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-634-
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-635-		// 브랜드 그룹핑
+handler/product.go:636:		// 기본 인기순 정렬 후 ranking 추가
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-637-		sort.Slice(brandGroupList, func(i, j int) bool {
+/Users/admin/project/legacy/searchapi-elastic/handler/product.go-638-			return utils.CheckIntData(brandGroupList[i].SUM_POPULARITYSCORE) > utils.CheckIntData(brandGroupList[j].SUM_POPULARITYSCORE)
+--
+controller/product.go-43-/ @Param totalPrice query string false "배송비 포함 최소가   <br>  - 범위 검색 가능 : <br> 1. X~Y(특정 범위), <br> 2. X~(특정 이상), <br> 3. ~Y(특정 이하) "
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-44-// @Param packageYN query string false "<table><thead><tr><th colspan=2>묶음 노출 선택 여부</th></tr></thead><tbody><tr><td>묶음형</td><td>Y</td></tr><tr><td>리스트형</td><td>N</td></tr></tbody></table>" default(N)
+controller/product.go:45:[Omitted long matching line]
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-46-// @Param discountRate query string false "할인률 <br>- X값 이상   ex) discountRate=10 (할인율 10% 이상 상품)"
+controller/product.go-47-/ @Param start query string false "검색 시작 위치  (default :1)  <br>" default(1)
+--
+controller/product.go-360-/ @Param priceRange query string false "<table><thead><tr><th colspan=2>가격범위 검색</th></tr></thead><tbody><tr><td>ex)</td></tr><tr><td>1000원 이상 : <b>1000~</b></td></tr><tr><td>100원~1000원 : <b>100~1000</b></td></tr><tr><td>1000원 이하 : <b>~1000</b></td></tr></tbody></table>"
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-361-// @Param isMergeYN query string false "제조사, 브랜드명 <br> 통합 결과 데이터 "
+controller/product.go:362:// @Param sort query string false "그룹핑 정렬 <br> 1. 인기순 <br> 2. 카운트순<br> 3. 가나다순" default(2)
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-363-// @Param zeroPriceYN query string false "<table><thead><tr><th colspan=2>0원상품 포함 여부</th></tr></thead><tbody><tr><td>Y</td><td>0원상품 포함</td></tr><tr><td>N</td><td>0원상품 제외</td></tr></tbody></table>" Enums(Y,N)
+controller/product.go-364-/ @param registerDateRange query string false "<table><thead><tr><th colspan=2>등록년월 범위 검색</th></tr></thead><tbody><tr><td>ex)</td></tr><tr><td>2019년 01월 포함 '이후' : <b>201901~</b></td></tr><tr><td>2019년 01월 ~ 2020년 6월 : <b>201901~202006</b></td></tr><tr><td>2020년 06월 포함 '이전' : <b>~202006</b></td></tr></tbody></table>"
+--
+controller/product.go-1085-/ @param priceRange query string false "<table><thead><tr><th colspan=2>가격범위 검색</th></tr></thead><tbody><tr><td>ex)</td></tr><tr><td>1000원 이상 : <b>1000~</b></td></tr><tr><td>100원~1000원 : <b>100~1000</b></td></tr><tr><td>1000원 이하 : <b>~1000</b></td></tr></tbody></table>"
+controller/product.go-1086-/ @param discountRate query string false "<table><thead><tr><th colspan=2>할인률</th></tr></thead><tbody><tr><td>X값 이상 <br></td></tr><tr><td>ex) discountRate=10 : (할인율 10% 이상 상품)</td> </tr></tbody></table>"
+controller/product.go:1087:// @param sort query string false "<table><thead><tr><th colspan=2>그룹핑 정렬</th></tr></thead><tbody><tr><td></td><td>제조사|브랜드</td></tr><tr><td>1</td><td>인기순</td><tr><td>2</td><td>카운트순</td><tr><td>3</td><td>가나다순</td><tr><td>EX)</td><td>제조사(인기순), 브랜드(가나다순) <br>-> 1|3</td></tbody></table>" default(1|1)
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-1088-// @param type query string false "<table><thead><tr><th colspan=2>그룹핑 종류</th></tr></thead><tbody><tr><td>all</td><td>제조사.브랜드 그룹핑</td></tr><tr><td>maker</td><td>제조사 그룹핑</td></tr><tr><td>brand</td><td>브랜드 그룹핑</td></tr></tbody></table>" Enums(all,maker,brand) default(all)
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-1089-// @param depth query string false "대표로 설정된 물리카테고리의 뎁스"
+--
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-1185-// @Param service query string false "<table><thead><tr><th colspan=2>로그분석시 분석될 사이트코드</th></tr></thead><tbody><tr><td>1</td><td>통합검색</td></tr><tr><td>2</td><td>모바일</td></tr><tr><td>3</td><td>기타</td></tr><tr><td>4</td><td>N/A</td></tr></tbody></table>" Enums(1,2,3,4)
+/Users/admin/project/legacy/searchapi-elastic/controller/product.go-1186-// @Param keywordType query string false "<table><thead><tr><th colspan=2>검색 키워드종류</th></tr></thead><tbody><tr><td>1</td><td>텍스트</td></tr><tr><td>2</td><td>음성</td></tr></tbody></table>" Enums(1,2) default(1)
+controller/product.go:1187:[Omitted long matching line]
+controller/product.go-1188-/ @Param priceRange query string false "<table><thead><tr><th colspan=2>가격범위 검색</th></tr></thead><tbody><tr><td>ex)</td></tr><tr><td>1000원 이상 : <b>1000~</b></td></tr><tr><td>100원~1000원 : <b>100~1000</b></td></tr><tr><td>1000원 이하 : <b>~1000</b></td></tr></tbody></table>"
+controller/product.go-1189-/ @Param totalPriceRange query string false "<table><thead><tr><th colspan=2>배송비 포함 가격범위 검색</th></tr></thead><tbody><tr><td>ex)</td></tr><tr><td>1000원 이상 : <b>1000~</b></td></tr><tr><td>100원~1000원 : <b>100~1000</b></td></tr><tr><td>1000원 이하 : <b>~1000</b></td></tr></tbody></table>"
+--
+controller/rankingViewer.go-31-/ @Param brandName query string false "브랜드 명 <br>- 복수 가능 : 구분자 '|' 사용 <br>ex)  i5|i7"
+/Users/admin/project/legacy/searchapi-elastic/controller/rankingViewer.go-32-// @Param productCode query string false "기준상품 코드 검색"
+controller/rankingViewer.go:33:// @Param sort query string flase "<table><thead><tr><th colspan=2>정렬필드</th></tr></thead><tbody><tr><td>1</td><td>인기도순,등록일순</td></tr><tr><td>2</td><td>상품 구분순,최저가순</td></tr><tr><td>3</td><td>최저가순</td></tr><tr><td>4</td><td>등록일순</td></tr><tr><td>5</td><td>업체수순</td></tr></tbody></table>" Enums(1,2,3,4,5) default(1)
+/Users/admin/project/legacy/searchapi-elastic/controller/rankingViewer.go-34-// @Param groupYN query string false "<table><thead><tr><th colspan=2>그룹확인 여부</th></tr></thead><tbody><tr><td>일반</td><td>N</td></tr><tr><td>그룹</td><td>Y</td></tr></tbody></table>" Enums(Y,N) default(N)
+/Users/admin/project/legacy/searchapi-elastic/controller/rankingViewer.go-35-// @Param boostYN query string false "<table><thead><tr><th colspan=2>카테고리 부스팅 적용 여부</th></tr></thead><tbody><tr><td>Y</td><td>부스팅 적용</td></tr><tr><td>N</td><td>부스팅 미적용</td></tr></tbody></table>"  Enums(Y,N) default(Y)
+--
+/Users/admin/project/legacy/searchapi-elastic/controller/dealer.go-27-// @Param limit query int false "결과 개수" default(20)
+controller/dealer.go-28-/ @Param highlightYN query string false "검색결과 키워드 하이라이팅 처리 여부 : 적용(Y), 비적용(N)" Enums(Y, N) default(Y) - x
+controller/dealer.go:29:[Omitted long matching line]
+/Users/admin/project/legacy/searchapi-elastic/controller/dealer.go-30-// @Success 200 {object} response.Response
+/Users/admin/project/legacy/searchapi-elastic/controller/dealer.go-31-// @Router /dealer/product [get]
+--
+docs/swagger.yaml-1169-      - description: '정렬 <br><table><thead><tr><th colspan=2>필드|정렬</th></tr></thead><tbody><tr><td>정렬
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-1170-          필드</td><td></td></tr><tr><td>1</td><td>인기도 </td></tr><tr><td>2</td><td>등록일</td></tr><tr><td>3</td><td>상품명  </td></tr><tr><td>4</td><td>가격</td></tr><tr><td>정렬방법</td><td></td></tr><tr><td>1</td><td>ASC</td></tr><tr><td>2</td><td>DESC</td></tr></tbody></table>
+docs/swagger.yaml:1171:          <br><br>* 다중 정렬 가능  <br>- 구분자 '','' 사용 <br>- ex) 인기순,최신등록순: 1|2,2|2 <br>-
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-1172-          다중 정렬의 경우 앞에 위치한 값부터 우선순위 적용'
+docs/swagger.yaml-1173-        in: query
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-1330-          최저가</td></tr><tr><td>4</td><td>상품명<br>(제조사/브랜드/상품명 순)</td></tr><tr><td>5</td><td>카드
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-1331-          최저가</td></tr><tr><td>정렬방법</td><td></td></tr><tr><td>1</td><td>ASC</td></tr><tr><td>2</td><td>DESC</td></tr></tbody></table>
+docs/swagger.yaml:1332:          <br><br>* 다중 정렬 가능  <br>- 구분자 '','' 사용 <br>- ex) 인기순,최신등록순: 1|2,2|2 <br>-
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-1333-          다중 정렬의 경우 앞에 위치한 값부터 우선순위 적용'
+docs/swagger.yaml-1334-        in: query
+--
+docs/swagger.yaml-2510-      - default: 1|2
+docs/swagger.yaml-2511-        description: '정렬 <br><table><thead><tr><th colspan=2>필드|정렬</th></tr></thead><tbody><tr><td>필드</td><td></td></tr><tr><td>1</td><td>save_plus_q
+docs/swagger.yaml:2512:          <br> (수동 인기순+인기순위)</td></tr><tr><td>2</td><td>cntSave(인기순위)</td></tr><tr><td>3</td><td>min_price
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-2513-          (최저가)</td></tr><tr><td>4</td><td>prod_id (상품 코드) </td></tr><tr><td>5</td><td>prod_name
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-2514-          (상품명)</td></tr><tr><td>6</td><td>shop (업체 수)</td></tr><tr><td>7</td><td>list_sort
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-2523-          최저가)</td></tr><tr><td>21</td><td>unit_member_total_price (배송비 포함 단위 환산 멤버십
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-2524-          최저가)</td></tr><tr><td></td><td></td></tr><tr><td>정렬</td><td></td></tr><tr><td>1</td><td>asc</td></tr><tr><td>2</td><td>desc</td></tr></tbody></table>
+docs/swagger.yaml:2525:          <br><br>* 다중 정렬 가능  <br>- 구분자 '','' 사용 <br>- ex) 인기순,최저가순: 2|2,3|1 <br>-
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-2526-          다중 정렬의 경우 앞에 위치한 값부터 우선순위 적용'
+docs/swagger.yaml-2527-        in: query
+--
+docs/swagger.yaml-2647-        type: string
+docs/swagger.yaml-2648-      - default: "2"
+docs/swagger.yaml:2649:        description: 그룹핑 정렬 <br> 1. 인기순 <br> 2. 카운트순<br> 3. 가나다순
+docs/swagger.yaml-2650-        in: query
+docs/swagger.yaml-2651-        name: sort
+--
+docs/swagger.yaml-3573-      - default: "9"
+docs/swagger.yaml-3574-        description: <table><thead><tr><th colspan=2>정렬에 사용될 필드</th></tr></thead><tbody><tr><td>1</td><td>상품명순</td></tr><tr><td>2</td><td>최저가순</td></tr><tr><td>3</td><td>최고가순</td></tr><tr><td>4</td><td>제조일순</td></tr><tr><td>5</td><td>배송비순</td></tr><tr><td>6</td><td>판매몰순</td></tr><tr><td>7</td><td>제조사순</td></tr><tr><td>9</td><td>인기상품순</td></tr><tr><td>10</td><td>상품의견
+docs/swagger.yaml:3575:          카운트순</td></tr><tr><td>11</td><td>등록일순</td></tr><tr><td>12</td><td>최저가순(배송비포함)</td></tr><tr><td>13</td><td>최고가순(배송비포함)</td></tr><tr><td>14</td><td>제조일순(추천정렬)</td></tr><tr><td>15</td><td>링크상품
+docs/swagger.yaml:3576:          인기순</td></tr><tr><td>16</td><td>멤버십 최저가순</td></tr><tr><td>17</td><td>멤버십
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-3577-          최고가순</td></tr><tr><td>18</td><td>멤버십 최저가순(배송비 포함)</td></tr><tr><td>19</td><td>멤버십
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-3578-          최고가순(배송비 포함)</td></tr><tr><td>20</td><td>단위 환산 최저가순</td></tr><tr><td>21</td><td>단위
+--
+docs/swagger.yaml-3745-        type: string
+docs/swagger.yaml-3746-      - default: 1|1
+docs/swagger.yaml:3747:        description: <table><thead><tr><th colspan=2>그룹핑 정렬</th></tr></thead><tbody><tr><td></td><td>제조사|브랜드</td></tr><tr><td>1</td><td>인기순</td><tr><td>2</td><td>카운트순</td><tr><td>3</td><td>가나다순</td><tr><td>EX)</td><td>제조사(인기순),
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-3748-          브랜드(가나다순) <br>-> 1|3</td></tbody></table>
+docs/swagger.yaml-3749-        in: query
+--
+docs/swagger.yaml-4123-        type: string
+docs/swagger.yaml-4124-      - default: "1"
+docs/swagger.yaml:4125:        description: <table><thead><tr><th colspan=2>정렬필드</th></tr></thead><tbody><tr><td>1</td><td>인기도순,등록일순</td></tr><tr><td>2</td><td>상품
+docs/swagger.yaml:4126:          구분순,최저가순</td></tr><tr><td>3</td><td>최저가순</td></tr><tr><td>4</td><td>등록일순</td></tr><tr><td>5</td><td>업체수순</td></tr></tbody></table>
+docs/swagger.yaml-4127-        enum:
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-4128-        - "1"
+--
+docs/swagger.yaml-4341-      - default: 1|1
+docs/swagger.yaml-4342-        description: '<table><thead><tr><th colspan=2>정렬 (필드|정렬방법) - [default : 1|1]</th></tr></thead><tbody><tr><td
+docs/swagger.yaml:4343:          colspan=2>필드</td></tr><tr><td>가격순</td><td>1</td></tr><tr><td>인기순</td><td>2</td></tr><tr><td>신상품순</td><td>3</td></tr><tr><td
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-4344-          colspan=2>정렬 방법</td></tr><tr><td>ASC</td><td>1</td></tr><tr><td>DESC</td><td>2</td></tr></tbody></table>'
+docs/swagger.yaml-4345-        in: query
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-4496-          colspan=2>필드</td></tr><tr><td>인기도</td><td>1</td></tr><tr><td>등록일</td><td>2</td></tr><tr><td>가격</td><td>3</td></tr><tr><td>배송비</td><td>4</td></tr><tr><td
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.yaml-4497-          colspan=2>정렬 방법</td></tr><tr><td>ASC</td><td>1</td></tr><tr><td>DESC</td><td>2</td></tr><tr><td
+docs/swagger.yaml:4498:          colspan=2>정렬추가시 컴마(,)로 추가<br>ex) 인기순위순 , 최신등록순<br>-> sort=1|2,2|2</td></tr></tbody></table>
+docs/swagger.yaml-4499-        in: query
+docs/swagger.yaml-4500-        name: sort
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.json-729-                    {
+docs/swagger.json-730-                        "type": "string",
+docs/swagger.json:731:[Omitted long matching line]
+docs/swagger.json-732-                        "name": "sort",
+docs/swagger.json-733-                        "in": "query"
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/swagger.json-957-                    {
+docs/swagger.json-958-                        "type": "string",
+docs/swagger.json:959:[Omitted long matching line]
+docs/swagger.json-960-                        "name": "sort",
+docs/swagger.json-961-                        "in": "query"
+--
+docs/swagger.json-2601-                        "type": "string",
+docs/swagger.json-2602-                        "default": "1|2",
+docs/swagger.json:2603:[Omitted long matching line]
+docs/swagger.json-2604-                        "name": "sort",
+docs/swagger.json-2605-                        "in": "query"
+--
+docs/swagger.json-2768-                        "type": "string",
+docs/swagger.json-2769-                        "default": "2",
+docs/swagger.json:2770:                        "description": "그룹핑 정렬 \u003cbr\u003e 1. 인기순 \u003cbr\u003e 2. 카운트순\u003cbr\u003e 3. 가나다순",
+docs/swagger.json-2771-                        "name": "sort",
+docs/swagger.json-2772-                        "in": "query"
+--
+docs/swagger.json-4004-                        "type": "string",
+docs/swagger.json-4005-                        "default": "9",
+docs/swagger.json:4006:[Omitted long matching line]
+docs/swagger.json-4007-                        "name": "sort",
+docs/swagger.json-4008-                        "in": "query"
+--
+docs/swagger.json-4180-                        "type": "string",
+docs/swagger.json-4181-                        "default": "1|1",
+docs/swagger.json:4182:[Omitted long matching line]
+docs/swagger.json-4183-                        "name": "sort",
+docs/swagger.json-4184-                        "in": "query"
+--
+docs/swagger.json-4703-                        "type": "string",
+docs/swagger.json-4704-                        "default": "1",
+docs/swagger.json:4705:[Omitted long matching line]
+docs/swagger.json-4706-                        "name": "sort",
+docs/swagger.json-4707-                        "in": "query"
+--
+docs/swagger.json-5006-                        "type": "string",
+docs/swagger.json-5007-                        "default": "1|1",
+docs/swagger.json:5008:[Omitted long matching line]
+docs/swagger.json-5009-                        "name": "sort",
+docs/swagger.json-5010-                        "in": "query"
+--
+docs/swagger.json-5224-                        "type": "string",
+docs/swagger.json-5225-                        "default": "1|2",
+docs/swagger.json:5226:[Omitted long matching line]
+docs/swagger.json-5227-                        "name": "sort",
+docs/swagger.json-5228-                        "in": "query"
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/docs.go-742-                    {
+docs/docs.go-743-                        "type": "string",
+docs/docs.go:744:[Omitted long matching line]
+docs/docs.go-745-                        "name": "sort",
+docs/docs.go-746-                        "in": "query"
+--
+/Users/admin/project/legacy/searchapi-elastic/docs/docs.go-970-                    {
+docs/docs.go-971-                        "type": "string",
+docs/docs.go:972:[Omitted long matching line]
+docs/docs.go-973-                        "name": "sort",
+docs/docs.go-974-                        "in": "query"
+--
+docs/docs.go-2614-                        "type": "string",
+docs/docs.go-2615-                        "default": "1|2",
+docs/docs.go:2616:[Omitted long matching line]
+docs/docs.go-2617-                        "name": "sort",
+docs/docs.go-2618-                        "in": "query"
+--
+docs/docs.go-2781-                        "type": "string",
+docs/docs.go-2782-                        "default": "2",
+docs/docs.go:2783:                        "description": "그룹핑 정렬 \u003cbr\u003e 1. 인기순 \u003cbr\u003e 2. 카운트순\u003cbr\u003e 3. 가나다순",
+docs/docs.go-2784-                        "name": "sort",
+docs/docs.go-2785-                        "in": "query"
+--
+docs/docs.go-4017-                        "type": "string",
+docs/docs.go-4018-                        "default": "9",
+docs/docs.go:4019:[Omitted long matching line]
+docs/docs.go-4020-                        "name": "sort",
+docs/docs.go-4021-                        "in": "query"
+--
+docs/docs.go-4193-                        "type": "string",
+docs/docs.go-4194-                        "default": "1|1",
+docs/docs.go:4195:[Omitted long matching line]
+docs/docs.go-4196-                        "name": "sort",
+docs/docs.go-4197-                        "in": "query"
+--
+docs/docs.go-4716-                        "type": "string",
+docs/docs.go-4717-                        "default": "1",
+docs/docs.go:4718:[Omitted long matching line]
+docs/docs.go-4719-                        "name": "sort",
+docs/docs.go-4720-                        "in": "query"
+--
+docs/docs.go-5019-                        "type": "string",
+docs/docs.go-5020-                        "default": "1|1",
+docs/docs.go:5021:[Omitted long matching line]
+docs/docs.go-5022-                        "name": "sort",
+docs/docs.go-5023-                        "in": "query"
+--
+docs/docs.go-5237-                        "type": "string",
+docs/docs.go-5238-                        "default": "1|2",
+docs/docs.go:5239:[Omitted long matching line]
+docs/docs.go-5240-                        "name": "sort",
+docs/docs.go-5241-                        "in": "query"
+--
+/Users/admin/project/legacy/searchapi-elastic/common/utils/utils.go-495-					}
+/Users/admin/project/legacy/searchapi-elastic/common/utils/utils.go-496-				}
+common/utils/utils.go:497:			} else if CheckIntData(bundleScore.(string)) > CheckIntData(tempScore.(string)) && sort == 9 { // 인기순 정렬이고, 묶음상품이 리스트정렬상품(대표상품)보다 점수가 높은경우 묶음(번들)상품이 대표
+/Users/admin/project/legacy/searchapi-elastic/common/utils/utils.go-498-				tempListData = bundle
+/Users/admin/project/legacy/searchapi-elastic/common/utils/utils.go-499-

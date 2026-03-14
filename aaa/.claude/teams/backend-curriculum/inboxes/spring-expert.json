@@ -1,0 +1,15 @@
+[
+  {
+    "from": "spring-expert",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"4\",\"subject\":\"Spring JDBC/JdbcTemplate/Exposed 커리큘럼 섹션 작성\",\"description\":\"JPA 외의 데이터 접근 기술 커리큘럼을 작성한다. Spring JDBC와 JdbcTemplate 활용법, Exposed(Kotlin 네이티브 ORM) 상세, JPA vs JdbcTemplate vs Exposed 비교 및 선택 기준, 각 기술의 성능 특성, 실무 활용 사례를 포함한다.\",\"assignedBy\":\"spring-expert\",\"timestamp\":\"2026-02-15T15:29:20.033Z\"}",
+    "timestamp": "2026-02-15T15:29:20.033Z",
+    "color": "orange",
+    "read": true
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"shutdown_request\",\"requestId\":\"shutdown-1771170199276@spring-expert\",\"from\":\"team-lead\",\"reason\":\"모든 커리큘럼 작성이 완료되었습니다. 수고하셨습니다.\",\"timestamp\":\"2026-02-15T15:43:19.276Z\"}",
+    "timestamp": "2026-02-15T15:43:19.276Z",
+    "read": true
+  }
+]

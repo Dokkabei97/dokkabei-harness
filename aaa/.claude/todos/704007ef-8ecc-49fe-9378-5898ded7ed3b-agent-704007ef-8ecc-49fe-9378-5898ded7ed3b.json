@@ -1,0 +1,20 @@
+[
+  {
+    "content": "Examine current GitLab CI configuration files",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Check git submodule configuration",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Fix CI to properly initialize git submodules",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  }
+]

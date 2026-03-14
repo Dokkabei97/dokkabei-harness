@@ -1,0 +1,28 @@
+.build_image_push:
+  image: docker:27.1.1-dind-alpine3.20
+  services:
+    - docker:27.1.1-dind-alpine3.20
+  variables:
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - echo $HARBOR_PASSWORD | docker login $HARBOR_URL -u $HARBOR_USERNAME --password-stdin
+  script:
+    - set -e
+    - echo "Docker Build Start"
+    - |
+      if [ -n "$DOCKER_FILE_PATH" ]; then
+        docker build --pull -f "$DOCKER_FILE_PATH" \
+          -t $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:$IMAGE_TAG \
+          -t $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:latest \
+          .
+      else
+        docker build --pull \
+          -t $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:$IMAGE_TAG \
+          -t $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:latest \
+          .
+      fi
+    - echo "Docker Build Done"
+    - echo "Docker Image Push Start"
+    - docker push $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:$IMAGE_TAG
+    - docker push $HARBOR_HOST/$HARBOR_PROJECT/$SERVICE_NAME:latest
+    - echo "Docker Image Push Done"

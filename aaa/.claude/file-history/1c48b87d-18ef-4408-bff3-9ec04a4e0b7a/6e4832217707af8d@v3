@@ -1,0 +1,207 @@
+package com.cowave.search.application.legacy.mapper
+
+import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
+import com.cowave.search.application.legacy.dto.LinkedProductRequest
+import com.cowave.search.application.legacy.dto.UnlinkedProductDeleteRequest
+import com.cowave.search.application.legacy.dto.UnlinkedProductRequest
+import com.cowave.search.domain.index.dto.ChangedData
+import com.cowave.search.domain.index.dto.LegacyProductData
+import com.cowave.search.domain.proxy.category.CategoryProjection
+import com.cowave.search.domain.proxy.mall.MallProjection
+import com.cowave.shared.utils.DateTimeFormats
+import java.time.Instant
+import java.time.ZoneId
+
+object LegacySyncMapper {
+    private val dateFormatter =
+        DateTimeFormats.STANDARD
+            .withZone(ZoneId.of("Asia/Seoul"))
+
+    fun convertToLinkedRequest(
+        data: LegacyProductData,
+        mall: MallProjection,
+    ): LinkedProductRequest =
+        LinkedProductRequest(
+            shopProductCode = data.mallProductId,
+            shopCode = mall.mallIdDanawa ?: "",
+        )
+
+    fun convertToUnlinkedRequest(
+        data: LegacyProductData,
+        category: CategoryProjection,
+        mall: MallProjection,
+    ): UnlinkedPropductRequest {
+        val firstPromo = data.promotions?.firstOrNull()
+        return UnlinkedProductRequest(
+            shopProductCode = data.mallProductId,
+            shopCode = mall.mallIdDanawa ?: "",
+            productName = data.name,
+            stockYN = data.hasStock.convertToYN(),
+            couponDownloadYN = (data.benefit?.hasCouponDownload ?: false).convertToYN(),
+            brandCertification = data.isBrandCertification.convertToYOrEmpty(),
+            eventInfo = data.eventInfo ?: "",
+            differentialPostYN = (data.delivery?.hasShippingGrade ?: false).convertToYN(),
+            mobilePrice = data.price?.mobile ?: 0L,
+            cmpnyCateCode = data.mallCategoryId ?: 0L,
+            sellerId = data.sellerId ?: "",
+            productImageUrl = data.imageUrl ?: "",
+            addDescription = data.additionalInfo ?: "",
+            shopGift = data.benefit?.gift ?: "",
+            modifyDate = data.updatedAt.formatDate(),
+            categoryCode1 = category.categoryId1,
+            categoryCode2 = category.categoryId2 ?: 0,
+            categoryCode3 = category.categoryId3 ?: 0,
+            categoryCode4 = category.categoryId4 ?: 0,
+            brand = data.mallBrandName ?: "",
+            importYN = (data.isImportProduct ?: false).convertToYN(),
+            totalOrderPrice = 0L,
+            condition = "",
+            promotionInfo = "",
+            dataStat = mapDataStat(data.productStatus),
+            orderDate = "",
+            installationFeeYN = (data.hasInstallationCosts ?: false).convertToYN(),
+            shippingInfo = data.delivery?.info ?: "",
+            bestGoodsSort = "",
+            promotionPrice = firstPromo?.price ?: 0L,
+            isbn = data.isbn ?: "",
+            model = data.manufactureDefineNumber ?: "",
+            mobileUrl = data.linkUrl?.mobile ?: "",
+            differentialPost = data.delivery?.shippingGradeInfo ?: "",
+            adultYN = (data.isAdultRequired ?: false).convertToYOrEmpty(),
+            point = data.benefit?.point ?: 0,
+            groupSeq = data.mallProductCompositedId?.toLongOrNull() ?: 0L,
+            pcPrice = data.price?.pc ?: 0L,
+            venderId = data.vendorId ?: "",
+            nointerest = data.benefit?.interestFree ?: "",
+            promotionName = firstPromo?.name ?: "",
+            quickTime = data.delivery?.fastDeliveryTime ?: 0,
+            makeDate = data.createdAt?.let { dateFormatter.format(it) } ?: "",
+            registerDate = data.collectedAt.formatDate(),
+            promotionType = firstPromo?.type ?: 0,
+            memberPrice = data.price?.membershipPrice ?: 0L,
+            productMaker = data.mallManufacturerName ?: "",
+            orderCount = 0,
+            deliveryPrice = data.delivery?.shipping ?: 0,
+            shopCoupon = data.benefit?.coupon ?: "",
+            linkUrl = data.linkUrl?.pc ?: "",
+            barcode = data.barcode ?: "",
+            reviewCount = data.reviewCount ?: 0,
+            shipping = data.delivery?.shipping ?: 0,
+        )
+    }
+
+    fun convertToUnlinkedDeleteRequest(
+        data: LegacyProductData,
+        mall: MallProjection,
+    ): UnlinkedProductDeleteRequest =
+        UnlinkedProductDeleteRequest(
+            shopCode = mall.mallIdDanawa ?: "",
+            shopProductCode = data.mallProductId,
+        )
+
+    private fun Boolean.convertToYN(): String = if (this) "Y" else "N"
+
+    private fun Boolean.convertToYOrEmpty(): String = if (this) "Y" else ""
+
+    private fun Instant.formatDate(): String = dateFormatter.format(this)
+
+    fun convertToChangedLegacyData(changedData: List<ChangedData<Product>>): List<ChangedData<LegacyProductData>> =
+        changedData.map { changed ->
+            ChangedData(
+                id = changed.id,
+                op = changed.op,
+                beforeData = changed.beforeData?.convertToLegacyProduct(),
+                afterData = changed.afterData?.convertToLegacyProduct(),
+                partition = changed.partition,
+                offset = changed.offset,
+            )
+        }
+
+    private fun Product.convertToLegacyProduct(): LegacyProductData {
+        val danawaChannel = channelDatas?.get("DANAWA")
+        return LegacyProductData(
+            id = `id$1`.toString(),
+            name = name,
+            shopId = mallId,
+            mallProductId = mallProductId,
+            mallProductCompositedId = mallProductCompositedId,
+            categoryId = categoryId ?: 0,
+            mallCategory = mallCategory,
+            mallCategoryId = mallCategoryId,
+            mallBrandName = mallBrandName,
+            brandId = brandId,
+            mallManufacturerName = mallManufacturerName,
+            manufacturerId = manufacturerId,
+            manufactureDefineNumber = manufactureDefineNumber,
+            imageUrl = imageUrl,
+            hasStock = hasStock ?: false,
+            productStatus = collectedStatus ?: "ACTIVE",
+            isCatalogMatch = catalogMatchings?.any { it.source != "NONE" } ?: false,
+            isUsedProduct = isUsedProduct ?: false,
+            isRefurbished = isRefurbished ?: false,
+            isImportProduct = isImportProduct,
+            hasInstallationCosts = hasInstallationCosts,
+            barcode = barcode,
+            sellerId = sellerId,
+            reviewCount = reviewCount,
+            vendorId = vendorId,
+            additionalInfo = additionalInfo,
+            collectedAt = collectedAt ?: Instant.now(),
+            updatedAt = updatedAt ?: Instant.now(),
+            createdAt = createdAt,
+            linkUrl =
+                danawaChannel?.url?.let {
+                    LegacyProductData.LegacyUrl(pc = it.pc, mobile = it.mobile)
+                },
+            price =
+                danawaChannel?.price?.let {
+                    LegacyProductData.LegacyPrice(
+                        pc = it.pc,
+                        mobile = it.mobile,
+                        membershipPrice = it.membershipPrice,
+                    )
+                },
+            delivery =
+                delivery?.let {
+                    LegacyProductData.LegacyDelivery(
+                        shipping = it.shipping,
+                        originalShipping = it.originalShipping,
+                        isConditionalShipping = it.isConditionalShipping,
+                        hasShippingGrade = it.hasShippingGrade,
+                        shippingGradeInfo = it.shippingGradeInfo,
+                        info = it.info,
+                        fastDeliveryTime = it.fastDeliveryTime,
+                    )
+                },
+            isbn = isbn,
+            isAdultRequired = isAdultRequired,
+            isBrandCertification = brandAlliance != null,
+            benefit =
+                danawaChannel?.benefit?.let {
+                    LegacyProductData.LegacyBenefit(
+                        point = it.point,
+                        coupon = it.coupon,
+                        interestFree = it.interestFree,
+                        gift = it.gift,
+                        hasCouponDownload = it.hasCouponDownload,
+                    )
+                },
+            promotions =
+                danawaChannel?.promotions?.map {
+                    LegacyProductData.LegacyPromotion(
+                        type = it.type,
+                        name = it.name,
+                        price = it.price,
+                    )
+                },
+            eventInfo = danawaChannel?.eventInfo,
+            unreceivedAt = danawaChannel?.unreceivedAt,
+        )
+    }
+
+    private fun mapDataStat(status: String): String =
+        when (status) {
+            "ACTIVE" -> "N"
+            else -> "Y"
+        }
+}

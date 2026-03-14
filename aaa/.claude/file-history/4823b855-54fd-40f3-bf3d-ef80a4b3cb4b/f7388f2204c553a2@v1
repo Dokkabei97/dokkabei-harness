@@ -1,0 +1,32 @@
+---
+description: "외부 API 클라이언트: 형태소 분석 HTTP REST, 프록시 GraphQL/WebFlux"
+globs: ["**/outbound/client/**", "**/outbound-adapter/keyword/**", "**/outbound-adapter/proxy/**", "**/domain/keyword/**", "**/domain/proxy/**"]
+---
+
+## External Clients
+
+### 형태소 분석 (Keyword Analyzer) — HTTP REST
+
+- **클라이언트**: `outbound/client/keyword-analyzer/`
+  - `KeywordAnalysisClient.kt` — HTTP REST 클라이언트
+  - `KeywordAnalysisConfig.kt` — 설정
+  - `KeywordAnalysisClientProperties.kt` — endpoint, API key, timeouts
+  - `dto/` — KeywordAnalysisRequest, KeywordAnalysisResponse
+- **어댑터**: `outbound-adapter/keyword/KeywordAnalyzerImpl.kt`
+- **도메인 인터페이스**: `domain/keyword/KeywordAnalyzer.kt`
+- **설정**: `application-outbound.yml` → `client.keyword-analysis.url`, `api-key`
+
+### 프록시 API (Brand/Category/Mall/Manufacturer) — GraphQL + WebFlux
+
+- **클라이언트**: `outbound/client/proxy-api/`
+  - Spring GraphQL + WebFlux 기반
+  - Brand, Category, Manufacturer, Mall 프록시 API 호출
+- **어댑터**: `outbound-adapter/proxy/`
+  - `BrandRepositoryImpl`, `CategoryRepositoryImpl`, `ManufacturerRepositoryImpl`, `MallRepositoryImpl`
+  - `@TieredCache` 적용 (L1+L2 캐싱)
+- **도메인 모델**: `domain/proxy/` — Brand, Category, Manufacturer, Mall 도메인
+
+### 참고
+
+- gRPC 의존성은 build.gradle.kts에 존재하나 현재 **미사용** (proto/ 디렉토리 비어있음)
+- 형태소 분석은 HTTP REST 방식으로 연동 (gRPC 아님)

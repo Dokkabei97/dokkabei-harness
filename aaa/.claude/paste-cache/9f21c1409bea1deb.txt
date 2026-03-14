@@ -1,0 +1,73 @@
+[2026-02-20 16:51:22.740] [io-19] [] INFO  TieredCache.category - [category] L1 partial HIT [hit=9, miss=11]
+[2026-02-20 16:51:22.740] [io-20] [] INFO  TieredCache.mall - [mall] L1 ALL HIT [count=50]
+[2026-02-20 16:51:22.742] [io-19] [] INFO  TieredCache.category - [category] L2(Valkey) MISS [count=11, ids=[1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020]]
+[2026-02-20 16:51:22.810] [DefaultDispatcher-worker-4] [] INFO  c.c.s.o.l.LegacyReserveSyncRepositoryImpl - 레거시 비연동상품 동기화 요청 [operation=CREATE, count=100]
+[2026-02-20 16:51:23.355] [reactor-http-nio-4] [] WARN  r.n.http.client.HttpClientConnect - [8dc6543c-10, L:/10.10.12.114:65232 - R:/119.205.208.36:8080] The connection observed an error
+io.netty.handler.timeout.ReadTimeoutException: null
+[2026-02-20 16:51:23.383] [DefaultDispatcher-worker-4] [] ERROR c.c.s.c.legacy_api.LegacyApiClient - Legacy API pushQueue 호출 실패 [service=TCMPNY_LINK]: org.springframework.web.reactive.function.client.WebClientRequestException
+[2026-02-20 16:51:23.384] [DefaultDispatcher-worker-4] [] ERROR c.c.s.a.i.s.LegacyReserveSyncApplicationService - Legacy push 실패
+org.springframework.web.reactive.function.client.WebClientRequestException: null
+    at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:137)
+    Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+    *__checkpoint ⇢ Request to POST http://119.205.208.36:8080/pushQueue.json [DefaultWebClient]
+Original Stack Trace:
+        at org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction.lambda$wrapException$9(ExchangeFunctions.java:137)
+        at reactor.core.publisher.MonoErrorSupplied.subscribe(MonoErrorSupplied.java:55)
+        at reactor.core.publisher.Mono.subscribe(Mono.java:4576)
+        at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103)
+        at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+        at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+        at reactor.core.publisher.FluxPeek$PeekSubscriber.onError(FluxPeek.java:222)
+        at reactor.core.publisher.MonoNext$NextSubscriber.onError(MonoNext.java:93)
+        at reactor.core.publisher.MonoFlatMapMany$FlatMapManyMain.onError(MonoFlatMapMany.java:205)
+        at reactor.core.publisher.SerializedSubscriber.onError(SerializedSubscriber.java:124)
+        at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.whenError(FluxRetryWhen.java:229)
+        at reactor.core.publisher.FluxRetryWhen$RetryWhenOtherSubscriber.onError(FluxRetryWhen.java:279)
+        at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onError(FluxContextWrite.java:121)
+        at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.maybeOnError(FluxConcatMapNoPrefetch.java:327)
+        at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.onNext(FluxConcatMapNoPrefetch.java:212)
+        at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107)
+        at reactor.core.publisher.SinkManyEmitterProcessor.drain(SinkManyEmitterProcessor.java:476)
+        at reactor.core.publisher.SinkManyEmitterProcessor$EmitterInner.drainParent(SinkManyEmitterProcessor.java:620)
+        at reactor.core.publisher.FluxPublish$PubSubInner.request(FluxPublish.java:874)
+        at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+        at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.request(FluxConcatMapNoPrefetch.java:337)
+        at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.request(FluxContextWrite.java:136)
+        at reactor.core.publisher.Operators$DeferredSubscription.request(Operators.java:1742)
+        at reactor.core.publisher.FluxRetryWhen$RetryWhenMainSubscriber.onError(FluxRetryWhen.java:196)
+        at reactor.core.publisher.MonoCreate$DefaultMonoSink.error(MonoCreate.java:205)
+        at reactor.netty.http.client.HttpClientConnect$HttpObserver.onUncaughtException(HttpClientConnect.java:425)
+        at reactor.netty.ReactorNetty$CompositeConnectionObserver.onUncaughtException(ReactorNetty.java:715)
+        at reactor.netty.resources.DefaultPooledConnectionProvider$DisposableAcquire.onUncaughtException(DefaultPooledConnectionProvider.java:225)
+        at reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnection.onUncaughtException(DefaultPooledConnectionProvider.java:478)
+        at reactor.netty.channel.FluxReceive.drainReceiver(FluxReceive.java:245)
+        at reactor.netty.channel.FluxReceive.onInboundError(FluxReceive.java:466)
+        at reactor.netty.channel.ChannelOperations.onInboundError(ChannelOperations.java:535)
+        at reactor.netty.channel.ChannelOperationsHandler.exceptionCaught(ChannelOperationsHandler.java:153)
+        at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:346)
+        at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:325)
+        at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:317)
+        at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireExceptionCaught(CombinedChannelDuplexHandler.java:424)
+        at io.netty.channel.ChannelHandlerAdapter.exceptionCaught(ChannelHandlerAdapter.java:92)
+        at io.netty.channel.CombinedChannelDuplexHandler$1.fireExceptionCaught(CombinedChannelDuplexHandler.java:145)
+        at io.netty.channel.ChannelInboundHandlerAdapter.exceptionCaught(ChannelInboundHandlerAdapter.java:143)
+        at io.netty.channel.CombinedChannelDuplexHandler.exceptionCaught(CombinedChannelDuplexHandler.java:231)
+        at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:346)
+        at io.netty.channel.AbstractChannelHandlerContext.invokeExceptionCaught(AbstractChannelHandlerContext.java:325)
+        at io.netty.channel.AbstractChannelHandlerContext.fireExceptionCaught(AbstractChannelHandlerContext.java:317)
+        at io.netty.handler.timeout.ReadTimeoutHandler.readTimedOut(ReadTimeoutHandler.java:98)
+        at io.netty.handler.timeout.ReadTimeoutHandler.channelIdle(ReadTimeoutHandler.java:90)
+        at io.netty.handler.timeout.IdleStateHandler$ReaderIdleTimeoutTask.run(IdleStateHandler.java:525)
+        at io.netty.handler.timeout.IdleStateHandler$AbstractIdleTask.run(IdleStateHandler.java:497)
+        at io.netty.util.concurrent.PromiseTask.runTask(PromiseTask.java:98)
+        at io.netty.util.concurrent.ScheduledFutureTask.run(ScheduledFutureTask.java:160)
+        at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173)
+        at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:166)
+        at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:472)
+        at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:569)
+        at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)
+        at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: io.netty.handler.timeout.ReadTimeoutException: null

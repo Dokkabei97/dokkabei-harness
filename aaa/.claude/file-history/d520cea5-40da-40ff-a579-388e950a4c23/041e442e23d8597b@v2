@@ -1,0 +1,28 @@
+FROM eclipse-temurin:21-jdk-alpine AS builder
+
+WORKDIR /app
+
+COPY . .
+RUN chmod +x gradlew \
+    && ./gradlew :bootstrap:legacy-sync:bootJar --no-daemon
+
+# 레이어드 JAR 추출
+RUN java -Djarmode=tools -jar build/bootstrap/legacy-sync/libs/bootstrap-legacy-sync.jar \
+    extract --layers --destination extracted
+
+FROM eclipse-temurin:21-jre-alpine AS runner
+
+WORKDIR /apps
+
+# OpenTelemetry agent
+ARG OTEL_AGENT_VERSION=2.24.0
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_AGENT_VERSION}/opentelemetry-javaagent.jar /apps/otel-javaagent.jar
+COPY otel-config.yaml /apps/otel-config.yaml
+
+# Spring Boot 레이어드 복사 (변경 빈도 낮은 순)
+COPY --from=builder /app/extracted/dependencies/ ./
+COPY --from=builder /app/extracted/spring-boot-loader/ ./
+COPY --from=builder /app/extracted/snapshot-dependencies/ ./
+COPY --from=builder /app/extracted/application/ ./
+
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

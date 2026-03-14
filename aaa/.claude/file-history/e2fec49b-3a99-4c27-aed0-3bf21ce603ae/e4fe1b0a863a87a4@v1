@@ -1,0 +1,32 @@
+package com.cowave.search.inbound_adapter.handler.config
+
+import com.cowave.search.application.index.service.LegacySyncApplicationService
+import com.cowave.search.inbound_adapter.handler.ConsumerCallbackManager
+import com.cowave.search.inbound_adapter.handler.listener.ProductLegacySyncListener
+import org.apache.avro.specific.SpecificRecord
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
+
+@Configuration
+@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true")
+class LegacySyncKafkaConfig(
+    private val legacySyncConsumerProperties: LegacySyncConsumerProperties,
+    private val legacySyncApplicationService: LegacySyncApplicationService,
+    private val consumerCallbackManager: ConsumerCallbackManager,
+) {
+    @Bean
+    fun productLegacySyncKafkaListenerContainer(): ConcurrentMessageListenerContainer<SpecificRecord, SpecificRecord> {
+        val listener =
+            ProductLegacySyncListener(
+                legacySyncApplicationService = legacySyncApplicationService,
+                groupId = legacySyncConsumerProperties.productCdc.groupId,
+                consumerCallbackManager = consumerCallbackManager,
+            )
+        return DynamicIndexContainerFactory.createCdcContainer(
+            dynamicIndexConsumer = legacySyncConsumerProperties.productCdc,
+            listener = listener,
+        )
+    }
+}

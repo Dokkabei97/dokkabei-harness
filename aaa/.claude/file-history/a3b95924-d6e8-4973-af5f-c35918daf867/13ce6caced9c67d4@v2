@@ -1,0 +1,80 @@
+package com.cowave.search.application.index.service
+
+import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.Catalog
+import com.cowave.search.application.index.dto.Dependency
+import com.cowave.search.application.index.dto.DependencyId
+import com.cowave.search.application.index.mapper.toDeleteDocument
+import com.cowave.search.application.index.mapper.toIndexDocument
+import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
+import com.cowave.search.domain.index.dto.ChangedData
+import com.cowave.search.domain.index.dto.IndexDocument
+import com.cowave.search.domain.index.enums.Operation
+import com.cowave.search.domain.search.document.CatalogDocument
+import com.cowave.shared.utils.logger
+class CatalogAssembleService(
+    private val cachedProxyApplicationService: CachedProxyApplicationService,
+) {
+    private val logger by logger()
+
+    fun assemble(documents: List<ChangedData<Catalog>>): List<IndexDocument<CatalogDocument>> {
+        val dependencyId = getDependencyId(documents)
+        val dependency = cachedProxyApplicationService.fetchDependencies(dependencyId)
+
+        return documents
+            .filter { validateDependency(it, dependency) }
+            .map {
+                try {
+                    when (it.op) {
+                        Operation.CREATE,
+                        Operation.UPDATE -> {
+                            it.toIndexDocument(
+                                categoryProjection = dependency.categories[it.afterData?.categoryId]!!,
+                                manufacturerProjection = dependency.manufacturers[it.afterData?.manufacturerId]!!,
+                                brandProjection = dependency.brands[it.afterData?.brandId],
+                            )
+                        }
+                        Operation.DELETE -> it.toDeleteDocument()
+                    }
+                } catch (e: Exception) {
+                    logger.error(e) { "[Catalog Assemble] Failed to assemble catalog document." +
+                            " catalogId=[${it.id}], partition=[${it.partition}], offset=[${it.offset}]"}
+                    throw e
+                }
+            }
+    }
+
+    private fun getDependencyId(documents: List<ChangedData<Catalog>>): DependencyId {
+        val categoryIds: MutableSet<Int> = mutableSetOf()
+        val brandIds: MutableSet<Long> = mutableSetOf()
+        val manufacturerIds: MutableSet<Long> = mutableSetOf()
+
+        documents.forEach {
+            if (it.shouldFetchCategory) categoryIds.add(it.afterData!!.categoryId)
+            if (it.shouldFetchBrand) it.afterData?.brandId?.run { brandIds.add(this) }
+            if (it.shouldFetchManufacturer) manufacturerIds.add(it.afterData!!.manufacturerId)
+        }
+
+        return DependencyId(
+            categoryIds = categoryIds,
+            brandIds = brandIds,
+            manufacturerIds = manufacturerIds,
+        )
+    }
+
+    private fun validateDependency(document: ChangedData<Catalog>, dependency: Dependency): Boolean {
+
+        if (document.shouldFetchCategory && dependency.categories[document.afterData!!.categoryId] == null) {
+            logger.warn { "[Catalog Assemble] Skipped to index catalog. Category not found. categoryId=[${document.afterData!!.categoryId}]" +
+                    " catalogId=[${document.id}], partition=[${document.partition}], offset=[${document.offset}]" }
+            return false
+        }
+
+        if (document.shouldFetchManufacturer && dependency.manufacturers[document.afterData!!.manufacturerId] == null) {
+            logger.warn { "[Catalog Assemble] Skipped to index catalog. Manufacturer not found. manufacturerId=[${document.afterData!!.manufacturerId}]" +
+                    " catalogId=[${document.id}], partition=[${document.partition}], offset=[${document.offset}]" }
+            return false
+        }
+
+        return true
+    }
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "content": "Create domain models for structured response (TokenizeResponseV2, SynonymExpansionResult)",
+    "status": "pending",
+    "activeForm": "Creating domain models for structured response"
+  },
+  {
+    "content": "Enhance ProductModelName to store Viterbi segmentation results",
+    "status": "pending",
+    "activeForm": "Enhancing ProductModelName segmentation storage"
+  },
+  {
+    "content": "Implement structured synonym expansion logic (group by origin, track compounds)",
+    "status": "pending",
+    "activeForm": "Implementing structured synonym expansion logic"
+  },
+  {
+    "content": "Create compound token variation generator (cross-product algorithm)",
+    "status": "pending",
+    "activeForm": "Creating compound token variation generator"
+  },
+  {
+    "content": "Add get_tokenize_structured() method to TokenizeService",
+    "status": "pending",
+    "activeForm": "Adding get_tokenize_structured() service method"
+  },
+  {
+    "content": "Implement /api/v2/tokenize REST endpoint with new response format",
+    "status": "pending",
+    "activeForm": "Implementing /api/v2/tokenize REST endpoint"
+  },
+  {
+    "content": "Create gRPC TokenizeResponseV2 proto and implement GetTokenizeV2 RPC",
+    "status": "pending",
+    "activeForm": "Creating gRPC v2 proto and RPC method"
+  },
+  {
+    "content": "Write unit tests for structured response generation and compound variations",
+    "status": "pending",
+    "activeForm": "Writing unit tests for structured response"
+  },
+  {
+    "content": "Add integration tests with sample Korean product queries",
+    "status": "pending",
+    "activeForm": "Adding integration tests with product queries"
+  },
+  {
+    "content": "Validate backward compatibility of v1 API endpoints",
+    "status": "pending",
+    "activeForm": "Validating backward compatibility"
+  }
+]

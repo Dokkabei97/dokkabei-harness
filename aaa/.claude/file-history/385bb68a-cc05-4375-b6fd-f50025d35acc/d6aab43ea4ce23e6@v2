@@ -1,0 +1,29 @@
+set -g set-clipboard on
+
+# ── Status bar ──────────────────────────────────
+set -g status on
+set -g status-position bottom
+set -g status-style "bg=colour235,fg=colour250"
+
+# 왼쪽: 세션명 (밝은 하늘색)
+set -g status-left "#[bg=colour39,fg=colour16,bold] #S #[bg=colour235] "
+set -g status-left-length 30
+
+# 윈도우 목록: 비선택 윈도우
+setw -g window-status-format "#[fg=colour250] #I:#W "
+# 선택된 윈도우 (밝은 흰색, bold)
+setw -g window-status-current-format "#[fg=colour231,bold] #I:#W "
+# 구분자
+setw -g window-status-separator "#[fg=colour245]|"
+
+# ── Activity monitoring ─────────────────────────
+# 다른 윈도우에서 출력 발생 시 감지
+setw -g monitor-activity on
+# 시각적 알림 활성화
+set -g visual-activity off
+
+# 활동 감지된 윈도우: 밝은 노란색 + 깜빡임(blink)
+setw -g window-status-activity-style "fg=colour226,bold,blink"
+
+# 오른쪽: 비움 (필요시 시간 등 추가 가능)
+set -g status-right ""

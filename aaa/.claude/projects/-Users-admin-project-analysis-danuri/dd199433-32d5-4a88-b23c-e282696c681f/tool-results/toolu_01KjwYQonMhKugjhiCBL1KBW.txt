@@ -1,0 +1,124 @@
+     1→package com.danawa.search.analysis.product;
+     2→
+     3→import com.danawa.search.analysis.dict.CompoundDictionary;
+     4→import com.danawa.search.analysis.dict.CustomDictionary;
+     5→import com.danawa.search.analysis.dict.ProductNameDictionary;
+     6→import com.danawa.search.analysis.dict.SetDictionary;
+     7→import com.danawa.search.analysis.dict.SourceDictionary;
+     8→import com.danawa.search.analysis.dict.SpaceDictionary;
+     9→import com.danawa.search.analysis.dict.SynonymDictionary;
+    10→import com.danawa.search.analysis.korean.KoreanWordExtractor;
+    11→import com.danawa.search.analysis.korean.KoreanWordExtractor.ExtractedEntry;
+    12→import com.danawa.search.analysis.korean.PosTagProbEntry.TagProb;
+    13→import com.danawa.util.CharVector;
+    14→import com.danawa.util.TestUtil;
+    15→
+    16→import org.apache.logging.log4j.Logger;
+    17→import org.elasticsearch.common.logging.Loggers;
+    18→import org.junit.Before;
+    19→import org.junit.Test;
+    20→
+    21→import static org.junit.Assert.*;
+    22→
+    23→import java.io.BufferedOutputStream;
+    24→import java.io.FileOutputStream;
+    25→import java.io.OutputStream;
+    26→import java.util.ArrayList;
+    27→import java.util.HashMap;
+    28→import java.util.List;
+    29→import java.util.Map;
+    30→import java.util.TreeSet;
+    31→
+    32→public class KoreanWordExtractorTest {
+    33→
+    34→	private static Logger logger = Loggers.getLogger(KoreanWordExtractorTest.class, "");
+    35→
+    36→	@Before public void init() {
+    37→		TestUtil.setLogLevel(System.getProperty("LOG_LEVEL"), 
+    38→			ProductNameTokenizer.class, 
+    39→			ProductNameParsingRule.class,
+    40→			ProductNameAnalysisFilter.class);
+    41→	}
+    42→
+    43→	@Test public void testUserDictionary() {
+    44→		if (TestUtil.launchForBuild()) { return; }
+    45→		ProductNameDictionary dictionary = TestUtil.loadDictionary();
+    46→		SetDictionary userDict = dictionary.getDictionary(ProductNameDictionary.DICT_USER, SetDictionary.class);
+    47→		CustomDictionary brandDict = dictionary.getDictionary(ProductNameDictionary.DICT_BRAND, CustomDictionary.class);
+    48→		CustomDictionary makerDict= dictionary.getDictionary(ProductNameDictionary.DICT_MAKER, CustomDictionary.class);
+    49→		CustomDictionary categoryDict= dictionary.getDictionary(ProductNameDictionary.DICT_CATEGORY, CustomDictionary.class);
+    50→		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+    51→		CompoundDictionary compoundDict = dictionary.getDictionary(ProductNameDictionary.DICT_COMPOUND, CompoundDictionary.class);
+    52→		SpaceDictionary spaceDict = dictionary.getDictionary(ProductNameDictionary.DICT_SPACE, SpaceDictionary.class);
+    53→		SetDictionary stopDict = dictionary.getDictionary(ProductNameDictionary.DICT_STOP, SetDictionary.class);
+    54→		SetDictionary unitDict = dictionary.getDictionary(ProductNameDictionary.DICT_UNIT, SetDictionary.class);
+    55→		SynonymDictionary unitSynDict = dictionary.getDictionary(ProductNameDictionary.DICT_UNIT_SYNONYM, SynonymDictionary.class);
+    56→
+    57→		CharSequence word = null;
+    58→		word = new CharVector("JY모터스");
+    59→		logger.debug("CONTAINS {} = {}", word, userDict.contains(word));
+    60→		word = new CharVector("jy모터스");
+    61→		logger.debug("CONTAINS {} = {}", word, userDict.contains(word));
+    62→		word = new CharVector("SANDISK");
+    63→		CharSequence[] synonyms = synonymDict.get(word);
+    64→		for (CharSequence syn : synonyms) {
+    65→			logger.debug("SYNONYM:{}", syn);
+    66→		}
+    67→
+    68→		String[] compareData = { "sandisk", "예일가구" };
+    69→		compareData = new String[] { "z", "지", "제트", "zett", "jet", "sandisk", "산디스크" };
+    70→
+    71→		for (String key : compareData) {
+    72→			word = new CharVector(key);
+    73→			List<TagProb> result = dictionary.find(word);
+    74→			logger.debug("");
+    75→			logger.debug("RESULT-FOR {}:{}", word, result);
+    76→			logger.debug("USER:{} / {}", userDict.contains(word), userDict.set().size());
+    77→			logger.debug("BRAND:{} / {} / {}", brandDict.map().containsKey(word), brandDict.map().get(word), brandDict.getWordSet().size());
+    78→			logger.debug("MAKER:{} / {} / {}", makerDict.map().containsKey(word), makerDict.map().get(word), makerDict.getWordSet().size());
+    79→			logger.debug("CATEGORY:{} / {} / {}", categoryDict.map().containsKey(word), categoryDict.map().get(word), makerDict.getWordSet().size());
+    80→			logger.debug("SYNONYM:{}{} / {}", "", synonymDict.get(word), synonymDict.getWordSet().size());
+    81→			logger.debug("COMPOUND:{}{} / {}", "", compoundDict.get(word), synonymDict.getWordSet().size());
+    82→			logger.debug("SPACE:{}{} / {}", "", spaceDict.get(word), spaceDict.getWordSet().size());
+    83→			logger.debug("STOP:{} / {}", stopDict.contains(word), stopDict.set().size());
+    84→			logger.debug("UNIT:{} / {}", unitDict.contains(word), unitDict.set().size());
+    85→			logger.debug("UNITSYNONYM:{}{} / {}", "", unitSynDict.get(word), unitSynDict.getWordSet().size());
+    86→			logger.debug("--------------------------------------------------------------------------------");
+    87→		}
+    88→	}
+    89→
+    90→	@Test public void testUnitDictionaryAdd() throws Exception {
+    91→		if (TestUtil.launchForBuild()) { return; }
+    92→		ProductNameDictionary dictionary = TestUtil.loadDictionary();
+    93→		SetDictionary srcDict = dictionary.getDictionary(ProductNameDictionary.DICT_UNIT, SetDictionary.class);
+    94→		SetDictionary tgtDict = new SetDictionary();
+    95→		int count = 0;
+    96→		for (CharSequence word : srcDict.set()) {
+    97→			logger.debug("WORD:{}", word);
+    98→			tgtDict.addSourceLineEntry(word);
+    99→			count++;
+   100→		}
+   101→		tgtDict.addSourceLineEntry(new CharVector("%"));
+   102→		logger.debug("COUNT:{}", count);
+   103→		OutputStream ostream = null;
+   104→		try {
+   105→			ostream = new BufferedOutputStream(new FileOutputStream("/mnt/pub/Documents/workspace/TEST_HOME/esl-7.8.1/test.dict"));
+   106→			tgtDict.writeTo(ostream);
+   107→		} finally {
+   108→			try { ostream.close(); } catch (Exception ignore) { }
+   109→		}
+   110→		dictionary.addDictionary(ProductNameDictionary.DICT_UNIT, tgtDict);
+   111→	}
+   112→
+   113→	@Test public void testSynonymDictionary() {
+   114→		if (TestUtil.launchForBuild()) { return; }
+   115→		ProductNameDictionary dictionary = TestUtil.loadDictionary();
+   116→		SynonymDictionary synonymDict = dictionary.getDictionary(ProductNameDictionary.DICT_SYNONYM, SynonymDictionary.class);
+   117→		CharSequence word = null;
+   118→		word = new CharVector("sandisk");
+   119→		word = new CharVector("z");
+   120→		List<CharSequence> words = ProductNameDictionary.getTwowaySynonymWord(word, synonymDict.map());
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

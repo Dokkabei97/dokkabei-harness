@@ -1,0 +1,538 @@
+
+> admin@0.1.0 prebuild /Users/admin/project/admin-tools/shopping-frontend/admin
+> pnpm run codegen
+
+
+> admin@0.1.0 codegen /Users/admin/project/admin-tools/shopping-frontend/admin
+> graphql-codegen --config codegen.ts
+
+[dotenv@17.2.3] injecting env (33) from .env.development -- tip: ⚙️  override existing env vars with { override: true }
+[STARTED] Parse Configuration
+[SUCCESS] Parse Configuration
+[STARTED] Generate outputs
+[STARTED] Generate to ./src/generated/
+[STARTED] Generate to ./src/generated/auth-hooks.ts
+[STARTED] Generate to src/generated/mock-hooks.ts
+[STARTED] Generate to ./src/generated/real-hooks.ts
+[STARTED] Generate to ./src/gql/real/introspection.json
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to ./src/generated/auth-hooks.ts
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to ./src/generated/
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to ./src/gql/real/introspection.json
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to src/generated/mock-hooks.ts
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to ./src/generated/real-hooks.ts
+[SUCCESS] Generate outputs
+
+> admin@0.1.0 build /Users/admin/project/admin-tools/shopping-frontend/admin
+> next build
+
+   ▲ Next.js 15.2.8
+   - Environments: .env.production, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+./src/app/api/auth/logout/route.ts
+3:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/hooks/menu/ui/useMenuByPermission.ts
+5:15  Warning: 'ServiceMenu' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/hooks/user/useCurrentUserAssignment.ts
+50:13  Warning: '_groupId' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/libs/msw/mswProvider.tsx
+20:53  Warning: 'print' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/services/graphql/auth/authServerActions.ts
+40:1  Warning: `graphql` import should occur before import of `@/generated/auth-hooks`  import/order
+41:1  Warning: `next/headers` import should occur before import of `@/generated/auth-hooks`  import/order
+
+./src/shared/services/graphql/catalog/mapper.ts
+8:22  Warning: 'getCurrentDate' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/services/graphql/dictionary/useDictionariesWithUsers.ts
+41:8  Warning: React Hook useMemo has unnecessary dependencies: 'input' and 'page'. Either exclude them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/shared/services/graphql/product/useProduct.ts
+66:9  Warning: React Hook useMemo has an unnecessary dependency: 'input.cursorPage'. Either exclude it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/shared/services/graphql/ui-category/mapper.ts
+1:10  Warning: 'map' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/services/rest/billing/admin.ts
+39:52  Warning: 'errorType' is defined but never used.  @typescript-eslint/no-unused-vars
+39:82  Warning: 'message' is defined but never used.  @typescript-eslint/no-unused-vars
+66:53  Warning: 'reason' is defined but never used.  @typescript-eslint/no-unused-vars
+85:56  Warning: 'approver' is defined but never used.  @typescript-eslint/no-unused-vars
+88:55  Warning: 'reason' is defined but never used.  @typescript-eslint/no-unused-vars
+88:71  Warning: 'rejector' is defined but never used.  @typescript-eslint/no-unused-vars
+91:57  Warning: 'refundTransactionId' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/stores/useUserStore.ts
+3:1  Warning: `react` import should occur before type import of `@/generated/auth-hooks`  import/order
+4:1  Warning: `zustand` import should occur before type import of `@/generated/auth-hooks`  import/order
+
+./src/shared/ui/Collapsible/Collapsible.tsx
+4:8  Warning: Using exported name 'styled' as identifier for default import.  import/no-named-as-default
+
+./src/shared/ui/ColorPicker/index.tsx
+1:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+14:31  Warning: 'value' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/ui/FormLabel/FormLabelWithTooltip.tsx
+44:5  Warning: 'labelClassName' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/ui/SSRSuspense/SSRSuspense.tsx
+13:12  Warning: 'isLoading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/ui/Spinner/Spinner.tsx
+6:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/shared/ui/TableCountHeader/TableCountHeader.tsx
+1:29  Warning: 'ReactNode' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/ui/TableImageCarousel/TableImageCarousel.styles.ts
+2:8  Warning: Using exported name 'styled' as identifier for default import.  import/no-named-as-default
+
+./src/shared/ui/errors/ErrorBoundary.tsx
+151:5  Warning: 'isolate' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/ui/popups/StackedPopup/StackedPopup.stories.tsx
+225:8  Warning: React Hook useEffect has missing dependencies: 'closeChildPopup' and 'openChildPopup'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+310:8  Warning: React Hook useEffect has missing dependencies: 'closeChildPopup' and 'openChildPopup'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+395:8  Warning: React Hook useEffect has missing dependencies: 'closeChildPopup' and 'openChildPopup'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/shared/ui/popups/TabbedPopup/TabbedPopup.stories.tsx
+83:11  Warning: 'handleTabAdd' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+171:11  Warning: 'handleTabAdd' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+226:11  Warning: 'handleTabAdd' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/shared/utils/sanitize.ts
+18:22  Warning: Caution: `sanitizeHtml` also has a named export `defaults`. Check if you meant to write `import {defaults} from 'sanitize-html'` instead.  import/no-named-as-default-member
+40:16  Warning: Caution: `sanitizeHtml` also has a named export `defaults`. Check if you meant to write `import {defaults} from 'sanitize-html'` instead.  import/no-named-as-default-member
+
+./src/views/attribute-manage/ui/table/AttributeValueTableColumns.tsx
+177:19  Warning: 'dictionaryDescription' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/category-manage/model/usePhysicalCategoryManager.tsx
+84:8  Warning: React Hook useEffect has a missing dependency: 'form'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/views/category-manage/ui/Page.tsx
+6:8  Warning: Using exported name 'CategoryManageTable' as identifier for default import.  import/no-named-as-default
+9:8  Warning: Using exported name 'styled' as identifier for default import.  import/no-named-as-default
+
+./src/views/category-manage/ui/table/CategoryManageTable.tsx
+92:9  Warning: React Hook useMemo has a missing dependency: 'handleRowSelectionChange'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/views/category-manage/ui/table/ShippingFeeColumn.tsx
+4:32  Warning: 'Input' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/danawa-auto-login/ui/Page.tsx
+3:15  Warning: 'AutoLoginConfig' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/danawa-click-score/ui/Page.tsx
+6:55  Warning: 'Space' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/danawa-content-publish-manage/ui/Page.tsx
+86:75  Warning: 'sortOrder' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/danawa-content-register/ui/Page.tsx
+180:41  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/views/danawa-intro-manage/ui/Page.tsx
+13:5  Warning: 'Space' is defined but never used.  @typescript-eslint/no-unused-vars
+236:38  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+303:36  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/views/danawa-middle-banner/ui/Page.tsx
+3:15  Warning: 'MiddleBanner' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/danawa-real-curation/ui/Page.tsx
+17:5  Warning: 'Space' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/dictionary-manage/model/useDictionaryManagement.tsx
+68:9  Warning: 'error' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+129:19  Warning: 'result' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/dictionary-manage/ui/modal/DictionaryManageFormModal.tsx
+34:8  Warning: React Hook useEffect has a missing dependency: 'form'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/views/inipay-execution/ui/section/CartStep.tsx
+3:10  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/model/category-assignment/useCategoryAssignment.ts
+68:13  Warning: '_groupId' is defined but never used.  @typescript-eslint/no-unused-vars
+265:16  Warning: 'userId' is defined but never used.  @typescript-eslint/no-unused-vars
+265:32  Warning: 'assignedCategories' is defined but never used.  @typescript-eslint/no-unused-vars
+265:68  Warning: 'role' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/model/useCatalogCardList.ts
+28:25  Warning: 'setCardCurrentPage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/model/useCatalogTableList.ts
+37:18  Warning: 'catalogKeyword' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/model/useProductCatalogImageSource.ts
+1:1  Warning: `@/widgets/CatalogManagement/model/type` import should occur after import of `react`  import/order
+
+./src/views/monitor-catalog/model/useProductCatalogManufacturer.ts
+7:1  Warning: `lodash-es/debounce` import should occur before import of `@/shared/services/graphql/vendor/useVendor`  import/order
+8:1  Warning: `react` import should occur before import of `@/shared/services/graphql/vendor/useVendor`  import/order
+
+./src/views/monitor-catalog/ui/CatalogManagementFunctions.tsx
+37:5  Warning: 'onConfirm' is defined but never used.  @typescript-eslint/no-unused-vars
+38:5  Warning: 'onReject' is defined but never used.  @typescript-eslint/no-unused-vars
+47:5  Warning: 'onAiCatalogRegistration' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/CategorySearchTabs.tsx
+4:25  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+11:10  Warning: 'CategoryAssignmentModal' is defined but never used.  @typescript-eslint/no-unused-vars
+16:12  Warning: 'isAssignmentModalOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:35  Warning: 'setIsAssignmentModalOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/MonitorTab.tsx
+17:13  Warning: 'selectedRowKeys' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/Page.tsx
+4:27  Warning: 'Tag' is defined but never used.  @typescript-eslint/no-unused-vars
+17:8  Warning: Using exported name 'styled' as identifier for default import.  import/no-named-as-default
+26:9  Warning: 'keyword' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/CatalogHelpGuideModal.tsx
+68:15  Warning: 'idColumn' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+69:15  Warning: 'catalogNameColumn' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+70:15  Warning: 'imageColumn' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/CatalogSearchCondition.tsx
+124:12  Warning: 'nGramSearchEnabled' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+362:11  Warning: 'handleSaveSettings' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+372:19  Warning: 'combinedFilters' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+425:11  Warning: 'parseKeywordNavigation' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/list/CatalogCardList.tsx
+32:12  Warning: 'containerWidth' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/list/CatalogListWithPagination.tsx
+5:18  Warning: 'Tabs' is defined but never used.  @typescript-eslint/no-unused-vars
+7:10  Warning: 'useCatalogTableStore' is defined but never used.  @typescript-eslint/no-unused-vars
+8:10  Warning: 'useAiRecommendedCatalogList' is defined but never used.  @typescript-eslint/no-unused-vars
+10:8  Warning: 'AiRecommendedCatalogTable' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/modal/CatalogBulkEditModal/BulkEditTable.tsx
+394:19  Warning: 'fields' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/modal/CatalogBundleEditModal.tsx
+18:1  Warning: `antd` import should occur before import of `@/generated/real-hooks`  import/order
+19:1  Warning: `lodash-es` import should occur before import of `@/generated/real-hooks`  import/order
+20:1  Warning: `react` import should occur before import of `@/generated/real-hooks`  import/order
+174:8  Warning: React Hook useMemo has a missing dependency: 'sortedBundleCatalogs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/views/monitor-catalog/ui/catalog/modal/CatalogItemManageModalImageTabItem.tsx
+5:10  Warning: 'FaImage' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/table/CatalogTableFixedRowBottom.tsx
+19:5  Warning: 'isSimilarExpanded' is defined but never used.  @typescript-eslint/no-unused-vars
+20:5  Warning: 'onSimilarToggle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/catalog/table/CatalogTableFixedRowRight.tsx
+12:38  Warning: 'record' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/product/ProductSearchCondition.tsx
+239:11  Warning: 'handleSaveSettings' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+355:12  Warning: 'nGramSearchEnabled' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/monitor-catalog/ui/product/ProductTable.tsx
+148:37  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+163:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/views/payment-test/model/useProductSearch.ts
+4:10  Warning: 'SHOPPING_CONTEXT' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/payment-test/ui/section/ProductSelector.tsx
+26:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/views/place-academies/ui/Page.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+6:1  Warning: `antd/es/table` type import should occur before import of `react`  import/order
+
+./src/views/place-academies/ui/section/SearchPanel.tsx
+4:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+
+./src/views/place-community/ui/Page.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+6:1  Warning: `antd/es/table` type import should occur before import of `react`  import/order
+
+./src/views/place-dashboard/ui/Page.tsx
+4:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+
+./src/views/place-receipts/ui/Page.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+6:1  Warning: `antd/es/table` type import should occur before import of `react`  import/order
+
+./src/views/place-sync/ui/Page.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+
+./src/views/purchase-proxy-detail/ui/modal/LinkPurchaseModal.tsx
+5:71  Warning: 'Space' is defined but never used.  @typescript-eslint/no-unused-vars
+37:12  Warning: 'itemCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/search/dictionary/model/useSearchDictionary.ts
+6:1  Warning: `./types` type import should occur before import of `@tanstack/react-query`  import/order
+
+./src/views/search/dictionary/ui/Page.tsx
+5:1  Warning: `antd` type import should occur before import of `react`  import/order
+6:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+17:1  Warning: `../model/types` type import should occur before import of `react`  import/order
+19:1  Warning: `./SearchDictionaryList` import should occur before import of `./SearchDictionaryOverview`  import/order
+
+./src/views/search/dictionary/ui/SearchDictionaryList.tsx
+5:1  Warning: `antd` type import should occur before import of `react`  import/order
+6:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+22:1  Warning: `../model/types` type import should occur before import of `react`  import/order
+23:1  Warning: `../model/types` import should occur before import of `../model/useSearchDictionary`  import/order
+
+./src/views/search/dictionary/ui/SearchDictionaryOverview.tsx
+5:1  Warning: `antd` type import should occur before import of `react`  import/order
+6:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+8:1  Warning: `../model/types` type import should occur before import of `react`  import/order
+9:1  Warning: `../model/types` import should occur before import of `../model/useSearchDictionary`  import/order
+
+./src/views/search/dictionary/ui/modal/SearchDictionaryAddModal.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+7:1  Warning: `../../model/types` type import should occur before import of `react`  import/order
+8:1  Warning: `../../model/types` import should occur before import of `../../model/useSearchDictionary`  import/order
+
+./src/views/search/dictionary/ui/modal/SearchDictionaryEditModal.tsx
+5:1  Warning: `@ant-design/icons` import should occur before import of `antd`  import/order
+7:1  Warning: `../../model/types` type import should occur before import of `react`  import/order
+8:1  Warning: `../../model/types` import should occur before import of `../../model/useSearchDictionary`  import/order
+
+./src/views/service-manage/model/useGroups.ts
+12:41  Warning: 'error' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/model/usePermissions.ts
+12:41  Warning: 'error' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/model/useRoles.ts
+12:41  Warning: 'error' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/ui/group/GroupList.tsx
+23:5  Warning: 'record' is defined but never used.  @typescript-eslint/no-unused-vars
+24:5  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/ui/group/GroupUsers.tsx
+52:11  Warning: The 'members' logical expression could make the dependencies of useMemo Hook (at line 56) change on every render. To fix this, wrap the initialization of 'members' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+
+./src/views/service-manage/ui/menu/MenuEditForm.tsx
+3:54  Warning: 'Row' is defined but never used.  @typescript-eslint/no-unused-vars
+3:59  Warning: 'Col' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/ui/permisson/PermissionList.tsx
+23:5  Warning: 'record' is defined but never used.  @typescript-eslint/no-unused-vars
+24:5  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/ui/role/RoleList.tsx
+23:5  Warning: 'record' is defined but never used.  @typescript-eslint/no-unused-vars
+24:5  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/service-manage/ui/role/RoleUsers.tsx
+53:11  Warning: The 'members' logical expression could make the dependencies of useMemo Hook (at line 56) change on every render. To fix this, wrap the initialization of 'members' in its own useMemo() Hook.  react-hooks/exhaustive-deps
+
+./src/views/standard-category/ui/CategoryStandardManagement.tsx
+19:5  Warning: 'showCollapse' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/standard-category/ui/Page.tsx
+6:8  Warning: Using exported name 'styled' as identifier for default import.  import/no-named-as-default
+
+./src/views/standard-category/ui/attribute/AttributeTable.tsx
+6:1  Warning: `@ant-design/icons` import should occur before import of `@/generated/real-hooks`  import/order
+7:1  Warning: `antd` import should occur before import of `@/generated/real-hooks`  import/order
+8:1  Warning: `antd/es/table` type import should occur before import of `@/generated/real-hooks`  import/order
+9:1  Warning: `react` import should occur before import of `@/generated/real-hooks`  import/order
+252:29  Warning: 'displayOrder' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/model/useDraggableTree.tsx
+339:8  Warning: React Hook useEffect has a missing dependency: 'fetchDefaultCategories'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+339:9  Warning: React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
+
+./src/views/ui-category-manage/ui/DraggableTreeWithMenu.tsx
+7:8  Warning: Using exported name 'useDraggableTreeNew' as identifier for default import.  import/no-named-as-default
+
+./src/views/ui-category-manage/ui/Layout.tsx
+21:29  Warning: 'refetchSections' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/UiCategoryTab.tsx
+5:8  Warning: 'DraggableTreeWithMenu' is defined but never used.  @typescript-eslint/no-unused-vars
+14:30  Warning: 'setSelectedCategory' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+19:12  Warning: 'isNewCategoryMaking' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+19:33  Warning: 'setIsNewCategoryMaking' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/CategoryFormDepth1.tsx
+2:10  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+3:10  Warning: 'useQuery' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/CategoryFormDepth2.tsx
+1:10  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+2:10  Warning: 'useQuery' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/CategoryFormDepth3.tsx
+1:10  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+2:10  Warning: 'useQuery' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/CategoryFormDepth4.tsx
+1:10  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+2:10  Warning: 'useQuery' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/form/AdditionalInfoForm.tsx
+29:39  Warning: 'cleaned' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/form/DescriptionEditor.tsx
+2:8  Warning: 'Editor' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/modal/connection-type/CategorySettingBase.tsx
+39:40  Warning: '_options' is defined but never used.  @typescript-eslint/no-unused-vars
+231:8  Warning: React Hook useEffect has a missing dependency: 'fetchDefaultCategories'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/modal/connection-type/OptionSelections.tsx
+2:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/modal/connection-type/PartnerSearchSelect.tsx
+22:36  Warning: 'record' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/ui-category-manage/ui/tabs/ui-category-tab/modal/search-options/single/SingleMappingAttributeTable.tsx
+22:12  Warning: React Hook useMemo has an unnecessary dependency: 'singleGroups'. Either exclude it or remove the dependency array. Outer scope values like 'singleGroups' aren't valid dependencies because mutating them doesn't re-render the component.  react-hooks/exhaustive-deps
+
+./src/views/vendor-manage/model/excel.worker.ts
+40:13  Warning: 'mode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/views/vendor-manage/model/useExcelDownloader.ts
+18:29  Warning: 'mode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/widgets/CatalogManagement/basic/modals/BundlePriceModal.tsx
+34:32  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/widgets/CatalogManagement/detail/CatalogDetailContent.tsx
+171:11  Warning: 'handleBulkApply' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/widgets/CatalogManagement/detail/ContentModal.tsx
+97:8  Warning: React Hook useMemo has a missing dependency: 'initialData?.id'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/widgets/CatalogManagement/image/LargeImageListItem.tsx
+19:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/widgets/CategorySelectionModal/CategorySelectionModal.tsx
+27:5  Warning: 'restrictToAvailable' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+42:11  Warning: 'handleCategorySelect' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/widgets/SearchForm/SearchForm.tsx
+68:5  Warning: 'variant' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/51) ...
+   Generating static pages (12/51) 
+   Generating static pages (25/51) 
+   Generating static pages (38/51) 
+ ✓ Generating static pages (51/51)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      172 B         102 kB
+├ ○ /_not-found                            987 B         103 kB
+├ ƒ /[...not_found]                        172 B         102 kB
+├ ○ /ai/attribute                          329 B         353 kB
+├ ○ /ai/attribute/prompt-editor            329 B         353 kB
+├ ƒ /api/auth/logout                       172 B         102 kB
+├ ƒ /api/auth/refresh                      172 B         102 kB
+├ ƒ /api/extension/capture                 172 B         102 kB
+├ ƒ /api/extension/pending                 172 B         102 kB
+├ ƒ /api/health-check                      172 B         102 kB
+├ ƒ /api/image/copy                        172 B         102 kB
+├ ƒ /api/image/remove                      172 B         102 kB
+├ ƒ /api/image/upload                      172 B         102 kB
+├ ƒ /api/image/upload-bulk                 172 B         102 kB
+├ ○ /attribute/manage                    12.6 kB         634 kB
+├ ƒ /auth/callback                         172 B         102 kB
+├ ○ /catalog/monitor                      165 kB         843 kB
+├ ○ /category/manage                     20.9 kB         490 kB
+├ ○ /category/view                       8.02 kB         370 kB
+├ ○ /danawa/ad-banner/ending-banner      6.79 kB         374 kB
+├ ○ /danawa/content/click-score          1.85 kB         406 kB
+├ ○ /danawa/content/list                 12.6 kB         397 kB
+├ ○ /danawa/content/publish-manage       12.1 kB         297 kB
+├ ○ /danawa/content/register             8.98 kB         360 kB
+├ ○ /danawa/intro/manage                 6.23 kB         457 kB
+├ ○ /danawa/intro/resolution             8.93 kB         407 kB
+├ ○ /danawa/main/auto-login              8.66 kB         389 kB
+├ ○ /danawa/main/middle-banner           7.71 kB         333 kB
+├ ○ /danawa/main/plan-product            27.1 kB         468 kB
+├ ○ /danawa/main/promotion               11.5 kB         410 kB
+├ ○ /danawa/main/real-curation           12.5 kB         446 kB
+├ ○ /danawa/popup/list                   12.5 kB         397 kB
+├ ○ /danawa/popup/register               4.94 kB         371 kB
+├ ○ /danawa/push/manage                  13.5 kB         412 kB
+├ ○ /danawa/push/stats                   1.65 kB         393 kB
+├ ○ /dictionary                          22.7 kB         565 kB
+├ ○ /home                                6.02 kB         114 kB
+├ ○ /inipay/execution                    10.8 kB         316 kB
+├ ○ /inipay/scenario                     15.6 kB         400 kB
+├ ○ /login                               2.06 kB         176 kB
+├ ○ /payment/payment-test                  22 kB         474 kB
+├ ○ /payment/purchase-proxy              5.89 kB         419 kB
+├ ƒ /payment/purchase-proxy/[id]         20.3 kB         486 kB
+├ ○ /place-admin                         12.3 kB         252 kB
+├ ○ /place-admin/academies               10.6 kB         371 kB
+├ ○ /place-admin/community               8.32 kB         364 kB
+├ ○ /place-admin/receipts                10.8 kB         378 kB
+├ ○ /place-admin/sync                    13.1 kB         305 kB
+├ ○ /search/dictionary                   17.8 kB         392 kB
+├ ○ /service                             17.5 kB         432 kB
+├ ○ /settlement                          4.33 kB         382 kB
+├ ƒ /settlement/[id]                     24.2 kB         434 kB
+├ ○ /standard/category                   17.9 kB         621 kB
+├ ○ /ui-category/manage                  15.3 kB         390 kB
+├ ○ /unauthorized                          710 B         158 kB
+└ ○ /vendor                              33.7 kB         540 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/9003-c71c0dc0c2c3b057.js      46.3 kB
+  ├ chunks/92d81773-21a2a541959be3e6.js  53.3 kB
+  └ other shared chunks (total)           2.1 kB
+
+
+ƒ Middleware                             33.3 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,10 @@
+{
+  "matcher": "tool == \"{{TOOL}}\" && tool_input.{{FIELD}} matches \"{{PATTERN}}\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"{{NODE_SCRIPT}}\""
+    }
+  ],
+  "description": "{{DESCRIPTION}}"
+}

@@ -1,0 +1,19 @@
+package com.cowave.search.client.legacy_api
+
+import io.kotest.core.spec.style.FunSpec
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.test.context.SpringBootTest
+
+@SpringBootTest(
+    classes = [
+        LegacyApiClientConfig::class,
+        LegacyApiClient::class,
+    ],
+)
+@EnableConfigurationProperties(
+    LegacyApiClientProperties::class,
+)
+class LegacyApiTest(
+    private val legacyApiClient: LegacyApiClient,
+) : FunSpec({
+    })

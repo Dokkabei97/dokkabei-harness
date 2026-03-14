@@ -1,0 +1,71 @@
+package output
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"golang.org/x/term"
+)
+
+// JSONFormatter outputs data as JSON.
+type JSONFormatter struct{}
+
+// NewJSONFormatter creates a new JSON formatter.
+func NewJSONFormatter() *JSONFormatter {
+	return &JSONFormatter{}
+}
+
+func (f *JSONFormatter) Format(data interface{}) error {
+	return writeJSON(data)
+}
+
+// JSONRawFormatter outputs raw JSON data.
+type JSONRawFormatter struct{}
+
+// NewJSONRawFormatter creates a new raw JSON formatter.
+func NewJSONRawFormatter() *JSONRawFormatter {
+	return &JSONRawFormatter{}
+}
+
+func (f *JSONRawFormatter) Format(data interface{}) error {
+	raw, ok := data.(json.RawMessage)
+	if !ok {
+		return writeJSON(data)
+	}
+
+	if isTerminal() {
+		// Pretty-print for terminal
+		var parsed interface{}
+		if err := json.Unmarshal(raw, &parsed); err != nil {
+			fmt.Println(string(raw))
+			return nil
+		}
+		return writeJSON(parsed)
+	}
+
+	// Compact for pipe
+	fmt.Println(string(raw))
+	return nil
+}
+
+func writeJSON(data interface{}) error {
+	var output []byte
+	var err error
+
+	if isTerminal() {
+		output, err = json.MarshalIndent(data, "", "  ")
+	} else {
+		output, err = json.Marshal(data)
+	}
+	if err != nil {
+		return fmt.Errorf("formatting JSON: %w", err)
+	}
+
+	fmt.Println(string(output))
+	return nil
+}
+
+func isTerminal() bool {
+	return term.IsTerminal(int(os.Stdout.Fd()))
+}

@@ -1,0 +1,79 @@
+image:
+  pullPolicy: Always
+  tag: "latest"
+
+nameOverride: "cmn-legacy-sync"
+fullnameOverride: "cmn-legacy-sync"
+otelServiceName: "backend-was.cmn-search.cmn-legacy-sync"
+
+envFrom:
+  # 서비스 특화 ConfigMap 참조
+  - configMapRef:
+      name: cmn-legacy-sync-config
+  # secret 참조
+  - secretRef:
+      name: "cmn-search-credentials"
+
+# 서비스 특화 ConfigMap 설정
+config:
+  index:
+    adminCatalog: catalogs
+    adminProduct: products
+  # 인프라 공통 설정 (shared-resources에서 이관)
+  elasticsearch:
+    urls: "http://cmn-elasticsearch.danuricorp.com:80"
+    connectionTimeout: "5000"
+    socketTimeout: "5000"
+  valkey:
+    backend:
+      hosts: "cmn-valkey.danuricorp.com:6379"
+      database: "0"
+  keywordAnalysis:
+    url: "http://cmn-keyword-analysis-api.danuricorp.com:80"
+    connectionTimeout: "5000"
+    socketTimeout: "5000"
+
+httpRoute:
+  enabled: false
+  parentRefs:
+    - name: cmn-search-gateway
+      namespace: istio-system
+  hostnames:
+    - "cmn-legacy-sync.danuricorp.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: cmn-legacy-sync.danuricorp.com
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8080
+  tls: [ ]
+
+resources:
+  limits:
+    memory: 4Gi
+    cpu: 2
+  requests:
+    memory: 2Gi
+    cpu: 2
+
+replicaCount: 2
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+podAnnotations:
+  grafana.danuricorp.com/app: backend-was.cmn-search.cmn-legacy-sync
+  prometheus.io/interval: 30s

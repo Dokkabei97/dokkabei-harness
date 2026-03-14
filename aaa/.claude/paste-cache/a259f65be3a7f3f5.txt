@@ -1,0 +1,24 @@
+curl -fsSL "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)" | bash                                                                                                                                                                                                                     ─╯
+✋ STOP
+   🤨 It looks like you are piping commands from the internet to your shell!
+   🙏 Please take the time to review what's going to be executed...
+
+   Do you want to review the content? [Yes/No/Cancel] >
+   Do you want to review the content? [Yes/No/Cancel] > No
+
+🎢 Installing Oh my tmux! Buckle up!
+
+⚠️  '~'/.config/tmux directory exists, making a backup → '~'/.config/tmux.2026110353
+⚠️  '~'/.local/share/tmux/oh-my-tmux exists, making a backup
+'~'/.local/share/tmux/oh-my-tmux → '~'/.local/share/tmux/oh-my-tmux.2026110353
+
+✅ Using '~'/.local/share/tmux/oh-my-tmux
+✅ Using '~'/.config/tmux/tmux.conf
+✅ Using '~'/.config/tmux/tmux.conf.local
+
+⬇️  Cloning Oh my tmux! repository...
+
+✅ Symlinked '~'/.config/tmux/tmux.conf → '~'/.local/share/tmux/oh-my-tmux/.tmux.conf
+✅ Copied '~'/.local/share/tmux/oh-my-tmux/.tmux.conf.local → '~'/.config/tmux/tmux.conf.local
+
+🎉 Oh my tmux! successfully installed 🎉

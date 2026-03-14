@@ -1,0 +1,11 @@
+{
+  "id": "8",
+  "subject": "kotlin-developer",
+  "description": "당신은 Kotlin 개발자입니다. 이 Elasticsearch 커스텀 한글 형태소분석기 프로젝트의 모든 Java 코드를 Kotlin으로 마이그레이션해주세요.\n\n프로젝트 경로: /U",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

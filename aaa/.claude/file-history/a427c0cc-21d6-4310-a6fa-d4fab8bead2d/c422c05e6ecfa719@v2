@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""legacy-sync E2E 테스트용 Avro 메시지 생성기"""
+
+import json
+import random
+import sys
+
+PRODUCT_NS = "com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product"
+URL_NS = "com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Url"
+PRICE_NS = "com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Price"
+
+
+def make_product(pid, mall_id=100, category_id=1001, linked=False):
+    catalog = (
+        {"array": [{"catalogId": pid * 10, "source": {"string": "AUTO"}}]}
+        if linked
+        else None
+    )
+    return {
+        "_id": {"long": pid},
+        "mallId": {"int": mall_id + (pid % 50)},
+        "mallProductId": {"string": f"PROD-{pid}"},
+        "mallProductCompositedId": None,
+        "name": {"string": f"테스트상품-{pid}"},
+        "mallCategory": {"string": "카테고리"},
+        "mallCategoryId": {"long": category_id * 10},
+        "mallManufacturerName": None,
+        "manufacturerId": None,
+        "manufactureDefineNumber": None,
+        "mallBrandName": None,
+        "brandId": None,
+        "channelDatas": {
+            "map": {
+                "DANAWA": {
+                    "url": {
+                        URL_NS: {
+                            "pc": {"string": f"http://test.com/pc/{pid}"},
+                            "mobile": {"string": f"http://test.com/m/{pid}"},
+                        }
+                    },
+                    "price": {
+                        PRICE_NS: {
+                            "pc": {"long": random.randint(10000, 500000)},
+                            "mobile": {"long": random.randint(10000, 500000)},
+                            "membershipPrice": None,
+                        }
+                    },
+                    "benefit": None,
+                    "promotions": None,
+                    "unreceivedAt": None,
+                    "eventInfo": None,
+                    "originalEventInfo": None,
+                }
+            }
+        },
+        "delivery": None,
+        "hasStock": {"boolean": True},
+        "categoryId": {"int": category_id + (pid % 20)},
+        "createdAt": None,
+        "updatedAt": {"long": 1708416000000 + pid},
+        "collectedAt": {"long": 1708416000000 + pid},
+        "collectedStatus": {"string": "ACTIVE"},
+        "imageUrl": {"string": f"http://test.com/img/{pid}.jpg"},
+        "additionalInfo": None,
+        "hasInstallationCosts": None,
+        "isImportProduct": None,
+        "isRefurbished": None,
+        "isUsedProduct": None,
+        "barcode": None,
+        "sellerId": None,
+        "reviewCount": None,
+        "vendorId": None,
+        "warrantyAlliance": None,
+        "brandAlliance": None,
+        "isbn": None,
+        "catalogMatchings": catalog,
+        "isAdultRequired": None,
+        "inspection": None,
+        "expiredAt": None,
+        "audit": None,
+    }
+
+
+def make_envelope(pid, op, linked=False):
+    product = make_product(pid, linked=linked)
+    product_wrapped = {PRODUCT_NS: product}
+
+    if op == "d":
+        before, after = product_wrapped, None
+    else:
+        before, after = None, product_wrapped
+
+    return {
+        "before": before,
+        "after": after,
+        "op": {"string": op},
+        "schema_version": {"int": 1},
+    }
+
+
+def make_line(pid, op, linked=False):
+    key = json.dumps({"_id": pid}, ensure_ascii=False)
+    value = json.dumps(make_envelope(pid, op, linked), ensure_ascii=False)
+    return f"{key}|{value}"
+
+
+CASES = {
+    "unlinked_create": ("c", False),
+    "linked_create": ("c", True),
+    "unlinked_update": ("u", False),
+    "linked_update": ("u", True),
+    "unlinked_delete": ("d", False),
+    "linked_delete": ("d", True),
+}
+
+if __name__ == "__main__":
+    case_name = sys.argv[1]
+    count = int(sys.argv[2]) if len(sys.argv) > 2 else 500
+    base_id = int(sys.argv[3]) if len(sys.argv) > 3 else 100000
+
+    op, linked = CASES[case_name]
+    for i in range(count):
+        print(make_line(base_id + i, op, linked))

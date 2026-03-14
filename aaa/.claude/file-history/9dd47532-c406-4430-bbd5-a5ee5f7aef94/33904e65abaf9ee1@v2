@@ -1,0 +1,29 @@
+import { readFileSync, existsSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parse } from "yaml";
+import { modelsConfigSchema, type ModelsConfig } from "./schema.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+let cachedConfig: ModelsConfig | null = null;
+
+export function loadModelsConfig(configPath?: string): ModelsConfig {
+	if (cachedConfig) return cachedConfig;
+
+	const path = configPath ?? resolve(__dirname, "../../config/models.yaml");
+
+	if (!existsSync(path)) {
+		throw new Error(`Models config not found: ${path}`);
+	}
+
+	const raw = readFileSync(path, "utf-8");
+	const parsed = parse(raw);
+	cachedConfig = modelsConfigSchema.parse(parsed);
+	return cachedConfig;
+}
+
+export function reloadModelsConfig(configPath?: string): ModelsConfig {
+	cachedConfig = null;
+	return loadModelsConfig(configPath);
+}

@@ -1,0 +1,1103 @@
+Reading prompt from stdin...
+OpenAI Codex v0.104.0 (research preview)
+--------
+workdir: /Users/admin/project/agent-review
+model: gpt-5.3-codex-spark
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: xhigh
+reasoning summaries: auto
+session id: 019c7995-0b86-7a31-ab3a-15531c43ed08
+--------
+user
+LY Corporation의 AI 코드 리뷰 플랫폼 기술블로그를 참고하여, GitLab CI/CD + Copilot CLI 기반의 AI 코드 리뷰 플로우를 설계해줘.
+
+원본 블로그 핵심 구조:
+- GitHub Actions으로 PR 이벤트(open, synchronize, comment) 트리거
+- Caller-Executor 패턴: 개별 repo는 트리거만, 중앙 플랫폼이 리뷰 실행
+- Claude API로 코드 분석 후 PR에 라인별 Review Comment 등록
+- 프롬프트 레지스트리에서 기술스택별 맞춤 프롬프트 로드
+- 메트릭 수집(리뷰 수, 수용률 등)
+
+변경사항:
+1. GitHub -> GitLab (GitLab CI/CD, Merge Request, GitLab API)
+2. Claude API -> Copilot CLI (copilot 명령어 사용)
+
+다음을 포함하여 상세히 설계해줘:
+1. GitLab CI/CD .gitlab-ci.yml 설정 (MR 이벤트 트리거)
+2. Copilot CLI를 활용한 코드 리뷰 스크립트 (Python 또는 Shell)
+3. GitLab API를 통한 MR 라인별 코멘트 등록 방법
+4. Caller-Executor 패턴을 GitLab에서 구현하는 방법 (Multi-project pipeline 또는 GitLab API trigger)
+5. 프롬프트 레지스트리 설계
+6. 전체 시스템 아키텍처 다이어그램 (mermaid)
+7. 실제 구현 가능한 코드 예시
+
+코드는 실제로 동작할 수 있는 수준으로 작성해줘.
+
+deprecated: `collab` is deprecated. Use `[features].multi_agent` instead.
+  Enable it with `--enable multi_agent` or `[features].multi_agent` in config.toml. See https://github.com/openai/codex/blob/main/docs/config.md#feature-flags for details.
+mcp: aa-mcp starting
+mcp: aa-mcp failed: MCP client for `aa-mcp` failed to start: MCP startup failed: handshaking with MCP server failed: connection closed: initialize response
+mcp startup: failed: aa-mcp
+codex
+좋습니다. 요구사항대로 **GitLab CI/CD + Copilot CLI 기반 Caller-Executor 형태**로 설계한 실전 구성입니다.
+
+## 1) GitLab CI/CD `.gitlab-ci.yml` (MR 이벤트 트리거)
+
+`caller-repo/.gitlab-ci.yml` (오직 트리거만 수행)
+
+```yaml
+# caller-repo/.gitlab-ci.yml
+stages:
+  - trigger_review
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - when: never
+
+variables:
+  AI_REVIEW_EXECUTOR_REF: "main" # 중앙 실행기 기본 브랜치
+  GITLAB_API_V4_URL: "$CI_API_V4_URL"
+
+dispatch_ai_review:
+  stage: trigger_review
+  image: curlimages/curl:8.10.0
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_IID'
+      when: on_success
+    - when: never
+  script:
+    - >
+      curl -fsSL -X POST
+      --form "token=$AI_REVIEW_TRIGGER_TOKEN"
+      --form "ref=$AI_REVIEW_EXECUTOR_REF"
+      --form "variables[REVIEW_SOURCE_PROJECT_ID]=$CI_PROJECT_ID"
+      --form "variables[REVIEW_MR_IID]=$CI_MERGE_REQUEST_IID"
+      --form "variables[REVIEW_SOURCE_PROJECT_PATH]=$CI_PROJECT_PATH"
+      --form "variables[REVIEW_TRIGGER_REASON]=merge_request_event"
+      --form "variables[REVIEW_TARGET_BRANCH]=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      --form "variables[REVIEW_SOURCE_BRANCH]=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+      --form "variables[REVIEW_SOURCE_SHA]=$CI_COMMIT_SHA"
+      --form "variables[REVIEW_TRIGGER_SHA]=$CI_COMMIT_SHA"
+      "$GITLAB_API_V4_URL/projects/$AI_REVIEW_EXECUTOR_PROJECT_ID/trigger/pipeline"
+```
+
+설정 포인트  
+- `CI_PIPELINE_SOURCE=merge_request_event`가 `open`, `reopen`, `synchronize`에 해당.
+- `AI_REVIEW_TRIGGER_TOKEN`: 중앙 실행기 프로젝트의 trigger token(마스크드 변수).
+- `AI_REVIEW_EXECUTOR_PROJECT_ID`: 중앙 실행기 프로젝트 ID.
+
+---
+
+## 2) Copilot CLI 기반 리뷰 스크립트 (Python)
+
+`executor/requirements.txt`
+
+```txt
+PyYAML==6.0.2
+requests==2.32.4
+```
+
+`executor/scripts/run_ai_review.py`
+
+```python
+#!/usr/bin/env python3
+import hashlib
+import json
+import os
+import re
+import shlex
+import subprocess
+import time
+from collections import Counter
+from urllib.parse import quote_plus
+
+import requests
+import yaml
+
+API_URL = os.getenv("GITLAB_API_URL", "https://gitlab.com/api/v4")
+PROJECT_ID = os.environ["REVIEW_SOURCE_PROJECT_ID"]
+MR_IID = os.environ["REVIEW_MR_IID"]
+GITLAB_TOKEN = os.environ["GITLAB_API_TOKEN"]
+REGISTRY_PATH = os.getenv("PROMPT_REGISTRY_PATH", "config/prompt_registry.yaml")
+METRICS_ENDPOINT = os.getenv("METRICS_ENDPOINT", "")
+DIFF_MAX_CHARS = int(os.getenv("DIFF_MAX_CHARS", "50000"))
+MAX_FINDINGS = int(os.getenv("AI_REVIEW_MAX_FINDINGS", "60"))
+TRIGGER_REASON = os.getenv("REVIEW_TRIGGER_REASON", "manual")
+
+# Copilot CLI 호출 방식은 프로젝트에서 검증된 방식으로 맞춤
+COPILOT_CMD = os.getenv("COPILOT_CMD", "copilot")
+COPILOT_ARGS = shlex.split(os.getenv("COPILOT_ARGS", "suggest --json"))
+COPILOT_INPUT_MODE = os.getenv("COPILOT_INPUT_MODE", "stdin")  # stdin|arg
+
+session = requests.Session()
+session.headers.update({
+    "PRIVATE-TOKEN": GITLAB_TOKEN,
+    "Content-Type": "application/json",
+})
+
+project_enc = quote_plus(str(PROJECT_ID), safe="")
+
+
+def api_request(method: str, path: str, **kwargs):
+    url = f"{API_URL}/projects/{project_enc}{path}"
+    resp = session.request(method, url, timeout=60, **kwargs)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"{method} {url} failed: {resp.status_code} {resp.text}")
+    if resp.status_code == 204 or not resp.text:
+        return {}
+    return resp.json()
+
+
+def get_merge_request():
+    return api_request("GET", f"/merge_requests/{MR_IID}")
+
+
+def get_mr_changes():
+    return api_request("GET", f"/merge_requests/{MR_IID}/changes", params={"per_page": 100})
+
+
+def load_registry():
+    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def detect_stack(changes, registry):
+    explicit = os.getenv("REVIEW_TECH_STACK", "").strip()
+    stacks = registry.get("tech_stacks", {})
+    if explicit and explicit in stacks:
+        return explicit
+
+    score = Counter()
+    for item in changes.get("changes", []):
+        path = item.get("new_path") or item.get("old_path") or ""
+        for name, conf in stacks.items():
+            exts = conf.get("match_extensions", [])
+            if any(path.endswith(ext) for ext in exts):
+                score[name] += 1
+
+    if score:
+        return score.most_common(1)[0][0]
+    return "default"
+
+
+def build_prompt(mr, changes, stack, registry):
+    base = registry.get("default", {})
+    stack_conf = (registry.get("tech_stacks", {}).get(stack, {}))
+
+    system = stack_conf.get("system_prompt", base.get("system_prompt", "You are an expert code reviewer."))
+    rules = base.get("rules", []) + stack_conf.get("rules", [])
+    forbid = stack_conf.get("forbidden", [])
+    required = stack_conf.get("must_report", [])
+
+    blocks = []
+    for c in changes.get("changes", []):
+        path = c.get("new_path") or c.get("old_path")
+        diff = c.get("diff", "")
+        if diff:
+            blocks.append(f"### {path}\n```diff\n{diff}\n```")
+
+    diff_text = "\n\n".join(blocks)
+    if len(diff_text) > DIFF_MAX_CHARS:
+        diff_text = diff_text[:DIFF_MAX_CHARS] + "\n\n...[truncated]"
+
+    return "\n".join(
+        [
+            system,
+            "",
+            "Return ONLY strict JSON array. No markdown, no fences.",
+            'Each item must be object with: "file","line","severity","rule","message","suggestion".',
+            'If line is not applicable, set line=0 and add an overall summary note.',
+            "",
+            f"MR title: {mr.get('title', '')}",
+            f"Source branch: {mr.get('source_branch', '')}",
+            f"Target branch: {mr.get('target_branch', '')}",
+            f"Trigger reason: {TRIGGER_REASON}",
+            "",
+            "Global rules:",
+            *(f"- {r}" for r in rules),
+            "",
+            "Forbidden patterns:",
+            *(f"- {x}" for x in forbid),
+            "",
+            "Must-check areas:",
+            *(f"- {x}" for x in required),
+            "",
+            "Now inspect the following unified diffs and return findings:",
+            diff_text,
+        ]
+    )
+
+
+def call_copilot(prompt: str) -> str:
+    cmd = [COPILOT_CMD] + COPILOT_ARGS
+    if COPILOT_INPUT_MODE == "stdin":
+        proc = subprocess.run(cmd, input=prompt, text=True, capture_output=True)
+    else:
+        proc = subprocess.run(cmd + [prompt], text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise RuntimeError(f"Copilot failed: {proc.stderr or proc.stdout}")
+    return proc.stdout.strip()
+
+
+def parse_findings(raw: str):
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        m = re.search(r"\[\s*\{[\s\S]*\}\s*\]", raw)
+        if not m:
+            raise RuntimeError(f"Copilot output is not JSON:\n{raw}")
+        data = json.loads(m.group(0))
+
+    if isinstance(data, dict):
+        data = data.get("findings", [])
+    if not isinstance(data, list):
+        raise ValueError("Copilot output must be JSON array.")
+    return data
+
+
+def emoji(sev: str) -> str:
+    return {"critical": "🚨", "high": "⚠️", "medium": "🟡", "low": "ℹ️"}.get((sev or "").lower(), "⚠️")
+
+
+def mk_comment_body(f):
+    sev = (f.get("severity") or "medium").lower()
+    rule = f.get("rule") or "review-finding"
+    msg = (f.get("message") or "").strip()
+    fix = (f.get("suggestion") or "").strip()
+    return (
+        f"### {emoji(sev)} {rule}\n\n"
+        f"- **Severity**: {sev}\n\n"
+        f"{msg}\n\n"
+        f"**Suggested fix**\n{fix if fix else '-'}"
+    )
+
+
+def post_line_comment(file: str, line: int, body: str, diff_refs: dict):
+    # line==0이면 PR 본문 코멘트로 보냄
+    if line <= 0:
+        return api_request(
+            "POST",
+            f"/merge_requests/{MR_IID}/notes",
+            json={"body": body},
+        )
+
+    payload = {
+        "body": body,
+        "position": {
+            "position_type": "text",
+            "base_sha": diff_refs["base_sha"],
+            "start_sha": diff_refs["start_sha"],
+            "head_sha": diff_refs["head_sha"],
+            "old_path": file,
+            "new_path": file,
+            "new_line": line,
+        },
+    }
+    return api_request(
+        "POST",
+        f"/merge_requests/{MR_IID}/discussions",
+        json=payload,
+    )
+
+
+def send_metrics(payload):
+    if not METRICS_ENDPOINT:
+        return
+    try:
+        requests.post(METRICS_ENDPOINT, json=payload, timeout=10).raise_for_status()
+    except Exception:
+        # 리뷰 실패로 이어지지 않게 안전하게 무시
+        pass
+
+
+def main():
+    start = time.time()
+
+    mr = get_merge_request()
+    changes = get_mr_changes()
+    diff_refs = mr.get("diff_refs", {})
+    if not diff_refs:
+        raise RuntimeError("No diff_refs found on merge request object.")
+
+    registry = load_registry()
+    stack = detect_stack(changes, registry)
+    prompt = build_prompt(mr, changes, stack, registry)
+    raw = call_copilot(prompt)
+    findings = parse_findings(raw)
+
+    if len(findings) > MAX_FINDINGS:
+        findings = findings[:MAX_FINDINGS]
+
+    posted = 0
+    skipped = 0
+    seen = set()
+    for item in findings:
+        if not isinstance(item, dict):
+            skipped += 1
+            continue
+
+        file = item.get("file") or ""
+        if not file:
+            skipped += 1
+            continue
+
+        try:
+            line = int(item.get("line") or 0)
+        except (TypeError, ValueError):
+            line = 0
+
+        body = mk_comment_body(item)
+        sig = hashlib.sha1(f"{file}:{line}:{item.get('message','')}".encode()).hexdigest()
+        if sig in seen:
+            continue
+        seen.add(sig)
+
+        try:
+            post_line_comment(file, line, body, diff_refs)
+            posted += 1
+        except Exception:
+            skipped += 1
+
+    summary = (
+        f"AI 리뷰 완료 ({TRIGGER_REASON})\n\n"
+        f"- 스택: {stack}\n"
+        f"- 전체 발견: {len(findings)}\n"
+        f"- 게시됨: {posted}\n"
+        f"- 스킵: {skipped}"
+    )
+    api_request("POST", f"/merge_requests/{MR_IID}/notes", json={"body": summary})
+
+    metrics = {
+        "project_id": PROJECT_ID,
+        "mr_iid": int(MR_IID),
+        "tech_stack": stack,
+        "source": TRIGGER_REASON,
+        "total_findings": len(findings),
+        "posted_comments": posted,
+        "skipped": skipped,
+        "duration_ms": int((time.time() - start) * 1000),
+        "created_at": int(time.time()),
+    }
+    send_metrics(metrics)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+`executor/.gitlab-ci.yml`
+
+```yaml
+# executor/.gitlab-ci.yml
+stages:
+  - review
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+      when: always
+    - when: never
+
+review_job:
+  stage: review
+  image: python:3.12
+  variables:
+    PYTHONUNBUFFERED: "1"
+    GITLAB_API_URL: "$CI_API_V4_URL"
+    PROMPT_REGISTRY_PATH: "config/prompt_registry.yaml"
+
+    # Copilot CLI가 실제로 받는 형태에 맞춰 수정
+    COPILOT_CMD: "copilot"
+    COPILOT_ARGS: "suggest"
+    COPILOT_INPUT_MODE: "stdin"
+
+  script:
+    - pip install -r requirements.txt
+    - python scripts/run_ai_review.py
+```
+
+---
+
+## 3) GitLab API로 MR 라인별 코멘트 등록
+
+### Inline comment (line comment)
+`POST /api/v4/projects/:id/merge_requests/:iid/discussions`
+
+```bash
+curl -X POST \
+  "$CI_API_V4_URL/projects/$REVIEW_SOURCE_PROJECT_ID/merge_requests/$REVIEW_MR_IID/discussions" \
+  --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "body": "⚠️ SQL injection 가능성이 있습니다.",
+    "position": {
+      "position_type": "text",
+      "base_sha": "'$BASE_SHA'",
+      "start_sha": "'$START_SHA'",
+      "head_sha": "'$HEAD_SHA'",
+      "old_path": "app/service.py",
+      "new_path": "app/service.py",
+      "new_line": 42
+    }
+  }'
+```
+
+### MR 본문 코멘트
+`POST /api/v4/projects/:id/merge_requests/:iid/notes`  
+요약, 처리 불가 항목, 정책 공지 등에 사용.
+
+---
+
+## 4) Caller-Executor 패턴 구현 (GitLab)
+
+권장 방식: **API Trigger + Multi-project pipeline**
+- Caller는 MR 이벤트만 받고 `AI_REVIEW_TRIGGER_TOKEN`으로 중앙 실행기 프로젝트 파이프라인을 트리거.
+- 실행기에서 실제 코드 diff 조회, Copilot 분석, GitLab API 코멘트 등록, 메트릭 저장 수행.
+
+참고: `trigger` 키워드 방식도 가능(동일 그룹/권한 정책에서 편리), 대신 프로젝트 간 권한 제어가 더 엄격한 trigger-token 방식이 운영상 안전합니다.
+
+```yaml
+# caller에서 trigger 키워드 방식 (대안)
+trigger_ai_review:
+  trigger:
+    project: group/ai-review-executor
+    branch: main
+    strategy: depend
+  variables:
+    REVIEW_SOURCE_PROJECT_ID: $CI_PROJECT_ID
+    REVIEW_MR_IID: $CI_MERGE_REQUEST_IID
+```
+
+### MR open/synchronize + comment 이벤트 처리
+- `open/synchronize`: `merge_request_event`로 caller CI 자동 실행.
+- `comment`: GitLab은 기본 CI 규칙으로 Note 이벤트를 직접 받지 않음.
+  - GitLab Webhook `Note Hook`을 별도 서비스가 받아서 `/ai-review` 같은 명령이 들어오면 같은 trigger API를 호출해 executor 파이프라인을 재실행.
+
+---
+
+## 5) 프롬프트 레지스트리 설계
+
+`executor/config/prompt_registry.yaml`
+
+```yaml
+default:
+  system_prompt: |
+    You are a strict security and quality focused code reviewer.
+  rules:
+    - Prioritize correctness and security over style.
+    - Report only actionable issues with reproducible impact.
+    - Prefer short, explicit fixes.
+  forbidden:
+    - "Do not mention speculative concerns without evidence from diff."
+    - "Do not output markdown except plain text JSON."
+
+tech_stacks:
+  python:
+    match_extensions: [".py"]
+    system_prompt: |
+      You are an expert Python reviewer for backend services.
+    rules:
+      - Check for insecure deserialization, SQL injection, command injection.
+      - Check exception handling and transaction boundaries.
+      - Check unhandled NoneType risks and type-mismatch edge cases.
+      - Check logging of secrets or PII.
+    must_report:
+      - Security-sensitive input/output handling
+      - Missing authorization checks
+      - Broad exception handling masking failures
+
+  javascript:
+    match_extensions: [".js", ".ts", ".jsx", ".tsx"]
+    system_prompt: |
+      You are an expert JavaScript/TypeScript reviewer for web services.
+    rules:
+      - Check async/await race conditions and unhandled Promise rejections.
+      - Validate input before SQL/ORM calls and template interpolation.
+      - Check DOM/text injection and auth logic.
+    must_report:
+      - Prototype pollution risks
+      - Object mutation side effects
+      - Insecure dependency import
+
+  java:
+    match_extensions: [".java", ".kt"]
+    system_prompt: |
+      You are an expert Java/Kotlin code reviewer.
+    rules:
+      - Check null-safety and concurrency issues.
+      - Validate transaction boundaries and privilege checks.
+      - Check resource leak and exception handling.
+```
+
+동작 방식
+- 변경 파일 확장자로 스택 자동 추론.
+- 명시 변수 `REVIEW_TECH_STACK`가 있으면 우선 적용.
+- 스택별 규칙 + 공통 규칙 합쳐서 프롬프트 생성.
+
+---
+
+## 6) 전체 아키텍처 (Mermaid)
+
+```mermaid
+flowchart TD
+  A[개발자: Merge Request 생성/갱신] --> B[caller-repo GitLab MR Pipeline]
+  B --> C[dispatch_ai_review job]
+  C --> D[GitLab Trigger API 호출]
+  D --> E[executor-project 파이프라인 실행]
+  D --> F[옵션: note 이벤트 webhook]
+  F --> D
+  E --> G[run_ai_review.py]
+  G --> H[GitLab API: MR 및 changes 조회]
+  G --> I[Prompt Registry 로드]
+  G --> J[Copilot CLI 실행]
+  J --> K[코멘트 JSON 파싱]
+  K --> L[GitLab API: discussions/notes 등록]
+  L --> M[GitLab MR에 라인별 코멘트 반영]
+  G --> N[Metrics API / DB 저장]
+  N --> O[리뷰 수, 수용률 대시보드]
+```
+
+---
+
+필요하면 다음으로 이어서 아래 항목만 바로 이어서 만들어드릴게요.
+1. 중앙 실행기 실행 시간 단축을 위한 병렬 작업 분할(파일 단위 배치 분석) 설계
+2. GitLab 토큰/권한 모델(개인토큰 vs Project Access Token vs 그룹 토큰) 운영 가이드
+3. 메트릭 수용률 계산 스크립트(merged MR 기준 accepted_count / total_findings) 추가 설계
+tokens used
+35,611
+좋습니다. 요구사항대로 **GitLab CI/CD + Copilot CLI 기반 Caller-Executor 형태**로 설계한 실전 구성입니다.
+
+## 1) GitLab CI/CD `.gitlab-ci.yml` (MR 이벤트 트리거)
+
+`caller-repo/.gitlab-ci.yml` (오직 트리거만 수행)
+
+```yaml
+# caller-repo/.gitlab-ci.yml
+stages:
+  - trigger_review
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - when: never
+
+variables:
+  AI_REVIEW_EXECUTOR_REF: "main" # 중앙 실행기 기본 브랜치
+  GITLAB_API_V4_URL: "$CI_API_V4_URL"
+
+dispatch_ai_review:
+  stage: trigger_review
+  image: curlimages/curl:8.10.0
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_IID'
+      when: on_success
+    - when: never
+  script:
+    - >
+      curl -fsSL -X POST
+      --form "token=$AI_REVIEW_TRIGGER_TOKEN"
+      --form "ref=$AI_REVIEW_EXECUTOR_REF"
+      --form "variables[REVIEW_SOURCE_PROJECT_ID]=$CI_PROJECT_ID"
+      --form "variables[REVIEW_MR_IID]=$CI_MERGE_REQUEST_IID"
+      --form "variables[REVIEW_SOURCE_PROJECT_PATH]=$CI_PROJECT_PATH"
+      --form "variables[REVIEW_TRIGGER_REASON]=merge_request_event"
+      --form "variables[REVIEW_TARGET_BRANCH]=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      --form "variables[REVIEW_SOURCE_BRANCH]=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+      --form "variables[REVIEW_SOURCE_SHA]=$CI_COMMIT_SHA"
+      --form "variables[REVIEW_TRIGGER_SHA]=$CI_COMMIT_SHA"
+      "$GITLAB_API_V4_URL/projects/$AI_REVIEW_EXECUTOR_PROJECT_ID/trigger/pipeline"
+```
+
+설정 포인트  
+- `CI_PIPELINE_SOURCE=merge_request_event`가 `open`, `reopen`, `synchronize`에 해당.
+- `AI_REVIEW_TRIGGER_TOKEN`: 중앙 실행기 프로젝트의 trigger token(마스크드 변수).
+- `AI_REVIEW_EXECUTOR_PROJECT_ID`: 중앙 실행기 프로젝트 ID.
+
+---
+
+## 2) Copilot CLI 기반 리뷰 스크립트 (Python)
+
+`executor/requirements.txt`
+
+```txt
+PyYAML==6.0.2
+requests==2.32.4
+```
+
+`executor/scripts/run_ai_review.py`
+
+```python
+#!/usr/bin/env python3
+import hashlib
+import json
+import os
+import re
+import shlex
+import subprocess
+import time
+from collections import Counter
+from urllib.parse import quote_plus
+
+import requests
+import yaml
+
+API_URL = os.getenv("GITLAB_API_URL", "https://gitlab.com/api/v4")
+PROJECT_ID = os.environ["REVIEW_SOURCE_PROJECT_ID"]
+MR_IID = os.environ["REVIEW_MR_IID"]
+GITLAB_TOKEN = os.environ["GITLAB_API_TOKEN"]
+REGISTRY_PATH = os.getenv("PROMPT_REGISTRY_PATH", "config/prompt_registry.yaml")
+METRICS_ENDPOINT = os.getenv("METRICS_ENDPOINT", "")
+DIFF_MAX_CHARS = int(os.getenv("DIFF_MAX_CHARS", "50000"))
+MAX_FINDINGS = int(os.getenv("AI_REVIEW_MAX_FINDINGS", "60"))
+TRIGGER_REASON = os.getenv("REVIEW_TRIGGER_REASON", "manual")
+
+# Copilot CLI 호출 방식은 프로젝트에서 검증된 방식으로 맞춤
+COPILOT_CMD = os.getenv("COPILOT_CMD", "copilot")
+COPILOT_ARGS = shlex.split(os.getenv("COPILOT_ARGS", "suggest --json"))
+COPILOT_INPUT_MODE = os.getenv("COPILOT_INPUT_MODE", "stdin")  # stdin|arg
+
+session = requests.Session()
+session.headers.update({
+    "PRIVATE-TOKEN": GITLAB_TOKEN,
+    "Content-Type": "application/json",
+})
+
+project_enc = quote_plus(str(PROJECT_ID), safe="")
+
+
+def api_request(method: str, path: str, **kwargs):
+    url = f"{API_URL}/projects/{project_enc}{path}"
+    resp = session.request(method, url, timeout=60, **kwargs)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"{method} {url} failed: {resp.status_code} {resp.text}")
+    if resp.status_code == 204 or not resp.text:
+        return {}
+    return resp.json()
+
+
+def get_merge_request():
+    return api_request("GET", f"/merge_requests/{MR_IID}")
+
+
+def get_mr_changes():
+    return api_request("GET", f"/merge_requests/{MR_IID}/changes", params={"per_page": 100})
+
+
+def load_registry():
+    with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def detect_stack(changes, registry):
+    explicit = os.getenv("REVIEW_TECH_STACK", "").strip()
+    stacks = registry.get("tech_stacks", {})
+    if explicit and explicit in stacks:
+        return explicit
+
+    score = Counter()
+    for item in changes.get("changes", []):
+        path = item.get("new_path") or item.get("old_path") or ""
+        for name, conf in stacks.items():
+            exts = conf.get("match_extensions", [])
+            if any(path.endswith(ext) for ext in exts):
+                score[name] += 1
+
+    if score:
+        return score.most_common(1)[0][0]
+    return "default"
+
+
+def build_prompt(mr, changes, stack, registry):
+    base = registry.get("default", {})
+    stack_conf = (registry.get("tech_stacks", {}).get(stack, {}))
+
+    system = stack_conf.get("system_prompt", base.get("system_prompt", "You are an expert code reviewer."))
+    rules = base.get("rules", []) + stack_conf.get("rules", [])
+    forbid = stack_conf.get("forbidden", [])
+    required = stack_conf.get("must_report", [])
+
+    blocks = []
+    for c in changes.get("changes", []):
+        path = c.get("new_path") or c.get("old_path")
+        diff = c.get("diff", "")
+        if diff:
+            blocks.append(f"### {path}\n```diff\n{diff}\n```")
+
+    diff_text = "\n\n".join(blocks)
+    if len(diff_text) > DIFF_MAX_CHARS:
+        diff_text = diff_text[:DIFF_MAX_CHARS] + "\n\n...[truncated]"
+
+    return "\n".join(
+        [
+            system,
+            "",
+            "Return ONLY strict JSON array. No markdown, no fences.",
+            'Each item must be object with: "file","line","severity","rule","message","suggestion".',
+            'If line is not applicable, set line=0 and add an overall summary note.',
+            "",
+            f"MR title: {mr.get('title', '')}",
+            f"Source branch: {mr.get('source_branch', '')}",
+            f"Target branch: {mr.get('target_branch', '')}",
+            f"Trigger reason: {TRIGGER_REASON}",
+            "",
+            "Global rules:",
+            *(f"- {r}" for r in rules),
+            "",
+            "Forbidden patterns:",
+            *(f"- {x}" for x in forbid),
+            "",
+            "Must-check areas:",
+            *(f"- {x}" for x in required),
+            "",
+            "Now inspect the following unified diffs and return findings:",
+            diff_text,
+        ]
+    )
+
+
+def call_copilot(prompt: str) -> str:
+    cmd = [COPILOT_CMD] + COPILOT_ARGS
+    if COPILOT_INPUT_MODE == "stdin":
+        proc = subprocess.run(cmd, input=prompt, text=True, capture_output=True)
+    else:
+        proc = subprocess.run(cmd + [prompt], text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise RuntimeError(f"Copilot failed: {proc.stderr or proc.stdout}")
+    return proc.stdout.strip()
+
+
+def parse_findings(raw: str):
+    raw = raw.strip()
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        m = re.search(r"\[\s*\{[\s\S]*\}\s*\]", raw)
+        if not m:
+            raise RuntimeError(f"Copilot output is not JSON:\n{raw}")
+        data = json.loads(m.group(0))
+
+    if isinstance(data, dict):
+        data = data.get("findings", [])
+    if not isinstance(data, list):
+        raise ValueError("Copilot output must be JSON array.")
+    return data
+
+
+def emoji(sev: str) -> str:
+    return {"critical": "🚨", "high": "⚠️", "medium": "🟡", "low": "ℹ️"}.get((sev or "").lower(), "⚠️")
+
+
+def mk_comment_body(f):
+    sev = (f.get("severity") or "medium").lower()
+    rule = f.get("rule") or "review-finding"
+    msg = (f.get("message") or "").strip()
+    fix = (f.get("suggestion") or "").strip()
+    return (
+        f"### {emoji(sev)} {rule}\n\n"
+        f"- **Severity**: {sev}\n\n"
+        f"{msg}\n\n"
+        f"**Suggested fix**\n{fix if fix else '-'}"
+    )
+
+
+def post_line_comment(file: str, line: int, body: str, diff_refs: dict):
+    # line==0이면 PR 본문 코멘트로 보냄
+    if line <= 0:
+        return api_request(
+            "POST",
+            f"/merge_requests/{MR_IID}/notes",
+            json={"body": body},
+        )
+
+    payload = {
+        "body": body,
+        "position": {
+            "position_type": "text",
+            "base_sha": diff_refs["base_sha"],
+            "start_sha": diff_refs["start_sha"],
+            "head_sha": diff_refs["head_sha"],
+            "old_path": file,
+            "new_path": file,
+            "new_line": line,
+        },
+    }
+    return api_request(
+        "POST",
+        f"/merge_requests/{MR_IID}/discussions",
+        json=payload,
+    )
+
+
+def send_metrics(payload):
+    if not METRICS_ENDPOINT:
+        return
+    try:
+        requests.post(METRICS_ENDPOINT, json=payload, timeout=10).raise_for_status()
+    except Exception:
+        # 리뷰 실패로 이어지지 않게 안전하게 무시
+        pass
+
+
+def main():
+    start = time.time()
+
+    mr = get_merge_request()
+    changes = get_mr_changes()
+    diff_refs = mr.get("diff_refs", {})
+    if not diff_refs:
+        raise RuntimeError("No diff_refs found on merge request object.")
+
+    registry = load_registry()
+    stack = detect_stack(changes, registry)
+    prompt = build_prompt(mr, changes, stack, registry)
+    raw = call_copilot(prompt)
+    findings = parse_findings(raw)
+
+    if len(findings) > MAX_FINDINGS:
+        findings = findings[:MAX_FINDINGS]
+
+    posted = 0
+    skipped = 0
+    seen = set()
+    for item in findings:
+        if not isinstance(item, dict):
+            skipped += 1
+            continue
+
+        file = item.get("file") or ""
+        if not file:
+            skipped += 1
+            continue
+
+        try:
+            line = int(item.get("line") or 0)
+        except (TypeError, ValueError):
+            line = 0
+
+        body = mk_comment_body(item)
+        sig = hashlib.sha1(f"{file}:{line}:{item.get('message','')}".encode()).hexdigest()
+        if sig in seen:
+            continue
+        seen.add(sig)
+
+        try:
+            post_line_comment(file, line, body, diff_refs)
+            posted += 1
+        except Exception:
+            skipped += 1
+
+    summary = (
+        f"AI 리뷰 완료 ({TRIGGER_REASON})\n\n"
+        f"- 스택: {stack}\n"
+        f"- 전체 발견: {len(findings)}\n"
+        f"- 게시됨: {posted}\n"
+        f"- 스킵: {skipped}"
+    )
+    api_request("POST", f"/merge_requests/{MR_IID}/notes", json={"body": summary})
+
+    metrics = {
+        "project_id": PROJECT_ID,
+        "mr_iid": int(MR_IID),
+        "tech_stack": stack,
+        "source": TRIGGER_REASON,
+        "total_findings": len(findings),
+        "posted_comments": posted,
+        "skipped": skipped,
+        "duration_ms": int((time.time() - start) * 1000),
+        "created_at": int(time.time()),
+    }
+    send_metrics(metrics)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+`executor/.gitlab-ci.yml`
+
+```yaml
+# executor/.gitlab-ci.yml
+stages:
+  - review
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+      when: always
+    - when: never
+
+review_job:
+  stage: review
+  image: python:3.12
+  variables:
+    PYTHONUNBUFFERED: "1"
+    GITLAB_API_URL: "$CI_API_V4_URL"
+    PROMPT_REGISTRY_PATH: "config/prompt_registry.yaml"
+
+    # Copilot CLI가 실제로 받는 형태에 맞춰 수정
+    COPILOT_CMD: "copilot"
+    COPILOT_ARGS: "suggest"
+    COPILOT_INPUT_MODE: "stdin"
+
+  script:
+    - pip install -r requirements.txt
+    - python scripts/run_ai_review.py
+```
+
+---
+
+## 3) GitLab API로 MR 라인별 코멘트 등록
+
+### Inline comment (line comment)
+`POST /api/v4/projects/:id/merge_requests/:iid/discussions`
+
+```bash
+curl -X POST \
+  "$CI_API_V4_URL/projects/$REVIEW_SOURCE_PROJECT_ID/merge_requests/$REVIEW_MR_IID/discussions" \
+  --header "PRIVATE-TOKEN: $GITLAB_API_TOKEN" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "body": "⚠️ SQL injection 가능성이 있습니다.",
+    "position": {
+      "position_type": "text",
+      "base_sha": "'$BASE_SHA'",
+      "start_sha": "'$START_SHA'",
+      "head_sha": "'$HEAD_SHA'",
+      "old_path": "app/service.py",
+      "new_path": "app/service.py",
+      "new_line": 42
+    }
+  }'
+```
+
+### MR 본문 코멘트
+`POST /api/v4/projects/:id/merge_requests/:iid/notes`  
+요약, 처리 불가 항목, 정책 공지 등에 사용.
+
+---
+
+## 4) Caller-Executor 패턴 구현 (GitLab)
+
+권장 방식: **API Trigger + Multi-project pipeline**
+- Caller는 MR 이벤트만 받고 `AI_REVIEW_TRIGGER_TOKEN`으로 중앙 실행기 프로젝트 파이프라인을 트리거.
+- 실행기에서 실제 코드 diff 조회, Copilot 분석, GitLab API 코멘트 등록, 메트릭 저장 수행.
+
+참고: `trigger` 키워드 방식도 가능(동일 그룹/권한 정책에서 편리), 대신 프로젝트 간 권한 제어가 더 엄격한 trigger-token 방식이 운영상 안전합니다.
+
+```yaml
+# caller에서 trigger 키워드 방식 (대안)
+trigger_ai_review:
+  trigger:
+    project: group/ai-review-executor
+    branch: main
+    strategy: depend
+  variables:
+    REVIEW_SOURCE_PROJECT_ID: $CI_PROJECT_ID
+    REVIEW_MR_IID: $CI_MERGE_REQUEST_IID
+```
+
+### MR open/synchronize + comment 이벤트 처리
+- `open/synchronize`: `merge_request_event`로 caller CI 자동 실행.
+- `comment`: GitLab은 기본 CI 규칙으로 Note 이벤트를 직접 받지 않음.
+  - GitLab Webhook `Note Hook`을 별도 서비스가 받아서 `/ai-review` 같은 명령이 들어오면 같은 trigger API를 호출해 executor 파이프라인을 재실행.
+
+---
+
+## 5) 프롬프트 레지스트리 설계
+
+`executor/config/prompt_registry.yaml`
+
+```yaml
+default:
+  system_prompt: |
+    You are a strict security and quality focused code reviewer.
+  rules:
+    - Prioritize correctness and security over style.
+    - Report only actionable issues with reproducible impact.
+    - Prefer short, explicit fixes.
+  forbidden:
+    - "Do not mention speculative concerns without evidence from diff."
+    - "Do not output markdown except plain text JSON."
+
+tech_stacks:
+  python:
+    match_extensions: [".py"]
+    system_prompt: |
+      You are an expert Python reviewer for backend services.
+    rules:
+      - Check for insecure deserialization, SQL injection, command injection.
+      - Check exception handling and transaction boundaries.
+      - Check unhandled NoneType risks and type-mismatch edge cases.
+      - Check logging of secrets or PII.
+    must_report:
+      - Security-sensitive input/output handling
+      - Missing authorization checks
+      - Broad exception handling masking failures
+
+  javascript:
+    match_extensions: [".js", ".ts", ".jsx", ".tsx"]
+    system_prompt: |
+      You are an expert JavaScript/TypeScript reviewer for web services.
+    rules:
+      - Check async/await race conditions and unhandled Promise rejections.
+      - Validate input before SQL/ORM calls and template interpolation.
+      - Check DOM/text injection and auth logic.
+    must_report:
+      - Prototype pollution risks
+      - Object mutation side effects
+      - Insecure dependency import
+
+  java:
+    match_extensions: [".java", ".kt"]
+    system_prompt: |
+      You are an expert Java/Kotlin code reviewer.
+    rules:
+      - Check null-safety and concurrency issues.
+      - Validate transaction boundaries and privilege checks.
+      - Check resource leak and exception handling.
+```
+
+동작 방식
+- 변경 파일 확장자로 스택 자동 추론.
+- 명시 변수 `REVIEW_TECH_STACK`가 있으면 우선 적용.
+- 스택별 규칙 + 공통 규칙 합쳐서 프롬프트 생성.
+
+---
+
+## 6) 전체 아키텍처 (Mermaid)
+
+```mermaid
+flowchart TD
+  A[개발자: Merge Request 생성/갱신] --> B[caller-repo GitLab MR Pipeline]
+  B --> C[dispatch_ai_review job]
+  C --> D[GitLab Trigger API 호출]
+  D --> E[executor-project 파이프라인 실행]
+  D --> F[옵션: note 이벤트 webhook]
+  F --> D
+  E --> G[run_ai_review.py]
+  G --> H[GitLab API: MR 및 changes 조회]
+  G --> I[Prompt Registry 로드]
+  G --> J[Copilot CLI 실행]
+  J --> K[코멘트 JSON 파싱]
+  K --> L[GitLab API: discussions/notes 등록]
+  L --> M[GitLab MR에 라인별 코멘트 반영]
+  G --> N[Metrics API / DB 저장]
+  N --> O[리뷰 수, 수용률 대시보드]
+```
+
+---
+
+필요하면 다음으로 이어서 아래 항목만 바로 이어서 만들어드릴게요.
+1. 중앙 실행기 실행 시간 단축을 위한 병렬 작업 분할(파일 단위 배치 분석) 설계
+2. GitLab 토큰/권한 모델(개인토큰 vs Project Access Token vs 그룹 토큰) 운영 가이드
+3. 메트릭 수용률 계산 스크립트(merged MR 기준 accepted_count / total_findings) 추가 설계

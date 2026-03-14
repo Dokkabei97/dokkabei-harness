@@ -1,0 +1,158 @@
+2026-02-15T15:35:15.394Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:15.400Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T15:35:15.401Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:15.402Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T15:35:16.005Z [DEBUG] Getting matching hook commands for SessionEnd with query: clear
+2026-02-15T15:35:16.005Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:35:16.005Z [DEBUG] Matched 0 unique hooks for query "clear" (0 before deduplication)
+2026-02-15T15:35:16.005Z [DEBUG] Cleared all session hooks for session 8cb5f812-6d3a-47e7-b2c4-4cbd42f045c5
+2026-02-15T15:35:16.006Z [DEBUG] Getting matching hook commands for SessionStart with query: clear
+2026-02-15T15:35:16.006Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T15:35:16.006Z [DEBUG] Matched 1 unique hooks for query "clear" (1 before deduplication)
+2026-02-15T15:35:16.045Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.058Z [DEBUG] High write ratio: blit=0, write=9555 (100.0% writes), screen=278x212
+2026-02-15T15:35:16.066Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169716066
+2026-02-15T15:35:16.066Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:16.066Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:16.066Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:16.066Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169716066 to /Users/admin/.claude.json
+2026-02-15T15:35:16.067Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:16.069Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169716069
+2026-02-15T15:35:16.069Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:16.069Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:16.069Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:16.069Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169716069 to /Users/admin/.claude.json
+2026-02-15T15:35:16.069Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:16.074Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:35:16.077Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.082Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-15T15:35:16.082Z [DEBUG] [claudeai-mcp] Gate returned: true
+2026-02-15T15:35:16.082Z [DEBUG] [claudeai-mcp] Fetching from https://api.anthropic.com/v1/mcp_servers?limit=1000
+2026-02-15T15:35:16.084Z [DEBUG] Hooks: Checking initial response for async: {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T15:35:16.084Z [DEBUG] Hooks: Parsed initial response: {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."}}
+2026-02-15T15:35:16.084Z [DEBUG] Hooks: Initial response is not async, continuing normal processing
+2026-02-15T15:35:16.084Z [DEBUG] Successfully parsed and validated hook JSON output
+2026-02-15T15:35:16.084Z [DEBUG] Hook SessionStart:clear (SessionStart) success:
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T15:35:16.084Z [DEBUG] FileHistory: Added snapshot for 846c980e-6397-4d72-ac28-7c4d3000de14, tracking 0 files
+2026-02-15T15:35:16.101Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.107Z [DEBUG] High write ratio: blit=0, write=9545 (100.0% writes), screen=276x212
+2026-02-15T15:35:16.110Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.123Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.129Z [DEBUG] High write ratio: blit=0, write=9561 (100.0% writes), screen=274x212
+2026-02-15T15:35:16.133Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:35:16.157Z [DEBUG] Full reset (shrink->below): prevHeight=274, nextHeight=15, viewport=57
+2026-02-15T15:35:16.424Z [DEBUG] [claudeai-mcp] Fetched 1 servers
+2026-02-15T15:35:16.426Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.428Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:16.612Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:18.068Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:18.074Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T15:35:18.074Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:18.075Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T15:35:18.703Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:18.706Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:19.484Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169719484
+2026-02-15T15:35:19.484Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:19.484Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:19.484Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:19.484Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169719484 to /Users/admin/.claude.json
+2026-02-15T15:35:19.485Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:19.485Z [DEBUG] Metadata string for obsidian:
+2026-02-15T15:35:19.485Z [DEBUG] <command-message>obsidian</command-message>
+<command-name>/obsidian</command-name>
+<command-args>  @LLM-context.md 이 파일을 읽고 작업을 이어가줘</command-args>
+2026-02-15T15:35:19.485Z [DEBUG] command-message tags in metadata: 1
+2026-02-15T15:35:19.492Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:19.498Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T15:35:19.498Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-15T15:35:19.500Z [DEBUG] Passes: Using fresh cached eligibility data
+2026-02-15T15:35:19.500Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T15:35:19.500Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T15:35:19.500Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T15:35:19.500Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T15:35:19.500Z [DEBUG] getPluginSkills: Processing 14 enabled plugins
+2026-02-15T15:35:19.500Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-15T15:35:19.500Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7/skills
+2026-02-15T15:35:19.502Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin gitlab: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-15T15:35:19.502Z [DEBUG] Total plugin skills loaded: 1
+2026-02-15T15:35:19.502Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-15T15:35:19.503Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-15T15:35:19.504Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-15T15:35:19.504Z [DEBUG] Total plugin commands loaded: 5
+2026-02-15T15:35:19.507Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:19.513Z [DEBUG] Loaded 17 unique skills (17 unconditional, 0 conditional, managed: 0, user: 10, project: 0, additional: 0, legacy commands: 7)
+2026-02-15T15:35:19.513Z [DEBUG] getSkills returning: 17 skill dir commands, 1 plugin skills, 2 bundled skills
+2026-02-15T15:35:19.514Z [DEBUG] Sending 24 skills via attachment (initial, 24 total sent)
+2026-02-15T15:35:19.514Z [DEBUG] Skill prompt: showing "frontend-design:frontend-design" (userFacingName="frontend-design")
+2026-02-15T15:35:19.514Z [DEBUG] processPromptSlashCommand creating 5 messages for obsidian
+2026-02-15T15:35:19.514Z [DEBUG] Message 1: <command-message>obsidian</command-message>
+<command-name>/obsidian</command-name>
+<command-args>  @LLM-context.md 이 파일을 읽고 작업을 이어가줘</command-args>
+2026-02-15T15:35:19.514Z [DEBUG] Message 2 [META]: [{"type":"text","text":"# /obsidian - 기술 학습 노트 생성\n\n## Triggers\n- 기술 개념 학습 노트 작성\n- 코드 실습/튜토리얼 기록\n- 라이브러리/프레임워크 비교 분석\n- 에러 해결/트러블슈팅 기록\n- 아키텍처/설계 패턴 학습\n- TIL(Today I Learned) 작성\n- MOC(Map of Con
+2026-02-15T15:35:19.514Z [DEBUG] Message 3: [ATTACHMENT]
+2026-02-15T15:35:19.514Z [DEBUG] Message 4: [ATTACHMENT]
+2026-02-15T15:35:19.514Z [DEBUG] Message 5: [ATTACHMENT]
+2026-02-15T15:35:19.515Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T15:35:19.515Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T15:35:19.515Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T15:35:19.515Z [DEBUG] FileHistory: Making snapshot for message e00398d3-d776-4ab4-890c-fa1594df8954
+2026-02-15T15:35:19.515Z [DEBUG] FileHistory: Added snapshot for e00398d3-d776-4ab4-890c-fa1594df8954, tracking 0 files
+2026-02-15T15:35:19.516Z [DEBUG] [useDeferredValue] Messages deferred by 5 (6→11)
+2026-02-15T15:35:19.517Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:19.518Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T15:35:19.523Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169719523
+2026-02-15T15:35:19.523Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:19.523Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:19.523Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:19.523Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169719523 to /Users/admin/.claude.json
+2026-02-15T15:35:19.524Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:19.547Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:19.547Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:19.547Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:19.550Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:20.276Z [DEBUG] Auto tool search enabled: 64056 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T15:35:20.282Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.13853.1771169720282
+2026-02-15T15:35:20.282Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T15:35:20.282Z [DEBUG] Temp file written successfully, size: 105925 bytes
+2026-02-15T15:35:20.282Z [DEBUG] Applied original permissions to temp file
+2026-02-15T15:35:20.282Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.13853.1771169720282 to /Users/admin/.claude.json
+2026-02-15T15:35:20.283Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T15:35:20.283Z [DEBUG] Dynamic tool loading: 0/259 deferred tools included
+2026-02-15T15:35:20.284Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T15:35:20.284Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T15:35:20.284Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T15:35:20.284Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T15:35:20.287Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:22.687Z [DEBUG] Stream started - received first chunk
+2026-02-15T15:35:22.704Z [DEBUG] [useDeferredValue] Messages deferred by 1 (11→12)
+2026-02-15T15:35:22.704Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:26.141Z [DEBUG] [onCancel] focusedInputDialog=undefined streamMode=thinking
+2026-02-15T15:35:26.144Z [DEBUG] [useDeferredValue] Messages deferred by 1 (12→13)
+2026-02-15T15:35:26.147Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:26.148Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T15:35:26.502Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T15:35:26.504Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)

@@ -1,0 +1,28 @@
+     1→import {SET_CLUSTER_SETTINGS, SET_DSEARCH_SETTINGS} from "../constants";
+     2→import Client from '~/Client'
+     3→
+     4→const client = new Client()
+     5→
+     6→export const setClusterSettingsAction = () => dispatch => client.call({
+     7→    uri: `/elasticsearch/_cluster/settings?include_defaults=true&flat_settings=true`
+     8→})
+     9→    .then(response => dispatch({ type: SET_CLUSTER_SETTINGS, payload: response.data }))
+    10→    .catch(err => console.error(err))
+    11→
+    12→
+    13→export const getDsearchSettingsAction = () => dispatch => client.call({
+    14→    uri: `/collections/getSettings`
+    15→})
+    16→    .then(response => { dispatch({ type: SET_DSEARCH_SETTINGS, payload: response.data }); })
+    17→    .catch(err => console.error(err))
+    18→
+    19→export const setDsearchSettingsAction = (type, content) => dispatch => client.call({
+    20→    uri: `/collections/setSettings?type=${type}`,
+    21→    method: "POST",
+    22→    data: content
+    23→}).catch(err => console.error(err))
+    24→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

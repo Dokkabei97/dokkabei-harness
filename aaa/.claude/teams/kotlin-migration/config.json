@@ -1,0 +1,19 @@
+{
+  "name": "kotlin-migration",
+  "description": "analysis-danuri Java to Kotlin migration team",
+  "createdAt": 1770629989171,
+  "leadAgentId": "team-lead@kotlin-migration",
+  "leadSessionId": "084326ea-c073-4309-ada0-e5832034bd6e",
+  "members": [
+    {
+      "agentId": "team-lead@kotlin-migration",
+      "name": "team-lead",
+      "agentType": "leader",
+      "model": "claude-opus-4-6",
+      "joinedAt": 1770629989171,
+      "tmuxPaneId": "",
+      "cwd": "/Users/admin/project/analysis-danuri",
+      "subscriptions": []
+    }
+  ]
+}

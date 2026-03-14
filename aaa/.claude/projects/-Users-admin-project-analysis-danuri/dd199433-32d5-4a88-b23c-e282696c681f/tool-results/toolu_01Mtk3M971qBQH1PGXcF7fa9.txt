@@ -1,0 +1,200 @@
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:mmx:120mm / type:<ALPHA>:<UNIT>
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 120mm
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:120mm:120 / type:<UNIT>:<NUMBER>
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 120
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> mm
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [100mmx120mmx300mm, 100mm <UNIT>, 100 <NUMBER>, 120mm <UNIT>, 120 <NUMBER>, 300mm <UNIT>, 300 <NUMBER>]
+    09:27:43.028 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 100mmx120mmx300mm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:100mmx120mmx300mm:100mm / type:<MODEL_NAME>:<UNIT>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 100
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:100:100 / type:<NUMBER>:<NUMBER>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> mmx
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:mmx:120mm / type:<ALPHA>:<UNIT>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 120
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:120:120 / type:<NUMBER>:<NUMBER>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> mmx
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:mmx:300mm / type:<ALPHA>:<UNIT>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 300mm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:300mm:300 / type:<UNIT>:<NUMBER>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 300
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> mm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [5cmx5cm, 5cm <UNIT>, 5 <NUMBER>, 5cm <UNIT>, 5 <NUMBER>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 5cmx5cm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:5cmx5cm:5cm / type:<MODEL_NAME>:<UNIT>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 5
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:5:5 / type:<NUMBER>:<NUMBER>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> cmx
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:cmx:5cm / type:<ALPHA>:<UNIT>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 5cm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:5cm:5 / type:<UNIT>:<NUMBER>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 5
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> cm
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [A&B, A&B <MODEL_NAME>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> A&B
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:A&B:A&B / type:<MODEL_NAME>:<MODEL_NAME>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [I&U, I&U <MODEL_NAME>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> I&U
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:I&U:I&U / type:<MODEL_NAME>:<MODEL_NAME>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [G&B, G&B <MODEL_NAME>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> G&B
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:G&B:G&B / type:<MODEL_NAME>:<MODEL_NAME>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [M&A, M&A <MODEL_NAME>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> M&A
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:M&A:M&A / type:<MODEL_NAME>:<MODEL_NAME>
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [아디다스테니스화50%세일무료배송, 아디다스 <HANGUL>, 테니스화 <COMPOUND>, 테니스 <COMPOUND>, 신발 <COMPOUND>, 50% <UNIT>, 50 <NUMBER>, 세일 <HANGUL>, 무료 <HANGUL>, 배송 <HANGUL>]
+    09:27:43.029 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 아디다스테니스화
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:아디다스테니스화:아디다스 / type:<HANGUL>:<HANGUL>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 50%
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:50%:테니스화 / type:<UNIT>:<COMPOUND>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 50
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:50:테니스 / type:<NUMBER>:<COMPOUND>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 세일무료배송
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:세일무료배송:신발 / type:<HANGUL>:<COMPOUND>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [서랍장(22.6x18.8cm), 서랍장 <HANGUL>, 22.6 <NUMBER>, 18.8cm <UNIT>, 18.8 <NUMBER>]
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 서랍장
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:서랍장:서랍장 / type:<HANGUL>:<HANGUL>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 22.6x18.8cm
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:22.6x18.8cm:22.6 / type:<MODEL_NAME>:<NUMBER>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 22.6
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:22.6:18.8cm / type:<NUMBER>:<UNIT>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> x
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:x:18.8 / type:<ALPHA>:<NUMBER>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 18.8
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> cm
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [18v충전배터리, 18v <MODEL_NAME>, 18 <NUMBER>, v <ALPHA>, 충전 <HANGUL>, 배터리 <HANGUL>]
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 18v
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:18v:18v / type:<MODEL_NAME>:<MODEL_NAME>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 18
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:18:18 / type:<NUMBER>:<NUMBER>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> v
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:v:v / type:<ALPHA>:<ALPHA>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 충전배터리
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:충전배터리:충전 / type:<HANGUL>:<HANGUL>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [15키, 15 <NUMBER:0~2>, 키 <HANGUL:2~3>]
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 15
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:15:15 / type:<NUMBER>:<NUMBER>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 키
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:키:키 / type:<HANGUL>:<HANGUL>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [15키키, 15 <NUMBER:0~2>, 키키 <HANGUL:2~4>]
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 15
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:15:15 / type:<NUMBER>:<NUMBER>
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 키키
+    09:27:43.030 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:키키:키키 / type:<HANGUL>:<HANGUL>
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [침대매트리스s, 침대 <HANGUL:0~2>, 매트리스 <HANGUL:2~6>, s <ALPHA:6~7>]
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 침
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:침:침대 / type:<HANGUL>:<HANGUL>
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 대
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:대:매트리스 / type:<HANGUL>:<HANGUL>
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 매트
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:매트:s / type:<HANGUL>:<ALPHA>
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> 리스
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> s
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - NOT FOUND!
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - test for [침대매트리스 s, 침대 <HANGUL:0~2>, 매트리스 <HANGUL:2~6>, s <ALPHA:7~8>]
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - --------------------------------------------------------------------------------
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >> s
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:s:침대 / type:<ALPHA>:<HANGUL>
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - >>       
+    09:27:43.031 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalysisFilterTest - term:      :매트리스 / type:<UNCATEGORIZED>:<HANGUL>
+
+ProductNameAnalyzerTest > testAnalyzerSimple STANDARD_OUT
+    09:27:43.036 [Test worker] DEBUG com.danawa.util.TestUtil - Extra dict dir:src/test/resources/dict_extra
+    09:27:43.037 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary user : com.danawa.search.analysis.dict.SetDictionary@22c86919 [1 / 0]
+    09:27:43.037 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary synonym : com.danawa.search.analysis.dict.SynonymDictionary@70fab835 [39 / 39]
+    09:27:43.038 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary unit : com.danawa.search.analysis.dict.SetDictionary@1b0a7baf [27 / 0]
+    09:27:43.038 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary unit_synonym : com.danawa.search.analysis.dict.SynonymDictionary@62417a16 [8 / 8]
+    09:27:43.038 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary space : com.danawa.search.analysis.dict.SpaceDictionary@32057e6 [1 / 3]
+    09:27:43.039 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary compound : com.danawa.search.analysis.dict.CompoundDictionary@26be6ca7 [0 / 0]
+    09:27:43.039 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:70-200,300,400mm / 32~48 / 16 / <MODEL_NAME> // null / POS_INC[1]
+    09:27:43.039 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:70 / 32~34 / 16 / <NUMBER> // null / POS_INC[0]
+    09:27:43.039 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:200,300,400 / 35~46 / 16 / <NUMBER> // null / POS_INC[0]
+    09:27:43.040 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:200300400 / 35~46 / 16 / <MODEL_NAME> // null / POS_INC[0]
+    09:27:43.040 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:mm / 46~48 / 16 / <UNIT> // null / POS_INC[0]
+    09:27:43.040 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameAnalyzerTest - TOKEN:mm / 46~48 / 16 / <ALPHA> // null / POS_INC[1]
+
+ProductNameTokenizerTest > testTokenizer STANDARD_OUT
+    09:27:43.044 [Test worker] DEBUG com.danawa.util.TestUtil - Extra dict dir:src/test/resources/dict_extra
+    09:27:43.044 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary user : com.danawa.search.analysis.dict.SetDictionary@759fad4 [1 / 0]
+    09:27:43.045 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary synonym : com.danawa.search.analysis.dict.SynonymDictionary@64712be [39 / 39]
+    09:27:43.045 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary unit : com.danawa.search.analysis.dict.SetDictionary@53499d85 [27 / 0]
+    09:27:43.045 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary unit_synonym : com.danawa.search.analysis.dict.SynonymDictionary@30ed9c6c [8 / 8]
+    09:27:43.046 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary space : com.danawa.search.analysis.dict.SpaceDictionary@782a4fff [1 / 3]
+    09:27:43.046 [Test worker] DEBUG com.danawa.search.analysis.dict.CommonDictionary - addDictionary compound : com.danawa.search.analysis.dict.CompoundDictionary@46c670a6 [0 / 0]
+    09:27:43.046 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - TOKEN: / 파티해 벚꽃 토퍼 봄이 / 0~12 / <FULL_STRING> / null
+    09:27:43.046 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - TOKEN:봄 / 봄 / 22~23 / null / N
+    09:27:43.046 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - TOKEN:   /    / 24~26 / null / SYMBOL
+
+ProductNameTokenizerTest > testNumberPattern STANDARD_OUT
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 123 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1234 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 12345 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1,234 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1,234,567 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 12,345,678 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1,2,3,4 : BAD
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1.2 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1.234 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1.234.567 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 100:100 : OK
+    09:27:43.047 [Test worker] DEBUG com.danawa.search.analysis.product.ProductNameTokenizerTest - 1,234:5,678 : OK
+
+15 tests completed, 4 failed
+Finished generating test XML results (0.003 secs) into: /Users/admin/project/analysis-danuri/build/test-results/test
+Generating HTML test report...
+Finished generating test html results (0.004 secs) into: /Users/admin/project/analysis-danuri/build/reports/tests/test
+
+[Incubating] Problems report is available at: file:///Users/admin/project/analysis-danuri/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/admin/project/analysis-danuri/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+7 actionable tasks: 3 executed, 4 up-to-date
+Watched directory hierarchies: [/Users/admin/project/analysis-danuri]

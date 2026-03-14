@@ -1,0 +1,56 @@
+[
+  {
+    "content": "dictionary_preprocessor 디렉토리 생성",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "base.py 파일 생성 (추상 클래스와 데이터 클래스)",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "user_dictionary.py 파일 생성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "synonym_dictionary.py 파일 생성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "unit_dictionary.py 파일 생성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  },
+  {
+    "content": "stopword_dictionary.py 파일 생성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "6"
+  },
+  {
+    "content": "factory.py 파일 생성",
+    "status": "completed",
+    "priority": "medium",
+    "id": "7"
+  },
+  {
+    "content": "__init__.py 파일 생성 (모든 클래스 import)",
+    "status": "completed",
+    "priority": "low",
+    "id": "8"
+  },
+  {
+    "content": "기존 dictionary_preprocessor.py 파일 제거",
+    "status": "completed",
+    "priority": "low",
+    "id": "9"
+  }
+]

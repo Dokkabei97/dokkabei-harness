@@ -1,0 +1,54 @@
+image:
+  pullPolicy: Always
+  tag: "latest"
+
+nameOverride: "dev-cmn-legacy-sync"
+fullnameOverride: "dev-cmn-legacy-sync"
+otelServiceName: "development.dev-search.dev-cmn-legacy-sync"
+
+envFrom:
+  # 공통 ConfigMap 참조
+  - configMapRef:
+      name: dev-cmn-search-config
+  # 서비스 특화 ConfigMap 참조
+  - configMapRef:
+      name: dev-cmn-legacy-sync-config
+  # secret 참조
+  - secretRef:
+      name: "dev-cmn-search-credentials"
+
+# 서비스 특화 ConfigMap 설정
+config:
+  profile: dev
+  index:
+    adminCatalog: catalogs
+    adminProduct: products
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: dev-cmn-legacy-sync.danuricorp.com
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8080
+  tls: [ ]
+
+resources:
+  limits:
+    memory: 2Gi
+    cpu: 1
+  requests:
+    memory: 1Gi
+    cpu: 1
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false
+
+podAnnotations:
+  grafana.danuricorp.com/app: development.dev-search.dev-cmn-legacy-sync
+  prometheus.io/interval: 30s

@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Debug target document existence check",
+    "status": "completed",
+    "activeForm": "Debugging target document existence check"
+  },
+  {
+    "content": "Found authentication/permission error",
+    "status": "completed",
+    "activeForm": "Found authentication/permission error"
+  },
+  {
+    "content": "Fix Elasticsearch authentication issue",
+    "status": "in_progress",
+    "activeForm": "Fixing Elasticsearch authentication issue"
+  },
+  {
+    "content": "Test connectivity after auth fix",
+    "status": "pending",
+    "activeForm": "Testing connectivity after auth fix"
+  }
+]

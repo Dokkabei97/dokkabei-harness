@@ -1,0 +1,14 @@
+package com.cowave.shared.cache
+
+object TieredLoadingCacheFactory {
+    fun <ID, V> create(
+        localCache: LocalCache<ID, V>,
+        globalCache: GlobalCache<ID, V>,
+        fetcher: (Collection<ID>) -> Map<ID, V>,
+    ): TieredLoadingCache<ID, V> =
+        DefaultTieredLoadingCache(
+            localCache = localCache,
+            globalCache = globalCache,
+            fetcher = fetcher,
+        )
+}

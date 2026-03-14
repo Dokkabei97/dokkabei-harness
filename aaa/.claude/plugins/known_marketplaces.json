@@ -1,0 +1,18 @@
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "/Users/admin/.claude/plugins/marketplaces/claude-plugins-official",
+    "lastUpdated": "2026-03-14T13:34:06.721Z"
+  },
+  "cc-claude": {
+    "source": {
+      "source": "git",
+      "url": "https://labs.cowave.kr/consumer-commerce-dev/cc-claude/marketplace.git"
+    },
+    "installLocation": "/Users/admin/.claude/plugins/marketplaces/cc-claude",
+    "lastUpdated": "2026-03-10T02:09:19.295Z"
+  }
+}

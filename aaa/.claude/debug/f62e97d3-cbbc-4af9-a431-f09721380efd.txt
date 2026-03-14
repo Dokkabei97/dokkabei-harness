@@ -1,0 +1,80 @@
+2026-02-16T14:54:11.410Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-16T14:54:11.410Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-16T14:54:11.410Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-16T14:54:11.410Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-16T14:54:11.414Z [DEBUG] [render] initLayout starting
+2026-02-16T14:54:11.417Z [DEBUG] [render] initLayout complete
+2026-02-16T14:54:11.419Z [DEBUG] [keybindings] KeybindingSetup initialized with 102 bindings, 0 warnings
+2026-02-16T14:54:11.428Z [DEBUG] [render] first ink render: 223ms since process start
+2026-02-16T14:54:11.429Z [DEBUG] [keybindings] Watching for changes to /Users/admin/.claude/keybindings.json
+2026-02-16T14:54:11.455Z [DEBUG] Loading plugin frontend-design from source: "./plugins/frontend-design"
+2026-02-16T14:54:11.457Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.457Z [DEBUG] Plugin frontend-design@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7
+2026-02-16T14:54:11.457Z [DEBUG] Copied local plugin frontend-design to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7
+2026-02-16T14:54:11.458Z [DEBUG] Loading plugin serena from source: "./external_plugins/serena"
+2026-02-16T14:54:11.459Z [DEBUG] Using git SHA for serena@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.459Z [DEBUG] Plugin serena@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/2cd88e7947b7
+2026-02-16T14:54:11.459Z [DEBUG] Copied local plugin serena to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/2cd88e7947b7
+2026-02-16T14:54:11.460Z [DEBUG] Loading plugin context7 from source: "./external_plugins/context7"
+2026-02-16T14:54:11.460Z [DEBUG] Using git SHA for context7@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.460Z [DEBUG] Plugin context7@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/2cd88e7947b7
+2026-02-16T14:54:11.460Z [DEBUG] Copied local plugin context7 to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/2cd88e7947b7
+2026-02-16T14:54:11.461Z [DEBUG] Loading plugin playwright from source: "./external_plugins/playwright"
+2026-02-16T14:54:11.462Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.462Z [DEBUG] Plugin playwright@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/2cd88e7947b7
+2026-02-16T14:54:11.462Z [DEBUG] Copied local plugin playwright to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/2cd88e7947b7
+2026-02-16T14:54:11.463Z [DEBUG] Loading plugin feature-dev from source: "./plugins/feature-dev"
+2026-02-16T14:54:11.464Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.464Z [DEBUG] Plugin feature-dev@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/2cd88e7947b7
+2026-02-16T14:54:11.464Z [DEBUG] Copied local plugin feature-dev to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/2cd88e7947b7
+2026-02-16T14:54:11.465Z [DEBUG] Loading plugin code-review from source: "./plugins/code-review"
+2026-02-16T14:54:11.465Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.465Z [DEBUG] Plugin code-review@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/2cd88e7947b7
+2026-02-16T14:54:11.465Z [DEBUG] Copied local plugin code-review to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/2cd88e7947b7
+2026-02-16T14:54:11.466Z [DEBUG] Loading plugin ralph-loop from source: "./plugins/ralph-loop"
+2026-02-16T14:54:11.467Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.467Z [DEBUG] Plugin ralph-loop@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7
+2026-02-16T14:54:11.467Z [DEBUG] Copied local plugin ralph-loop to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7
+2026-02-16T14:54:11.468Z [DEBUG] Loaded hooks from standard location for plugin ralph-loop: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7/hooks/hooks.json
+2026-02-16T14:54:11.468Z [DEBUG] Loading plugin typescript-lsp from source: "./plugins/typescript-lsp"
+2026-02-16T14:54:11.468Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Plugin typescript-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Copied local plugin typescript-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Plugin typescript-lsp has no entry.skills defined
+2026-02-16T14:54:11.469Z [DEBUG] Loading plugin kotlin-lsp from source: "./plugins/kotlin-lsp"
+2026-02-16T14:54:11.469Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Plugin kotlin-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Copied local plugin kotlin-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-16T14:54:11.469Z [DEBUG] Plugin kotlin-lsp has no entry.skills defined
+2026-02-16T14:54:11.472Z [DEBUG] Loading plugin jdtls-lsp from source: "./plugins/jdtls-lsp"
+2026-02-16T14:54:11.472Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-16T14:54:11.472Z [DEBUG] Plugin jdtls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-16T14:54:11.472Z [DEBUG] Copied local plugin jdtls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-16T14:54:11.472Z [DEBUG] Plugin jdtls-lsp has no entry.skills defined
+2026-02-16T14:54:11.473Z [DEBUG] Loading plugin pyright-lsp from source: "./plugins/pyright-lsp"
+2026-02-16T14:54:11.473Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-16T14:54:11.473Z [DEBUG] Plugin pyright-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-16T14:54:11.473Z [DEBUG] Copied local plugin pyright-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-16T14:54:11.473Z [DEBUG] Plugin pyright-lsp has no entry.skills defined
+2026-02-16T14:54:11.474Z [DEBUG] Loading plugin gopls-lsp from source: "./plugins/gopls-lsp"
+2026-02-16T14:54:11.474Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-16T14:54:11.474Z [DEBUG] Plugin gopls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-16T14:54:11.474Z [DEBUG] Copied local plugin gopls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-16T14:54:11.474Z [DEBUG] Plugin gopls-lsp has no entry.skills defined
+2026-02-16T14:54:11.475Z [DEBUG] Loading plugin gitlab from source: "./external_plugins/gitlab"
+2026-02-16T14:54:11.475Z [DEBUG] Using git SHA for gitlab@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.475Z [DEBUG] Plugin gitlab@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gitlab/2cd88e7947b7
+2026-02-16T14:54:11.475Z [DEBUG] Copied local plugin gitlab to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gitlab/2cd88e7947b7
+2026-02-16T14:54:11.476Z [DEBUG] Loading plugin learning-output-style from source: "./plugins/learning-output-style"
+2026-02-16T14:54:11.477Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 2cd88e7947b7
+2026-02-16T14:54:11.477Z [DEBUG] Plugin learning-output-style@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7
+2026-02-16T14:54:11.477Z [DEBUG] Copied local plugin learning-output-style to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7
+2026-02-16T14:54:11.477Z [DEBUG] Loaded hooks from standard location for plugin learning-output-style: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7/hooks/hooks.json
+2026-02-16T14:54:11.477Z [DEBUG] Found 14 plugins (14 enabled, 0 disabled)
+2026-02-16T14:54:11.479Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-16T14:54:11.479Z [DEBUG] [claudeai-mcp] Gate returned: true
+2026-02-16T14:54:11.479Z [DEBUG] [claudeai-mcp] Fetching from https://api.anthropic.com/v1/mcp_servers?limit=1000
+2026-02-16T14:54:11.844Z [DEBUG] [claudeai-mcp] Fetched 1 servers
+2026-02-16T14:54:12.035Z [DEBUG] Getting matching hook commands for SessionEnd with query: other
+2026-02-16T14:54:12.035Z [DEBUG] Found 0 hook matchers in settings
+2026-02-16T14:54:12.035Z [DEBUG] Matched 0 unique hooks for query "other" (0 before deduplication)

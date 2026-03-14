@@ -1,0 +1,1659 @@
+# Kotlin + Spring 시니어 백엔드 개발자 보충 커리큘럼
+
+> **근거**: `backend-tech-feedback1.md` (10가지 우선 보강 항목) + `backend-tech-feedback2.md` (4가지 핵심 간극)
+> **작성일**: 2026-02-16
+> **범위**: 기존 커리큘럼(backend-tech1~5)의 식별된 Gap 보완
+> **대상**: 4~6년차 시니어 백엔드 개발자 (Kotlin + Spring Boot 환경)
+
+> **탐색**: [[backend-tech1|개요+Phase 1]] | [[backend-tech2|Phase 2]] | [[backend-tech3|Phase 3-5]] | [[backend-tech4|Phase 6-7]] | [[backend-tech5|Phase 8-10+부록]] | [[backend-tech-plus|Phase 2 심화]] | **보충 커리큘럼**
+
+---
+
+## 개요
+
+이 문서는 두 차례의 커리큘럼 피드백에서 식별된 **14개 기술적 간극(Gap)**을 보충하기 위한 학습 자료이다. 기존 커리큘럼이 시니어 역량의 90%를 커버한다면, 이 보충 자료는 나머지 10%의 핵심 빈틈을 메워 **대체 불가능한 시니어 개발자** 수준을 완성하는 것을 목표로 한다.
+
+### 보충 영역 매핑
+
+| # | 보충 영역 | 삽입 위치 | 피드백 근거 | 예상 기간 |
+|---|----------|----------|-----------|----------|
+| S1 | Spring Boot Internals 심화 | Phase 4 이후 | feedback1 #1, feedback2 #1 | 2주 |
+| S2 | 운영 환경 구성과 Secret 관리 | Phase 6.2 이후 | feedback1 #2,#3,#8, feedback2 #2 | 1.5주 |
+| S3 | Kotlin Nullable 경계 & 코루틴 I/O 격리 | Phase 1 이후 | feedback1 #4,#5 | 1주 |
+| S4 | API Deprecation & 멱등성 구현 | Phase 5.2 이후 | feedback1 #6, feedback2 #3 | 1주 |
+| S5 | Retry Storm 방지 체계 | Phase 4.1 이후 | feedback1 #7 | 0.5주 |
+| S6 | 테스트 회귀 방지 & 품질 도구 | Phase 6.1 이후 | feedback1 #9,#10 | 1주 |
+| S7 | 인프라 레벨 병목 진단 | Phase 9 이후 | feedback2 #4 | 1주 |
+| S8 | Observability 표준 메트릭 카탈로그 | Phase 6.4 이후 | feedback1 #7 관련 | 0.5주 |
+
+> **총 추가 학습 기간**: 약 8.5주 (기존 40주 + 8.5주 = 총 48.5주)
+
+---
+
+## S1. Spring Boot Internals 심화 (2주)
+
+> **삽입 위치**: Phase 4 (AOP 심화) 이후 또는 Phase 6과 병행
+> **연결**: Phase 4.2 AOP → S1 Auto-configuration → Phase 7.1 CI/CD
+> **피드백 근거**: feedback1 "DI/IoC, 빈 라이프사이클, auto-configuration 구조" + feedback2 "Custom Starter 제작"
+
+### S1.1 DI/IoC 원리와 빈 라이프사이클
+
+**학습 목표**
+Spring의 DI/IoC 컨테이너 동작 원리를 깊이 이해하고, 빈 라이프사이클을 활용한 시스템 초기화/종료 전략을 수립할 수 있다.
+
+**핵심 내용**
+
+*IoC 컨테이너 내부 동작*
+- `BeanFactory` vs `ApplicationContext`: 계층 구조와 차이
+- 빈 등록 과정: `@Component` 스캔 → `BeanDefinition` → 인스턴스 생성
+- 빈 스코프: `singleton`, `prototype`, `request`, `session`
+- 빈 주입 방식: 생성자 주입 vs 필드 주입 vs 세터 주입 (생성자 주입 권장 이유)
+
+*빈 라이프사이클 심화*
+
+```
+BeanDefinition 등록
+    ↓
+인스턴스 생성 (Constructor)
+    ↓
+의존성 주입 (DI)
+    ↓
+BeanNameAware / BeanFactoryAware / ApplicationContextAware
+    ↓
+BeanPostProcessor.postProcessBeforeInitialization()
+    ↓
+@PostConstruct / InitializingBean.afterPropertiesSet()
+    ↓
+BeanPostProcessor.postProcessAfterInitialization()  ← AOP 프록시 생성 시점!
+    ↓
+Bean 사용 가능 (Ready)
+    ↓
+@PreDestroy / DisposableBean.destroy()
+```
+
+*Spring과 Kotlin 통합 주의점*
+```kotlin
+// BAD: Kotlin val + 필드 주입 (컴파일 에러)
+@Service
+class OrderService {
+    @Autowired
+    val orderRepository: OrderRepository  // val은 final → 주입 불가
+}
+
+// GOOD: 생성자 주입 (Kotlin 권장)
+@Service
+class OrderService(
+    private val orderRepository: OrderRepository,  // 생성자 주입은 val OK
+    private val eventPublisher: ApplicationEventPublisher
+)
+```
+
+*`BeanPostProcessor` 활용*
+```kotlin
+// 커스텀 BeanPostProcessor로 특정 어노테이션 처리
+@Component
+class MetricsBeanPostProcessor : BeanPostProcessor {
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
+        if (bean.javaClass.isAnnotationPresent(Monitored::class.java)) {
+            // 프록시 래핑하여 메트릭 수집 추가
+            return createMonitoringProxy(bean)
+        }
+        return bean
+    }
+}
+```
+
+*순환 의존성 탐지와 해결*
+```kotlin
+// BAD: 순환 의존성
+@Service
+class OrderService(private val paymentService: PaymentService)
+
+@Service
+class PaymentService(private val orderService: OrderService) // 순환!
+
+// GOOD: 이벤트 기반으로 끊기
+@Service
+class OrderService(private val eventPublisher: ApplicationEventPublisher) {
+    fun createOrder(request: OrderRequest) {
+        val order = /* 주문 생성 */
+        eventPublisher.publishEvent(OrderCreatedEvent(order))
+    }
+}
+
+@Service
+class PaymentService {
+    @EventListener
+    fun handleOrderCreated(event: OrderCreatedEvent) {
+        processPayment(event.order)
+    }
+}
+```
+
+**실무 사례**
+- **순환 의존성 감지 실패**: Spring Boot 3.x에서 기본으로 순환 의존성을 금지(`spring.main.allow-circular-references=false`) → 레거시 코드 마이그레이션 시 이벤트 기반으로 리팩터링
+- **BeanPostProcessor 활용**: 모든 Repository 빈에 자동으로 쿼리 타이밍 메트릭을 추가하는 BeanPostProcessor 구현
+
+**실습 과제**
+1. `BeanPostProcessor`를 구현하여 특정 어노테이션이 붙은 빈의 메서드 실행 시간을 자동으로 로깅
+2. 순환 의존성이 있는 코드를 식별하고 이벤트 기반으로 리팩터링
+3. 빈 라이프사이클 각 단계에서 로깅하여 전체 흐름을 시각화
+
+**평가 기준**
+- [ ] 빈 라이프사이클의 각 단계와 콜백 호출 순서를 설명할 수 있다
+- [ ] AOP 프록시가 생성되는 시점(`BeanPostProcessor.postProcessAfterInitialization`)을 이해한다
+- [ ] 순환 의존성을 감지하고 해결할 수 있다
+
+---
+
+### S1.2 Auto-configuration과 Custom Starter 제작
+
+**학습 목표**
+Spring Boot의 "마법"인 Auto-configuration의 동작 원리를 이해하고, 팀 내 공통 라이브러리를 Custom Starter로 패키징할 수 있다.
+
+**핵심 내용**
+
+*Auto-configuration 동작 원리*
+```
+@SpringBootApplication
+    └── @EnableAutoConfiguration
+        └── META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            └── 자동 설정 클래스 목록 로드
+                └── @Conditional... 조건 평가
+                    └── 조건 충족 시 빈 등록
+```
+
+*@Conditional 어노테이션 패밀리*
+
+| 어노테이션 | 조건 | 사용 시나리오 |
+|-----------|------|-------------|
+| `@ConditionalOnClass` | 클래스패스에 특정 클래스 존재 시 | 라이브러리 의존 설정 |
+| `@ConditionalOnMissingBean` | 해당 타입 빈이 없을 때 | 기본 구현 제공 |
+| `@ConditionalOnProperty` | 특정 프로퍼티 값이 일치할 때 | 기능 On/Off |
+| `@ConditionalOnBean` | 특정 빈이 존재할 때 | 의존 빈 기반 설정 |
+| `@ConditionalOnWebApplication` | 웹 애플리케이션일 때 | 웹 전용 설정 |
+
+*Auto-configuration 디버그*
+```yaml
+# application.yml
+debug: true  # 어떤 Auto-configuration이 적용/제외되었는지 출력
+
+# 또는 특정 Auto-configuration 제외
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+```
+
+*Custom Starter 제작 (팀 공통 라이브러리)*
+
+프로젝트 구조:
+```
+my-company-spring-boot-starter/
+├── my-company-spring-boot-autoconfigure/   ← Auto-configuration 모듈
+│   ├── src/main/kotlin/
+│   │   └── com/mycompany/autoconfigure/
+│   │       ├── MyCompanyAutoConfiguration.kt
+│   │       └── MyCompanyProperties.kt
+│   └── src/main/resources/
+│       └── META-INF/spring/
+│           └── org.springframework.boot.autoconfigure.AutoConfiguration.imports
+└── my-company-spring-boot-starter/         ← Starter 모듈 (의존성 집합)
+    └── build.gradle.kts  (autoconfigure + 관련 라이브러리 의존)
+```
+
+Auto-configuration 클래스:
+```kotlin
+@AutoConfiguration
+@ConditionalOnClass(MyCompanyClient::class)
+@EnableConfigurationProperties(MyCompanyProperties::class)
+class MyCompanyAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun myCompanyClient(properties: MyCompanyProperties): MyCompanyClient {
+        return MyCompanyClient(
+            baseUrl = properties.baseUrl,
+            timeout = properties.timeout
+        )
+    }
+
+    @Bean
+    @ConditionalOnProperty(
+        prefix = "mycompany",
+        name = ["metrics.enabled"],
+        havingValue = "true",
+        matchIfMissing = true
+    )
+    fun myCompanyMetricsCollector(
+        client: MyCompanyClient,
+        meterRegistry: MeterRegistry
+    ): MyCompanyMetricsCollector {
+        return MyCompanyMetricsCollector(client, meterRegistry)
+    }
+}
+```
+
+Properties 클래스:
+```kotlin
+@ConfigurationProperties(prefix = "mycompany")
+data class MyCompanyProperties(
+    val baseUrl: String = "https://api.mycompany.com",
+    val timeout: Duration = Duration.ofSeconds(5),
+    val metrics: MetricsProperties = MetricsProperties()
+) {
+    data class MetricsProperties(
+        val enabled: Boolean = true
+    )
+}
+```
+
+**실무 사례**
+- **팀 공통 Starter**: API Gateway 클라이언트, 분산 추적 설정, 공통 에러 핸들러를 Custom Starter로 패키징 → 새 프로젝트 셋업 시간 3일 → 30분
+- **조건부 설정 활용**: `@ConditionalOnProperty`로 개발 환경에서만 Mock 서비스 자동 등록
+- **Auto-configuration 디버깅**: `debug: true`로 의도치 않은 Auto-configuration 활성화 발견 및 제외
+
+**실습 과제**
+1. Spring Boot의 `debug: true`로 Auto-configuration 리포트를 분석하여 현재 프로젝트에 적용된/제외된 설정 정리
+2. 팀 공통 HTTP 클라이언트를 Custom Starter로 패키징 (`@Conditional` 조건부 설정 포함)
+3. `@ConfigurationProperties`를 활용한 타입 안전 설정 바인딩 구현
+4. 커스텀 `@Conditional` 어노테이션 구현 (예: 특정 환경 변수 존재 여부 기반)
+
+**평가 기준**
+- [ ] Auto-configuration의 동작 흐름을 설명할 수 있다
+- [ ] `@Conditional` 어노테이션 패밀리의 사용 시점을 구분할 수 있다
+- [ ] Custom Starter를 설계하고 구현할 수 있다
+- [ ] Auto-configuration 디버깅 방법을 알고 있다
+
+---
+
+## S2. 운영 환경 구성과 Secret 관리 (1.5주)
+
+> **삽입 위치**: Phase 6.2 (보안) 이후
+> **연결**: Phase 6.2 보안 → S2 운영 보안 → Phase 7.1 CI/CD
+> **피드백 근거**: feedback1 "readiness/liveness, profile, secret, CORS/SSRF, 마스킹, 감사로그" + feedback2 "Secret Management"
+
+### S2.1 Multi-env 구성과 Health Check (0.5주)
+
+**학습 목표**
+Spring Boot 애플리케이션의 환경별 설정 분리 전략을 수립하고, Kubernetes 환경에서의 Health Check를 올바르게 구성할 수 있다.
+
+**핵심 내용**
+
+*Profile 기반 환경 분리*
+```yaml
+# application.yml (공통)
+spring:
+  application:
+    name: order-service
+
+# application-local.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders
+logging:
+  level:
+    root: DEBUG
+
+# application-staging.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://staging-db:5432/orders
+
+# application-prod.yml
+spring:
+  datasource:
+    url: jdbc:postgresql://prod-db-primary:5432/orders
+  jpa:
+    show-sql: false
+logging:
+  level:
+    root: WARN
+```
+
+*환경별 설정 우선순위*
+```
+1. 명령줄 인수 (--server.port=8081)
+2. SPRING_APPLICATION_JSON
+3. OS 환경 변수 (SPRING_DATASOURCE_URL)
+4. application-{profile}.yml
+5. application.yml
+6. @PropertySource
+7. 기본값
+```
+
+*Readiness / Liveness Probe*
+```yaml
+# Kubernetes Deployment
+spec:
+  containers:
+    - name: order-service
+      livenessProbe:           # "애플리케이션이 살아 있는가?"
+        httpGet:
+          path: /actuator/health/liveness
+          port: 8080
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        failureThreshold: 3    # 3번 실패 시 Pod 재시작
+      readinessProbe:          # "트래픽을 받을 준비가 되었는가?"
+        httpGet:
+          path: /actuator/health/readiness
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 3    # 3번 실패 시 Service에서 제외
+      startupProbe:            # "시작이 완료되었는가?" (느린 시작 허용)
+        httpGet:
+          path: /actuator/health/liveness
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 30   # 최대 150초(5*30) 대기
+```
+
+```kotlin
+// 커스텀 Health Indicator
+@Component
+class ExternalApiHealthIndicator(
+    private val externalApiClient: ExternalApiClient
+) : HealthIndicator {
+    override fun health(): Health {
+        return try {
+            val response = externalApiClient.ping()
+            if (response.isSuccessful) Health.up().build()
+            else Health.down().withDetail("status", response.code).build()
+        } catch (e: Exception) {
+            Health.down(e).build()
+        }
+    }
+}
+
+// Readiness를 위한 커스텀 그룹 설정
+// application.yml
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: db, redis, customExternalApi
+        liveness:
+          include: ping
+```
+
+**주의: Liveness vs Readiness 혼동**
+| 상황 | Liveness | Readiness |
+|------|----------|-----------|
+| DB 연결 끊김 | UP (앱 자체는 살아있음) | DOWN (요청 처리 불가) |
+| 외부 API 장애 | UP | DOWN (일시적) |
+| 메모리 누수 (앱 행) | DOWN → 재시작 | DOWN |
+| 배포 직후 웜업 중 | UP | DOWN → UP (준비 완료 후) |
+
+> **흔한 실수**: Liveness에 DB 체크를 포함하면 DB 장애 시 모든 Pod가 재시작되어 장애가 확대된다.
+
+---
+
+### S2.2 Secret Management (0.5주)
+
+**학습 목표**
+코드에서 민감 정보를 완전히 격리하고, 프로덕션 수준의 Secret 관리 체계를 구축할 수 있다.
+
+**핵심 내용**
+
+*Secret 관리 원칙*
+1. 코드에 Secret 절대 커밋 금지 (`.env`, `application-prod.yml` 등)
+2. 환경 변수 또는 외부 Secret Store 사용
+3. Secret 로테이션 가능한 구조
+4. 접근 감사 로깅
+
+*방법 1: Kubernetes Secret + 환경 변수*
+```yaml
+# Kubernetes Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: order-service-secrets
+type: Opaque
+data:
+  DB_PASSWORD: cGFzc3dvcmQxMjM=  # base64 인코딩
+
+# Deployment에서 참조
+spec:
+  containers:
+    - name: order-service
+      env:
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: order-service-secrets
+              key: DB_PASSWORD
+```
+
+*방법 2: HashiCorp Vault + Spring Cloud Vault*
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("org.springframework.cloud:spring-cloud-starter-vault-config")
+}
+
+// application.yml
+spring:
+  cloud:
+    vault:
+      uri: https://vault.mycompany.com
+      authentication: KUBERNETES  # K8s Service Account 인증
+      kv:
+        backend: secret
+        default-context: order-service
+      # DB credential 자동 로테이션
+      database:
+        enabled: true
+        role: order-service-role
+        backend: database
+```
+
+*방법 3: AWS Secrets Manager + Spring Cloud AWS*
+```kotlin
+// 설정
+spring:
+  config:
+    import: "aws-secretsmanager:/prod/order-service"
+
+// Secrets Manager에 저장된 JSON
+// /prod/order-service:
+// {
+//   "spring.datasource.url": "jdbc:postgresql://...",
+//   "spring.datasource.password": "auto-rotated-pw"
+// }
+```
+
+*민감정보 마스킹*
+```kotlin
+// 로그에서 민감 정보 마스킹
+@Component
+class SensitiveDataMaskingLayout : LayoutBase<ILoggingEvent>() {
+    private val patterns = listOf(
+        Regex("(password|secret|token|key)\\s*[:=]\\s*\\S+", RegexOption.IGNORE_CASE)
+            to "$1=***MASKED***",
+        Regex("\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b")
+            to "****-****-****-XXXX"
+    )
+
+    override fun doLayout(event: ILoggingEvent): String {
+        var message = event.formattedMessage
+        patterns.forEach { (regex, replacement) ->
+            message = regex.replace(message, replacement)
+        }
+        return message
+    }
+}
+
+// API 응답에서 마스킹
+data class UserResponse(
+    val name: String,
+    val email: String,
+    @JsonSerialize(using = MaskedSerializer::class)
+    val phoneNumber: String  // 출력: "010-****-5678"
+)
+```
+
+*감사 로그 (Audit Log)*
+```kotlin
+// 감사 이벤트 기록: "누가, 언제, 무엇을, 어떻게"
+@Aspect
+@Component
+class AuditLogAspect(
+    private val auditLogRepository: AuditLogRepository,
+    private val securityContext: SecurityContextHolder
+) {
+    @Around("@annotation(Audited)")
+    fun audit(joinPoint: ProceedingJoinPoint): Any? {
+        val user = SecurityContextHolder.getContext().authentication?.name ?: "anonymous"
+        val action = joinPoint.signature.name
+        val args = joinPoint.args.map { sanitize(it) }
+        val startTime = Instant.now()
+
+        return try {
+            val result = joinPoint.proceed()
+            auditLogRepository.save(AuditLog(
+                who = user,
+                action = action,
+                target = args.toString(),
+                result = "SUCCESS",
+                timestamp = startTime,
+                duration = Duration.between(startTime, Instant.now())
+            ))
+            result
+        } catch (e: Exception) {
+            auditLogRepository.save(AuditLog(
+                who = user,
+                action = action,
+                target = args.toString(),
+                result = "FAILURE: ${e.message}",
+                timestamp = startTime
+            ))
+            throw e
+        }
+    }
+}
+```
+
+---
+
+### S2.3 CORS / SSRF 방어 (0.5주)
+
+**학습 목표**
+CORS 설정의 동작 원리를 이해하고, SSRF 공격을 방어할 수 있다.
+
+**핵심 내용**
+
+*CORS 설정*
+```kotlin
+@Configuration
+class CorsConfig : WebMvcConfigurer {
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/api/**")
+            .allowedOrigins(
+                "https://www.mycompany.com",
+                "https://admin.mycompany.com"
+            )
+            // BAD: .allowedOrigins("*") → 모든 도메인 허용
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedHeaders("Authorization", "Content-Type")
+            .allowCredentials(true)
+            .maxAge(3600)  // Preflight 캐시 1시간
+    }
+}
+```
+
+*SSRF 방어*
+```kotlin
+// SSRF 위험 코드
+@PostMapping("/fetch")
+fun fetchUrl(@RequestBody request: FetchRequest): String {
+    // BAD: 사용자 입력 URL을 직접 호출
+    return restTemplate.getForObject(request.url, String::class.java)!!
+}
+
+// SSRF 방어
+@Component
+class SafeUrlValidator {
+    private val allowedHosts = setOf("api.trusted-partner.com", "cdn.mycompany.com")
+    private val blockedCidrs = listOf(
+        "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",  // Private
+        "127.0.0.0/8", "169.254.0.0/16"                     // Loopback, Link-local
+    )
+
+    fun validate(url: String): Boolean {
+        val uri = URI.create(url)
+        // 1. 허용된 호스트인지 확인
+        if (uri.host !in allowedHosts) return false
+        // 2. IP 주소 기반 접근인지 확인 (DNS 리바인딩 방지)
+        val ip = InetAddress.getByName(uri.host)
+        if (ip.isSiteLocalAddress || ip.isLoopbackAddress) return false
+        // 3. HTTPS만 허용
+        if (uri.scheme != "https") return false
+        return true
+    }
+}
+```
+
+**실습 과제**
+1. Profile 기반 multi-env 설정 구성 (local/staging/prod)
+2. Kubernetes Liveness/Readiness Probe 설계 및 장애 시나리오 테스트
+3. HashiCorp Vault 또는 AWS Secrets Manager 연동 구현
+4. AOP 기반 감사 로그 시스템 구현
+5. CORS 설정 + SSRF 방어 필터 구현
+
+**평가 기준**
+- [ ] Liveness와 Readiness의 차이를 설명하고 올바르게 구성할 수 있다
+- [ ] Secret을 코드에서 완전히 분리하는 3가지 방법을 구현할 수 있다
+- [ ] 민감 정보 마스킹과 감사 로그를 구현할 수 있다
+- [ ] CORS 동작 원리와 SSRF 방어 전략을 설명할 수 있다
+
+---
+
+## S3. Kotlin Nullable 경계 & 코루틴 I/O 격리 (1주)
+
+> **삽입 위치**: Phase 1 (Kotlin 심화) 보충 또는 Phase 1 이수 후 실전 적용
+> **연결**: Phase 1.5 코루틴 → S3 I/O 격리 → Phase 4.1 비동기 처리
+> **피드백 근거**: feedback1 "nullable 처리 경계 명문화" + "blocking I/O 격리 기준 명시"
+
+### S3.1 Nullable 경계 규칙
+
+**학습 목표**
+Kotlin 프로젝트에서 null-safety의 경계를 명문화하여, 도메인 내부의 견고함과 외부 연동의 유연성을 동시에 확보한다.
+
+**핵심 내용**
+
+*Nullable 경계 원칙*
+```
+┌──────────────────────────────────────────────┐
+│        External (Nullable 허용)               │
+│  HTTP Request, DB Result, External API,       │
+│  Kafka Message, User Input                    │
+├──────────────────────────────────────────────┤
+│        Boundary (변환 계층)                    │
+│  Controller → DTO (nullable)                  │
+│  Repository → Entity → Domain (non-null)      │
+│  API Client → Response → Domain (non-null)    │
+├──────────────────────────────────────────────┤
+│        Internal (Non-null 유지)               │
+│  Domain Model, Service, Use Case              │
+│  모든 프로퍼티는 non-null                      │
+│  null이면 예외 또는 Result 반환                │
+└──────────────────────────────────────────────┘
+```
+
+*경계에서의 변환 패턴*
+```kotlin
+// Controller 레이어: 외부 입력은 nullable 허용
+data class CreateOrderRequest(
+    val userId: Long?,       // nullable: 사용자 입력
+    val productId: Long?,    // nullable: 사용자 입력
+    val quantity: Int?
+)
+
+// Controller → Domain 변환 시 검증
+@PostMapping("/orders")
+fun createOrder(@Valid @RequestBody request: CreateOrderRequest): ResponseEntity<OrderResponse> {
+    // 경계에서 non-null로 변환 + 도메인 타입 래핑
+    val command = CreateOrderCommand(
+        userId = UserId(request.userId ?: throw BadRequestException("userId 필수")),
+        productId = ProductId(request.productId ?: throw BadRequestException("productId 필수")),
+        quantity = request.quantity?.takeIf { it > 0 }
+            ?: throw BadRequestException("quantity는 1 이상")
+    )
+    val result = orderService.createOrder(command)
+    return ResponseEntity.ok(result.toResponse())
+}
+
+// Domain 레이어: 모든 것이 non-null
+data class CreateOrderCommand(
+    val userId: UserId,        // non-null, value class
+    val productId: ProductId,  // non-null, value class
+    val quantity: Int           // non-null
+)
+
+// Service: 내부는 non-null 보장
+class OrderService(private val orderRepository: OrderRepository) {
+    fun createOrder(command: CreateOrderCommand): Order {
+        // command의 모든 프로퍼티가 non-null이므로 안전
+        val order = Order.create(command.userId, command.productId, command.quantity)
+        return orderRepository.save(order)
+    }
+}
+```
+
+*Repository 경계 처리*
+```kotlin
+// BAD: Repository에서 nullable 전파
+interface OrderRepository : JpaRepository<OrderEntity, Long> {
+    fun findByUserId(userId: Long): OrderEntity?  // nullable 반환
+}
+
+// Service에서 매번 null 체크
+fun getOrder(userId: UserId): Order {
+    val entity = orderRepository.findByUserId(userId.value)
+        ?: throw OrderNotFoundException(userId)  // 경계에서 처리
+    return entity.toDomain()  // 도메인 객체는 non-null
+}
+
+// BETTER: sealed class로 결과 표현
+sealed interface FindResult<out T> {
+    data class Found<T>(val value: T) : FindResult<T>
+    data object NotFound : FindResult<Nothing>
+}
+```
+
+---
+
+### S3.2 코루틴 Blocking I/O 격리 정책
+
+**학습 목표**
+코루틴 환경에서 blocking I/O를 안전하게 격리하기 위한 Dispatcher 전략을 수립한다.
+
+**핵심 내용**
+
+*Dispatcher 선택 기준*
+
+| 작업 유형 | Dispatcher | 이유 |
+|----------|-----------|------|
+| CPU 집중 (계산, 직렬화) | `Dispatchers.Default` | CPU 코어 수만큼 스레드 |
+| Blocking I/O (JDBC, File) | `Dispatchers.IO` | 최대 64개 스레드 (확장 가능) |
+| Non-blocking I/O (WebClient) | 코루틴 그대로 | 이미 비동기 |
+| Spring MVC 컨트롤러 | 요청 스레드 (Servlet) | 기본 동작 |
+| Spring WebFlux | `Dispatchers.Unconfined` / Reactor | 이벤트 루프 |
+
+*JPA/JDBC blocking 격리*
+```kotlin
+// BAD: Default Dispatcher에서 JDBC 호출
+suspend fun getOrders(): List<Order> {
+    // Dispatchers.Default에서 JDBC 호출 → 스레드 블로킹 → 코루틴 스케줄러 멈춤!
+    return orderRepository.findAll().map { it.toDomain() }
+}
+
+// GOOD: IO Dispatcher로 격리
+suspend fun getOrders(): List<Order> = withContext(Dispatchers.IO) {
+    orderRepository.findAll().map { it.toDomain() }
+}
+
+// BETTER: 전용 Dispatcher 사용 (DB 커넥션 풀과 동기화)
+@Configuration
+class DispatcherConfig {
+    @Bean
+    @Qualifier("dbDispatcher")
+    fun dbDispatcher(): CoroutineDispatcher {
+        // DB 커넥션 풀 크기와 맞추기 (HikariCP maximumPoolSize = 10)
+        return Executors.newFixedThreadPool(10).asCoroutineDispatcher()
+    }
+
+    @Bean
+    @Qualifier("externalApiDispatcher")
+    fun externalApiDispatcher(): CoroutineDispatcher {
+        return Executors.newFixedThreadPool(20).asCoroutineDispatcher()
+    }
+}
+
+@Service
+class OrderService(
+    private val orderRepository: OrderRepository,
+    @Qualifier("dbDispatcher") private val dbDispatcher: CoroutineDispatcher
+) {
+    suspend fun getOrders(): List<Order> = withContext(dbDispatcher) {
+        orderRepository.findAll().map { it.toDomain() }
+    }
+}
+```
+
+*HTTP Client 종류별 격리*
+```kotlin
+// RestTemplate → Blocking → IO Dispatcher 필수
+suspend fun callLegacyApi(): LegacyResponse = withContext(Dispatchers.IO) {
+    restTemplate.getForObject("/api/legacy", LegacyResponse::class.java)!!
+}
+
+// WebClient → Non-blocking → Dispatcher 불필요
+suspend fun callModernApi(): ModernResponse {
+    return webClient.get()
+        .uri("/api/modern")
+        .retrieve()
+        .awaitBody<ModernResponse>()  // 코루틴 확장, 비동기
+}
+```
+
+*코루틴 + 트랜잭션 컨텍스트 전파*
+```kotlin
+// 주의: @Transactional은 ThreadLocal 기반 → 코루틴에서 스레드 전환 시 전파 안 됨
+
+// BAD: 트랜잭션 내에서 withContext로 스레드 전환
+@Transactional
+suspend fun processOrder(order: Order) {
+    orderRepository.save(order)
+    withContext(Dispatchers.IO) {
+        // 다른 스레드 → TransactionContext 유실!
+        inventoryRepository.decreaseStock(order.productId, order.quantity)
+    }
+}
+
+// GOOD: 같은 트랜잭션 내 작업은 같은 Dispatcher에서
+@Transactional
+suspend fun processOrder(order: Order) = withContext(dbDispatcher) {
+    // 모든 DB 작업이 같은 스레드 풀에서 실행 → 트랜잭션 유지
+    orderRepository.save(order)
+    inventoryRepository.decreaseStock(order.productId, order.quantity)
+}
+```
+
+**실습 과제**
+1. 도메인 모델의 Nullable 경계 규칙 문서를 작성하고 코드에 적용
+2. Dispatcher 전략 문서를 작성 (작업 유형별 Dispatcher 매핑 테이블)
+3. JPA + 코루틴 환경에서 트랜잭션 전파가 올바르게 동작하는지 검증하는 테스트 작성
+4. 전용 Dispatcher를 사용한 DB/외부 API 격리 구현
+
+**평가 기준**
+- [ ] Nullable 경계 규칙을 명문화하고 팀에 공유할 수 있다
+- [ ] 코루틴 환경에서 blocking I/O 격리 전략을 설계할 수 있다
+- [ ] 코루틴 + @Transactional의 주의점을 이해하고 올바르게 사용할 수 있다
+- [ ] Dispatcher 선택 기준을 설명하고 근거를 제시할 수 있다
+
+---
+
+## S4. API Deprecation & 멱등성 구현 (1주)
+
+> **삽입 위치**: Phase 5.2 (API 설계) 이후
+> **연결**: Phase 5.2 API 설계 → S4 고급 패턴 → Phase 7.3 마이크로서비스
+> **피드백 근거**: feedback1 "API deprecation 정책 템플릿" + feedback2 "Redis 기반 멱등성 필터"
+
+### S4.1 API Deprecation / 하위 호환 정책
+
+**학습 목표**
+API의 하위 호환성을 유지하면서 점진적으로 기능을 제거하는 전략을 수립할 수 있다.
+
+**핵심 내용**
+
+*API 변경의 호환성 분류*
+
+| 변경 유형 | 하위 호환 | 예시 |
+|----------|---------|------|
+| 필드 추가 (응답) | O | Response에 새 필드 추가 |
+| Optional 파라미터 추가 | O | 새 쿼리 파라미터 (기본값 있음) |
+| 필드 제거 (응답) | **X** | 클라이언트가 참조 시 깨짐 |
+| 필수 파라미터 추가 | **X** | 기존 요청 실패 |
+| 필드 타입 변경 | **X** | String → Int |
+| URL 경로 변경 | **X** | /v1/users → /v1/members |
+
+*Deprecation 정책 템플릿*
+
+```markdown
+## API Deprecation 정책
+
+### 1. 공지 기간
+- 내부 API: 최소 2 스프린트(4주) 전 공지
+- 외부 API: 최소 6개월 전 공지
+
+### 2. 단계
+1. **Announce**: API 문서에 @Deprecated 표기, 대안 API 안내
+2. **Warn**: 응답 헤더에 Deprecation 경고 추가 (Sunset 헤더)
+3. **Monitor**: 호출 메트릭 수집, 사용 클라이언트 직접 연락
+4. **Remove**: 사용량 0 확인 후 제거 (또는 410 Gone 반환)
+```
+
+```kotlin
+// Deprecation 응답 헤더
+@Deprecated("v2를 사용하세요")
+@GetMapping("/api/v1/users")
+fun getUsersV1(): ResponseEntity<List<UserV1Response>> {
+    val users = userService.getUsers()
+    return ResponseEntity.ok()
+        .header("Deprecation", "true")
+        .header("Sunset", "Sat, 01 Jun 2026 00:00:00 GMT")
+        .header("Link", "</api/v2/users>; rel=\"successor-version\"")
+        .body(users.map { it.toV1Response() })
+}
+
+// 메트릭 기반 사용량 추적
+@Aspect
+@Component
+class DeprecatedApiMetrics(private val meterRegistry: MeterRegistry) {
+    @Before("@annotation(kotlin.Deprecated)")
+    fun trackDeprecatedApiUsage(joinPoint: JoinPoint) {
+        val endpoint = joinPoint.signature.name
+        meterRegistry.counter("api.deprecated.calls", "endpoint", endpoint).increment()
+    }
+}
+```
+
+---
+
+### S4.2 멱등성(Idempotency) 구현
+
+**학습 목표**
+네트워크 타임아웃, 재시도 시나리오에서 안전성을 보장하기 위한 범용 멱등성 필터를 구현할 수 있다.
+
+**핵심 내용**
+
+*멱등성이 필요한 이유*
+```
+클라이언트 → 요청 → 서버 (처리 완료)
+     ↑                    ↓
+     └── 타임아웃! ←── 응답 유실
+     ↓
+클라이언트 → 재시도 → 서버 (또 처리? → 중복 결제!)
+```
+
+*Redis 기반 멱등성 필터*
+```kotlin
+// 멱등성 키 어노테이션
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Idempotent(
+    val headerName: String = "Idempotency-Key",
+    val ttlMinutes: Long = 60
+)
+
+// 멱등성 인터셉터
+@Component
+class IdempotencyInterceptor(
+    private val redisTemplate: StringRedisTemplate,
+    private val objectMapper: ObjectMapper
+) : HandlerInterceptor {
+
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        if (handler !is HandlerMethod) return true
+
+        val annotation = handler.getMethodAnnotation(Idempotent::class.java) ?: return true
+        val idempotencyKey = request.getHeader(annotation.headerName)
+            ?: throw BadRequestException("${annotation.headerName} 헤더가 필요합니다")
+
+        val cacheKey = "idempotency:${request.requestURI}:$idempotencyKey"
+        val cached = redisTemplate.opsForValue().get(cacheKey)
+
+        if (cached != null) {
+            // 이전 응답을 그대로 반환
+            val cachedResponse = objectMapper.readValue(cached, CachedResponse::class.java)
+            response.status = cachedResponse.status
+            response.contentType = "application/json"
+            response.writer.write(cachedResponse.body)
+            return false  // 컨트롤러 실행 안 함
+        }
+
+        // 처리 중 표시 (동시 요청 방지)
+        val lockAcquired = redisTemplate.opsForValue()
+            .setIfAbsent(cacheKey, "PROCESSING", Duration.ofMinutes(annotation.ttlMinutes))
+
+        if (lockAcquired != true) {
+            response.status = 409
+            response.writer.write("""{"error": "요청 처리 중입니다. 잠시 후 재시도하세요."}""")
+            return false
+        }
+
+        return true
+    }
+}
+
+// AOP 기반 응답 캐싱
+@Aspect
+@Component
+class IdempotencyResponseCapture(
+    private val redisTemplate: StringRedisTemplate,
+    private val objectMapper: ObjectMapper
+) {
+    @AfterReturning(
+        pointcut = "@annotation(idempotent)",
+        returning = "result"
+    )
+    fun cacheResponse(joinPoint: JoinPoint, idempotent: Idempotent, result: ResponseEntity<*>) {
+        val request = (RequestContextHolder.currentRequestAttributes() as ServletRequestAttributes).request
+        val key = request.getHeader(idempotent.headerName) ?: return
+        val cacheKey = "idempotency:${request.requestURI}:$key"
+
+        val cached = CachedResponse(
+            status = result.statusCode.value(),
+            body = objectMapper.writeValueAsString(result.body)
+        )
+        redisTemplate.opsForValue().set(
+            cacheKey,
+            objectMapper.writeValueAsString(cached),
+            Duration.ofMinutes(idempotent.ttlMinutes)
+        )
+    }
+}
+
+// 사용
+@PostMapping("/orders")
+@Idempotent(ttlMinutes = 30)
+fun createOrder(@RequestBody request: CreateOrderRequest): ResponseEntity<OrderResponse> {
+    val order = orderService.createOrder(request)
+    return ResponseEntity.status(HttpStatus.CREATED).body(order.toResponse())
+}
+```
+
+**실습 과제**
+1. API Deprecation 정책 문서를 작성하고 Sunset 헤더를 구현
+2. Deprecated API 호출량 메트릭 수집 및 Grafana 대시보드 구성
+3. Redis 기반 범용 멱등성 인터셉터 구현
+4. 네트워크 타임아웃 시나리오에서 멱등성 동작을 검증하는 통합 테스트
+
+**평가 기준**
+- [ ] API Deprecation 4단계 프로세스를 설명할 수 있다
+- [ ] 하위 호환 변경과 비호환 변경을 구분할 수 있다
+- [ ] Redis 기반 멱등성 필터의 동작 원리를 설명하고 구현할 수 있다
+- [ ] 멱등성 키의 적절한 TTL과 중복 방지 전략을 설계할 수 있다
+
+---
+
+## S5. Retry Storm 방지 체계 (0.5주)
+
+> **삽입 위치**: Phase 4.1 (복원력 패턴) 보충
+> **연결**: Phase 4.1 Retry 전략 → S5 Retry Storm 방지 → Phase 7.3 분산 시스템
+> **피드백 근거**: feedback1 "retry storm 방지 규칙을 명시 항목으로 독립화"
+
+### S5.1 Retry Storm의 위험과 방지
+
+**학습 목표**
+분산 시스템에서 Retry Storm(재시도 폭풍)이 발생하는 메커니즘을 이해하고, 이를 체계적으로 방지할 수 있다.
+
+**핵심 내용**
+
+*Retry Storm 발생 메커니즘*
+```
+서비스 A → 서비스 B (장애 발생)
+   ↓ 재시도 3회
+   ↓ 재시도 3회  (서비스 A의 모든 인스턴스가 동시 재시도)
+   ↓ 재시도 3회
+   = 서비스 B에 원래 트래픽의 4배 폭주 → 장애 확대!
+
+만약 서비스 A → B → C 체인이라면?
+A (3회) × B (3회) × C (3회) = 최대 64배(4^3)의 요청 폭발
+```
+
+*Retry Storm 방지 체크리스트*
+
+```markdown
+## Retry 설정 체크리스트
+
+### 1. 최대 재시도 횟수 제한
+- [ ] 최대 3회 이하로 설정
+- [ ] 체인 전체의 곱셈 효과를 고려 (A→B→C: 각 2회면 최대 8배)
+
+### 2. 지수 백오프 (Exponential Backoff)
+- [ ] 기본 간격: 100ms → 200ms → 400ms → ...
+- [ ] 최대 간격 상한: 30초
+- [ ] 공식: min(maxDelay, baseDelay * 2^attempt)
+
+### 3. 지터 (Jitter) 추가
+- [ ] Full Jitter: random(0, delay) → 분산 극대화
+- [ ] Equal Jitter: delay/2 + random(0, delay/2) → 균형
+- [ ] 목적: 동시 재시도 시점 분산 → Thundering Herd 방지
+
+### 4. 재시도 가능한 에러만 재시도
+- [ ] 재시도 O: 5xx, 429, 타임아웃, 네트워크 오류
+- [ ] 재시도 X: 4xx (400, 401, 403, 404), 비즈니스 에러
+- [ ] 재시도 조건을 명시적으로 선언
+
+### 5. 서킷 브레이커와 조합
+- [ ] 서킷 브레이커가 Open 상태면 재시도 자체를 하지 않음
+- [ ] 서킷 브레이커 > 재시도 순서로 적용
+
+### 6. Budget 제한
+- [ ] 전체 요청 대비 재시도 비율 상한 (예: 10%)
+- [ ] 재시도 Budget 초과 시 즉시 실패 반환
+```
+
+*Resilience4j를 활용한 구현*
+```kotlin
+@Configuration
+class RetryConfig {
+    @Bean
+    fun retryRegistry(): RetryRegistry {
+        val config = RetryConfig.custom<Any>()
+            .maxAttempts(3)
+            .waitDuration(Duration.ofMillis(100))
+            .intervalFunction(IntervalFunction.ofExponentialRandomBackoff(
+                Duration.ofMillis(100),  // 초기 대기
+                2.0,                     // 배수
+                Duration.ofSeconds(30)   // 최대 대기
+            ))
+            .retryOnResult { response ->
+                response is ResponseEntity<*> && response.statusCode.is5xxServerError
+            }
+            .retryExceptions(
+                IOException::class.java,
+                TimeoutException::class.java
+            )
+            .ignoreExceptions(
+                BusinessException::class.java,
+                IllegalArgumentException::class.java
+            )
+            .build()
+
+        return RetryRegistry.of(config)
+    }
+}
+
+// 서킷 브레이커 + 재시도 조합 (순서 중요!)
+@Service
+class ExternalApiClient(
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+    private val retryRegistry: RetryRegistry,
+    private val webClient: WebClient
+) {
+    // 서킷 브레이커가 바깥, 재시도가 안쪽
+    // = 서킷 브레이커 Open이면 재시도 자체를 안 함
+    @CircuitBreaker(name = "externalApi", fallbackMethod = "fallback")
+    @Retry(name = "externalApi")
+    fun callExternalApi(request: ApiRequest): ApiResponse {
+        return webClient.post()
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(ApiResponse::class.java)
+            .block()!!
+    }
+}
+```
+
+**실습 과제**
+1. Retry Storm 시뮬레이션: 재시도 설정 미비 시 트래픽 폭발을 k6로 재현
+2. Exponential Backoff + Full Jitter 적용 전후 부하 패턴 비교
+3. 서킷 브레이커 + Retry 조합 구현 및 장애 시나리오 테스트
+
+**평가 기준**
+- [ ] Retry Storm의 발생 원리와 곱셈 효과를 설명할 수 있다
+- [ ] Retry 설정 체크리스트를 팀에 적용할 수 있다
+- [ ] 지수 백오프 + 지터의 필요성을 정량적으로 설명할 수 있다
+- [ ] 서킷 브레이커와 Retry의 올바른 조합 순서를 알고 있다
+
+---
+
+## S6. 테스트 회귀 방지 & 품질 도구 (1주)
+
+> **삽입 위치**: Phase 6.1 (테스트 전략) 이후
+> **연결**: Phase 6.1 테스트 → S6 회귀 방지 → Phase 7.1 CI/CD
+> **피드백 근거**: feedback1 "회귀 테스트 루틴 추가" + "Gradle build cache + Ktlint/Detekt 운영 기준"
+
+### S6.1 회귀 테스트 (Regression Test) 루틴
+
+**학습 목표**
+버그가 수정될 때 반드시 해당 버그를 재현하는 테스트를 먼저 작성하는 습관을 확립한다.
+
+**핵심 내용**
+
+*회귀 테스트 프로세스*
+```
+1. 버그 리포트 수신
+    ↓
+2. 버그를 재현하는 실패하는 테스트 작성 (RED)
+    ↓
+3. 버그 수정 (GREEN)
+    ↓
+4. 테스트가 통과하는지 확인
+    ↓
+5. 이 테스트는 영구적으로 CI에 포함 → 재발 방지
+```
+
+*회귀 테스트 작성 패턴*
+```kotlin
+class OrderServiceTest {
+    // 회귀 테스트 네이밍 컨벤션: 이슈 번호 포함
+    @Test
+    fun `BUG-1234 동시 주문 시 재고가 음수가 되는 문제`() {
+        // Given: 재고 1개인 상품
+        val product = createProduct(stock = 1)
+
+        // When: 2개의 주문이 동시에 들어옴
+        val latch = CountDownLatch(2)
+        val results = ConcurrentLinkedQueue<Result<Order>>()
+
+        repeat(2) {
+            thread {
+                results.add(runCatching { orderService.createOrder(product.id, quantity = 1) })
+                latch.countDown()
+            }
+        }
+        latch.await()
+
+        // Then: 하나는 성공, 하나는 실패해야 함 (재고 음수 불가)
+        assertThat(results.count { it.isSuccess }).isEqualTo(1)
+        assertThat(results.count { it.isFailure }).isEqualTo(1)
+        assertThat(productRepository.findById(product.id)!!.stock).isGreaterThanOrEqualTo(0)
+    }
+
+    @Test
+    fun `BUG-1567 pagination offset이 음수일 때 500 에러 대신 400 반환`() {
+        // Given & When
+        val response = mockMvc.get("/api/orders?page=-1&size=10")
+
+        // Then: 500이 아닌 400 반환
+        response.andExpect {
+            status { isBadRequest() }
+            jsonPath("$.code") { value("INVALID_PARAMETER") }
+        }
+    }
+}
+```
+
+---
+
+### S6.2 Gradle Build Cache & 정적 분석 도구
+
+**학습 목표**
+CI 빌드 시간을 최적화하고, Ktlint/Detekt를 활용한 코드 품질 자동화를 구축한다.
+
+**핵심 내용**
+
+*Gradle Build Cache*
+```kotlin
+// settings.gradle.kts
+buildCache {
+    local {
+        directory = File(rootDir, ".gradle/build-cache")
+        removeUnusedEntriesAfterDays = 7
+    }
+    // 팀 공유 원격 캐시 (선택)
+    remote<HttpBuildCache> {
+        url = uri("https://build-cache.mycompany.com/cache/")
+        isPush = System.getenv("CI") != null  // CI에서만 push
+        credentials {
+            username = System.getenv("CACHE_USER")
+            password = System.getenv("CACHE_PASS")
+        }
+    }
+}
+
+// gradle.properties
+org.gradle.caching=true
+org.gradle.parallel=true
+org.gradle.configureondemand=true
+```
+
+*Ktlint 설정*
+```kotlin
+// build.gradle.kts
+plugins {
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+}
+
+ktlint {
+    version.set("1.1.0")
+    android.set(false)
+    outputToConsole.set(true)
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+        reporter(ReporterType.SARIF)  // GitHub Code Scanning 연동
+    }
+    filter {
+        exclude("**/generated/**")
+    }
+}
+
+// .editorconfig (Ktlint 규칙 커스터마이징)
+// [*.{kt,kts}]
+// ktlint_code_style = ktlint_official
+// max_line_length = 120
+// ktlint_function_naming_ignore_when_annotated_with = Composable
+```
+
+*Detekt 설정*
+```kotlin
+// build.gradle.kts
+plugins {
+    id("io.gitlab.arturbosch.detekt") version "1.23.5"
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    baseline = file("$rootDir/config/detekt/baseline.xml")  // 기존 이슈 허용
+}
+
+// detekt.yml (핵심 규칙)
+complexity:
+  ComplexMethod:
+    threshold: 15      # 순환 복잡도 15 초과 시 경고
+  LongMethod:
+    threshold: 60      # 60줄 초과 시 경고
+  LargeClass:
+    threshold: 300     # 300줄 초과 시 경고
+
+style:
+  ForbiddenComment:
+    values:
+      - 'TODO:'        # TODO를 이슈로 전환하도록 유도
+      - 'FIXME:'
+  MagicNumber:
+    ignoreNumbers: ['-1', '0', '1', '2']  # 흔한 숫자는 허용
+  MaxLineLength:
+    maxLineLength: 120
+
+potential-bugs:
+  CastToNullableType:
+    active: true
+  UnnecessaryNotNullOperator:
+    active: true       # 불필요한 !! 탐지
+```
+
+*CI 파이프라인 통합*
+```yaml
+# GitHub Actions
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle Build Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle/build-cache
+          key: gradle-${{ hashFiles('**/*.gradle.kts') }}
+
+      - name: Ktlint Check
+        run: ./gradlew ktlintCheck
+
+      - name: Detekt
+        run: ./gradlew detekt
+
+      - name: Test with Coverage
+        run: ./gradlew test jacocoTestReport
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: build/reports/ktlint/ktlint.sarif
+```
+
+**실습 과제**
+1. 기존 프로젝트에서 버그 1개를 선정하여 회귀 테스트 프로세스(RED → GREEN) 실습
+2. Gradle Build Cache를 설정하고 빌드 시간 개선 효과를 측정
+3. Ktlint + Detekt를 프로젝트에 설정하고 baseline 생성
+4. GitHub Actions CI에 정적 분석 + 테스트 파이프라인 구축
+
+**평가 기준**
+- [ ] 버그 수정 시 회귀 테스트를 먼저 작성하는 습관이 있다
+- [ ] Gradle Build Cache의 동작 원리를 설명할 수 있다
+- [ ] Ktlint와 Detekt의 차이(포매팅 vs 정적 분석)를 이해한다
+- [ ] CI에서 코드 품질 게이트를 자동화할 수 있다
+
+---
+
+## S7. 인프라 레벨 병목 진단 (1주)
+
+> **삽입 위치**: Phase 9 (성능 최적화 마스터리) 이후
+> **연결**: Phase 9 시스템 레벨 최적화 → S7 인프라 레벨 → 종합 프로젝트
+> **피드백 근거**: feedback2 "TCP 커널 파라미터, Linux 파일 디스크립터 설정 등 인프라 레벨 병목 진단"
+
+### S7.1 TCP 커널 파라미터와 네트워크 병목
+
+**학습 목표**
+JVM/DB 수준 아래의 OS/네트워크 레벨에서 발생하는 병목을 이해하고 진단할 수 있다.
+
+**핵심 내용**
+
+*TCP 핵심 파라미터*
+
+| 파라미터 | 기본값 | 권장값 | 설명 |
+|---------|--------|-------|------|
+| `net.core.somaxconn` | 128 | 4096 | Listen 큐 최대 크기. 동시 접속 많을 때 부족하면 SYN Drop |
+| `net.ipv4.tcp_max_syn_backlog` | 1024 | 8192 | SYN 큐 최대 크기 |
+| `net.ipv4.tcp_tw_reuse` | 0 | 1 | TIME_WAIT 소켓 재사용 허용 |
+| `net.ipv4.tcp_fin_timeout` | 60 | 30 | FIN_WAIT2 타임아웃 (초) |
+| `net.ipv4.tcp_keepalive_time` | 7200 | 600 | Keep-alive 시작까지 대기 (초) |
+| `net.ipv4.tcp_keepalive_intvl` | 75 | 30 | Keep-alive 프로브 간격 (초) |
+| `net.ipv4.tcp_keepalive_probes` | 9 | 5 | Keep-alive 최대 프로브 횟수 |
+| `net.ipv4.ip_local_port_range` | 32768-60999 | 1024-65535 | 사용 가능 소스 포트 범위 |
+
+*TIME_WAIT 문제*
+```bash
+# TIME_WAIT 소켓 수 확인
+ss -s
+# State      Recv-Q Send-Q
+# TIME-WAIT  28514
+
+# 많은 TIME_WAIT가 문제가 되는 경우:
+# - 소스 포트 고갈 → 새 연결 생성 불가
+# - 대량 외부 API 호출 시 자주 발생
+```
+
+해결:
+```bash
+# /etc/sysctl.conf
+net.ipv4.tcp_tw_reuse = 1        # TIME_WAIT 소켓 재사용
+net.ipv4.ip_local_port_range = 1024 65535  # 포트 범위 확대
+```
+
+*파일 디스크립터 (FD) 제한*
+```bash
+# 현재 제한 확인
+ulimit -n    # 소프트 리밋
+ulimit -Hn   # 하드 리밋
+
+# 프로세스별 FD 사용 현황
+ls -la /proc/<PID>/fd | wc -l
+# 또는
+cat /proc/<PID>/limits | grep "Max open files"
+```
+
+```bash
+# /etc/security/limits.conf
+*    soft    nofile    65536
+*    hard    nofile    65536
+
+# systemd 서비스의 경우
+# /etc/systemd/system/myapp.service
+[Service]
+LimitNOFILE=65536
+```
+
+```yaml
+# Kubernetes Pod에서는 securityContext로 설정 불가 → Init Container 또는 sysctl
+apiVersion: v1
+kind: Pod
+spec:
+  securityContext:
+    sysctls:
+      - name: net.core.somaxconn
+        value: "4096"
+```
+
+> **왜 중요한가?**
+> 모든 TCP 소켓, 파일, 파이프, DB 커넥션은 FD를 소비한다. JVM 애플리케이션이 많은 동시 연결을 처리할 때 FD 부족은 "Too many open files" 에러를 발생시킨다.
+
+*주요 진단 명령어*
+
+```bash
+# 1. 네트워크 연결 상태 요약
+ss -s
+
+# 2. TIME_WAIT 연결 수
+ss -tan state time-wait | wc -l
+
+# 3. 특정 포트의 연결 상태
+ss -tan 'sport = :8080'
+
+# 4. 커넥션 상태별 분류
+ss -tan | awk '{print $1}' | sort | uniq -c | sort -rn
+
+# 5. 프로세스별 열린 파일/소켓 수
+lsof -p <PID> | wc -l
+
+# 6. TCP 재전송 통계 (네트워크 품질 지표)
+nstat -az | grep -i retrans
+
+# 7. 커널 파라미터 확인
+sysctl net.core.somaxconn
+sysctl net.ipv4.tcp_tw_reuse
+```
+
+*실전 병목 진단 시나리오*
+
+```
+증상: 피크 시간에 API 응답 시간이 급증하고 간헐적 Connection Refused 발생
+
+진단 순서:
+1. ss -s → TIME_WAIT 소켓 25000개 이상 확인
+2. sysctl net.ipv4.ip_local_port_range → 32768-60999 (약 28000개)
+3. 포트 고갈로 인한 새 연결 생성 실패
+
+해결:
+1. ip_local_port_range 확대 → 1024-65535
+2. tcp_tw_reuse 활성화
+3. 커넥션 풀링 적용 (HTTP 클라이언트 Keep-alive 활성화)
+4. 연결 재사용 극대화
+```
+
+**실무 사례**
+- **포트 고갈 장애**: 외부 API 동시 호출이 많은 서비스에서 TIME_WAIT 포트 고갈 → `tcp_tw_reuse` + 커넥션 풀링으로 해결
+- **FD 제한 장애**: 파일 업로드 서비스에서 "Too many open files" → `ulimit -n 65536` + 파일 스트림 close 누락 수정
+- **somaxconn 부족**: 트래픽 폭주 시 SYN Drop 발생 → `somaxconn=4096`으로 증가
+
+**실습 과제**
+1. 서버의 TCP 커널 파라미터를 진단하고 최적화 보고서 작성
+2. k6 부하 테스트로 TIME_WAIT 포트 고갈을 재현하고 해결
+3. 파일 디스크립터 제한으로 인한 장애를 재현하고 설정 변경으로 해결
+4. Kubernetes Pod의 sysctl 설정을 구성하고 검증
+
+**평가 기준**
+- [ ] TCP TIME_WAIT 문제의 원인과 해결 방법을 설명할 수 있다
+- [ ] 파일 디스크립터 제한의 영향과 설정 방법을 알고 있다
+- [ ] `ss`, `lsof` 등 네트워크 진단 도구를 활용할 수 있다
+- [ ] OS 레벨 파라미터가 JVM 애플리케이션에 미치는 영향을 이해한다
+
+---
+
+## S8. Observability 표준 메트릭 카탈로그 (0.5주)
+
+> **삽입 위치**: Phase 6.4 (모니터링) 보충
+> **연결**: Phase 6.4 모니터링 → S8 메트릭 카탈로그 → Phase 7.1 CI/CD (SLO)
+> **피드백 근거**: feedback1 "RPS/error rate/queue lag 등 표준 메트릭 카탈로그를 필수 체크리스트로 고정"
+
+### S8.1 시니어 필수 메트릭 카탈로그
+
+**학습 목표**
+새로운 서비스를 런칭할 때 반드시 수집해야 하는 메트릭의 표준 카탈로그를 확보하고, 즉시 적용할 수 있다.
+
+**핵심 내용**
+
+*RED Method (Request-oriented)*
+
+| 메트릭 | Prometheus 쿼리 | 알림 기준 |
+|--------|----------------|----------|
+| **R**ate (초당 요청 수) | `rate(http_server_requests_seconds_count[5m])` | 갑작스러운 Drop > 50% |
+| **E**rror (에러율) | `rate(http_server_requests_seconds_count{status=~"5.."}[5m]) / rate(http_server_requests_seconds_count[5m])` | > 1% (SLO 기준) |
+| **D**uration (지연) | `histogram_quantile(0.99, rate(http_server_requests_seconds_bucket[5m]))` | P99 > 500ms |
+
+*USE Method (Resource-oriented)*
+
+| 메트릭 | Prometheus 쿼리 | 알림 기준 |
+|--------|----------------|----------|
+| CPU **U**tilization | `rate(process_cpu_seconds_total[5m])` | > 80% (5분 지속) |
+| Memory **S**aturation | `jvm_memory_used_bytes / jvm_memory_max_bytes` | > 85% |
+| Conn Pool **U**tilization | `hikaricp_connections_active / hikaricp_connections_max` | > 80% |
+| Thread Pool **S**aturation | 활성 스레드 / 최대 스레드 | > 80% |
+| GC **E**rror | Full GC 발생 여부 | Full GC 발생 시 |
+
+*비즈니스 메트릭*
+
+| 메트릭 | 설명 | 알림 기준 |
+|--------|------|----------|
+| 주문 TPS | 초당 주문 생성 수 | 피크 대비 50% 미만 Drop |
+| 결제 성공률 | 결제 성공/전체 비율 | < 95% |
+| Consumer Lag | Kafka 메시지 처리 지연 | > 10000 (5분 지속) |
+| 큐 크기 | 비동기 작업 큐 대기 | > 1000 |
+| 캐시 히트율 | 캐시 히트/전체 조회 | < 80% |
+
+*Spring Boot Actuator + Micrometer 커스텀 메트릭*
+```kotlin
+@Component
+class BusinessMetrics(private val meterRegistry: MeterRegistry) {
+
+    // Counter: 주문 수
+    fun recordOrderCreated(status: String) {
+        meterRegistry.counter("business.orders.created", "status", status).increment()
+    }
+
+    // Gauge: 대기 큐 크기
+    init {
+        Gauge.builder("business.queue.size") { getQueueSize() }
+            .description("비동기 작업 대기 큐 크기")
+            .register(meterRegistry)
+    }
+
+    // Timer: 외부 API 호출 시간
+    fun <T> timeExternalApi(apiName: String, block: () -> T): T {
+        return meterRegistry.timer("business.external_api.duration", "api", apiName)
+            .recordCallable(block)!!
+    }
+
+    // Distribution Summary: 응답 크기
+    fun recordResponseSize(endpoint: String, bytes: Long) {
+        meterRegistry.summary("business.response.size", "endpoint", endpoint)
+            .record(bytes.toDouble())
+    }
+}
+```
+
+*서비스 런칭 메트릭 체크리스트*
+
+```markdown
+## 신규 서비스 런칭 전 메트릭 체크리스트
+
+### RED (필수)
+- [ ] RPS (초당 요청 수) 수집 및 대시보드
+- [ ] Error Rate (에러율) 수집 및 알림 설정
+- [ ] P50/P95/P99 Latency 수집 및 알림 설정
+
+### USE (필수)
+- [ ] CPU Utilization
+- [ ] JVM Heap 사용률
+- [ ] HikariCP 커넥션 풀 사용률
+- [ ] 스레드 풀 사용률
+
+### 인프라 (필수)
+- [ ] GC 발생 빈도 및 STW 시간
+- [ ] Pod 재시작 횟수
+- [ ] Disk I/O
+
+### 비즈니스 (서비스별 정의)
+- [ ] 핵심 비즈니스 메트릭 3개 이상 정의
+- [ ] SLO/SLI 정의 (예: 가용성 99.9%, P99 < 500ms)
+
+### 알림 (필수)
+- [ ] Critical 알림: 장애 감지 (Error Rate > 5%)
+- [ ] Warning 알림: 사전 경고 (CPU > 80%)
+- [ ] 알림 수신 채널 설정 (Slack, PagerDuty)
+```
+
+**실습 과제**
+1. RED/USE 메트릭을 모두 수집하는 Grafana 대시보드 구성
+2. 커스텀 비즈니스 메트릭 3개를 Micrometer로 구현
+3. SLO/SLI를 정의하고 알림 규칙을 설정
+4. 신규 서비스 런칭 메트릭 체크리스트를 팀 위키에 등록
+
+**평가 기준**
+- [ ] RED/USE 메트릭의 의미와 수집 방법을 설명할 수 있다
+- [ ] Micrometer를 활용한 커스텀 메트릭을 구현할 수 있다
+- [ ] SLO/SLI 기반으로 의미 있는 알림을 설계할 수 있다
+- [ ] 새 서비스 런칭 시 메트릭 체크리스트를 즉시 적용할 수 있다
+
+---
+
+## 보충 커리큘럼 전체 요약
+
+| 보충 영역 | 기간 | 핵심 성과물 | 커리큘럼 삽입 위치 |
+|----------|------|-----------|-----------------|
+| S1. Spring Boot Internals | 2주 | Custom Starter 구현 | Phase 4 이후 |
+| S2. 운영 보안 & Secret | 1.5주 | Secret 관리 체계, 감사로그 | Phase 6.2 이후 |
+| S3. Kotlin Nullable & 코루틴 I/O | 1주 | 경계 규칙 문서, Dispatcher 전략 | Phase 1 이후 |
+| S4. API Deprecation & 멱등성 | 1주 | 멱등성 인터셉터, Deprecation 정책 | Phase 5.2 이후 |
+| S5. Retry Storm 방지 | 0.5주 | Retry 체크리스트 | Phase 4.1 이후 |
+| S6. 회귀 테스트 & 품질 도구 | 1주 | CI 품질 게이트 | Phase 6.1 이후 |
+| S7. 인프라 병목 진단 | 1주 | TCP 파라미터 최적화 보고서 | Phase 9 이후 |
+| S8. 표준 메트릭 카탈로그 | 0.5주 | 런칭 메트릭 체크리스트 | Phase 6.4 이후 |
+
+---
+
+## 최적 학습 순서 (기존 커리큘럼에 통합)
+
+```
+Phase 1: Kotlin 심화 (6주)
+    └── S3: Nullable 경계 & 코루틴 I/O 격리 (1주)   ← 추가
+Phase 2: 데이터 계층 마스터리 (7주)
+Phase 3: 메시징과 비동기 시스템 (3주)
+Phase 4: 대용량 트래픽과 성능 (3주)
+    └── S5: Retry Storm 방지 (0.5주)                ← 추가
+    └── S1: Spring Boot Internals (2주)              ← 추가
+Phase 5: 아키텍처와 설계 (3주)
+    └── S4: API Deprecation & 멱등성 (1주)           ← 추가
+Phase 6: 운영과 안정성 (5주)
+    └── S6: 회귀 테스트 & 품질 도구 (1주)            ← 추가
+    └── S8: 표준 메트릭 카탈로그 (0.5주)             ← 추가
+    └── S2: 운영 보안 & Secret 관리 (1.5주)          ← 추가
+Phase 7: 시니어 역량 종합 (4주)
+Phase 8: JVM/GC 튜닝 심화 (3주)
+Phase 9: 성능 최적화 마스터리 (3주)
+    └── S7: 인프라 레벨 병목 진단 (1주)              ← 추가
+Phase 10: 종합 프로젝트 (2~3주)
+```
+
+> **총 학습 기간**: 약 48.5주 (기존 40주 + 보충 8.5주)
+> **총 예상 학습 시간**: 390~490시간
+
+---
+
+## 보충 커리큘럼 완료 기준
+
+- [ ] S1: Custom Starter를 설계하고 구현할 수 있다
+- [ ] S2: Secret을 코드에서 완전히 분리하고 감사 로그를 구현할 수 있다
+- [ ] S3: Nullable 경계 규칙을 문서화하고 코루틴 Dispatcher 전략을 수립할 수 있다
+- [ ] S4: 멱등성 필터를 구현하고 API Deprecation 정책을 운영할 수 있다
+- [ ] S5: Retry Storm의 위험을 이해하고 방지 체크리스트를 적용할 수 있다
+- [ ] S6: 회귀 테스트 프로세스를 습관화하고 CI 품질 게이트를 구축할 수 있다
+- [ ] S7: OS/네트워크 레벨의 병목을 진단하고 해결할 수 있다
+- [ ] S8: 표준 메트릭 카탈로그를 즉시 적용하고 SLO 기반 알림을 설계할 수 있다

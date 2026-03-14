@@ -1,0 +1,37 @@
+[
+  {
+    "content": "Analyze findining-crawl API client code",
+    "status": "completed",
+    "activeForm": "Analyzing findining-crawl API client code"
+  },
+  {
+    "content": "Review findining Restaurant API endpoint and DTOs",
+    "status": "completed",
+    "activeForm": "Reviewing findining Restaurant API endpoint and DTOs"
+  },
+  {
+    "content": "Check seed_test_data.py for correct JSON format",
+    "status": "completed",
+    "activeForm": "Checking seed_test_data.py for correct JSON format"
+  },
+  {
+    "content": "Examine domain and Enum classes in findining",
+    "status": "completed",
+    "activeForm": "Examining domain and Enum classes"
+  },
+  {
+    "content": "Fix Python enums to match Kotlin enums",
+    "status": "completed",
+    "activeForm": "Fixing Python enums to match Kotlin enums"
+  },
+  {
+    "content": "Fix JSON serialization in restaurant_client.py",
+    "status": "completed",
+    "activeForm": "Fixing JSON serialization"
+  },
+  {
+    "content": "Test the fix by verifying API compatibility",
+    "status": "in_progress",
+    "activeForm": "Testing API compatibility"
+  }
+]

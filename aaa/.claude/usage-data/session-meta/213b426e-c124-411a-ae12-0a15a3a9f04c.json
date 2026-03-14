@@ -1,0 +1,65 @@
+{
+  "session_id": "213b426e-c124-411a-ae12-0a15a3a9f04c",
+  "project_path": "/Users/admin/project/admin/ui",
+  "start_time": "2026-03-05T05:59:57.980Z",
+  "duration_minutes": 59,
+  "user_message_count": 11,
+  "assistant_message_count": 32,
+  "tool_counts": {
+    "ToolSearch": 5,
+    "mcp__stitch__list_projects": 1,
+    "mcp__stitch__list_screens": 1,
+    "mcp__stitch__get_screen": 4,
+    "WebFetch": 1,
+    "Grep": 1,
+    "Glob": 2,
+    "Read": 5
+  },
+  "languages": {
+    "TypeScript": 5
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 48,
+  "output_tokens": 2828,
+  "first_prompt": "stitch에 접근해서 search-admin 프로젝트에 사전 버튼 누르면 펼쳐져서 시스템 사전, AI 사전 페이지는 ui가 있는데 나머지 사전 페이지에 대한 ui를 만들어줄수 있어?",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "Other": 1
+  },
+  "uses_task_agent": false,
+  "uses_mcp": true,
+  "uses_web_search": false,
+  "uses_web_fetch": true,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-05T06:06:12.504Z",
+    "2026-03-05T06:06:12.336Z",
+    "2026-03-05T06:06:56.495Z",
+    "2026-03-05T06:06:56.347Z",
+    "2026-03-05T06:38:18.469Z",
+    "2026-03-05T06:38:18.469Z",
+    "2026-03-05T06:38:18.469Z",
+    "2026-03-05T06:40:36.792Z",
+    "2026-03-05T06:40:36.791Z",
+    "2026-03-05T06:40:36.791Z",
+    "2026-03-05T06:57:23.662Z"
+  ]
+}

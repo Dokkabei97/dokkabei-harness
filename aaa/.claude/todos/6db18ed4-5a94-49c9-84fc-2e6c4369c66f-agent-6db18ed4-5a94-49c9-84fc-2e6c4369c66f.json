@@ -1,0 +1,26 @@
+[
+  {
+    "content": "다중 파드 환경의 스케줄러 동기화 문제 분석",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "현재 ppuri 스케줄러의 파드 간 중복 실행 방지 메커니즘 확인",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "APScheduler의 분산 환경 동기화 솔루션 조사",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "실제 동기화 솔루션 제안 및 구현 방안 도출",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  }
+]

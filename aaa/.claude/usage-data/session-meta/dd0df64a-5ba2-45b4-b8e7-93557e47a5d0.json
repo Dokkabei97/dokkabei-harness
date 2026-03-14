@@ -1,0 +1,38 @@
+{
+  "session_id": "dd0df64a-5ba2-45b4-b8e7-93557e47a5d0",
+  "project_path": "/Users/admin/project/admin/ui",
+  "start_time": "2026-03-03T02:28:38.187Z",
+  "duration_minutes": 1,
+  "user_message_count": 1,
+  "assistant_message_count": 6,
+  "tool_counts": {
+    "mcp__stitch__list_projects": 1,
+    "Agent": 2
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 14,
+  "output_tokens": 730,
+  "first_prompt": "stitch mcp를 통해서 search-admin 프로젝트에 페이지를 구현하고 싶어   컴포넌트화 가능한거 컴포넌트화 하고",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 3,
+  "tool_error_categories": {
+    "Other": 2,
+    "User Rejected": 1
+  },
+  "uses_task_agent": true,
+  "uses_mcp": true,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    11
+  ],
+  "user_message_timestamps": [
+    "2026-03-03T02:29:18.562Z"
+  ]
+}

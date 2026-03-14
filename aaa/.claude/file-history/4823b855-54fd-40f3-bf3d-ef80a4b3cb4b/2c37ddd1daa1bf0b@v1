@@ -1,0 +1,53 @@
+---
+description: "Spring 프로필, 설정 파일 계층, 환경변수 관리"
+globs: ["**/bootstrap/**", "**/resources/**/*.yml", "**/resources/**/*.properties"]
+---
+
+## Spring Configuration
+
+### 프로필 계층
+
+| 프로필 | 용도 | 자동 import |
+|--------|------|-------------|
+| `local` | 로컬 개발 (local.properties 로드) | - |
+| `outbound` | 외부 시스템 연결 (ES, Kafka, Valkey, 클라이언트) | O (application.yml에서) |
+| `observability` | OTEL, 메트릭, 헬스체크 | O |
+| `override` | 개인별 로컬 오버라이드 (.gitignore) | - |
+
+### 설정 파일 구조 (각 bootstrap 모듈)
+
+```
+src/main/resources/
+├── application.yml            ← 기본 (환경변수 참조, outbound+observability import)
+├── application-local.yml      ← local 프로필 (local.properties import)
+├── local.properties           ← 환경변수 값 정의 (git 관리됨)
+├── application-outbound.yml   ← ES, Kafka, Valkey, 클라이언트 설정
+├── application-observability.yml ← Actuator, Prometheus (port 8081)
+├── application-override.yml   ← 개인 전용 (.gitignore)
+└── override.properties        ← 개인 환경변수 (.gitignore)
+```
+
+### Bootstrap 진입점
+
+- **SearchApiApplication**: `bootstrap/search-api/.../SearchApiApplication.kt`
+  - scanBasePackages로 search-api 관련 모듈 컴포넌트 스캔
+- **DynamicIndexerApplication**: `bootstrap/dynamic-indexer/.../DynamicIndexerApplication.kt`
+  - scanBasePackages로 dynamic-indexer 관련 모듈 컴포넌트 스캔
+
+### 실행 명령
+
+```bash
+./gradlew :bootstrap:search-api:bootRun --args='--spring.profiles.active=local'
+./gradlew :bootstrap:dynamic-indexer:bootRun --args='--spring.profiles.active=local'
+```
+
+### 패키지 스캔 주의
+
+Gradle 모듈명 하이픈 → Kotlin 패키지 언더스코어. scanBasePackages 등록 시 **반드시 언더스코어** 사용:
+- `inbound-adapter/search-api` → `com.cowave.search.inbound_adapter.api`
+- `outbound-adapter/search` → `com.cowave.search.outbound_adapter.search`
+- `outbound/client/keyword-analyzer` → `com.cowave.search.client.keyword_analyzer`
+
+### SharedConfig
+
+`@ComponentScan(basePackages = ["com.cowave.shared"], lazyInit = true)` — `com.cowave.shared` 패키지는 자동 스캔됨

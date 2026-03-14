@@ -1,0 +1,106 @@
+     1→import {SET_CLUSTER, SET_CLUSTER_LIST, SET_SERVER_CHECK} from "../constants";
+     2→import Client from '~/Client'
+     3→
+     4→const client = new Client()
+     5→
+     6→export const setClusterList = ({isStatus} = { isStatus: true }) => dispatch => client.call({
+     7→    uri: "/clusters?isStatus=" + isStatus,
+     8→}).then(response => {
+     9→    dispatch({type: SET_CLUSTER_LIST, payload: response.data})
+    10→    return response.data
+    11→})
+    12→
+    13→export const setClusterStatus = (cluster) => dispatch => client.call({
+    14→    uri: "/elasticsearch/status",
+    15→    method: "POST",
+    16→    data: cluster,
+    17→}).then(response => response.data)
+    18→
+    19→
+    20→export const setKibanaStatus = (url) => dispatch => client.call({
+    21→    uri: "/kibana/status",
+    22→    method: "POST",
+    23→    data: {"url": url},
+    24→})
+    25→
+    26→export const addCluster = (cluster) => dispatch => client.call({
+    27→    uri: "/clusters",
+    28→    method: "POST",
+    29→    data: cluster,
+    30→}).then(response => {
+    31→    dispatch({type: SET_CLUSTER, payload: response.data})
+    32→    return response.data
+    33→})
+    34→
+    35→export const removeClusterAction = (id,isRemoveData) => dispatch => client.call({
+    36→    uri: `/clusters/${id}?isRemoveData=${isRemoveData}`,
+    37→    method: "DELETE"
+    38→}).then(response => {
+    39→    dispatch({type: SET_CLUSTER, payload: response.data})
+    40→    return response.data
+    41→})
+    42→
+    43→export const editCluster = (id, cluster) => dispatch => client.call({
+    44→    uri: `/clusters/${id}`,
+    45→    method: "PUT",
+    46→    data: cluster,
+    47→}).then(response => {
+    48→    dispatch({type: SET_CLUSTER, payload: response.data})
+    49→    return response.data
+    50→})
+    51→
+    52→export const setClusterServerCheck = () => dispatch => client.call({
+    53→    uri: "/elasticsearch/_cluster/settings?filter_path=transient.cluster.routing.allocation",
+    54→    method: "GET"
+    55→}).then(response => {
+    56→    //{
+    57→    //   "transient" : {
+    58→    //     "cluster" : {
+    59→    //       "routing" : {
+    60→    //         "allocation" : {
+    61→    //           "enable" : "all"
+    62→    //         }
+    63→    //       }
+    64→    //     }
+    65→    //   }
+    66→    // }
+    67→    const data = response.data
+    68→    const enable = ((((data['transient']||{})['cluster']||{})['routing']||{})['allocation']||{})['enable']||"all"
+    69→    dispatch({type: SET_SERVER_CHECK, payload: enable !== "all"})
+    70→    return response.data
+    71→})
+    72→
+    73→export const editClusterServerCheck = (flag) => dispatch => client.call({
+    74→    uri: "/elasticsearch/_cluster/settings",
+    75→    method: "PUT",
+    76→    data: {
+    77→        transient : {
+    78→            cluster : {
+    79→                routing : {
+    80→                    allocation : {
+    81→                        enable : flag
+    82→                    }
+    83→                }
+    84→            }
+    85→        }
+    86→    }
+    87→}).then(response => response.data)
+    88→
+    89→export const editClusterFlush = () => dispatch => client.call({
+    90→    uri: "/elasticsearch/_flush/synced",
+    91→    method: "POST"
+    92→}).then(response => response.data)
+    93→
+    94→
+    95→export const editClusterServerCheckAfterScheduleFlush = (flag) => dispatch => client.call({
+    96→    uri: "/clusters/check",
+    97→    method: "PUT",
+    98→    params: {
+    99→        flag: flag
+   100→    }
+   101→})
+   102→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

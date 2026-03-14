@@ -1,0 +1,58 @@
+{
+  "session_id": "a443b7f2-34d3-4bbd-8c2a-29806ca2d080",
+  "project_path": "/Users/admin/project/integrated-search",
+  "start_time": "2026-02-27T01:42:17.653Z",
+  "duration_minutes": 344,
+  "user_message_count": 8,
+  "assistant_message_count": 40,
+  "tool_counts": {
+    "mcp__plugin_serena_serena__find_symbol": 9,
+    "mcp__plugin_serena_serena__activate_project": 1,
+    "mcp__plugin_serena_serena__search_for_pattern": 6,
+    "mcp__plugin_serena_serena__read_file": 2,
+    "Bash": 4,
+    "mcp__plugin_serena_serena__replace_content": 1
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 78,
+  "output_tokens": 8430,
+  "first_prompt": "[2026-02-27 10:41:55.419] [legacyReserveSyncKafkaListenerContainer-0-C-1] [] ERROR c.c.s.i.l.l.LegacyReserveSyncListener - Failed to sync products to legacy java.util.concurrent.CompletionException: j…",
+  "user_interruptions": 0,
+  "user_response_times": [
+    609.836,
+    313.192,
+    1264.876,
+    728.348
+  ],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": true,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    10,
+    10,
+    11,
+    11,
+    11,
+    16,
+    16,
+    16
+  ],
+  "user_message_timestamps": [
+    "2026-02-27T01:42:56.617Z",
+    "2026-02-27T01:54:34.346Z",
+    "2026-02-27T02:00:31.970Z",
+    "2026-02-27T02:22:38.126Z",
+    "2026-02-27T02:35:35.376Z",
+    "2026-02-27T07:26:35.745Z",
+    "2026-02-27T07:26:35.745Z",
+    "2026-02-27T07:26:35.745Z"
+  ]
+}

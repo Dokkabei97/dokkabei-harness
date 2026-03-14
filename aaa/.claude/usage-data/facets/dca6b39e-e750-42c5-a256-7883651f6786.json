@@ -1,0 +1,15 @@
+{
+  "underlying_goal": "Create a custom command/skill that analyzes work before commit/push/PR and determines whether CLAUDE.md needs to be updated, then either updates it or informs the user it's not needed",
+  "goal_categories": {
+    "feature_creation": 1
+  },
+  "outcome": "partially_achieved",
+  "user_satisfaction_counts": {},
+  "claude_helpfulness": "moderately_helpful",
+  "session_type": "single_task",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "proactive_help",
+  "brief_summary": "User requested a custom command/skill to auto-analyze and update CLAUDE.md before commits/PRs; Claude explored the codebase, read reference files, and wrote a plan but the session ended before full implementation was visible or confirmed.",
+  "session_id": "dca6b39e-e750-42c5-a256-7883651f6786"
+}

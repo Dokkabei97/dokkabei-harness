@@ -1,0 +1,161 @@
+---
+title: "LLM + RAG + LangChain/LangGraph 학습 로드맵"
+aliases: [LLM RAG MOC, LLM RAG 커리큘럼 MOC]
+tags: [MOC, llm, rag, langchain, langgraph, embedding]
+created: <% tp.date.now("YYYY-MM-DD") %>
+updated: <% tp.date.now("YYYY-MM-DD") %>
+status: active
+duration: 13주
+tech_stack: [Python, LangChain, LangGraph, OpenAI, HuggingFace, Elasticsearch, Milvus, FastAPI]
+---
+
+# LLM + RAG + LangChain/LangGraph 학습 로드맵
+
+> 검색 플랫폼 엔지니어를 위한 LLM 기반 검색 결과 요약 및 AI 확장 기능 마스터 과정
+> 총 13주 | Python + LangChain + LangGraph + ES + Milvus
+
+---
+
+## 학습 진행 현황
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "노트",
+  phase AS "Phase",
+  status AS "상태",
+  difficulty AS "난이도"
+FROM "📚학습노트/LLM-RAG"
+SORT phase ASC, file.name ASC
+```
+
+### 진행률 요약
+
+```dataview
+TABLE WITHOUT ID
+  phase AS "Phase",
+  length(rows) AS "총 노트",
+  length(filter(rows, (r) => r.status = "done")) AS "완료",
+  round(length(filter(rows, (r) => r.status = "done")) / length(rows) * 100) + "%" AS "진행률"
+FROM "📚학습노트/LLM-RAG"
+GROUP BY phase
+SORT phase ASC
+```
+
+---
+
+## 전체 아키텍처 개요
+
+```
+[Phase 1]        [Phase 2]        [Phase 3]        [Phase 4]        [Phase 5]
+LLM 기초 ───────→ LangChain ─────→ RAG ────────────→ LangGraph ────→ 프로덕션
+& 임베딩          기초~심화         파이프라인         워크플로우       AI 검색
+
+기반 역량 ──────────────────────→ 통합 역량 ────────────────────────→ 프로덕션
+(이론 + API)                     (파이프라인 설계)                   (배포 + 운영)
+```
+
+---
+
+## Phase 1: LLM 기초 & 임베딩 모델 (Week 1~2)
+
+> Transformer 아키텍처, 토크나이제이션, 임베딩 모델, 프롬프트 엔지니어링
+
+- [[1-1 Transformer 아키텍처]]
+- [[1-2 토크나이제이션]]
+- [[1-3 LLM 추론 과정]]
+- [[1-4 임베딩 모델 심화]]
+- [[1-5 OpenAI API와 HuggingFace 활용]]
+- [[1-6 로컬 오픈소스 LLM 서빙]]
+- [[1-7 프롬프트 엔지니어링 기초]]
+
+---
+
+## Phase 2: LangChain 기초~심화 (Week 3~5)
+
+> LCEL, Retriever, Agent, Output Parser, Custom Chain
+
+- [[2-1 LangChain 아키텍처와 LCEL]]
+- [[2-2 Memory 시스템]]
+- [[2-3 Agent와 Tool]]
+- [[2-4 Document Loaders]]
+- [[2-5 Text Splitters]]
+- [[2-6 Retriever 패턴]]
+- [[2-7 Output Parsers와 Structured Output]]
+- [[2-8 Custom Chain 작성]]
+- [[2-9 Callbacks와 Streaming]]
+
+---
+
+## Phase 3: RAG 파이프라인 구축 (Week 6~8)
+
+> Advanced RAG, 청킹 전략, HyDE, Re-ranking, RAGAS 평가
+
+- [[3-1 Naive RAG]]
+- [[3-2 Advanced RAG]]
+- [[3-3 Modular RAG]]
+- [[3-4 문서 청킹 전략 심화]]
+- [[3-5 Milvus 벡터 스토어 실전 연동]]
+- [[3-6 ES-Milvus 하이브리드 RAG 아키텍처]]
+- [[3-7 Retrieval 품질 개선 기법]]
+- [[3-8 RAG 평가 프레임워크]]
+
+---
+
+## Phase 4: LangGraph 워크플로우 (Week 9~10)
+
+> State Machine, Corrective RAG, 멀티스텝 검색, HITL
+
+- [[4-1 LangGraph 핵심 개념]]
+- [[4-2 LangGraph vs LangChain Chain]]
+- [[4-3 검색 워크플로우 그래프 설계]]
+- [[4-4 에이전트 기반 검색]]
+- [[4-5 Human-in-the-loop 패턴]]
+- [[4-6 서브그래프와 상태 관리]]
+- [[4-7 스트리밍과 이벤트]]
+
+---
+
+## Phase 5: 검색 결과 요약 & AI 확장 (Week 11~13)
+
+> AI Overview, 스트리밍, Guardrails, 비용 최적화, 배포
+
+- [[5-1 AI Overview 검색 요약 아키텍처]]
+- [[5-2 검색 의도 분류]]
+- [[5-3 요약 품질 최적화]]
+- [[5-4 실시간 스트리밍 응답]]
+- [[5-5 멀티모달 검색]]
+- [[5-6 Guardrails와 Safety]]
+- [[5-7 프로덕션 배포 고려사항]]
+- [[5-8 로컬 LLM 서빙 프로덕션 적용]]
+- [[5-9 비용 최적화]]
+- [[5-10 모니터링과 운영]]
+
+---
+
+## 추천 리소스
+
+### 필수 논문
+- "Attention Is All You Need" (Vaswani et al., 2017)
+- "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" (Lewis et al., 2020)
+- "Precise Zero-Shot Dense Retrieval without Relevance Labels" (Gao et al., 2022) - HyDE
+- "Self-RAG" (Asai et al., 2023)
+- "Corrective Retrieval Augmented Generation" (Yan et al., 2024)
+
+### 공식 문서
+- [LangChain Documentation](https://python.langchain.com/docs/)
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+- [OpenAI API Reference](https://platform.openai.com/docs)
+- [Milvus Documentation](https://milvus.io/docs)
+- [RAGAS Documentation](https://docs.ragas.io/)
+
+### 강의
+- Andrej Karpathy "Let's build GPT from scratch"
+- DeepLearning.AI "LangChain for LLM Application Development"
+- LangGraph Academy (https://academy.langchain.com/)
+
+---
+
+## 관련 MOC
+
+- [[Hybrid-Search-MOC]] - 하이브리드 검색 시스템 구축 (선행 학습)
+- [[Kotlin Spring 시니어 성장 커리큘럼 MOC]] - 백엔드 기초 역량

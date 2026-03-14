@@ -1,0 +1,112 @@
+---
+title: "5-9 비용 최적화"
+aliases:
+  - "5-9 비용 최적화"
+  - "Cost Optimization"
+tags:
+  - llm-rag
+  - phase5
+  - cost
+  - rate-limit
+  - 토큰최적화
+created: ""
+updated: ""
+phase: 5
+status: "todo"
+difficulty: 중급
+---
+
+> [!summary]
+> 비용 최적화는 모델 라우팅과 토큰 제어, Rate Limiting, 지속적 모니터링이 핵심이다.  
+> 쿼리 복잡도에 따라 모델을 분기하고, 트래픽별 월간 비용 시뮬레이션을 통해 로컬/클라우드 비중을 조정한다.
+
+## 관련 노트
+- [[5-8 로컬 LLM 서빙 프로덕션 적용]]
+- [[5-7 프로덕션 배포 고려사항]]
+- [[5-10 모니터링과 운영]]
+- [[토큰 이코노미 설계]]
+- [[클라우드 비용 관리]]
+- [[Redis 캐시 전략]]
+
+## 개념
+- 모델 라우팅은 비용 절감과 품질 균형의 핵심 제어 레버다.
+- 저난이도 질의는 경량 모델 또는 캐시된 템플릿으로 처리한다.
+- 고난이도 질의는 정교한 모델이나 cloud API를 소량 사용한다.
+- 토큰 최적화는 시스템 프롬프트 압축, 문서 수 제한, chunk 크기 제어로 달성한다.
+- Rate Limiting은 사용자별/조직별 비용 상한 제어와 안정 운영에 필수다.
+- 월간 비용 시뮬레이션은 `요청수 * 평균 토큰 * 단가 + GPU/서버비` 공식이 기본이다.
+- 캐시 적중률이 올라가면 비용은 비례적으로 감소한다.
+- Blue Link 조회, 검색 자체도 비용 포인트이므로 API 호출당 로그를 남긴다.
+- 비용 알림은 예측치 대비 오차를 반영한 이상탐지로 운영한다.
+- 모델별 토큰 가격이 변하면 라우팅 임계값을 즉시 재계산한다.
+- API 과금이 큰 업무시간대에는 쿼리 단축 모드를 적용한다.
+- 과도한 rate limit은 사용자 불만을 유발하므로 UX 대체 경로를 함께 제공한다.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart TD
+  T["요청"] --> C["복잡도 스코어링"]
+  C --> L["저비용 경로"]
+  C --> H["고정밀 경로"]
+  L --> M["요약 + 캐시"]
+  H --> N["고성능 모델"]
+  M --> B["비용 감소"]
+  N --> B
+  B --> R["월간 비용 리포트"]
+```
+
+## Python 코드
+```python
+import math
+
+COST = {
+    "local": {"in": 0.0, "out": 0.0},  # GPU 고정비용 모델로 간주
+    "gpt-small": {"in": 0.0005, "out": 0.0015},
+    "gpt-large": {"in": 0.004, "out": 0.012},
+}
+
+def estimate_monthly(traffic: int, avg_in: int, avg_out: int, model: str):
+    unit = COST[model]["in"] * avg_in + COST[model]["out"] * avg_out
+    return traffic * unit / 1000  # $ 기준(예시)
+
+def route_by_budget(complexity: float, token_budget: int) -> str:
+    if complexity > 0.8 or token_budget > 2200:
+        return "gpt-large"
+    if complexity > 0.5:
+        return "gpt-small"
+    return "local"
+
+def rate_limit(count: int, limit: int = 120):
+    return count < limit
+
+# 예시 계산
+scenarios = [
+    ("light", 100_000, 900, 400, "gpt-small"),
+    ("medium", 50_000, 1800, 900, "gpt-small"),
+    ("heavy", 20_000, 3000, 1500, "gpt-large"),
+]
+for name, traffic, ins, outs, model in scenarios:
+    cost = estimate_monthly(traffic, ins, outs, model)
+    print(name, round(cost, 2))
+```
+
+## 표
+| 시나리오 | 월간 요청수 | 평균 in/out 토큰 | 모델 | 월비용(예시) |
+|---|---:|---:|---|---:|
+| 저복잡도 FAQ | 100,000 | 900 / 400 | gpt-small | 90 |
+| 비교형 리서치 | 50,000 | 1,800 / 900 | gpt-small | 675 |
+| 법률·의료 고난도 | 20,000 | 3,000 / 1,500 | gpt-large | 1,200 |
+| 로컬 하이브리드 | 170,000 | 전체 평균 | local | 0 + 인프라 |
+| 캐시 강화 | 170,000 | - | mixed | - |
+
+## 실습 체크리스트
+- [ ] 쿼리 복잡도 스코어와 비용 스코어를 분리해 로그로 남긴다.
+- [ ] 고비용 모델 호출이 전체의 20%를 넘지 않게 임계값을 둔다.
+- [ ] 월간 비용 계산을 매일 자동으로 갱신한다.
+- [ ] 토큰 제한 정책을 의도별로 조정한다.
+- [ ] 캐시 TTL을 실험적으로 조정해 비용 대비 TTL 상한을 찾는다.
+- [ ] rate limiting 경보를 설정하고 우회 경로를 문구로 제공한다.
+- [ ] 비용 지표를 제품 지표(전환, 이탈)와 함께 대시보드화한다.
+- [ ] 클라우드 단가 변경 시 라우팅 정책을 자동 반영한다.
+- [ ] 토큰 사용량 과대 청구 항목을 원인별로 분해해 태깅한다.
+- [ ] 비용 최적화가 요약 품질에 미치는 영향을 A/B로 확인한다.

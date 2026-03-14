@@ -1,0 +1,27 @@
+[
+  {
+    "content": "Analyze lib/config.ts and types/config.ts differences",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Investigate production API endpoint issue (localhost vs configmap)",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Check environment variable handling and build process",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Verify Dockerfile and deployment configuration",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Propose and implement fix for production API configuration",
+    "status": "completed",
+    "id": "5"
+  }
+]

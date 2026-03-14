@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "sessionId": "0df25fb7-5f44-4f4f-8432-37883545dab0",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/0df25fb7-5f44-4f4f-8432-37883545dab0.jsonl",
+      "fileMtime": 1769040242427,
+      "firstPrompt": "No prompt",
+      "summary": "Cleared conversation history",
+      "messageCount": 2,
+      "created": "2026-01-15T04:22:07.711Z",
+      "modified": "2026-01-15T04:22:07.711Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "dc010d8e-ee25-4471-b705-65d3c50d1042",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/dc010d8e-ee25-4471-b705-65d3c50d1042.jsonl",
+      "fileMtime": 1769040243204,
+      "firstPrompt": "현재 다른 기능보단 사전 관리자 페이지가 우선 개발하고 나머지가 되어야 해서 그런데 @/Users/admin/project/admin/search-admin-ui/src/app/\\(dashboard\\)/\\[clusterId\\]/analysis 페이지를 제외한 모든 페이지는 숨김처리 해줘",
+      "summary": "DSearch Dictionary Management Page Implementation",
+      "messageCount": 16,
+      "created": "2026-01-12T02:40:24.795Z",
+      "modified": "2026-01-12T03:29:09.519Z",
+      "gitBranch": "master",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "5f75f16e-032c-479b-a2cd-52324d2ace5a",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/5f75f16e-032c-479b-a2cd-52324d2ace5a.jsonl",
+      "fileMtime": 1769040244402,
+      "firstPrompt": "No prompt",
+      "summary": "Codebase analysis for Elasticsearch UI project documentation",
+      "messageCount": 4,
+      "created": "2026-01-13T10:34:43.502Z",
+      "modified": "2026-01-13T10:36:39.775Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "a406599f-532b-407e-81c9-57bd836d04cb",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/a406599f-532b-407e-81c9-57bd836d04cb.jsonl",
+      "fileMtime": 1769040245690,
+      "firstPrompt": "<command-message>analyze</command-message> <command-name>/analyze</command-name> <command-args>.env 파일을 사용해야 하는 변수나 설정이 코드에 있는지 분석해서 어떤 변수가 사용중인지 알려줘 --depth ddep</command-args>",
+      "summary": "Analyze .env usage in project code",
+      "messageCount": 5,
+      "created": "2026-01-20T01:17:02.731Z",
+      "modified": "2026-01-20T01:18:37.411Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "0df97ee0-f05d-483b-ab44-4d1b86fefc2a",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/0df97ee0-f05d-483b-ab44-4d1b86fefc2a.jsonl",
+      "fileMtime": 1769040246548,
+      "firstPrompt": "No prompt",
+      "summary": "Dictionary management pagination UI overhaul with SET type fix",
+      "messageCount": 7,
+      "created": "2026-01-15T00:33:49.755Z",
+      "modified": "2026-01-15T02:30:32.731Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "f8a4a3b3-8021-4b8b-9b41-3793c901f3c7",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/f8a4a3b3-8021-4b8b-9b41-3793c901f3c7.jsonl",
+      "fileMtime": 1769040247211,
+      "firstPrompt": "No prompt",
+      "summary": "IDE Connection Established with IntelliJ IDEA",
+      "messageCount": 2,
+      "created": "2026-01-20T00:01:00.511Z",
+      "modified": "2026-01-20T00:01:08.823Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    },
+    {
+      "sessionId": "a66ed9d8-ecfa-40ad-b1c1-74d5bd1c512d",
+      "fullPath": "/Users/admin/.claude/projects/-Users-admin-project-admin-search-admin-ui/a66ed9d8-ecfa-40ad-b1c1-74d5bd1c512d.jsonl",
+      "fileMtime": 1769053739529,
+      "firstPrompt": "<command-message>analyze</command-message> <command-name>/analyze</command-name> <command-args>.env 파일이 필요한지 검토해줘 --depth deep</command-args>",
+      "summary": ".env file necessity review for Next.js project",
+      "messageCount": 2,
+      "created": "2026-01-22T00:04:02.030Z",
+      "modified": "2026-01-22T00:05:10.630Z",
+      "gitBranch": "main",
+      "projectPath": "/Users/admin/project/admin/search-admin-ui",
+      "isSidechain": false
+    }
+  ],
+  "originalPath": "/Users/admin/project/admin/search-admin-ui"
+}

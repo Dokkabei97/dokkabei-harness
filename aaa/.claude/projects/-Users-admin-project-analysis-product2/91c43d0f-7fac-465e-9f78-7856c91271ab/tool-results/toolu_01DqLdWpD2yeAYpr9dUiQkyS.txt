@@ -1,0 +1,391 @@
+     1→package com.danawa.search.analysis.product
+     2→
+     3→import com.danawa.search.analysis.dict.ProductNameDictionary
+     4→import com.danawa.search.analysis.korean.KoreanWordExtractor
+     5→import com.danawa.search.analysis.korean.KoreanWordExtractor.ExtractedEntry
+     6→import com.danawa.search.analysis.product.TokenTypes.FULL_STRING
+     7→import com.danawa.search.analysis.product.TokenTypes.FULL_TERM_LENGTH
+     8→import com.danawa.search.analysis.product.TokenTypes.IO_BUFFER_SIZE
+     9→import com.danawa.search.analysis.product.TokenTypes.WHITESPACE
+    10→import com.danawa.search.analysis.product.TokenTypes.getType
+    11→import com.danawa.util.CharVector
+    12→import org.apache.lucene.analysis.Tokenizer
+    13→import org.apache.lucene.analysis.tokenattributes.CharTermAttribute
+    14→import org.apache.lucene.analysis.tokenattributes.OffsetAttribute
+    15→import org.apache.lucene.analysis.tokenattributes.TokenInfoAttribute
+    16→import org.apache.lucene.analysis.tokenattributes.TypeAttribute
+    17→import org.apache.lucene.util.AttributeFactory
+    18→import org.elasticsearch.common.logging.Loggers
+    19→import java.io.IOException
+    20→
+    21→class ProductNameTokenizer : Tokenizer {
+    22→
+    23→    companion object {
+    24→        private val logger = Loggers.getLogger(ProductNameTokenizer::class.java, "")
+    25→
+    26→        // Constants delegated to TokenTypes for Java interop
+    27→        @JvmField val DEFAULT_MAX_WORD_LEN = TokenTypes.DEFAULT_MAX_WORD_LEN
+    28→        @JvmField val IO_BUFFER_SIZE = TokenTypes.IO_BUFFER_SIZE
+    29→        @JvmField val FULL_TERM_LENGTH = TokenTypes.FULL_TERM_LENGTH
+    30→
+    31→        @JvmField val WHITESPACE = TokenTypes.WHITESPACE
+    32→        @JvmField val SYMBOL = TokenTypes.SYMBOL
+    33→        @JvmField val ALPHA = TokenTypes.ALPHA
+    34→        @JvmField val NUMBER = TokenTypes.NUMBER
+    35→        @JvmField val HANGUL = TokenTypes.HANGUL
+    36→        @JvmField val HANGUL_JAMO = TokenTypes.HANGUL_JAMO
+    37→        @JvmField val JAPANESE = TokenTypes.JAPANESE
+    38→        @JvmField val CHINESE = TokenTypes.CHINESE
+    39→        @JvmField val OTHER_LANGUAGE = TokenTypes.OTHER_LANGUAGE
+    40→        @JvmField val UNCATEGORIZED = TokenTypes.UNCATEGORIZED
+    41→
+    42→        @JvmField val NUMBER_TRANS = TokenTypes.NUMBER_TRANS
+    43→        @JvmField val MODEL_NAME = TokenTypes.MODEL_NAME
+    44→        @JvmField val ALPHANUM = TokenTypes.ALPHANUM
+    45→        @JvmField val ASCII = TokenTypes.ASCII
+    46→        @JvmField val UNIT = TokenTypes.UNIT
+    47→        @JvmField val UNIT_ALPHA = TokenTypes.UNIT_ALPHA
+    48→        @JvmField val FULL_STRING = TokenTypes.FULL_STRING
+    49→        @JvmField val MAKER = TokenTypes.MAKER
+    50→        @JvmField val BRAND = TokenTypes.BRAND
+    51→        @JvmField val COMPOUND = TokenTypes.COMPOUND
+    52→        @JvmField val STOPWORD = TokenTypes.STOPWORD
+    53→
+    54→        @JvmField val MAX_UNIT_LENGTH = TokenTypes.MAX_UNIT_LENGTH
+    55→
+    56→        @JvmField val AVAIL_SYMBOLS = TokenTypes.AVAIL_SYMBOLS
+    57→        @JvmField val AVAIL_SYMBOLS_STANDALONE = TokenTypes.AVAIL_SYMBOLS_STANDALONE
+    58→        @JvmField val AVAIL_SYMBOLS_CONNECTOR = TokenTypes.AVAIL_SYMBOLS_CONNECTOR
+    59→
+    60→        @JvmField val SYMBOL_COLON = TokenTypes.SYMBOL_COLON
+    61→        @JvmField val PTN_NUMBER = TokenTypes.PTN_NUMBER
+    62→
+    63→        @JvmField val AVAIL_SYMBOLS_INNUMBER = TokenTypes.AVAIL_SYMBOLS_INNUMBER
+    64→        @JvmField val AVAIL_SYMBOLS_SPLIT = TokenTypes.AVAIL_SYMBOLS_SPLIT
+    65→
+    66→        // Utility methods delegated to TokenTypes for Java interop
+    67→        @JvmStatic
+    68→        fun containsChar(array: CharArray, c: Char): Boolean = TokenTypes.containsChar(array, c)
+    69→
+    70→        @JvmStatic
+    71→        fun containsChar(array: CharArray, buf: CharArray, length: Int): Boolean = TokenTypes.containsChar(array, buf, length)
+    72→
+    73→        @JvmStatic
+    74→        fun isSplit(c: Char): String? = TokenTypes.isSplit(c)
+    75→
+    76→        @JvmStatic
+    77→        fun getUniType(cv: CharSequence): String? = TokenTypes.getUniType(cv)
+    78→
+    79→        @JvmStatic
+    80→        fun isAlphaNum(cv: CharVector): Boolean = TokenTypes.isAlphaNum(cv)
+    81→
+    82→        @JvmStatic
+    83→        fun getTermType(cv: CharSequence): String? = TokenTypes.getTermType(cv)
+    84→
+    85→        @JvmStatic
+    86→        fun getType(ch: Int): String = TokenTypes.getType(ch)
+    87→    }
+    88→
+    89→    private val termAtt: CharTermAttribute = addAttribute(CharTermAttribute::class.java)
+    90→    private val tokenAtt: TokenInfoAttribute = addAttribute(TokenInfoAttribute::class.java)
+    91→    private val offsetAtt: OffsetAttribute = addAttribute(OffsetAttribute::class.java)
+    92→    private val typeAtt: TypeAttribute = addAttribute(TypeAttribute::class.java)
+    93→
+    94→    private var baseOffset = 0
+    95→    private var position = 0
+    96→    private var extLength = 0
+    97→    private var readLength = 0
+    98→    private var tokenLength = 0
+    99→    private var finalOffset = 0
+   100→
+   101→    private var buffer: CharArray? = null
+   102→    private val backBuffer = arrayOf(CharArray(IO_BUFFER_SIZE), CharArray(IO_BUFFER_SIZE))
+   103→    private var entry: ExtractedEntry? = null
+   104→    private var extractor: KoreanWordExtractor? = null
+   105→    private var chrCurrent: Char = '\u0000'
+   106→    private var typeCurrent: String? = null
+   107→    private var exportTerm: Boolean = false
+   108→    private var tabularFull: Boolean = false
+   109→
+   110→    constructor(dictionary: ProductNameDictionary?, exportTerm: Boolean) : super() {
+   111→        if (dictionary != null) {
+   112→            extractor = KoreanWordExtractor(dictionary)
+   113→            tokenAtt.dictionary(dictionary)
+   114→        }
+   115→        this.exportTerm = exportTerm
+   116→    }
+   117→
+   118→    constructor(factory: AttributeFactory) : super(factory)
+   119→
+   120→    protected fun isTokenChar(c1: Int, c2: Int): Boolean {
+   121→        return !Character.isWhitespace(c1)
+   122→    }
+   123→
+   124→    @Throws(IOException::class)
+   125→    override fun incrementToken(): Boolean {
+   126→        typeAtt.setType(null)
+   127→        logger.trace("INCREMENT-TOKEN")
+   128→        var length = 0
+   129→        var start = -1
+   130→        var end = -1
+   131→        var bufferStart = position
+   132→        var continueTerm = false
+   133→        var startOffset = 0
+   134→        var endOffset = 0
+   135→        while (!tokenAtt.isState(TokenInfoAttribute.STATE_INPUT_FINISHED)) {
+   136→            if (entry == null) {
+   137→                innerLoop@ while (true) {
+   138→                    if (position >= readLength) {
+   139→                        ////////////////////////////////////////////////////////////////////////////////
+   140→                        // 1. 원본 읽어오기 (버퍼 크기만큼 읽어옴)
+   141→                        // 읽어온 버퍼가 없거나 모두 처리한 상태라면 리더에서 읽어온다.
+   142→                        ////////////////////////////////////////////////////////////////////////////////
+   143→                        val oldBuffer = backBuffer[0]
+   144→                        val newBuffer = backBuffer[1]
+   145→                        backBuffer[0] = newBuffer
+   146→                        backBuffer[1] = oldBuffer
+   147→                        baseOffset += readLength
+   148→                        readLength = input.read(newBuffer, 0, newBuffer.size)
+   149→                        logger.trace("READ {}/{}", newBuffer.size, readLength)
+   150→                        if (readLength > 0) {
+   151→                            buffer = newBuffer
+   152→                            tokenAtt.ref(newBuffer, 0, 0)
+   153→                            tokenAtt.rmState(TokenInfoAttribute.STATE_INPUT_BUFFER_EXHAUSTED)
+   154→                            entry = null
+   155→                            tokenLength = readLength
+   156→                            while (tokenLength > 0) {
+   157→                                if (getType(newBuffer[tokenLength - 1].code) != WHITESPACE) {
+   158→                                    break
+   159→                                }
+   160→                                tokenLength--
+   161→                            }
+   162→                        } else {
+   163→                            readLength = 0
+   164→                            logger.trace("LENGTH:{} / {}", length, readLength)
+   165→                            if (length > 0) {
+   166→                                break
+   167→                            } else {
+   168→                                finalOffset = correctOffset(baseOffset)
+   169→                                logger.trace("TOKENIZER STOPPED!!")
+   170→                                tokenAtt.addState(TokenInfoAttribute.STATE_INPUT_FINISHED)
+   171→                                return false
+   172→                            }
+   173→                        }
+   174→                        if (tokenLength > 0 && tokenLength < FULL_TERM_LENGTH && baseOffset == 0) {
+   175→                            // FULL-TERM. 색인시에는 추출하지 않음 (필터에서 걸러짐)
+   176→                            tokenAtt.ref(newBuffer, 0, tokenLength)
+   177→                            tokenAtt.posTag(null)
+   178→                            offsetAtt.setOffset(0, tokenLength)
+   179→                            typeAtt.setType(FULL_STRING)
+   180→                            return true
+   181→                        }
+   182→                        position = 0
+   183→                        bufferStart = 0
+   184→                        chrCurrent = '\u0000'
+   185→                        typeCurrent = null
+   186→                    }
+   187→                    ////////////////////////////////////////////////////////////////////////////////
+   188→                    // 2. 버퍼 내 단순 토크닝 (공백 / 특수기호에 의한 분해)
+   189→                    ////////////////////////////////////////////////////////////////////////////////
+   190→                    val chrPrev = chrCurrent
+   191→                    val typePrev = typeCurrent
+   192→                    chrCurrent = buffer!![position]
+   193→                    typeCurrent = getType(chrCurrent.code)
+   194→                    position++
+   195→                    var pass = 1
+   196→
+   197→                    if (typePrev == null) {
+   198→                        // 이전문자가 없다면 패스
+   199→                    } else if (typePrev == WHITESPACE && typeCurrent != WHITESPACE) {
+   200→                        //
+   201→                    } else if (typePrev == WHITESPACE && typeCurrent == WHITESPACE) {
+   202→                        // 공백뒤 공백. 오프셋 위치 변경
+   203→                        pass = 2
+   204→                    } else if (typePrev != WHITESPACE && typeCurrent == WHITESPACE) {
+   205→                        // 일반문자 뒤 공백. 끊어줌.
+   206→                        pass = 0
+   207→                    } else if (typePrev != typeCurrent) {
+   208→                        // 2021.06.23
+   209→                        // 토크닝 수준에서 일부 떨어지고 일부 붙어서 오분석이 나오기 때문에
+   210→                        // 모두 떨어뜨려서 한글분석을 거침
+   211→                        // 2021.04.26 swsong
+   212→                        // 숫자+단위명 조합은 parsingRule에서 다시한번 확인하므로 여기서는 떨어져있어도 무방.
+   213→                        // 오히려 v12배터리팩 같은 경우, 한글이 분리가 안되는 부작용이 발생하여 떨어지도록 수정.
+   214→                        pass = 0
+   215→                    }
+   216→                    // logger.trace("CH:{}[{}] / {} / {} / {} / {}", chrCurrent, typeCurrent, typePrev, position, length, pass)
+   217→                    if (pass == 1) {
+   218→                        // 최초 토크닝 위치 결정
+   219→                        if (length == 0) {
+   220→                            assert(start == -1)
+   221→                            start = baseOffset + position - 1
+   222→                            end = start
+   223→                        }
+   224→                        end++
+   225→                        length++
+   226→                        // 버퍼 마지막인 경우 무조건 끊어줌 (15키 등)
+   227→                        if (position >= tokenLength) {
+   228→                            break@innerLoop
+   229→                        }
+   230→                    } else if (pass == 2) {
+   231→                        // 공백 건너뜀
+   232→                        bufferStart = position
+   233→                        continue@innerLoop
+   234→                    } else if (length > 0) {
+   235→                        // 토크닝 길이 결정
+   236→                        if (position >= tokenLength) {
+   237→                            position++
+   238→                        }
+   239→                        if (typePrev != WHITESPACE && typeCurrent == WHITESPACE) {
+   240→                            position--
+   241→                        } else if (typePrev != WHITESPACE && typeCurrent != WHITESPACE) {
+   242→                            position--
+   243→                        }
+   244→                        length = position - bufferStart
+   245→                        break@innerLoop
+   246→                    }
+   247→                }
+   248→
+   249→                assert(start != -1)
+   250→                startOffset = correctOffset(start)
+   251→                endOffset = correctOffset(end)
+   252→
+   253→                if (extractor != null) {
+   254→                    logger.trace("TOKEN:{} / {}~{} / {}", CharVector(buffer!!, bufferStart, length), position - bufferStart, length)
+   255→                    extLength = length
+   256→                    if (extLength > extractor!!.getTabularSize()) {
+   257→                        extLength = extractor!!.getTabularSize()
+   258→                        tabularFull = true
+   259→                    } else {
+   260→                        tabularFull = false
+   261→                    }
+   262→                    logger.trace("EXTRACT:{} / {}~{} / {}", CharVector(buffer!!, bufferStart, extLength), bufferStart, extLength, baseOffset)
+   263→                    extractor!!.setInput(buffer!!, bufferStart, extLength)
+   264→                    entry = extractor!!.extract()
+   265→                    continue
+   266→                } else {
+   267→                    // 한글분석기가 없는경우 (한글사전 적재 실패) 분해된 토큰으로만 출력
+   268→                    tokenAtt.ref(buffer!!, bufferStart, length)
+   269→                    offsetAtt.setOffset(startOffset, endOffset.also { finalOffset = it })
+   270→                    logger.trace("TOKEN:{} / {}~{}", tokenAtt.ref(), startOffset, endOffset)
+   271→                }
+   272→            } else {
+   273→                while (entry != null) {
+   274→                    ////////////////////////////////////////////////////////////////////////////////
+   275→                    // 3. 한글분해
+   276→                    ////////////////////////////////////////////////////////////////////////////////
+   277→                    // 분해된 한글이 있으므로 속성에 출력해 준다
+   278→                    if (entry!!.column() <= 0) {
+   279→                        entry = entry!!.next()
+   280→                        continue
+   281→                    }
+   282→                    startOffset = correctOffset(baseOffset + entry!!.offset())
+   283→                    endOffset = correctOffset(baseOffset + entry!!.offset() + entry!!.column())
+   284→                    tokenAtt.ref(buffer!!, entry!!.offset(), entry!!.column())
+   285→                    tokenAtt.posTag(entry!!.posTag())
+   286→                    offsetAtt.setOffset(startOffset, endOffset)
+   287→                    logger.trace("TERM:{} / {}~{} / {} / {} / {}", tokenAtt.ref(), startOffset, endOffset, baseOffset, readLength, tokenAtt.posTag())
+   288→                    if (exportTerm) {
+   289→                        if (logger.isTraceEnabled) {
+   290→                            logger.trace("{} / {}~{}", String(buffer!!, entry!!.offset(), entry!!.column()), entry!!.offset(), entry!!.column())
+   291→                        }
+   292→                        termAtt.copyBuffer(buffer, entry!!.offset(), entry!!.column())
+   293→                    }
+   294→                    val extPosition: Int
+   295→                    var tempExtPosition = entry!!.offset() + entry!!.column()
+   296→                    val prevOffset = entry!!.offset()
+   297→                    entry = entry!!.next()
+   298→                    // ※ 분석기에서 오분석이 나는경우 (분리어사전 적용시 이전 오프셋으로 되돌아 가는 버그)
+   299→                    while (entry != null) {
+   300→                        if (entry!!.offset() < prevOffset) {
+   301→                            entry = entry!!.next()
+   302→                        } else {
+   303→                            break
+   304→                        }
+   305→                    }
+   306→
+   307→                    if (entry == null) {
+   308→                        // 분해된 한글이 없다면 다음구간 한글분해 시도
+   309→                        if (tempExtPosition < position) {
+   310→                            if (tabularFull) {
+   311→                                // TabularSize 를 넘어서 분석한 후 경우의 수
+   312→                                // 1. 일반적으로 최종 단어와 이후 단어를 이어서 다시한번 단어분석 시도
+   313→                                // 2. 분석된 단어길이가 tabularsize 와 같은경우 -> 그대로 출력 (Rule 에서 결합시도)
+   314→                                logger.trace("CONTINUE-TERM:{}", tokenAtt.ref())
+   315→                                val refLength = tokenAtt.ref()?.length ?: 0
+   316→                                if (refLength != extractor!!.getTabularSize()) {
+   317→                                    tempExtPosition -= refLength
+   318→                                    continueTerm = true
+   319→                                }
+   320→                            }
+   321→                            extLength = position - tempExtPosition
+   322→                            if (extLength > extractor!!.getTabularSize()) {
+   323→                                extLength = extractor!!.getTabularSize()
+   324→                                tabularFull = true
+   325→                            } else {
+   326→                                tabularFull = false
+   327→                            }
+   328→                            logger.trace("EXTRACT:{} / {}~{} / {}", CharVector(buffer!!, tempExtPosition, extLength), tempExtPosition, extLength, baseOffset)
+   329→                            extractor!!.setInput(buffer!!, tempExtPosition, extLength)
+   330→                            entry = extractor!!.extract()
+   331→                            if (continueTerm) {
+   332→                                continue
+   333→                            }
+   334→                        }
+   335→                    }
+   336→                    extPosition = tempExtPosition
+   337→                    // 마지막 공백이 있는경우 건너뜀
+   338→                    var skipPosition = extPosition
+   339→                    while (skipPosition < tokenLength) {
+   340→                        if (getType(buffer!![skipPosition].code) != WHITESPACE) {
+   341→                            break
+   342→                        }
+   343→                        skipPosition++
+   344→                    }
+   345→                    if (skipPosition == tokenLength) {
+   346→                        logger.trace("TOKENIZER BUFFER EXHAUSTED!")
+   347→                        tokenAtt.addState(TokenInfoAttribute.STATE_INPUT_BUFFER_EXHAUSTED)
+   348→                        continue
+   349→                    }
+   350→                    break
+   351→                }
+   352→                logger.trace("OFFSET:{} / {} / {} / {}", startOffset, endOffset, position, baseOffset + readLength)
+   353→            }
+   354→            return true
+   355→        }
+   356→        return false
+   357→    }
+   358→
+   359→    @Throws(IOException::class)
+   360→    override fun end() {
+   361→        logger.trace("TOKENIZER-END {}", finalOffset)
+   362→        super.end()
+   363→        offsetAtt.setOffset(finalOffset, finalOffset)
+   364→    }
+   365→
+   366→    @Throws(IOException::class)
+   367→    override fun reset() {
+   368→        logger.trace("TOKENIZER-RESET")
+   369→        super.reset()
+   370→        position = 0
+   371→        extLength = 0
+   372→        baseOffset = 0
+   373→        readLength = 0
+   374→        finalOffset = 0
+   375→        tokenLength = 0
+   376→        chrCurrent = '\u0000'
+   377→        typeCurrent = null
+   378→        tabularFull = false
+   379→    }
+   380→
+   381→    @Throws(IOException::class)
+   382→    override fun close() {
+   383→        logger.trace("TOKENIZER-CLOSE")
+   384→        super.close()
+   385→    }
+   386→}
+   387→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

@@ -1,0 +1,1942 @@
+2026-02-15T10:11:46.445Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-15T10:11:46.445Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-15T10:11:46.445Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-15T10:11:46.445Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-15T10:11:46.449Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-02-15T10:11:46.451Z [DEBUG] [ToolSearch:optimistic] mode=tst-auto, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-02-15T10:11:46.451Z [DEBUG] [STARTUP] Running setup()...
+2026-02-15T10:11:46.452Z [DEBUG] [TeammateModeSnapshot] Captured from config: auto
+2026-02-15T10:11:46.453Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-15T10:11:46.454Z [DEBUG] Passes: Using fresh cached eligibility data
+2026-02-15T10:11:46.454Z [DEBUG] Error log sink initialized
+2026-02-15T10:11:46.456Z [DEBUG] [STARTUP] setup() completed in 5ms
+2026-02-15T10:11:46.456Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-02-15T10:11:46.458Z [DEBUG] [Claude in Chrome] Found chrome profiles: Default
+2026-02-15T10:11:46.460Z [DEBUG] [Claude in Chrome] Extension fcoeoabgfenejglbffodgkkbkcdhcgfn found in chrome Default
+2026-02-15T10:11:46.473Z [DEBUG] Loaded 17 unique skills (17 unconditional, 0 conditional, managed: 0, user: 10, project: 0, additional: 0, legacy commands: 7)
+2026-02-15T10:11:46.475Z [DEBUG] Loading plugin frontend-design from source: "./plugins/frontend-design"
+2026-02-15T10:11:46.477Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.477Z [DEBUG] Plugin frontend-design@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7
+2026-02-15T10:11:46.477Z [DEBUG] Copied local plugin frontend-design to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7
+2026-02-15T10:11:46.479Z [DEBUG] Loading plugin serena from source: "./external_plugins/serena"
+2026-02-15T10:11:46.479Z [DEBUG] Using git SHA for serena@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.479Z [DEBUG] Plugin serena@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/2cd88e7947b7
+2026-02-15T10:11:46.479Z [DEBUG] Copied local plugin serena to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/2cd88e7947b7
+2026-02-15T10:11:46.480Z [DEBUG] Loading plugin context7 from source: "./external_plugins/context7"
+2026-02-15T10:11:46.481Z [DEBUG] Using git SHA for context7@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.481Z [DEBUG] Plugin context7@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/2cd88e7947b7
+2026-02-15T10:11:46.481Z [DEBUG] Copied local plugin context7 to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/2cd88e7947b7
+2026-02-15T10:11:46.482Z [DEBUG] Loading plugin playwright from source: "./external_plugins/playwright"
+2026-02-15T10:11:46.483Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.483Z [DEBUG] Plugin playwright@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/2cd88e7947b7
+2026-02-15T10:11:46.483Z [DEBUG] Copied local plugin playwright to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/2cd88e7947b7
+2026-02-15T10:11:46.484Z [DEBUG] Loading plugin feature-dev from source: "./plugins/feature-dev"
+2026-02-15T10:11:46.484Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.485Z [DEBUG] Plugin feature-dev@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/2cd88e7947b7
+2026-02-15T10:11:46.485Z [DEBUG] Copied local plugin feature-dev to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/2cd88e7947b7
+2026-02-15T10:11:46.485Z [DEBUG] Loading plugin code-review from source: "./plugins/code-review"
+2026-02-15T10:11:46.486Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.486Z [DEBUG] Plugin code-review@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/2cd88e7947b7
+2026-02-15T10:11:46.486Z [DEBUG] Copied local plugin code-review to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/2cd88e7947b7
+2026-02-15T10:11:46.487Z [DEBUG] Loading plugin ralph-loop from source: "./plugins/ralph-loop"
+2026-02-15T10:11:46.487Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.488Z [DEBUG] Plugin ralph-loop@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7
+2026-02-15T10:11:46.488Z [DEBUG] Copied local plugin ralph-loop to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7
+2026-02-15T10:11:46.490Z [DEBUG] Loaded hooks from standard location for plugin ralph-loop: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/2cd88e7947b7/hooks/hooks.json
+2026-02-15T10:11:46.491Z [DEBUG] Loading plugin typescript-lsp from source: "./plugins/typescript-lsp"
+2026-02-15T10:11:46.491Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:11:46.491Z [DEBUG] Plugin typescript-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-15T10:11:46.491Z [DEBUG] Copied local plugin typescript-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-15T10:11:46.491Z [DEBUG] Plugin typescript-lsp has no entry.skills defined
+2026-02-15T10:11:46.492Z [DEBUG] Loading plugin kotlin-lsp from source: "./plugins/kotlin-lsp"
+2026-02-15T10:11:46.492Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Plugin kotlin-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Copied local plugin kotlin-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Plugin kotlin-lsp has no entry.skills defined
+2026-02-15T10:11:46.492Z [DEBUG] Loading plugin jdtls-lsp from source: "./plugins/jdtls-lsp"
+2026-02-15T10:11:46.492Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Plugin jdtls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Copied local plugin jdtls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-15T10:11:46.492Z [DEBUG] Plugin jdtls-lsp has no entry.skills defined
+2026-02-15T10:11:46.493Z [DEBUG] Loading plugin pyright-lsp from source: "./plugins/pyright-lsp"
+2026-02-15T10:11:46.493Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:11:46.493Z [DEBUG] Plugin pyright-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-15T10:11:46.493Z [DEBUG] Copied local plugin pyright-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-15T10:11:46.493Z [DEBUG] Plugin pyright-lsp has no entry.skills defined
+2026-02-15T10:11:46.494Z [DEBUG] Loading plugin gopls-lsp from source: "./plugins/gopls-lsp"
+2026-02-15T10:11:46.494Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:11:46.494Z [DEBUG] Plugin gopls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-15T10:11:46.494Z [DEBUG] Copied local plugin gopls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-15T10:11:46.494Z [DEBUG] Plugin gopls-lsp has no entry.skills defined
+2026-02-15T10:11:46.495Z [DEBUG] Loading plugin gitlab from source: "./external_plugins/gitlab"
+2026-02-15T10:11:46.495Z [DEBUG] Using git SHA for gitlab@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.496Z [DEBUG] Plugin gitlab@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gitlab/2cd88e7947b7
+2026-02-15T10:11:46.496Z [DEBUG] Copied local plugin gitlab to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gitlab/2cd88e7947b7
+2026-02-15T10:11:46.499Z [DEBUG] Loading plugin learning-output-style from source: "./plugins/learning-output-style"
+2026-02-15T10:11:46.499Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:11:46.499Z [DEBUG] Plugin learning-output-style@claude-plugins-official version 2cd88e7947b7 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7
+2026-02-15T10:11:46.499Z [DEBUG] Copied local plugin learning-output-style to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7
+2026-02-15T10:11:46.500Z [DEBUG] Loaded hooks from standard location for plugin learning-output-style: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/2cd88e7947b7/hooks/hooks.json
+2026-02-15T10:11:46.500Z [DEBUG] Found 14 plugins (14 enabled, 0 disabled)
+2026-02-15T10:11:46.500Z [DEBUG] getPluginSkills: Processing 14 enabled plugins
+2026-02-15T10:11:46.500Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-15T10:11:46.500Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/2cd88e7947b7/skills
+2026-02-15T10:11:46.501Z [DEBUG] Loading hooks from plugin: ralph-loop
+2026-02-15T10:11:46.501Z [DEBUG] Loading hooks from plugin: learning-output-style
+2026-02-15T10:11:46.501Z [DEBUG] Registered 2 hooks from 14 plugins
+2026-02-15T10:11:46.502Z [DEBUG] Loaded 3 agents from plugin feature-dev default directory
+2026-02-15T10:11:46.502Z [DEBUG] Total plugin agents loaded: 3
+2026-02-15T10:11:46.502Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.502Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.504Z [DEBUG] Checking plugin gitlab: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.504Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-15T10:11:46.504Z [DEBUG] Total plugin skills loaded: 1
+2026-02-15T10:11:46.504Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-15T10:11:46.507Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-15T10:11:46.508Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-15T10:11:46.508Z [DEBUG] Total plugin commands loaded: 5
+2026-02-15T10:11:46.509Z [DEBUG] getSkills returning: 17 skill dir commands, 1 plugin skills, 2 bundled skills
+2026-02-15T10:11:46.509Z [DEBUG] [STARTUP] Commands and agents loaded in 53ms
+2026-02-15T10:11:46.511Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-02-15T10:11:46.511Z [DEBUG] Grove: Using fresh cached config
+2026-02-15T10:11:46.516Z [DEBUG] [keybindings] KeybindingSetup initialized with 102 bindings, 0 warnings
+2026-02-15T10:11:46.518Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-02-15T10:11:46.521Z [DEBUG] [keybindings] Watching for changes to /Users/admin/.claude/keybindings.json
+2026-02-15T10:11:46.521Z [DEBUG] Git remote URL: https://github.com/Dokkabei97/agetns-utils.git
+2026-02-15T10:11:46.521Z [DEBUG] Parsed repository: Dokkabei97/agetns-utils from https://github.com/Dokkabei97/agetns-utils.git
+2026-02-15T10:11:46.521Z [DEBUG] Parsed repository: Dokkabei97/agetns-utils from URL: https://github.com/Dokkabei97/agetns-utils.git
+2026-02-15T10:11:46.521Z [DEBUG] Path /Users/admin/mkp/agetns-utils already tracked for repo dokkabei97/agetns-utils
+2026-02-15T10:11:46.854Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150306854
+2026-02-15T10:11:46.854Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:11:46.855Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:11:46.855Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:11:46.855Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150306854 to /Users/admin/.claude.json
+2026-02-15T10:11:46.855Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:11:46.875Z [DEBUG] [STARTUP] showSetupScreens() completed in 364ms
+2026-02-15T10:11:46.875Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-02-15T10:11:46.875Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-02-15T10:11:46.875Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-02-15T10:11:46.875Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:46.875Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:46.877Z [DEBUG] Passes: Using fresh cached eligibility data
+2026-02-15T10:11:46.878Z [DEBUG] [STARTUP] MCP configs loaded in 429ms
+2026-02-15T10:11:46.881Z [DEBUG] MCP server "plugin:serena:serena": Starting connection with timeout of 30000ms
+2026-02-15T10:11:46.884Z [DEBUG] MCP server "plugin:context7:context7": Starting connection with timeout of 30000ms
+2026-02-15T10:11:46.886Z [DEBUG] MCP server "plugin:playwright:playwright": Starting connection with timeout of 30000ms
+2026-02-15T10:11:46.893Z [DEBUG] All plugins already exist, skipping migration
+2026-02-15T10:11:46.894Z [DEBUG] [Reconnection] computeInitialTeamContext: No teammate context set (not a teammate)
+2026-02-15T10:11:46.896Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150306896
+2026-02-15T10:11:46.896Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:11:46.897Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:11:46.897Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:11:46.897Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150306896 to /Users/admin/.claude.json
+2026-02-15T10:11:46.897Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:11:46.897Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:46.899Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2026-02-15T10:11:46.899Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T10:11:46.899Z [DEBUG] Matched 1 unique hooks for query "startup" (1 before deduplication)
+2026-02-15T10:11:46.901Z [DEBUG] Loaded 18 installed plugins from /Users/admin/.claude/plugins/installed_plugins.json
+2026-02-15T10:11:46.901Z [DEBUG] Initialized versioned plugins system with 18 plugins
+2026-02-15T10:11:46.922Z [DEBUG] Loaded 1 LSP server(s) from plugin: typescript-lsp
+2026-02-15T10:11:46.922Z [DEBUG] Loaded 1 LSP server(s) from plugin: kotlin-lsp
+2026-02-15T10:11:46.922Z [DEBUG] Loaded 1 LSP server(s) from plugin: jdtls-lsp
+2026-02-15T10:11:46.922Z [DEBUG] Loaded 1 LSP server(s) from plugin: pyright-lsp
+2026-02-15T10:11:46.923Z [DEBUG] Loaded 1 LSP server(s) from plugin: gopls-lsp
+2026-02-15T10:11:46.923Z [DEBUG] Total LSP servers loaded: 5
+2026-02-15T10:11:46.923Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 5 server(s)
+2026-02-15T10:11:46.923Z [DEBUG] Queued request handler for plugin:typescript-lsp:typescript.workspace/configuration (connection not ready)
+2026-02-15T10:11:46.923Z [DEBUG] Starting LSP server instance: plugin:typescript-lsp:typescript
+2026-02-15T10:11:46.924Z [ERROR] Error: Error: Failed to initialize LSP server plugin:kotlin-lsp:kotlin-lsp: LSP server 'plugin:kotlin-lsp:kotlin-lsp': startupTimeout is not yet implemented. Remove this field from the configuration.
+    at _ (/$bunfs/root/claude:2334:32622)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.924Z [ERROR] Error: Error: Failed to initialize LSP server plugin:jdtls-lsp:jdtls: LSP server 'plugin:jdtls-lsp:jdtls': startupTimeout is not yet implemented. Remove this field from the configuration.
+    at _ (/$bunfs/root/claude:2334:32622)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.924Z [DEBUG] Queued request handler for plugin:pyright-lsp:pyright.workspace/configuration (connection not ready)
+2026-02-15T10:11:46.924Z [DEBUG] Starting LSP server instance: plugin:pyright-lsp:pyright
+2026-02-15T10:11:46.924Z [DEBUG] Queued request handler for plugin:gopls-lsp:gopls.workspace/configuration (connection not ready)
+2026-02-15T10:11:46.924Z [DEBUG] Starting LSP server instance: plugin:gopls-lsp:gopls
+2026-02-15T10:11:46.924Z [DEBUG] LSP manager initialized with 3 servers
+2026-02-15T10:11:46.924Z [DEBUG] LSP server manager initialized successfully
+2026-02-15T10:11:46.924Z [DEBUG] Queued notification handler for plugin:typescript-lsp:typescript.textDocument/publishDiagnostics (connection not ready)
+2026-02-15T10:11:46.924Z [DEBUG] Registered diagnostics handler for plugin:typescript-lsp:typescript
+2026-02-15T10:11:46.924Z [DEBUG] Queued notification handler for plugin:pyright-lsp:pyright.textDocument/publishDiagnostics (connection not ready)
+2026-02-15T10:11:46.924Z [DEBUG] Registered diagnostics handler for plugin:pyright-lsp:pyright
+2026-02-15T10:11:46.924Z [DEBUG] Queued notification handler for plugin:gopls-lsp:gopls.textDocument/publishDiagnostics (connection not ready)
+2026-02-15T10:11:46.924Z [DEBUG] Registered diagnostics handler for plugin:gopls-lsp:gopls
+2026-02-15T10:11:46.924Z [DEBUG] LSP notification handlers registered successfully for all 3 server(s)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: LSP server plugin:typescript-lsp:typescript failed to start: Executable not found in $PATH: "typescript-language-server"
+    at start (/$bunfs/root/claude:2334:22315)
+    at async H (/$bunfs/root/claude:2334:24763)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: LSP server plugin:pyright-lsp:pyright failed to start: Executable not found in $PATH: "pyright-langserver"
+    at start (/$bunfs/root/claude:2334:22315)
+    at async H (/$bunfs/root/claude:2334:24763)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: LSP server plugin:gopls-lsp:gopls failed to start: Executable not found in $PATH: "gopls"
+    at start (/$bunfs/root/claude:2334:22315)
+    at async H (/$bunfs/root/claude:2334:24763)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Executable not found in $PATH: "typescript-language-server"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2334:20845)
+    at H (/$bunfs/root/claude:2334:24763)
+    at _ (/$bunfs/root/claude:2334:32531)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Executable not found in $PATH: "pyright-langserver"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2334:20845)
+    at H (/$bunfs/root/claude:2334:24763)
+    at _ (/$bunfs/root/claude:2334:32531)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Executable not found in $PATH: "gopls"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2334:20845)
+    at H (/$bunfs/root/claude:2334:24763)
+    at _ (/$bunfs/root/claude:2334:32531)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Failed to start LSP server plugin:typescript-lsp:typescript: Executable not found in $PATH: "typescript-language-server"
+    at <anonymous> (/$bunfs/root/claude:2334:32553)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Failed to start LSP server plugin:pyright-lsp:pyright: Executable not found in $PATH: "pyright-langserver"
+    at <anonymous> (/$bunfs/root/claude:2334:32553)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.925Z [ERROR] Error: Error: Failed to start LSP server plugin:gopls-lsp:gopls: Executable not found in $PATH: "gopls"
+    at <anonymous> (/$bunfs/root/claude:2334:32553)
+    at processTicksAndRejections (native:7:39)
+2026-02-15T10:11:46.931Z [DEBUG] Hooks: Checking initial response for async: {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T10:11:46.931Z [DEBUG] Hooks: Parsed initial response: {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."}}
+2026-02-15T10:11:46.931Z [DEBUG] Hooks: Initial response is not async, continuing normal processing
+2026-02-15T10:11:46.932Z [DEBUG] Successfully parsed and validated hook JSON output
+2026-02-15T10:11:46.932Z [DEBUG] Hook SessionStart:startup (SessionStart) success:
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-15T10:11:46.936Z [DEBUG] [keybindings] KeybindingSetup initialized with 102 bindings, 0 warnings
+2026-02-15T10:11:46.942Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:46.944Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:46.951Z [DEBUG] High write ratio: blit=0, write=1215 (100.0% writes), screen=17x212
+2026-02-15T10:11:46.955Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:11:46.957Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-02-15T10:11:46.957Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:11:46.957Z [DEBUG] Official marketplace auto-install skipped: already_attempted
+2026-02-15T10:11:46.957Z [DEBUG] performStartupChecks called
+2026-02-15T10:11:46.958Z [DEBUG] Starting background plugin installations
+2026-02-15T10:11:46.958Z [DEBUG] performBackgroundPluginInstallations called
+2026-02-15T10:11:46.959Z [DEBUG] Loaded 1 CLAUDE.md/rules files:
+  [User] /Users/admin/.claude/CLAUDE.md (846 chars)
+2026-02-15T10:11:46.961Z [DEBUG] Watching for changes in setting files /Users/admin/.claude/settings.json...
+2026-02-15T10:11:46.962Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:11:47.294Z [DEBUG] Loaded plugins - Enabled: 14, Disabled: 0, Commands: 5, Agents: 3, Errors: 0
+2026-02-15T10:11:47.297Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-15T10:11:47.297Z [DEBUG] [claudeai-mcp] Gate returned: true
+2026-02-15T10:11:47.297Z [DEBUG] [claudeai-mcp] Fetching from https://api.anthropic.com/v1/mcp_servers?limit=1000
+2026-02-15T10:11:47.299Z [DEBUG] Found 14 enabled plugins
+2026-02-15T10:11:47.299Z [DEBUG] All plugins already exist, skipping migration
+2026-02-15T10:11:47.299Z [DEBUG] Found 18 installed plugins (V2 format)
+2026-02-15T10:11:47.299Z [DEBUG] Found 0 missing plugins (not installed):
+2026-02-15T10:11:47.299Z [DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+2026-02-15T10:11:47.307Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150307307
+2026-02-15T10:11:47.307Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:11:47.307Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:11:47.307Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:11:47.307Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150307307 to /Users/admin/.claude.json
+2026-02-15T10:11:47.308Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:11:47.308Z [DEBUG] Org fast mode: enabled
+2026-02-15T10:11:47.308Z [DEBUG] Watching for changes in skill/command directories: /Users/admin/.claude/skills, /Users/admin/.claude/commands...
+2026-02-15T10:11:47.314Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:47.318Z [DEBUG] High write ratio: blit=0, write=1215 (100.0% writes), screen=17x212
+2026-02-15T10:11:47.318Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:11:47.327Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:47.547Z [DEBUG] [claudeai-mcp] Fetched 1 servers
+2026-02-15T10:11:47.549Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:47.552Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:47.691Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/Caskroom/claude-code/2.1.42/claude)
+2026-02-15T10:11:48.089Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.102Z [ERROR] MCP server "plugin:context7:context7" Server stderr: WARNING: Using default CLIENT_IP_ENCRYPTION_KEY.
+Context7 Documentation MCP Server v2.0.2 running on stdio
+2026-02-15T10:11:48.102Z [DEBUG] MCP server "plugin:context7:context7": Successfully connected to undefined server in 1219ms
+2026-02-15T10:11:48.102Z [DEBUG] MCP server "plugin:context7:context7": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"Context7","version":"2.0.2"}}
+2026-02-15T10:11:48.108Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.115Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.135Z [DEBUG] High write ratio: blit=0, write=1233 (100.0% writes), screen=19x212
+2026-02-15T10:11:48.219Z [DEBUG] MCP server "plugin:playwright:playwright": Successfully connected to undefined server in 1334ms
+2026-02-15T10:11:48.219Z [DEBUG] MCP server "plugin:playwright:playwright": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"Playwright","version":"0.0.68"}}
+2026-02-15T10:11:48.225Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.227Z [DEBUG] High write ratio: blit=0, write=1233 (100.0% writes), screen=19x212
+2026-02-15T10:11:48.228Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.720Z [ERROR] MCP server "plugin:serena:serena" Server stderr: INFO  2026-02-15 19:11:48,479 [MainThread] serena.cli:start_mcp_server:267 - Initializing Serena MCP server
+INFO  2026-02-15 19:11:48,479 [MainThread] serena.cli:start_mcp_server:268 - Storing logs in /Users/admin/.serena/logs/2026-02-15/mcp_20260215-191148.txt
+INFO  2026-02-15 19:11:48,480 [MainThread] serena.config.serena_config:from_config_file:601 - Loading Serena configuration from /Users/admin/.serena/serena_config.yml
+INFO  2026-02-15 19:11:48,509 [MainThread] serena.agent:__init__:289 - Will record tool usage statistics with token count estimator: TIKTOKEN_GPT4O.
+INFO  2026-02-15 19:11:48,512 [MainThread] serena.analytics:__init__:39 - Loading tiktoken encoding for model gpt-4o, this may take a while on the first run.
+INFO  2026-02-15 19:11:48,679 [MainThread] serena.agent:__init__:293 - Starting Serena server (version=0.1.4-1023abe0, process id=50508, parent process id=50449; language backend=LSP)
+INFO  2026-02-15 19:11:48,679 [MainThread] serena.agent:__init__:297 - Configuration file: /Users/admin/.serena/serena_config.yml
+INFO  2026-02-15 19:11:48,679 [MainThread] serena.agent:__init__:298 - Available projects: admin, analysis-danuri, analysis-product, dsearch-indexer, dsearch-server, findining, findining-crawl, integrated-search, search-admin, searchapi-elastic
+INFO  2026-02-15 19:11:48,679 [MainThread] serena.agent:__init__:299 - Loaded tools (40): read_file, create_text_file, list_dir, find_file, replace_content, delete_lines, replace_lines, insert_at_line, search_for_pattern, restart_language_server, get_symbols_overview, find_symbol, find_referencing_symbols, replace_symbol_body, insert_after_symbol, insert_before_symbol, rename_symbol, write_memory, read_memory, list_memories, delete_memory, edit_memory, execute_shell_command, open_dashboard, activate_project, remove_project, switch_modes, get_current_config, check_onboarding_performed, onboarding, think_about_collected_information, think_about_task_adherence, think_about_whether_you_are_done, summarize_changes, prepare_for_new_conversation, initial_instructions, jet_brains_find_symbol, jet_brains_find_referencing_symbols, jet_brains_get_symbols_overview, jet_brains_type_hierarchy
+INFO  2026-02-15 19:11:48,680 [MainThread] serena.agent:apply:142 - SerenaAgentContext[name='desktop-app'] included 1 tools: switch_modes
+INFO  2026-02-15 19:11:48,680 [MainThread] serena.agent:__init__:325 - Number of exposed tools: 29
+INFO  2026-02-15 19:11:48,688 [MainThread] serena.agent:get_mode_names:199 - Active modes: ['editing', 'interactive']
+INFO  2026-02-15 19:11:48,690 [MainThread] serena.agent:_update_active_modes_and_tools:584 - Active tools (29): activate_project, check_onboarding_performed, create_text_file, delete_memory, edit_memory, execute_shell_command, find_file, find_referencing_symbols, find_symbol, get_current_config, get_symbols_overview, initial_instructions, insert_after_symbol, insert_before_symbol, list_dir, list_memories, onboarding, prepare_for_new_conversation, read_file, read_memory, rename_symbol, replace_content, replace_symbol_body, search_for_pattern, switch_modes, think_about_collected_information, think_about_task_adherence, think_about_whether_you_are_done, write_memory
+INFO  2026-02-15 19:11:48,692 [MainThread] serena.dashboard:run_in_thread:637 - Starting dashboard (listen_address=127.0.0.1, port=24284)
+INFO  2026-02-15 19:11:48,692 [MainThread] serena.agent:__init__:361 - Serena web dashboard started at http://127.0.0.1:24284/dashboard/index.html
+INFO  2026-02-15 19:11:48,695 [MainThread] serena.agent:create_system_prompt:543 - Generating system prompt with available_tools=(see active tools), available_markers={'ToolMarkerDoesNotRequireActiveProject', 'InsertAfterSymbolTool', 'ExecuteShellCommandTool', 'ReplaceSymbolBodyTool', 'CreateTextFileTool', 'ToolMarkerSymbolicRead', 'DeleteMemoryTool', 'RenameSymbolTool', 'ToolMarkerSymbolicEdit', 'ToolMarkerCanEdit', 'ActivateProjectTool', 'WriteMemoryTool', 'FindReferencingSymbolsTool', 'GetSymbolsOverviewTool', 'InitialInstructionsTool', 'InsertBeforeSymbolTool', 'EditMemoryTool', 'ReplaceContentTool', 'FindSymbolTool', 'SwitchModesTool', 'ToolMarkerOptional'}
+INFO  2026-02-15 19:11:48,697 [MainThread] serena.agent:create_system_prompt:555 - System prompt:
+You are a professional coding agent. 
+You have access to semantic coding tools upon which you rely heavily for all your work.
+You operate in a resource-efficient and intelligent manner, always keeping in mind to not read or generate
+content that is not needed for the task at hand.
+
+Some tasks may require you to understand the architecture of large parts of the codebase, while for others,
+it may be enough to read a small set of symbols or a single file.
+You avoid reading entire files unless it is absolutely necessary, instead relying on intelligent step-by-step 
+acquisition of information. Once you have read a full file, it does not make
+sense to analyse it with the symbolic read tools; you already have the information.
+
+You can achieve intelligent reading of code by using the symbolic tools for getting an overview of symbols and
+the relations between them, and then only reading the bodies of symbols that are necessary to complete the task at hand. 
+You can use the standard tools like list_dir, find_file and search_for_pattern if you need to.
+Where appropriate, you pass the `relative_path` parameter to restrict the search to a specific file or directory.
+
+If you are unsure about a symbol's name or location (to the extent that substring_matching for the symbol name is not enough), you can use the `search_for_pattern` tool, which allows fast
+and flexible search for patterns in the codebase. In this way, you can first find candidates for symbols or files,
+and then proceed with the symbolic tools.
+
+
+
+Symbols are identified by their `name_path` and `relative_path` (see the description of the `find_symbol` tool).
+You can get information about the symbols in a file by using the `get_symbols_overview` tool or use the `find_symbol` to search. 
+You only read the bodies of symbols when you need to (e.g. if you want to fully understand or edit it).
+For example, if you are working with Python code and already know that you need to read the body of the constructor of the class Foo, you can directly
+use `find_symbol` with name path pattern `Foo/__init__` and `include_body=True`. If you don't know yet which methods in `Foo` you need to read or edit,
+you can use `find_symbol` with name path pattern `Foo`, `include_body=False` and `depth=1` to get all (top-level) methods of `Foo` before proceeding
+to read the desired methods with `include_body=True`.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool.
+
+
+
+You generally have access to memories and it may be useful for you to read them.
+You infer whether memories are relevant based on their names.
+
+
+The context and modes of operation are described below. These determine how to interact with your user
+and which kinds of interactions are expected of you.
+
+Context description:
+You are running in a desktop application context.
+Serena's tools give you access to the code base as well as some access to the file system (if enabled). 
+You interact with the user through a chat interface that is separated from the code base. 
+As a consequence, if you are in interactive mode, your communication with the user should
+involve high-level thinking and planning as well as some summarization of any code edits that you make.
+To view the code edits you make, the user will have switch to a separate application.
+To illustrate complex relationships, consider creating diagrams in addition to your text-based communication
+(depending on the options for text, html, mermaid diagrams, etc. that you are provided with in your initial instructions).
+
+Modes descriptions:
+
+You are operating in editing mode. You can edit files with the provided tools.
+You adhere to the project's code style and patterns.
+
+Use symbolic editing tools whenever possible for precise code modifications.
+If no explicit editing task has yet been provided, wait for the user to provide one. Do not be overly eager.
+
+When writing new code, think about where it belongs best. Don't generate new files if you don't plan on actually
+properly integrating them into the codebase.
+
+You have two main approaches for editing code: (a) editing at the symbol level and (b) file-based editing.
+The symbol-based approach is appropriate if you need to adjust an entire symbol, e.g. a method, a class, a function, etc.
+It is not appropriate if you need to adjust just a few lines of code within a larger symbol.
+
+**Symbolic editing**
+Use symbolic retrieval tools to identify the symbols you need to edit.
+If you need to replace the definition of a symbol, use the `replace_symbol_body` tool.
+If you want to add some new code at the end of the file, use the `insert_after_symbol` tool with the last top-level symbol in the file. 
+Similarly, you can use `insert_before_symbol` with the first top-level symbol in the file to insert code at the beginning of a file.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool. If not explicitly requested otherwise by the user,
+you make sure that when you edit a symbol, the change is either backward-compatible or you find and update all references as needed.
+The `find_referencing_symbols` tool will give you code snippets around the references as well as symbolic information.
+You can assume that all symbol editing tools are reliable, so you never need to verify the results if the tools return without error.
+
+
+**File-based editing**
+The `replace_content` tool allows you to perform regex-based replacements within files (as well as simple string replacements).
+This is your primary tool for editing code whenever replacing or deleting a whole symbol would be a more expensive operation,
+e.g. if you need to adjust just a few lines of code within a method.
+You are extremely good at regex, so you never need to check whether the replacement produced the correct result.
+In particular, you know how to use wildcards effectively in order to avoid specifying the full original text to be replaced!
+
+
+You are operating in interactive mode. You should engage with the user throughout the task, asking for clarification
+whenever anything is unclear, insufficiently specified, or ambiguous.
+
+Break down complex tasks into smaller steps and explain your thinking at each stage. When you're uncertain about
+a decision, present options to the user and ask for guidance rather than making assumptions.
+
+Focus on providing informative results for intermediate steps, such that the user can follow along with your progress and
+provide feedback as needed.
+
+
+You have hereby read the 'Serena Instructions Manual' and do not need to read it again.
+INFO  2026-02-15 19:11:48,698 [MainThread] serena.cli:start_mcp_server:299 - Starting MCP server …
+INFO  2026-02-15 19:11:48,718 [MainThread] serena.mcp:_set_mcp_tools:261 - Starting MCP server with 29 tools: ['read_file', 'create_text_file', 'list_dir', 'find_file', 'replace_content', 'search_for_pattern', 'get_symbols_overview', 'find_symbol', 'find_referencing_symbols', 'replace_symbol_body', 'insert_after_symbol', 'insert_before_symbol', 'rename_symbol', 'write_memory', 'read_memory', 'list_memories', 'delete_memory', 'edit_memory', 'execute_shell_command', 'activate_project', 'switch_modes', 'get_current_config', 'check_onboarding_performed', 'onboarding', 'think_about_collected_information', 'think_about_task_adherence', 'think_about_whether_you_are_done', 'prepare_for_new_conversation', 'initial_instructions']
+INFO  2026-02-15 19:11:48,718 [MainThread] serena.mcp:server_lifespan:343 - MCP server lifetime setup complete
+2026-02-15T10:11:48.720Z [DEBUG] MCP server "plugin:serena:serena": Successfully connected to undefined server in 1841ms
+2026-02-15T10:11:48.720Z [DEBUG] MCP server "plugin:serena:serena": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"FastMCP","version":"1.23.0"}}
+2026-02-15T10:11:48.727Z [DEBUG] MCP server "grafana": Starting connection with timeout of 30000ms
+2026-02-15T10:11:48.730Z [DEBUG] MCP server "outline": Starting connection with timeout of 30000ms
+2026-02-15T10:11:48.731Z [DEBUG] MCP server "plane": Starting connection with timeout of 30000ms
+2026-02-15T10:11:48.736Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.739Z [DEBUG] High write ratio: blit=0, write=1236 (100.0% writes), screen=19x212
+2026-02-15T10:11:48.744Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:48.816Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-02-15T10:11:48.816Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-02-15T10:11:48.820Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150308820
+2026-02-15T10:11:48.820Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:11:48.821Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:11:48.821Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:11:48.821Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150308820 to /Users/admin/.claude.json
+2026-02-15T10:11:48.821Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:11:48.826Z [DEBUG] [FileIndex] git ls-files (tracked) took 9ms
+2026-02-15T10:11:48.826Z [DEBUG] [FileIndex] git ls-files: 310 tracked files in 10ms
+2026-02-15T10:11:48.827Z [DEBUG] [FileIndex] using git ls-files result (310 files)
+2026-02-15T10:11:48.828Z [WARN] Failed to parse YAML frontmatter in /Users/admin/.claude/skills/search-platform-best-practices/references/mapping-explicit-mapping.md: YAML Parse error: Unexpected token
+2026-02-15T10:11:49.103Z [ERROR] MCP server "grafana" Server stderr: time=2026-02-15T19:11:48.783+09:00 level=INFO msg="Using Grafana configuration" url=http://grafana.danuricorp.com:80 api_key_set=true basic_auth_set=false org_id=0 extra_headers_count=0
+time=2026-02-15T19:11:48.835+09:00 level=ERROR msg="failed to initialize proxied tools for stdio" error="failed to discover MCP datasources: failed to list datasources: Get \"http://grafana.danuricorp.com:80/api/datasources\": dial tcp: lookup grafana.danuricorp.com: no such host"
+time=2026-02-15T19:11:48.835+09:00 level=INFO msg="Starting Grafana MCP server using stdio transport" version=(devel)
+time=2026-02-15T19:11:48.835+09:00 level=INFO msg="Using Grafana configuration" url=http://grafana.danuricorp.com:80 api_key_set=true basic_auth_set=false org_id=0 extra_headers_count=0
+2026-02-15T10:11:49.103Z [DEBUG] MCP server "grafana": Successfully connected to undefined server in 379ms
+2026-02-15T10:11:49.103Z [DEBUG] MCP server "grafana": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"mcp-grafana","version":"(devel)"}}
+2026-02-15T10:11:49.105Z [DEBUG] [FileIndex] background untracked fetch: 0 files
+2026-02-15T10:11:49.159Z [DEBUG] High write ratio: blit=0, write=1463 (100.0% writes), screen=22x212
+2026-02-15T10:11:49.329Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150309329
+2026-02-15T10:11:49.329Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:11:49.329Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:11:49.329Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:11:49.329Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150309329 to /Users/admin/.claude.json
+2026-02-15T10:11:49.330Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:11:49.522Z [DEBUG] MCP server "outline": Successfully connected to undefined server in 793ms
+2026-02-15T10:11:49.522Z [DEBUG] MCP server "outline": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"Document Outline","version":"1.26.0"}}
+2026-02-15T10:11:49.529Z [DEBUG] High write ratio: blit=0, write=1463 (100.0% writes), screen=22x212
+2026-02-15T10:11:50.395Z [ERROR] MCP server "plane" Server stderr: 
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                FastMCP 2.14.1                                │
+│                                                                              │
+│                                                                              │
+│                   🖥  Server name: Plane MCP Server (stdio)                   │
+│                                                                              │
+│                   📦 Transport:   STDIO                                      │
+│                                                                              │
+│                   📚 Docs:        https://gofastmcp.com                      │
+│                   🚀 Hosting:     https://fastmcp.cloud                      │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[02/15/26 19:11:50] INFO     Starting MCP server 'Plane MCP       server.py:2527
+                             Server (stdio)' with transport                     
+                             'stdio'
+2026-02-15T10:11:50.395Z [DEBUG] MCP server "plane": Successfully connected to undefined server in 1664ms
+2026-02-15T10:11:50.395Z [DEBUG] MCP server "plane": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"serverVersion":{"name":"Plane MCP Server (stdio)","version":"2.14.1"}}
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.412Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.412Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.415Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.415Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.416Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.417Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.418Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.419Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.420Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.420Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.420Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.420Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.420Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:50.438Z [DEBUG] High write ratio: blit=0, write=1463 (100.0% writes), screen=22x212
+2026-02-15T10:11:51.070Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:51.070Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:51.070Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:51.640Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: analyzeMcp]
+2026-02-15T10:11:51.653Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:11:51.653Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:11:51.653Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:11:51.771Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:51.781Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:11:51.781Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:11:51.782Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:01.297Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:02.907Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150322907
+2026-02-15T10:12:02.907Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:02.909Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:02.909Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:02.909Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150322907 to /Users/admin/.claude.json
+2026-02-15T10:12:02.910Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:03.134Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150323134
+2026-02-15T10:12:03.134Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:03.135Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:03.136Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:03.136Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150323134 to /Users/admin/.claude.json
+2026-02-15T10:12:03.136Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:04.160Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:04.171Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:04.171Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:04.172Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:06.737Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150326737
+2026-02-15T10:12:06.737Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:06.739Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:06.739Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:06.739Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150326737 to /Users/admin/.claude.json
+2026-02-15T10:12:06.740Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:08.502Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150328502
+2026-02-15T10:12:08.502Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:08.504Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:08.504Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:08.504Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150328502 to /Users/admin/.claude.json
+2026-02-15T10:12:08.504Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:09.055Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:09.064Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:09.065Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:09.066Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:09.716Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150329716
+2026-02-15T10:12:09.716Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:09.718Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:09.718Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:09.718Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150329716 to /Users/admin/.claude.json
+2026-02-15T10:12:09.718Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:10.174Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150330174
+2026-02-15T10:12:10.174Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:10.175Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:10.175Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:10.175Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150330174 to /Users/admin/.claude.json
+2026-02-15T10:12:10.175Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:10.753Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:10.762Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:10.763Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:10.764Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:11.923Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150331923
+2026-02-15T10:12:11.923Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:11.924Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:11.925Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:11.925Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150331923 to /Users/admin/.claude.json
+2026-02-15T10:12:11.925Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:12.179Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150332179
+2026-02-15T10:12:12.179Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:12.179Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:12.179Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:12.179Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150332179 to /Users/admin/.claude.json
+2026-02-15T10:12:12.180Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:12.297Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:12.300Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:12.300Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:12.301Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:13.465Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150333465
+2026-02-15T10:12:13.465Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:13.465Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:13.465Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:13.465Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150333465 to /Users/admin/.claude.json
+2026-02-15T10:12:13.466Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:13.807Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150333807
+2026-02-15T10:12:13.807Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:13.808Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:13.808Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:13.808Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150333807 to /Users/admin/.claude.json
+2026-02-15T10:12:13.809Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:14.687Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150334687
+2026-02-15T10:12:14.687Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:14.688Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:14.688Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:14.688Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150334687 to /Users/admin/.claude.json
+2026-02-15T10:12:14.689Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:15.220Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:15.224Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:15.224Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:15.224Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:16.125Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150336125
+2026-02-15T10:12:16.125Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:16.127Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:16.127Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:16.127Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150336125 to /Users/admin/.claude.json
+2026-02-15T10:12:16.128Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:16.994Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150336994
+2026-02-15T10:12:16.994Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:16.994Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:16.994Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:16.994Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150336994 to /Users/admin/.claude.json
+2026-02-15T10:12:16.994Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:17.499Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:17.505Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:17.505Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:17.506Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:18.535Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150338535
+2026-02-15T10:12:18.535Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:18.536Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:18.536Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:18.536Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150338535 to /Users/admin/.claude.json
+2026-02-15T10:12:18.536Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:19.705Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150339705
+2026-02-15T10:12:19.705Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:19.706Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:19.706Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:19.706Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150339705 to /Users/admin/.claude.json
+2026-02-15T10:12:19.707Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:19.926Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150339926
+2026-02-15T10:12:19.926Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:19.930Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:19.931Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:19.931Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150339926 to /Users/admin/.claude.json
+2026-02-15T10:12:19.934Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:21.538Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150341538
+2026-02-15T10:12:21.538Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:21.539Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:21.540Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:21.540Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150341538 to /Users/admin/.claude.json
+2026-02-15T10:12:21.540Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:21.977Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:21.987Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:21.987Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:21.988Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:42.474Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150362474
+2026-02-15T10:12:42.474Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:42.475Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:42.476Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:42.476Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150362474 to /Users/admin/.claude.json
+2026-02-15T10:12:42.476Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:43.138Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150363138
+2026-02-15T10:12:43.138Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:43.140Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:43.140Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:43.140Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150363138 to /Users/admin/.claude.json
+2026-02-15T10:12:43.141Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:43.436Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150363436
+2026-02-15T10:12:43.436Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:43.437Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:43.437Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:43.437Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150363436 to /Users/admin/.claude.json
+2026-02-15T10:12:43.438Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:43.442Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:43.450Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:43.451Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:43.452Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:43.657Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150363657
+2026-02-15T10:12:43.657Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:43.657Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:43.657Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:43.657Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150363657 to /Users/admin/.claude.json
+2026-02-15T10:12:43.658Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:43.659Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:43.909Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150363909
+2026-02-15T10:12:43.909Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:43.911Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:43.911Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:43.911Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150363909 to /Users/admin/.claude.json
+2026-02-15T10:12:43.912Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:43.915Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:45.565Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150365565
+2026-02-15T10:12:45.565Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:45.566Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:45.566Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:45.566Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150365565 to /Users/admin/.claude.json
+2026-02-15T10:12:45.567Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:45.573Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:45.577Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:45.577Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:45.577Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:46.351Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150366351
+2026-02-15T10:12:46.351Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:46.352Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:46.352Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:46.352Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150366351 to /Users/admin/.claude.json
+2026-02-15T10:12:46.353Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:47.649Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:47.659Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.42/claude
+2026-02-15T10:12:47.659Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:47.660Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-15T10:12:52.015Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:52.025Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:12:52.025Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:12:52.025Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:12:52.025Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:12:52.027Z [DEBUG] Sending 24 skills via attachment (initial, 24 total sent)
+2026-02-15T10:12:52.027Z [DEBUG] Skill prompt: showing "frontend-design:frontend-design" (userFacingName="frontend-design")
+2026-02-15T10:12:52.033Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-15T10:12:52.033Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T10:12:52.033Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T10:12:52.033Z [DEBUG] FileHistory: Added snapshot for d0cb3976-02c5-4246-9a2b-56272bfd6e48, tracking 0 files
+2026-02-15T10:12:52.038Z [DEBUG] [useDeferredValue] Messages deferred by 6 (3→9)
+2026-02-15T10:12:52.042Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:52.044Z [DEBUG] High write ratio: blit=0, write=1250 (100.0% writes), screen=21x212
+2026-02-15T10:12:52.048Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-15T10:12:52.049Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-15T10:12:52.049Z [DEBUG] [SystemPrompt] path=simple proactive=false
+2026-02-15T10:12:52.051Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.14a; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:12:52.051Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:12:52.051Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:12:52.052Z [DEBUG] Total plugin output styles loaded: 0
+2026-02-15T10:12:52.052Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:12:52.058Z [DEBUG] Stats cache is up to date
+2026-02-15T10:12:52.065Z [DEBUG] High write ratio: blit=0, write=2012 (100.0% writes), screen=29x212
+2026-02-15T10:12:52.068Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150372068
+2026-02-15T10:12:52.068Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:52.069Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:52.069Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:52.069Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150372068 to /Users/admin/.claude.json
+2026-02-15T10:12:52.069Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:52.070Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:12:52.075Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150372075
+2026-02-15T10:12:52.075Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:12:52.075Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:12:52.075Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:12:52.075Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150372075 to /Users/admin/.claude.json
+2026-02-15T10:12:52.075Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:12:52.076Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:12:52.076Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:12:52.077Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:12:52.077Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:12:52.077Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:12:52.081Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:52.561Z [DEBUG] Successfully refreshed marketplace: claude-plugins-official
+2026-02-15T10:12:52.561Z [DEBUG] Plugin autoupdate: checking installed plugins
+2026-02-15T10:12:52.564Z [DEBUG] Caching plugin from source: {"source":"url","url":"https://github.com/figma/mcp-server-guide.git"} to temporary path /Users/admin/.claude/plugins/cache/temp_git_1771150372564_kf6ytm
+2026-02-15T10:12:52.566Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:12:52.569Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:12:52.573Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:12:52.573Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:12:52.575Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-15T10:12:52.575Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.576Z [DEBUG] Using git SHA for commit-commands@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for context7@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for gitlab@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for plugin-dev@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for hookify@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.579Z [DEBUG] Using git SHA for serena@claude-plugins-official: 2cd88e7947b7
+2026-02-15T10:12:52.890Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:12:53.446Z [DEBUG] Cloned repository from https://github.com/figma/mcp-server-guide.git to /Users/admin/.claude/plugins/cache/temp_git_1771150372564_kf6ytm
+2026-02-15T10:12:53.447Z [DEBUG] Successfully cached plugin figma to /Users/admin/.claude/plugins/cache/figma
+2026-02-15T10:12:53.447Z [DEBUG] Using manifest version for figma@claude-plugins-official: 1.1.0
+2026-02-15T10:12:55.003Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:12:55.008Z [DEBUG] [useDeferredValue] Messages deferred by 1 (9→10)
+2026-02-15T10:12:55.009Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:12:55.035Z [DEBUG] High write ratio: blit=0, write=2022 (100.0% writes), screen=29x212
+2026-02-15T10:13:02.439Z [DEBUG] [useDeferredValue] Messages deferred by 1 (10→11)
+2026-02-15T10:13:02.441Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:02.470Z [DEBUG] High write ratio: blit=0, write=2069 (100.0% writes), screen=29x212
+2026-02-15T10:13:04.861Z [DEBUG] [useDeferredValue] Messages deferred by 1 (11→12)
+2026-02-15T10:13:04.863Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:04.868Z [DEBUG] [useDeferredValue] Messages deferred by 1 (11→12)
+2026-02-15T10:13:04.903Z [DEBUG] High write ratio: blit=0, write=2385 (100.0% writes), screen=37x212
+2026-02-15T10:13:06.671Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:06.674Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:06.674Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:06.674Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:06.684Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/mkp/agetns-utils/commands/analyze.md
+2026-02-15T10:13:06.685Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150386685
+2026-02-15T10:13:06.685Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:06.685Z [DEBUG] Temp file written successfully, size: 6750 bytes
+2026-02-15T10:13:06.685Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:06.685Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150386685 to /Users/admin/mkp/agetns-utils/commands/analyze.md
+2026-02-15T10:13:06.686Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/analyze.md written atomically
+2026-02-15T10:13:06.687Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:06.687Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:06.687Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:06.689Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:06.689Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:06.689Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:06.689Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:06.690Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:06.694Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150386694
+2026-02-15T10:13:06.694Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:06.695Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:06.695Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:06.695Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150386694 to /Users/admin/.claude.json
+2026-02-15T10:13:06.695Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:06.695Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:06.696Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:06.696Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:06.696Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:06.697Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:06.698Z [DEBUG] [useDeferredValue] Messages deferred by 4 (12→16)
+2026-02-15T10:13:06.701Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:06.704Z [DEBUG] High write ratio: blit=0, write=2385 (100.0% writes), screen=37x212
+2026-02-15T10:13:06.704Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T10:13:06.729Z [DEBUG] High write ratio: blit=0, write=3098 (100.0% writes), screen=48x212
+2026-02-15T10:13:06.752Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:09.166Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:09.175Z [DEBUG] High write ratio: blit=0, write=3113 (100.0% writes), screen=48x212
+2026-02-15T10:13:10.268Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:10.269Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:10.269Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:10.269Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:10.271Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/mkp/agetns-utils/commands/arch-review.md
+2026-02-15T10:13:10.272Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150390272
+2026-02-15T10:13:10.272Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:10.273Z [DEBUG] Temp file written successfully, size: 9612 bytes
+2026-02-15T10:13:10.273Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:10.273Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150390272 to /Users/admin/mkp/agetns-utils/commands/arch-review.md
+2026-02-15T10:13:10.273Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/arch-review.md written atomically
+2026-02-15T10:13:10.274Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:10.274Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:10.274Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:10.275Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:10.275Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:10.275Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:10.275Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:10.276Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:10.279Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150390279
+2026-02-15T10:13:10.279Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:10.280Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:10.280Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:10.280Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150390279 to /Users/admin/.claude.json
+2026-02-15T10:13:10.280Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:10.280Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:10.281Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:10.281Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:10.281Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:10.281Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:10.283Z [DEBUG] [useDeferredValue] Messages deferred by 4 (16→20)
+2026-02-15T10:13:10.286Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:10.289Z [DEBUG] High write ratio: blit=0, write=3113 (100.0% writes), screen=48x212
+2026-02-15T10:13:10.289Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T10:13:10.322Z [DEBUG] High write ratio: blit=0, write=3802 (100.0% writes), screen=59x212
+2026-02-15T10:13:12.326Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:12.356Z [DEBUG] High write ratio: blit=0, write=3802 (100.0% writes), screen=59x212
+2026-02-15T10:13:13.297Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:13.299Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:13.299Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:13.299Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:13.301Z [DEBUG] FileHistory: Tracked file modification for /Users/admin/mkp/agetns-utils/commands/perf-review.md
+2026-02-15T10:13:13.302Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150393302
+2026-02-15T10:13:13.302Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:13.302Z [DEBUG] Temp file written successfully, size: 7786 bytes
+2026-02-15T10:13:13.302Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:13.302Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150393302 to /Users/admin/mkp/agetns-utils/commands/perf-review.md
+2026-02-15T10:13:13.302Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/perf-review.md written atomically
+2026-02-15T10:13:13.304Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:13.304Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:13.304Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:13.305Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:13.305Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:13.305Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:13.305Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:13.305Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:13.310Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150393310
+2026-02-15T10:13:13.310Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:13.310Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:13.310Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:13.310Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150393310 to /Users/admin/.claude.json
+2026-02-15T10:13:13.310Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:13.311Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:13.311Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:13.312Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:13.312Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:13.312Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:13.314Z [DEBUG] [useDeferredValue] Messages deferred by 4 (20→24)
+2026-02-15T10:13:13.317Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:13.320Z [DEBUG] High write ratio: blit=0, write=3802 (100.0% writes), screen=59x212
+2026-02-15T10:13:13.320Z [DEBUG] [lspRecommendation] Looking for LSP plugins for .md
+2026-02-15T10:13:13.340Z [DEBUG] High write ratio: blit=0, write=4569 (100.0% writes), screen=70x212
+2026-02-15T10:13:15.386Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:15.741Z [DEBUG] [useDeferredValue] Messages deferred by 1 (24→25)
+2026-02-15T10:13:15.749Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:15.755Z [DEBUG] High write ratio: blit=0, write=4569 (100.0% writes), screen=70x212
+2026-02-15T10:13:15.760Z [DEBUG] [useDeferredValue] Messages deferred by 1 (24→25)
+2026-02-15T10:13:15.798Z [DEBUG] High write ratio: blit=0, write=4602 (100.0% writes), screen=72x212
+2026-02-15T10:13:21.017Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:21.018Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:21.018Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:21.018Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:21.022Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150401022
+2026-02-15T10:13:21.022Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:21.022Z [DEBUG] Temp file written successfully, size: 7385 bytes
+2026-02-15T10:13:21.023Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:21.023Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150401022 to /Users/admin/mkp/agetns-utils/commands/analyze.md
+2026-02-15T10:13:21.023Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/analyze.md written atomically
+2026-02-15T10:13:21.025Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:21.025Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:21.025Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:21.027Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:21.027Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:21.027Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:21.027Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:21.028Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:21.032Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150401032
+2026-02-15T10:13:21.032Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:21.033Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:21.033Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:21.033Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150401032 to /Users/admin/.claude.json
+2026-02-15T10:13:21.033Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:21.034Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:21.034Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:21.035Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:21.035Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:21.035Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:21.037Z [DEBUG] [useDeferredValue] Messages deferred by 4 (25→29)
+2026-02-15T10:13:21.041Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:21.045Z [DEBUG] High write ratio: blit=0, write=4602 (100.0% writes), screen=72x212
+2026-02-15T10:13:21.068Z [DEBUG] High write ratio: blit=0, write=9053 (100.0% writes), screen=102x212
+2026-02-15T10:13:22.881Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:22.895Z [DEBUG] High write ratio: blit=0, write=9073 (100.0% writes), screen=102x212
+2026-02-15T10:13:26.802Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:29.208Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:29.209Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:29.209Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:29.209Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:29.211Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150409211
+2026-02-15T10:13:29.211Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:29.212Z [DEBUG] Temp file written successfully, size: 10660 bytes
+2026-02-15T10:13:29.212Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:29.212Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150409211 to /Users/admin/mkp/agetns-utils/commands/arch-review.md
+2026-02-15T10:13:29.212Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/arch-review.md written atomically
+2026-02-15T10:13:29.214Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:29.214Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:29.214Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:29.215Z [DEBUG] [useDeferredValue] Messages deferred by 4 (29→33)
+2026-02-15T10:13:29.219Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:29.229Z [DEBUG] High write ratio: blit=0, write=9075 (100.0% writes), screen=102x212
+2026-02-15T10:13:29.236Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:29.236Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:29.236Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:29.236Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:29.236Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:29.240Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150409240
+2026-02-15T10:13:29.240Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:29.241Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:29.241Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:29.241Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150409240 to /Users/admin/.claude.json
+2026-02-15T10:13:29.241Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:29.241Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:29.242Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:29.242Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:29.242Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:29.242Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:29.245Z [DEBUG] [useDeferredValue] Messages deferred by 4 (29→33)
+2026-02-15T10:13:29.247Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:29.281Z [DEBUG] High write ratio: blit=0, write=15861 (100.0% writes), screen=143x212
+2026-02-15T10:13:30.969Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:31.006Z [DEBUG] High write ratio: blit=0, write=15861 (100.0% writes), screen=143x212
+2026-02-15T10:13:35.715Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:35.716Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:35.716Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:35.716Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:35.719Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150415719
+2026-02-15T10:13:35.719Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:35.720Z [DEBUG] Temp file written successfully, size: 8723 bytes
+2026-02-15T10:13:35.720Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:35.720Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150415719 to /Users/admin/mkp/agetns-utils/commands/perf-review.md
+2026-02-15T10:13:35.720Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/perf-review.md written atomically
+2026-02-15T10:13:35.721Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:35.721Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:35.722Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:35.723Z [DEBUG] [useDeferredValue] Messages deferred by 1 (33→34)
+2026-02-15T10:13:35.726Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:35.737Z [DEBUG] High write ratio: blit=0, write=15861 (100.0% writes), screen=143x212
+2026-02-15T10:13:35.743Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:35.743Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:35.743Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:35.743Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:35.743Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:35.748Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150415748
+2026-02-15T10:13:35.748Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:35.748Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:35.748Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:35.748Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150415748 to /Users/admin/.claude.json
+2026-02-15T10:13:35.748Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:35.749Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:35.750Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:35.750Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:35.750Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:35.751Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:35.752Z [DEBUG] [useDeferredValue] Messages deferred by 4 (33→37)
+2026-02-15T10:13:35.756Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:35.766Z [DEBUG] High write ratio: blit=0, write=15861 (100.0% writes), screen=143x212
+2026-02-15T10:13:35.798Z [DEBUG] High write ratio: blit=0, write=22769 (100.0% writes), screen=185x212
+2026-02-15T10:13:38.013Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:39.214Z [DEBUG] [useDeferredValue] Messages deferred by 1 (37→38)
+2026-02-15T10:13:39.218Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:39.235Z [DEBUG] High write ratio: blit=0, write=22769 (100.0% writes), screen=185x212
+2026-02-15T10:13:39.273Z [DEBUG] High write ratio: blit=0, write=22835 (100.0% writes), screen=187x212
+2026-02-15T10:13:41.690Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:41.691Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:41.691Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:41.691Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:41.693Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150421693
+2026-02-15T10:13:41.693Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:41.694Z [DEBUG] Temp file written successfully, size: 7588 bytes
+2026-02-15T10:13:41.694Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:41.694Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150421693 to /Users/admin/mkp/agetns-utils/commands/analyze.md
+2026-02-15T10:13:41.694Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/analyze.md written atomically
+2026-02-15T10:13:41.695Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:41.695Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:41.696Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:41.696Z [DEBUG] [useDeferredValue] Messages deferred by 1 (38→39)
+2026-02-15T10:13:41.699Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:41.708Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:41.708Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:41.708Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:41.708Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:41.708Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:41.712Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150421712
+2026-02-15T10:13:41.712Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:41.712Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:41.712Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:41.712Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150421712 to /Users/admin/.claude.json
+2026-02-15T10:13:41.713Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:41.713Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:41.714Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:41.714Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:41.714Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:41.714Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:41.716Z [DEBUG] [useDeferredValue] Messages deferred by 4 (39→43)
+2026-02-15T10:13:41.719Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:41.733Z [DEBUG] High write ratio: blit=0, write=22863 (100.0% writes), screen=189x212
+2026-02-15T10:13:41.764Z [DEBUG] High write ratio: blit=0, write=24476 (100.0% writes), screen=203x212
+2026-02-15T10:13:43.542Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:43.575Z [DEBUG] High write ratio: blit=0, write=24476 (100.0% writes), screen=203x212
+2026-02-15T10:13:45.072Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:45.075Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:45.075Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:45.075Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:45.080Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150425080
+2026-02-15T10:13:45.080Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:45.081Z [DEBUG] Temp file written successfully, size: 7595 bytes
+2026-02-15T10:13:45.081Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:45.081Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/analyze.md.tmp.50440.1771150425080 to /Users/admin/mkp/agetns-utils/commands/analyze.md
+2026-02-15T10:13:45.081Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/analyze.md written atomically
+2026-02-15T10:13:45.085Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:45.085Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:45.085Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:45.088Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:45.088Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:45.088Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:45.088Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:45.089Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:45.095Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150425095
+2026-02-15T10:13:45.095Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:45.096Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:45.097Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:45.097Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150425095 to /Users/admin/.claude.json
+2026-02-15T10:13:45.097Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:45.098Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:45.100Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:45.100Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:45.100Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:45.100Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:45.103Z [DEBUG] [useDeferredValue] Messages deferred by 4 (43→47)
+2026-02-15T10:13:45.113Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:45.135Z [DEBUG] High write ratio: blit=0, write=24476 (100.0% writes), screen=203x212
+2026-02-15T10:13:45.195Z [DEBUG] High write ratio: blit=0, write=25148 (100.0% writes), screen=211x212
+2026-02-15T10:13:46.870Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:47.028Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:47.051Z [DEBUG] High write ratio: blit=0, write=25148 (100.0% writes), screen=211x212
+2026-02-15T10:13:50.410Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:50.411Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:50.411Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:50.411Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:50.414Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150430414
+2026-02-15T10:13:50.414Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:50.415Z [DEBUG] Temp file written successfully, size: 10861 bytes
+2026-02-15T10:13:50.415Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:50.415Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150430414 to /Users/admin/mkp/agetns-utils/commands/arch-review.md
+2026-02-15T10:13:50.415Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/arch-review.md written atomically
+2026-02-15T10:13:50.417Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:50.417Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:50.417Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:50.418Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:50.418Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:50.418Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:50.418Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:50.418Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:50.422Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150430422
+2026-02-15T10:13:50.422Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:50.422Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:50.422Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:50.422Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150430422 to /Users/admin/.claude.json
+2026-02-15T10:13:50.423Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:50.423Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:50.424Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:50.424Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:50.424Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:50.424Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:50.426Z [DEBUG] [useDeferredValue] Messages deferred by 4 (47→51)
+2026-02-15T10:13:50.429Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:50.447Z [DEBUG] High write ratio: blit=0, write=25148 (100.0% writes), screen=211x212
+2026-02-15T10:13:50.482Z [DEBUG] High write ratio: blit=0, write=26779 (100.0% writes), screen=227x212
+2026-02-15T10:13:52.096Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:52.125Z [DEBUG] High write ratio: blit=0, write=26780 (100.0% writes), screen=227x212
+2026-02-15T10:13:53.087Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:53.089Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:53.089Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:53.089Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:53.093Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150433093
+2026-02-15T10:13:53.093Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:53.094Z [DEBUG] Temp file written successfully, size: 10868 bytes
+2026-02-15T10:13:53.094Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:53.094Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/arch-review.md.tmp.50440.1771150433093 to /Users/admin/mkp/agetns-utils/commands/arch-review.md
+2026-02-15T10:13:53.094Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/arch-review.md written atomically
+2026-02-15T10:13:53.096Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:53.096Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:53.096Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:53.098Z [DEBUG] [useDeferredValue] Messages deferred by 4 (51→55)
+2026-02-15T10:13:53.103Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:53.124Z [DEBUG] High write ratio: blit=0, write=26780 (100.0% writes), screen=227x212
+2026-02-15T10:13:53.130Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:53.130Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:53.130Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:53.130Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:53.131Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:53.135Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150433135
+2026-02-15T10:13:53.135Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:53.135Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:53.135Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:53.135Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150433135 to /Users/admin/.claude.json
+2026-02-15T10:13:53.136Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:53.136Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:53.137Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:53.137Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:53.137Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:53.137Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:53.139Z [DEBUG] [useDeferredValue] Messages deferred by 4 (51→55)
+2026-02-15T10:13:53.140Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:53.175Z [DEBUG] High write ratio: blit=0, write=27467 (100.0% writes), screen=238x212
+2026-02-15T10:13:55.736Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:55.783Z [DEBUG] High write ratio: blit=0, write=27467 (100.0% writes), screen=238x212
+2026-02-15T10:13:57.802Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:13:57.803Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:13:57.803Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:13:57.803Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:13:57.805Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150437805
+2026-02-15T10:13:57.805Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:57.806Z [DEBUG] Temp file written successfully, size: 8918 bytes
+2026-02-15T10:13:57.806Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:57.806Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150437805 to /Users/admin/mkp/agetns-utils/commands/perf-review.md
+2026-02-15T10:13:57.806Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/perf-review.md written atomically
+2026-02-15T10:13:57.808Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:13:57.808Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:13:57.808Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:13:57.809Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:13:57.809Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:13:57.809Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:13:57.809Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:13:57.809Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:13:57.813Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150437813
+2026-02-15T10:13:57.813Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:13:57.813Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:13:57.813Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:13:57.813Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150437813 to /Users/admin/.claude.json
+2026-02-15T10:13:57.813Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:13:57.814Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:13:57.814Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:13:57.814Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:13:57.814Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:13:57.814Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:13:57.816Z [DEBUG] [useDeferredValue] Messages deferred by 4 (55→59)
+2026-02-15T10:13:57.819Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:13:57.836Z [DEBUG] High write ratio: blit=0, write=27467 (100.0% writes), screen=238x212
+2026-02-15T10:13:57.871Z [DEBUG] High write ratio: blit=0, write=29098 (100.0% writes), screen=254x212
+2026-02-15T10:13:59.623Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:13:59.648Z [DEBUG] High write ratio: blit=0, write=29099 (100.0% writes), screen=254x212
+2026-02-15T10:14:00.549Z [DEBUG] executePreToolHooks called for tool: Edit
+2026-02-15T10:14:00.551Z [DEBUG] Getting matching hook commands for PreToolUse with query: Edit
+2026-02-15T10:14:00.551Z [DEBUG] Found 4 hook matchers in settings
+2026-02-15T10:14:00.551Z [DEBUG] Matched 0 unique hooks for query "Edit" (0 before deduplication)
+2026-02-15T10:14:00.555Z [DEBUG] Writing to temp file: /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150440555
+2026-02-15T10:14:00.555Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:14:00.556Z [DEBUG] Temp file written successfully, size: 8925 bytes
+2026-02-15T10:14:00.556Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:14:00.556Z [DEBUG] Renaming /Users/admin/mkp/agetns-utils/commands/perf-review.md.tmp.50440.1771150440555 to /Users/admin/mkp/agetns-utils/commands/perf-review.md
+2026-02-15T10:14:00.556Z [DEBUG] File /Users/admin/mkp/agetns-utils/commands/perf-review.md written atomically
+2026-02-15T10:14:00.558Z [DEBUG] Getting matching hook commands for PostToolUse with query: Edit
+2026-02-15T10:14:00.558Z [DEBUG] Found 16 hook matchers in settings
+2026-02-15T10:14:00.558Z [DEBUG] Matched 1 unique hooks for query "Edit" (1 before deduplication)
+2026-02-15T10:14:00.560Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-15T10:14:00.560Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-15T10:14:00.560Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-15T10:14:00.560Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-15T10:14:00.562Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:14:00.567Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150440567
+2026-02-15T10:14:00.567Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:14:00.568Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:14:00.568Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:14:00.568Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150440567 to /Users/admin/.claude.json
+2026-02-15T10:14:00.568Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:14:00.569Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:14:00.570Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:14:00.570Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:14:00.570Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:14:00.571Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:14:00.573Z [DEBUG] [useDeferredValue] Messages deferred by 4 (59→63)
+2026-02-15T10:14:00.584Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:00.611Z [DEBUG] High write ratio: blit=0, write=29099 (100.0% writes), screen=254x212
+2026-02-15T10:14:00.671Z [DEBUG] High write ratio: blit=0, write=29764 (100.0% writes), screen=265x212
+2026-02-15T10:14:02.088Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:14:06.922Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:10.692Z [DEBUG] [useDeferredValue] Messages deferred by 1 (63→64)
+2026-02-15T10:14:10.695Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:10.716Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-15T10:14:10.716Z [DEBUG] Found 1 hook matchers in settings
+2026-02-15T10:14:10.716Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-15T10:14:10.716Z [DEBUG] Auto tool search enabled: 58626 tokens (threshold: 20000, 10% of context) [source: query]
+2026-02-15T10:14:10.722Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150450722
+2026-02-15T10:14:10.722Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:14:10.722Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:14:10.722Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:14:10.722Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150450722 to /Users/admin/.claude.json
+2026-02-15T10:14:10.722Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:14:10.723Z [DEBUG] Dynamic tool loading: 0/234 deferred tools included
+2026-02-15T10:14:10.723Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.42.812; cc_entrypoint=cli; cch=00000;
+2026-02-15T10:14:10.724Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-15T10:14:10.724Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-15T10:14:10.724Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-15T10:14:10.725Z [DEBUG] [useDeferredValue] Messages deferred by 1 (64→65)
+2026-02-15T10:14:10.726Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:10.746Z [DEBUG] High write ratio: blit=0, write=31100 (100.0% writes), screen=286x212
+2026-02-15T10:14:10.747Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-15T10:14:10.755Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150450755
+2026-02-15T10:14:10.755Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:14:10.755Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:14:10.755Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:14:10.755Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150450755 to /Users/admin/.claude.json
+2026-02-15T10:14:10.755Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:14:10.757Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.50440.1771150450757
+2026-02-15T10:14:10.757Z [DEBUG] Preserving file permissions: 100644
+2026-02-15T10:14:10.758Z [DEBUG] Temp file written successfully, size: 105217 bytes
+2026-02-15T10:14:10.758Z [DEBUG] Applied original permissions to temp file
+2026-02-15T10:14:10.758Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.50440.1771150450757 to /Users/admin/.claude.json
+2026-02-15T10:14:10.758Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-15T10:14:10.759Z [DEBUG] [useDeferredValue] Messages deferred by 4 (64→68)
+2026-02-15T10:14:10.762Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:10.779Z [DEBUG] High write ratio: blit=0, write=31042 (100.0% writes), screen=284x212
+2026-02-15T10:14:10.781Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-15T10:14:10.820Z [DEBUG] High write ratio: blit=0, write=31061 (100.0% writes), screen=286x212
+2026-02-15T10:14:12.936Z [DEBUG] Stream started - received first chunk
+2026-02-15T10:14:13.195Z [DEBUG] Forked agent [prompt_suggestion] received message: type=assistant
+2026-02-15T10:14:13.284Z [DEBUG] Getting matching hook commands for SubagentStop with query:
+2026-02-15T10:14:13.284Z [DEBUG] Found 0 hook matchers in settings
+2026-02-15T10:14:13.284Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-15T10:14:13.284Z [DEBUG] Forked agent [prompt_suggestion] finished: 1 messages, types=[assistant], totalUsage: input=3 output=10 cacheRead=48305 cacheCreate=704
+2026-02-15T10:14:13.289Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:14:35.954Z [DEBUG] High write ratio: blit=5936, write=29248 (83.1% writes), screen=286x212
+2026-02-15T10:15:07.132Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-15T10:15:50.708Z [DEBUG] High write ratio: blit=5936, write=29230 (83.1% writes), screen=286x212
+2026-02-15T10:15:52.478Z [DEBUG] High write ratio: blit=5936, write=29230 (83.1% writes), screen=286x212
+2026-02-15T10:16:03.425Z [DEBUG] High write ratio: blit=5936, write=29230 (83.1% writes), screen=286x212

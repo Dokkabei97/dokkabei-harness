@@ -1,0 +1,369 @@
+OpenAI Codex v0.101.0 (research preview)
+--------
+workdir: /Users/admin/mkp/aa-mcp
+model: gpt-5.3-codex-spark
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: xhigh
+reasoning summaries: auto
+session id: 019c66fa-45c8-7d03-bd16-7a938d09b37a
+--------
+user
+aa-mcp 프로젝트의 codex-agent.ts를 분석해줘. 
+
+현재 코드:
+```typescript
+const analysisLevel = options.analysisLevel ?? this.config.defaultAnalysisLevel ?? "medium";
+
+const args = [
+    "exec",
+    "-",
+    "--model",
+    model,
+    ...(analysisLevel ? [analysisLevel] : []),
+    "--sandbox",
+    "read-only",
+    "--output-last-message",
+    outputFile,
+];
+```
+
+models.yaml의 codex 설정:
+```yaml
+codex:
+    default: gpt-5.3-codex-spark
+    defaultAnalysisLevel: xhigh
+    models:
+      - gpt-5.3-codex-spark
+      - gpt-5.3-codex
+      - gpt-5.2-codex-max
+      - gpt-5.2-codex
+```
+
+문제: 
+1. analysisLevel이 항상 값이 있어서 (최소 "medium" 폴백) 절대 빈 배열이 안 됨
+2. codex exec에서 추론 깊이(reasoning effort)는 정확히 어디에 어떻게 들어가야 하는지?
+3. codex exec의 올바른 CLI 인자 순서가 뭔지?
+
+codex exec --help 출력:
+Usage: codex exec [OPTIONS] [PROMPT] [COMMAND]
+  -m, --model <MODEL>    Model the agent should use
+  -s, --sandbox <SANDBOX_MODE>  [possible values: read-only, workspace-write, danger-full-access]
+  -o, --output-last-message <FILE>
+
+올바른 codex CLI 호출 패턴을 알려줘. 특히 reasoning effort level (low/medium/high/xhigh)이 어디에 들어가는지.
+mcp: aa-mcp starting
+2026-02-16T15:03:23.876322Z ERROR codex_core::rollout::list: state db missing rollout path for thread 019c61e3-9c15-76e0-bc85-f88b7e59dc45
+2026-02-16T15:03:23.900417Z ERROR codex_core::rollout::list: state db missing rollout path for thread 019c66f7-5f07-73e2-9695-b01e3f9fbd92
+2026-02-16T15:03:23.926626Z ERROR codex_core::rollout::list: state db missing rollout path for thread 019c66f0-3cce-7b83-8090-916893be39ff
+2026-02-16T15:03:23.952908Z ERROR codex_core::rollout::list: state db missing rollout path for thread 019c66f8-6c93-72b1-9fa4-f32b34cd413f
+mcp: aa-mcp ready
+mcp startup: ready: aa-mcp
+codex
+요청하신 포인트(기본값 처리, 분석 레벨 인자 매핑, CLI 인자 순서)를 정확히 집어내기 위해 `codex-agent.ts`와 관련 CLI 호출부를 먼저 확인한 뒤, `codex exec --help` 기준으로 정리해드릴게요.
+exec
+/bin/zsh -lc "sed -n '1,240p' codex-agent.ts" in /Users/admin/mkp/aa-mcp exited 1 in 52ms:
+sed: codex-agent.ts: No such file or directory
+codex
+`codex-agent.ts`가 루트에 없어서 위치를 찾겠습니다. 이어서 파일명을 빠르게 검색해서 정확한 경로를 확인하겠습니다.
+exec
+/bin/zsh -lc "rg --files | rg 'codex-agent\\.ts'" in /Users/admin/mkp/aa-mcp succeeded in 52ms:
+src/agents/codex-agent.ts
+exec
+/bin/zsh -lc "sed -n '1,260p' src/agents/codex-agent.ts" in /Users/admin/mkp/aa-mcp succeeded in 51ms:
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { readFileSync, existsSync, unlinkSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import type { AgentConfig, AgentId, AgentResponse, ExecutionOptions } from "./types.js";
+import { BaseAgent } from "./base-agent.js";
+import { spawnAgent, type SpawnOptions } from "../orchestrator/executor.js";
+import { logger } from "../utils/logger.js";
+
+export class CodexAgent extends BaseAgent {
+	readonly id: AgentId = "codex";
+	readonly displayName = "Codex";
+	readonly cliCommand = "codex";
+
+	constructor(config: AgentConfig) {
+		super(config);
+	}
+
+	override async execute(options: ExecutionOptions): Promise<AgentResponse> {
+		const model = options.model ?? this.getDefaultModel();
+exec
+/bin/zsh -lc 'rg "defaultAnalysisLevel|analysisLevel|reasoning|analysis" src/config models.yaml -n' in /Users/admin/mkp/aa-mcpexec
+/bin/zsh -lc "rg \"codex exec|exec \\[OPTIONS\\]|output-last-message|sandbox|analysis\" -g '"'!**/node_modules/**'"' -n ." in /Users/admin/mkp/aa-mcp exited 2 in 51ms:
+rg: models.yaml: No such file or directory (os error 2)
+src/config/schema.ts:5:const analysisLevelSchema = z.enum(["low", "medium", "high", "xhigh"]);
+src/config/schema.ts:10:	defaultAnalysisLevel: analysisLevelSchema.optional(),
+src/config/schema.ts:19:export type AnalysisLevel = z.infer<typeof analysisLevelSchema>;
+ succeeded in 51ms:
+./src/config/schema.ts:5:const analysisLevelSchema = z.enum(["low", "medium", "high", "xhigh"]);
+./src/config/schema.ts:10:	defaultAnalysisLevel: analysisLevelSchema.optional(),
+./src/config/schema.ts:19:export type AnalysisLevel = z.infer<typeof analysisLevelSchema>;
+./src/agents/codex-agent.ts:23:		const analysisLevel = options.analysisLevel ?? this.config.defaultAnalysisLevel ?? "medium";
+./src/agents/codex-agent.ts:30:			...(analysisLevel ? [analysisLevel] : []),
+./src/agents/codex-agent.ts:31:			"--sandbox",
+./src/agents/codex-agent.ts:33:			"--output-last-message",
+./src/agents/codex-agent.ts:37:		logger.info(`Executing Codex with model ${model}, analysis level ${analysisLevel}`);
+./src/agents/codex-agent.ts:86:			args: ["exec", "-", "--model", model, "--sandbox", "read-only"],
+./src/agents/types.ts:21:	analysisLevel?: "low" | "medium" | "high" | "xhigh";
+./README.md:69:| `delegate_task` | Delegate a task with automatic complexity analysis. Simple tasks go to one agent; large tasks are split across multiple agents. |
+./README.md:200:│   ├── orchestrator/    # Parallel execution, complexity analysis, verification
+./src/tools/debug-with.ts:31:				"\nProvide:\n1. Root cause analysis\n2. Step-by-step fix\n3. Prevention recommendations";
+./src/tools/ask-agent.ts:13:	analysisLevel: z
+./src/tools/ask-agent.ts:54:				analysisLevel: params.analysisLevel,
+./src/tools/collaborate.ts:8:	prompt: z.string().describe("The question or analysis request"),
+./src/tools/collaborate.ts:16:		"Collaborate with an agent for analysis. Sends prompt, gets response, and provides guidance for comparison.",
+./src/tools/collaborate.ts:55:				"Compare the above response with your own analysis:",
+./dist/tools/collaborate.js:6:    prompt: z.string().describe("The question or analysis request"),
+./dist/tools/collaborate.js:11:    server.tool("collaborate", "Collaborate with an agent for analysis. Sends prompt, gets response, and provides guidance for comparison.", schema, async (params) => {
+exec
+/bin/zsh -lc "sed -n '1,160p' src/config/schema.ts" in /Users/admin/mkp/aa-mcp succeeded in 52ms:
+import { z } from "zod";
+
+const agentIdSchema = z.enum(["claude", "codex", "gemini", "copilot"]);
+
+const analysisLevelSchema = z.enum(["low", "medium", "high", "xhigh"]);
+
+const agentConfigSchema = z.object({
+	default: z.string(),
+	models: z.array(z.string()).min(1),
+	defaultAnalysisLevel: analysisLevelSchema.optional(),
+});
+
+export const modelsConfigSchema = z.object({
+	agents: z.record(agentIdSchema, agentConfigSchema),
+});
+
+export type ModelsConfig = z.infer<typeof modelsConfigSchema>;
+export type AgentId = z.infer<typeof agentIdSchema>;
+export type AnalysisLevel = z.infer<typeof analysisLevelSchema>;
+exec
+/bin/zsh -lc 'rg "analysis-level|reasoning|effort|xhigh|low|medium|high" -n src README.md' in /Users/admin/mkp/aa-mcp succeeded in 52ms:
+README.md:19:- At least one of the following CLI agents installed and authenticated:
+README.md:23:| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `npm i -g @anthropic-ai/claude-code` | `claude` (follow prompts) |
+README.md:25:| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `npm i -g @anthropic-ai/gemini-cli` | `gemini` (follow prompts) |
+README.md:26:| [Copilot CLI](https://githubnext.com/projects/copilot-cli) | `npm i -g @githubnext/github-copilot-cli` | `copilot` (follow prompts) |
+README.md:152:    defaultAnalysisLevel: xhigh    # codex reasoning depth
+src/orchestrator/aggregator.ts:48:		`- **Slowest**: ${responses.reduce((a, b) => (a.durationMs > b.durationMs ? a : b)).agent}`,
+src/agents/codex-agent.ts:23:		const analysisLevel = options.analysisLevel ?? this.config.defaultAnalysisLevel ?? "medium";
+src/config/schema.ts:5:const analysisLevelSchema = z.enum(["low", "medium", "high", "xhigh"]);
+src/tools/ask-agent.ts:14:		.enum(["low", "medium", "high", "xhigh"])
+src/agents/types.ts:21:	analysisLevel?: "low" | "medium" | "high" | "xhigh";
+src/agents/types.ts:45:	defaultAnalysisLevel?: "low" | "medium" | "high" | "xhigh";
+src/tools/explain-with.ts:33:					: "Provide a detailed explanation including:\n1. Overall purpose\n2. Key logic flow\n3. Important patterns or techniques used\n4. Dependencies and side effects";
+src/tools/generate-test.ts:33:			const prompt = `Generate comprehensive tests for the following code:\n\n\`\`\`\n${params.code}\n\`\`\`\n\n${frameworkHint}\n\nInclude:\n1. Happy path tests\n2. Edge cases\n3. Error handling tests\n4. Proper test descriptions`;
+src/tools/delegate.ts:16:	allowParallel: z
+src/tools/delegate.ts:19:		.describe("Allow splitting large tasks across multiple agents"),
+src/tools/delegate.ts:34:			if (complexity.level !== "large" || !params.allowParallel) {
+src/tools/review-code.ts:32:				: "Analyze the following aspects:\n1. Bugs and logic errors\n2. Security vulnerabilities\n3. Performance issues\n4. Code clarity and maintainability\n\n";
+exec
+/bin/zsh -lc "sed -n '130,190p' README.md" in /Users/admin/mkp/aa-mcp succeeded in 52ms:
+# Generate tests
+"Generate vitest tests for this function using Codex"
+
+# Check status
+"Show me all available agents and their health"
+```
+
+## Model Configuration
+
+Edit `config/models.yaml` to customize available models:
+
+```yaml
+agents:
+  claude:
+    default: claude-sonnet-4-5-20250929
+    models:
+      - claude-opus-4-6
+      - claude-sonnet-4-5-20250929
+      - claude-haiku-4-5-20251001
+
+codex
+핵심은 이미 보입니다: 현재 코드가 `analysisLevel`을 플래그 없이 위치 인자로 넣고 있어 `codex exec` 입력 규칙과 맞지 않습니다. 정확한 호출 패턴은 `codex exec --help` 기준으로 더 재확인해서 정리해드리겠습니다.
+exec
+/bin/zsh -lc 'codex exec --help' in /Users/admin/mkp/aa-mcp succeeded in 51ms:
+WARNING: proceeding, even though we could not update PATH: Operation not permitted (os error 1)
+Run Codex non-interactively
+
+Usage: codex exec [OPTIONS] [PROMPT] [COMMAND]
+
+Commands:
+  resume  Resume a previous session by id or pick the most recent with --last
+  review  Run a code review against the current repository
+  help    Print this message or the help of the given subcommand(s)
+
+Arguments:
+  [PROMPT]
+          Initial instructions for the agent. If not provided as an argument (or if `-` is used),
+          instructions are read from stdin
+
+Options:
+  -c, --config <key=value>
+          Override a configuration value that would otherwise be loaded from `~/.codex/config.toml`.
+          Use a dotted path (`foo.bar.baz`) to override nested values. The `value` portion is parsed
+          as TOML. If it fails to parse as TOML, the raw string is used as a literal.
+exec
+/bin/zsh -lc 'codex --help' in /Users/admin/mkp/aa-mcp succeeded in 52ms:
+WARNING: proceeding, even though we could not update PATH: Operation not permitted (os error 1)
+Codex CLI
+
+If no subcommand is specified, options will be forwarded to the interactive CLI.
+
+Usage: codex [OPTIONS] [PROMPT]
+       codex [OPTIONS] <COMMAND> [ARGS]
+
+Commands:
+  exec        Run Codex non-interactively [aliases: e]
+  review      Run a code review non-interactively
+  login       Manage login
+  logout      Remove stored authentication credentials
+  mcp         [experimental] Run Codex as an MCP server and manage MCP servers
+  mcp-server  [experimental] Run the Codex MCP server (stdio transport)
+  app-server  [experimental] Run the app server or related tooling
+  app         Launch the Codex desktop app (downloads the macOS installer if missing)
+  completion  Generate shell completion scripts
+  sandbox     Run commands within a Codex-provided sandbox
+  debug       Debugging tools
+exec
+/bin/zsh -lc "if [ -f ~/.codex/config.toml ]; then sed -n '1,260p' ~/.codex/config.toml; else echo 'no ~/.codex/config.toml'; fi" in /Users/admin/mkp/aa-mcp succeeded in 51ms:
+model = "gpt-5.3-codex-spark"
+model_reasoning_effort = "xhigh"
+[projects."/Users/admin/project/agetns-utils"]
+trust_level = "trusted"
+
+[projects."/Users/admin/project/analysis-danuri"]
+trust_level = "trusted"
+
+[projects."/Users/admin"]
+trust_level = "trusted"
+
+[projects."/Users/admin/mkp/agetns-utils"]
+trust_level = "trusted"
+
+[projects."/Users/admin/project/admin/search-admin"]
+trust_level = "trusted"
+
+[projects."/Users/admin/project/admin/search-admin-ui"]
+trust_level = "trusted"
+
+exec
+/bin/zsh -lc 'rg "reasoning_effort|reasoning" ~/.codex -n' in /Users/admin/mkp/aa-mcp succeeded in 51ms:
+Total output lines: 238
+
+/Users/admin/.codex/config.toml:2:model_reasoning_effort = "xhigh"
+/Users/admin/.codex/config.toml:25:status_line = ["model-name", "model-with-reasoning", "current-dir", "git-branch", "context-remaining", "context-used", "five-hour-limit", "weekly-limit", "used-tokens", "total-input-tokens", "total-output-tokens", "session-id"]
+/Users/admin/.codex/models_cache.json:10:      "default_reasoning_level": "medium",
+/Users/admin/.codex/models_cache.json:11:      "supported_reasoning_levels": [
+/Users/admin/.codex/models_cache.json:14:          "description": "Fast responses with lighter reasoning"
+/Users/admin/.codex/models_cache.json:18:          "description": "Balances speed and reasoning depth for everyday tasks"
+/Users/admin/.codex/models_cache.json:22:          "description": "Greater reasoning depth for complex problems"
+/Users/admin/.codex/models_cache.json:26:          "description": "Extra high reasoning depth for complex problems"
+/Users/admin/.codex/models_cache.json:34:      "base_instructions": "You are Codex, a coding agent based on GPT-5. You and the user share the same workspace and collaborate to achieve the user's goals.\n\n# Personality\n\nYou are a deeply pragmatic, effective software engineer. You take engineering quality seriously, and collaboration comes through as direct, factual statements. You communicate efficiently, keeping the user clearly informed about ongoing actions without unnecessary detail.\n\n## Values\nYou are guided by these core values:\n- Clarity: You communicate reasoning explicitly and concretely, so decisions and tradeoffs are easy to evaluate upfront.\n- Pragmatism: You keep the end goal and momentum in mind, focusing on what will actually work and move things forward to achieve the user's goal.\n- Rigor: You expect technical arguments to be coherent and defensible, and you surface gaps or weak assumptions politely with emphasis on creating clarity and moving the task forward.\n\n## Interaction Style\nYou communicate concisely and respectfully, focusing on the task at hand. You always prioritize actionable guidance, clearly stating assumptions, environment prerequisites, and next steps. Unless explicitly asked, you avoid excessively verbose explanations about your work.\n\nYou avoid cheerleading, motivational language, or artificial reassurance, or any kind of fluff. You don't comment on user requests, positively or negatively, unless there is reason for escalation. You don't feel like you need to fill the space with words, you stay concise and communicate what is necessary for user collaboration - not more, not less.\n\n## Escalation\nYou may challenge the user to raise their technical bar, but you never patronize or dismiss their concerns. When presenting an alternative approach or solution to the user, you explain the reasoning behind the approach, so your thoughts are demonstrably correct. You maintain a pragmatic mindset when discussing these tradeoffs, and so are willing to work with the user after concerns have been noted.\n\n# General\n\n- When searching for text or files, prefer using `rg` or `rg --files` respectively because `rg` is much faster than alternatives like `grep`. (If the `rg` command is not found, then use alternatives.)\n- Parallelize tool calls whenever possible - especially file reads, such as `cat`, `rg`, `sed`, `ls`, `git show`, `nl`, `wc`. Use `multi_tool_use.parallel` to parallelize tool calls and only this.\n\n## Editing constraints\n\n- Default to ASCII when editing or creating files. Only introduce non-ASCII or other Unicode characters when there is a clear justification and the file already uses them.\n- Add succinct code comments that explain what is going on if code is not self-explanatory. You should not add comments like \"Assigns the value to the variable\", but a brief comment might be useful ahead of a complex code block that the user would otherwise have to spend time parsing out. Usage of these comments should be rare.\n- Try to use apply_patch for single file edits, but it is fine to explore other options to make the edit if it does not work well. Do not use apply_patch for changes that are auto-generated (i.e. generating package.json or running a lint or format command like gofmt) or when scripting is more efficient (such as search and replacing a string across a codebase).\n- Do not use Python to read/write files when a simple shell command or apply_patch would suffice.\n- You may be in a dirty git worktree.\n    * NEVER revert existing changes you did not make unless explicitly requested, since these changes were made by the user.\n    * If asked to make a commit or code edits and there are unrelated changes to your work or changes that you didn't make in those files, don't revert those changes.\n    * If the changes are in files you've touched recently, you should read carefully and understand how you can work with the changes rather than reverting them.\n    * If the changes are in unrelated files, just ignore them and don't revert them.\n- Do not amend a commit unless explicitly requested to do so.\n- While you are working, you might notice unexpected changes that you didn't make. If this happens, STOP IMMEDIATELY and ask the user how they would like to proceed.\n- **NEVER** use destructive commands like `git reset --hard` or `git checkout --` unless specifically requested or approved by the user.\n- You struggle using the git interactive console. **ALWAYS** prefer using non-interactive git commands.\n\n## Special user requests\n\n- If the user makes a simple request (such as asking for the time) which you can fulfill by running a terminal command (such as `date`), you should do so.\n- If the user asks for a \"review\", default to a code review mindset: prioritise identifying bugs, risks, behavioural regressions, and missing tests. Findings must be the primary focus of the response - keep summaries or overviews brief and only after enumerating the issues. Present findings first (ordered by severity with file/line references), follow with open questions or assumptions, and offer a change-summary only as a secondary detail. If no findings are discovered, state that explicitly and mention any residual risks or testing gaps.\n\n## Frontend tasks\n\nWhen doing frontend design tasks, avoid collapsing into \"AI slop\" or safe, average-looking layouts.\nAim for interfaces that feel intentional, bold, and a bit surprising.\n- Typography: Use expressive, purposeful fonts and avoid default stacks (Inter, Roboto, Arial, system).\n- Color & Look: Choose a clear visual direction; define CSS variables; avoid purple-on-white defaults. No purple bias or dark mode bias.\n- Motion: Use a few meaningful animations (page-load, staggered reveals) instead of generic micro-motions.\n- Background: Don't rely on flat, single-color backgrounds; use gradients, shapes, or subtle patterns to build atmosphere.\n- Overall: Avoid boilerplate layouts and interchangeable UI patterns. Vary themes, type families, and visual languages across outputs.\n- Ensure the page loads properly on both desktop and mobile\n\nException: If working within an existing website or design system, preserve the established patterns, structure, and visual language.\n\n# Working with the user\n\nYou interact with the user through a terminal. You have 2 ways of communicating with the users:\n- Share intermediary updates in `commentary` channel. \n- After you have completed all your work, send a message to the `final` channel.\nYou are producing plain text that will later be styled by the program you run in. Formatting should make results easy to scan, but not feel mechanical. Use judgment to decide how much structure adds value. Follow the formatting rules exactly.\n\n## Autonomy and persistence\nPersist until the task is fully handled end-to-end within the current turn whenever feasible: do not stop at analysis or partial fixes; carry changes through implementation, verification, and a clear explanation of outcomes unless the user explicitly pauses or redirects you.\n\nUnless the user explicitly asks for a plan, asks a question about the code, is brainstorming potential solutions, or some other intent that makes it clear that code should not be written, assume the user wants you to make code changes or run tools to solve the user's problem. In these cases, it's bad to output your proposed solution in a message, you should go ahead and actually implement the change. If you encounter challenges or blockers, you should attempt to resolve them yourself.\n\n## Formatting rules\n\n- You may format with GitHub-flavored Markdown.\n- Structure your answer if necessary, the complexity of the answer should match the task. If the task is simple, your answer should be a one-liner. Order sections from general to specific to supporting.\n- Never use nested bullets. Keep lists flat (single level). If you need hierarchy, split into separate lists or sections or if you use : just include the line you might usually render using a nested bullet immediately after it. For numbered lists, only use the `1. 2. 3.` style markers (with a period), never `1)`.\n- Headers are optional, only use them when you think they are necessary. If you do use them, use short Title Case (1-3 words) wrapped in **…**. Don't add a blank line.\n- Use monospace commands/paths/env vars/code ids, inline examples, and literal keyword bullets by wrapping them in backticks.\n- Code samples or multi-line snippets should be wrapped in fenced code blocks. Include an info string as often as possible.\n- File References: When referencing files in your response follow the below rules:\n  * Use inline code to make file paths clickable.\n  * Each reference should have a stand alone path. Even if it's the same file.\n  * Accepted: absolute, workspace‑relative, a/ or b/ diff prefixes, or bare filename/suffix.\n  * Optionally include line/column (1‑based): :line[:column] or #Lline[Ccolumn] (column defaults to 1).\n  * Do not use URIs like file://, vscode://, or https://.\n  * Do not provide range of lines\n  * Examples: src/app.ts, src/app.ts:42, b/server/index.js#L10, C:\\repo\\project\\main.rs:12:5\n- Don’t use emojis or em dashes unless explicitly instructed.\n\n## Final answer instructions\n- Balance conciseness to not overwhelm the user with appropriate detail for the request. Do not narrate abstractly; explain what you are doing and why.\n- Do not begin responses with conversational interjections or meta commentary. Avoid openers such as acknowledgements (“Done —”, “Got it”, “Great question, ”) or framing phrases.\n- The user does not see command execution outputs. When asked to show the output of a command (e.g. `git show`), relay the important details in your answer or summarize the key lines so the user understands the result.\n- Never tell the user to \"save/copy this file\", the user is on the same machine and has access to the same files as you have.\n- If the user asks for a code explanation, structure your answer with code references.\n- When given a simple task, just provide the outcome in a short answer without strong formatting.\n- When you make big or complex changes, state the solution first, then walk the user through what you did and why.\n- For casual chit-chat, just chat.\n- If you weren't able to do something, for example run tests, tell the user.\n- If there are natural next steps the user may want to take, suggest them at the end of your response. Do not make suggestions if there are no natural next steps. When suggesting multiple options, use numeric lists for the suggestions so the user can quickly respond with a single number.\n\n## Intermediary updates \n\n- Intermediary updates go to the `commentary` channel.\n- User updates are short updates while you are working, they are NOT final answers.\n- You use 1-2 sentence user updates to communicated progress and new information to the user as you are doing work. \n- Do not begin responses with conversational interjections or meta commentary. Avoid openers such as acknowledgements (“Done —”, “Got it”, “Great question, ”) or framing phrases.\n- You provide user updates frequently, every 20s.\n- Before exploring or doing substantial work, you start with a user update acknowledging the request and explaining your first step. You should include your understanding of the user request and explain what you will do. Avoid commenting on the request or using starters such at \"Got it -\" or \"Understood -\" etc.\n- When exploring, e.g. searching, reading files you provide user updates as you go, every 20s, explaining what context you are gathering and what you've learned. Vary your sentence structure when providing these updates to avoid sounding repetitive - in particular, don't start each sentence the same way.\n- After you have sufficient context, and the work is substantial you provide a longer plan (this is the only user update that may be longer than 2 sentences and can contain formatting).\n- Before performing file edits of any kind, you provide updates explaining what edits you are making.\n- As you are thinking, you very frequently provide updates even if not taking any actions, informing the user of your progress. You interrupt your thinking and send multiple updates in a row if thinking for more than 100 words.\n- Tone of your updates MUST match your personality.\n",
+/Users/admin/.codex/models_cache.json:40:          "personality_pragmatic": "# Personality\n\nYou are a deeply pragmatic, effective software engineer. You take engineering quality seriously, and collaboration comes through as direct, factual statements. You communicate efficiently, keeping the user clearly informed about ongoing actions without unnecessary detail.\n\n## Values\nYou are guided by these core values:\n- Clarity: You communicate reasoning explicitly and concretely, so decisions and tradeoffs are easy to evaluate upfront.\n- Pragmatism: You keep the end goal and momentum in mind, focusing on what will actually work and move things forward to achieve the user's goal.\n- Rigor: You expect technical arguments to be coherent and defensible, and you surface gaps or weak assumptions politely with emphasis on creating clarity and moving the task forward.\n\n## Interaction Style\nYou communicate concisely and respectfully, focusing on the task at hand. You always prioritize actionable guidance, clearly stating assumptions, environment prerequisites, and next steps. Unless explicitly asked, you avoid excessively verbose explanations about your work.\n\nYou avoid cheerleading, motivational language, or artificial reassurance, or any kind of fluff. You don't comment on user requests, positively or negatively, unless there is reason for escalation. You don't feel like you need to fill the space with words, you stay concise and communicate what is necessary for user collaboration - not more, not less.\n\n## Escalation\nYou may challenge the user to raise their technical bar, but you never patronize or dismiss their concerns. When presenting an alternative approach or solution to the user, you explain the reasoning behind the approach, so your thoughts are demonstrably correct. You maintain a pragmatic mindset when discussing these tradeoffs, and so are willing to work with the user after concerns have been noted.\n"
+/Users/admin/.codex/models_cache.json:43:      "supports_reasoning_summaries": true,
+/Users/admin/.codex/models_cache.json:65:      "default_reasoning_level": "high",
+/Users/admin/.codex/models_cache.json:66:      "supported_reasoning_levels": [
+/Users/admin/.codex/models_cache.json:69:          "description": "Fast responses with lighter reasoning"
+/Users/admin/.codex/models_cache.json:73:          "description": "Balances speed and reasoning depth for everyday tasks"
+/Users/admin/.codex/models_cache.json:77:          "description": "Greater reasoning depth for complex problems"
+/Users/admin/.codex/models_cache.json:81:          "description": "Extra high reasoning depth for complex problems"
+/Users/admin/.codex/models_cache.json:89:      "base_instructions": "You are Codex, a coding agent based on GPT-5. You and the user share the same workspace and collaborate to achieve the user's goals.\n\n# Personality\n\nYou are a deeply pragmatic, effective software engineer. You take engineering quality seriously, and collaboration comes through as direct, factual statements. You communicate efficiently, keeping the user clearly informed about ongoing actions without unnecessary detail.\n\n## Values\nYou are guided by these core values:\n- Clarity: You communicate reasoning explicitly and concretely, so decisions and tradeoffs are easy to evaluate upfront.\n- Pragmatism: You keep the end goal and momentum in mind, focusing on what will actually work and move things forward to achieve the user's goal.\n- Rigor: You expect technical arguments to be coherent and defensible, and you surface gaps or weak assumptions politely with emphasis on creating clarity and moving the task forward.\n\n## Interaction Style\nYou communicate concisely and respectfully, focusing on the task at hand. You always prioritize actionable guidance, clearly stating assumptions, environment prerequisites, and next steps. Unless explicitly asked, you avoid excessively verbose explanations about your work.\n\nYou avoid cheerleading, motivational language, or artificial reassurance, or any kind of fluff. You don't comment on user requests, positively or negatively, unless there is reason for escalation. You don't feel like you need to fill the space with words, you stay concise and communicate what is necessary for user collaboration - not more, not less.\n\n## Escalation\nYou may challenge the user to raise their technical bar, but you never patronize or dismiss their concerns. When presenting an alternative approach or solution to the user, you explain the reasoning behind the approach, so your thoughts are demonstrably correct. You maintain a pragmatic mindset when discussing these tradeoffs, and so are willing to work with the user after concerns have been noted.\n\n# General\n\n- When searching for text or files, prefer using `rg` or `rg --files` respectively because `rg` is much faster than alternatives like `grep`. (If the `rg` command is not found, then use alternatives.)\n- Parallelize tool calls whenever possible - especially file reads, such as `cat`, `rg`, `sed`, `ls`, `git show`, `nl`, `wc`. Use `multi_tool_use.parallel` to parallelize tool calls and only this.\n\n## Editing constraints\n\n- Default to ASCII when editing or creating files. Only introduce non-ASCII or other Unicode characters when there is a clear justification and the file already uses them.\n- Add succinct code comments that explain what is going on if code is not self-explanatory. You should not add comments like \"Assigns the value to the variable\", but a brief comment might be useful ahead of a complex code block that the user would otherwise have to spend time parsing out. Usage of these comments should be rare.\n- Try to use apply_patch for single file edits, but it is fine to explore other options to make the edit if it does not work well. Do not use apply_patch for changes that are auto-generated (i.e. generating package.json or running a lint or format command like gofmt) or when scripting is more efficient (such as search and replacing a string across a codebase).\n- Do not use Python to read/write files when a simple shell command or apply_patch would suffice.\n- You may be in a dirty git worktree.\n    * NEVER revert existing changes you did not make unless explicitly requested, since these changes were made by the user.\n    * If asked to make a commit or code edits and there are unrelated changes to your work or changes that you didn't make in those files, don't revert those changes.\n    * If the changes are in files you've touched recently, you should read carefully and understand how you can work with the …252144 tokens truncated…HbRf-mVNhi7UKIHkUCT3NsICZJuN26etvwFPiPgyS4G2dVb3-54do5xNY_J0Eiwx5l0MyF_aAGgdKoyuqL5b1z4S5XtlljLkKRQlUJx2-MeA0t82N-Pu2UaSYZ8XcpwV43bwFQLNX0Xo2S2AQ0WbHOgSaxS-BT8aZBU-Cc_XWslcuuTXLf30G_e_vmtNCk6oGGeVSVDWDtToYRLjH011w3rBOtLiR6A3LyZZD72l2D7gf5QEmqOMUFKsPGl3MC0uB9Og_-qvsNCKTO8saDDMQbjT_JLPm7noe4aGFNYv4fZMrrJurplm0DO5t3RaKqFlIKbX9In-JjGUW-e99jhfRxO7rijXv-nU5cR1MO76Z6zW-4bMbSriE0Cu-AGyOTQHD0ooQfZYeh7SB-CiXcd4mjTr-MG75uRLVOvWmv53V-mgpF598MJN4R50VdOiq0haLy3dVu5w7a4LWRlBKKCRLjAGry8BBShEm7JyXNYHnvdUBxHVOkD9IKft6Gxy-U1xwyA1XDu5NLnELfcD-S46Q7hDNrvMX46YZF7YHkNYqJRcrf6ldi08QOJwnTKsiYIly5PdYDg9EX93aUgHJFb_CkoI4X8AIjnuHLtZ0ZIyZzgMy1blzfPjj5O_0llAke5y8cDg_ubBCtgBCKS4Z3rlEhOcdi1loPe2KWL5O3Oh_4nx_KB1Si30rRChwDJbdkPXXC23YlUL_fH81gK7LnHg6Vyqvtqi404WkdxGX9TxrSHo2Rcz-CCZp7F_IuJsPWUC8rU726Hzv-0keUxbNNtg-fvv6fmxEPYwMcn639pfcYVvPgeGK1Vl5_GD0AI39L3P07G8wmGpWbFLuWO65k_sq1qDx8V5VUZZZvspqqOlID1JnD2nhh5OdnWFLcW4aDCCHgX-wZekfNJiQb39ay1VkU4uPLfpXCMupOI8TT_X9yoQvHyK07ESFMDfm_UR5ym5LumkgWdOpCJJDuYRhv9dkDIhPHuj1wPg98G_k1LZurkPfGXMjcyoXAessO3oylHxSPRpZ-iMc21QrrgGmAWn4aa-OwEUcqI80o_v1zDeCBKGLOxrzh8q-orKML6q-9r-3Nyv8-Id4r0KmfFIvPddd-vR2gkW_C5DHXC4YgVktg3WMq0CyBLxwy3Qwh1WFiIi1-78MkRvsZwFEljZ00Kq3LWcyVxGUPD-se-twE1E6Z5MJ8BjTxntEtL1w0o2iMpnk-uA84eD7gMvphWrdFEZe6uPW0ZiLEnnje-xoGQ4vWjrzPy2t0te_0lEbcUQo-lveK93tw-a2EelQthFYBA4vEahgxPrzIPFOEoX_j9JWmvR8Q-fuRrDa-ZfL17riPrDHFI6hbLVKAOA0K-scfJhY76IXaltDsMFM7vFrCDttiZWGOg-u4k45LW57ljlsFzJIxnlP-7Q2vp_sDNt-pG6_k6hnL_VXTomAN3ABJAx7eclM8uEwQ6cVe5YgFDGRXJ02dPEsZ48LdmBcOm_PJCguyXvVidFRs9cQHIZ4YlFVPzolBWgmlCHHywIJ-AtCX8KQyTQR9bLDu6nNaClmG0-6VcySWdiL8aIh7P7XK8MDlPt0yJFq7t7JgqxXHNo50-Lvy374Lf2cUPU8u7ZHp4dibSYdnC5mXGTzqc75Tx_3QEJuEBgBXAYtShVoS5VQTm4WhOFG_dCQ1wfjfQrwx9MQ7u-VBf3kPTqedo9raoaLm_m2Y_VzMS3I5zMbwMe-qW3kw0YiqHmMjeiC1lgCUW0WTGUVbGikn2Dkodh1QjCLQfmTWv-OSNHgZZ0Qb1JcpzXnC9kf1ByvjsYEAw4wirWk5l0nC9SVAtcGjj_NkCwBtAUR93AMn3RZKxbi_FRJM0qwqZkM8KzuUjOBAs5Tj91fbcYbAc32_oucab_civbV7OEfSfG_AneRqAZyi40Pn7OKS-zI3gbY3gHCzOeqYBqBwCqbmq-Sw1sQnxAPxk_em-b82xNvKbt_49WdpsKCWDwb-uOmiFOThFbK6Lp-yPiV_-u1Zpx5azx_tjrnz_t7V1c1GWXh8DUWY39tzdZhh86eh-__fmVh33yUujCK28IKHq1-m4IU9z6mwLRSHfgexXKt-OFpQw2lJCds2-E1DKMHAXdtM9K3gGNPs98kPnK1pI5GEZDk95DVCr0gyKrwkri68LVMdHANWLL9tnRagMtomQR20GkzPumxwpfBMpzfRboCWNGFu0QsDqzGyUK_kJALNV1wrWvB-v_AAkK3ZtSNpph861zYjxEUGlSvmiL03zM3Qb4pBRAv5ghW5_hqFwQYpQJ_oUMwDq0tSPyPMb6pF4Uevp7wEIxv24STgEfufdNEifrNPjsjN0FJ06Yp-tImYIMTHVIxjdgDN_MfxXrBOjr3rpbzLLnMVwuNmQNlrKS5BBKAiJz1F7tP1JBmLxvPPIlZfBJtU02B1TvnHwaH2aZLitbedVZ5JBvq50r6mSh-q3PdUFdFtE_bArXoC3HqFgaDvqj4xWc-fPFhHRScONWhJYNm6cAf5G1X-30APiI1f2-q5Q1nvo0CuJ2t66rpqSP4TPtElGExntJCDB5kCEsIzH83tlh_2TwM4W3u0WFkVTg4dYilLpKak27ITt0gPNcTkxrPRZylA2rhCiw0JPIDyw2ycEVXBgWofatM1c96nEgGbAvLtXtnPchLS7F1vl32r8Ohib5FugLfniE5qDrIaV-rbfitktLi_Uo4XKt-v-7tuXz71FcuV_m6JQYcdQH-QytybQegZ1wcdx39JzDmax9jvMXRdchovJN80MoKVuep2xuWCfWCHQv3-eFvwVIuCp0vn3GueGOu8fVbBoHk6OFqNITz6joA2qm3mPeGR9CZYhdS_qIrGHfariXtdQw497blz1d5mspY0oE3_GxDxR4h9gbvybqE2AwykTDX-C74LE6FL5vyvZGEyEZb_kyPbkbzuXCD6FWjd_3iWXFQE9WkboLwPeX6PYNoYizycLUssyportA47J6i9BT7ifJTeggpxY3E2BmHK5LtxSa-7MPbPb4WeqYrx9jR8MQqGBxMWfq0IbQc8R2V9F5lxNDk6Mye8r8RFRVjbMxwHXo_EW1EzrmMPreGg5Ols9_PPR5Mtq5PHLAvaKf1YS5W4qGoLaygDbSNyu_ptdVQGs_ag3s0zAXftP3C24EgRlPB0IkgPmC6Cb0UE_LSqG-FgUYUoEh-E3PXDEz7oBGFBnR96w6UHrStp6SYcUsiL3MTNdiK2Hlu1BGJjxdhuDtQDw9LNZtsp2uozw_60ivact0E_R52Hfx-oL5QH-aSOcHr57MY_UlpynvyLIU9tueGos30rBCR_pDpa93FR-McE6DnHQv5c4Y9oan_7Lo68wbeCcbdxoI4qVNcDij4is9KnoVqNDNp1pRv2ql1SpI1KxP-pOs5j1O6DtK3n0CTsHL5A8rVekusDp_xoBrnTbOarTSu9OBpTPRMCTef9-KUQKbxoi8EMehnUJEY7edyDouqjZRHtYfJQlxFoi0AJ-0F_N5gVyXOKf3f6r8u0QKrT2I6IOSqtlxF1RNLn5aERfeGLSnBizAfyX_KoiUR453gOHsY7MQwV6hWR7gBXI1AhsKWh2Kl4zfIGx-TrGJIHpknhFmgeUTThdNveGOfFQgtG2VdrTP8EMIul7UKhd8qmrrZzeCUGh6C7xcwnMpujSkKOt3stNy1J9MXl7lbxaKfzgRWTJST6tcP9FmXeUNhziUwcb1-QxD4AhmIo7QDvu0eR_-wqgy_81maTpvcI9kNp2jLlC7Bq_br8f5BZzceLnczvGqv4c7lUpa0o8OkJ7pA5JRKx9CD1IUqlSAxNx4FCvo5dkSUFmuZiLuknJ97LnxpNtNMIWoXpUxMpuk3jKlhFRTtIxzk-j4zdoBWDbwunOqzTvi5qZCn-AsciKpQp4KIXA-OWOeoe-5LNNcJeQw-QcCti9f0_VLZx-UHINu_wzfqGJkp6nyL7D55HCXj_1hGYX9mEAetaVqJJDUBTRNGE5MqgeEQJzfRUWwlGN7dN8N_weKR4KH9vyM4RJBhe4SyylX5vRtnDbOYiHXOWIEEe_iohnxUzh70Y0-YKqysfAPm4FmRxTn1bbc4OJ8423oj8fIgOqRSrzUyUTdsOM-t4SnXh1_22DPOucDcdQ3m5Nq99U80bscR7PRXcq6f9O3cmWkoQTCfjWxcI65Z01MkT9ra87rg6uOn6Q0DT_-U2hFjFoZpcqV8PxT-DVGBJwlGvaTo4j03XZSQndo4LG3TriOTt60Pa0n6_R__6RUncjYwSep10XS-uZPileUpnoMAI6mTDrmDZInKTD8UZYID7wfr-iyLT4jx8QgKWxzC_w5PkoxppjBXieffdGb_lmB6sfBzMcGHKeDTsZ2778LNVj98e2-PtgAobJlR7fmOZu8VvWLpfAMBOs4w3bVAMuQ0Wj9cX8hXhIjEclx5k7KXV8Zp6D8KsHJU9T7HJkqduWgZ40tZMfifEO6Dcrr2SQjLUSc3YBQza4FauDRTdlYMXrSs3ODiByosoYSHX72MtGS6tL-4wD-oMZhqZoGjTTbPBfr4CHGhsBSSXnvWxUaLv8j5rn5w33a3j6WhSzqtNRmfaeO-IxjKnIae2XpqG1G9Q2_ZOhcUxhv--rrM-4IRCSz28GoTm3mKmgRNAGYQRRJvUPX22BK0pqcwm3GjQAqFxRF_uiY5i0CYidZYzY96PECXAIjgULX7nCsu48qa6GVbjHYWnR-JNxMSkrSNGl5HUdup3NEvGQiG9e1z6S0He8O_g08mdNeAzQyByX0t-j9p9gt8ySuXLheKzDaLpVx1voug2xKaNKfDjXoZkVhae6OYNjnTCT-wKgL7tPNv-EeiF2madU3pbcdvg5upUQaJHFZcwJnma1aNu2jeWNU3E8TQnmD9HdXDLASsaHcWTbYEcNuxeC-fedfia3Qo2GKv0vyKl7hC268ribLrXP6C0EC4O1jnFC8Z5-RCEVJrnqExZCBFWE6lP-4-xKlkJy_vp_hm0llYT92EfuAU5jF7HddNPzJ6RfYC0sbIfUWn-HakZ6wwu9Ae6MLvM4o_10u_hxgo-0KjwqJbPIi1uRiMmsatjNe9lIlvoZzEjJlhnU6N8rEsvrEoy2J5Z_H_qge1xMmlPXiMzAb9ZFnsQuOavMGuk3S23B28gFE8iaj9GYK6zm3uh0L7k6e_StJP0E1myRzqwAIch4hfpotpZfsW6tWZ0q3DAhCaKU5y_cuWdvPN08JblHSZMYcN_bfpx1PhoBTvhX9fC33U5_l9RHjsI8yIRmf681PvFLG62o8KTNLd5Q5QcfrTb-JI48WE5JuoE2acO6zn36ksw15SObQZOcblrqxGVtmVeDFqobIkQjuyKH6SerUx5yUKUlfxH8heA3Vth-3CCqPq1UcXWWxX26uGZjNEzyCQZpR9NsBeyfnE4A_d39xqayJjtriAdgIZb8Ga4dEfGnnRjB5RGws_ACyMOgs87M5aG-Jz07nHDlMdLqfJ66vi-ZbKtpePkwpQrUf-HK0exy0F9xbCLkCrPDoT8976Mx7n1D6u2Q7csFZK1prm72AIh4iPyl7MFy4cR3gcqP-t-VKtHa-fedMqGCefaSKCExl-IpFCcJX0Ans8dcLe9q8rPp0gG7fQ8DjJUyUWjyytGc8wDTed5LmyrQ9XNedzXKr5dMR8zg67Kgu99z3Aa_estLtermFCUSiAY-GACHloZM1OVDyan6b9v0aQ4bUvs--xhswe35CLioisy5rtMqLnYwyGRsAOTm2tkLl9HhRzEl04tMwv-F5_qIBv3_vq1zes5nRaj3AU03rGt5a4iil7KnwDJyQVFgktBtOqWVw_K3etgI5I5xZ5WyX6M8VxufoQuvyxd9xqUY6xUH9DHN_NIeHiTKNhaqwMkIMuARZLVckctMzmqw_uwFfv0rmN6VB2sSpMHwGgmNgy7XPVvjBBtnFHLYg2qA1ylws0oz1gzetyldX5WLuFaqb1bN2_ZGzC4YWgZyrFWx_xdC7f2Pt9KNN39-pes2DjzvPSpoPWIhlsI5rNBOipv2Gsjuu1zWXrr-QelK39jytvgTNFF63n5o0towXSCJGu6sKfj8WXELXYQVV8WZo5HTGEJHw9FDDS5jUp14yiYotcGWphexitMsxL4edP1dN5rKD2rgbWj5ETj2JBtrmQWmH3b2e5OPjJhFl2i6AyH6tCoigBMpHirYasBAR-uvs_j8_odKDB-44D4ktAoOVg7EKwvVi4JQJQO-GPe8oE6SeoRURv2W14AfS8ERsNFmLUrsLF0kJRh-L_MiiLS2hCo2nmiDbZUyjdhNUNkQ2AIGyA-7WB1uWp6tOegF4q0djnMlz7oeaA1a9Y-5-S9qRiX6Hx_BxSrIt1upv1A9RXdAxTXIuiSIdhRrNqv4Rrl2oGT3AXScrrPOJMbAmaqWreUrjRYsKFm8CVvR3P2Fres7XZZULpDe0zQ6KYFRnGBT-jwE0XYQxx1U6ZztMJyRv2xvqPXMLM_BNS_14AzfPBt5hHrUCqs1X6xMUu2shPUPH_3_qx3-vWWS9oyrsj3FpIm9s1Gdb5ngWMgnslMscv39RC9yHfz8PrCza5evq_g5JXpNvUbOBzjUgc6dAu01vxDx_smP9aYnXS1luAvpkv6rsNkZtYv_hauiJLLN4TFQO2ML2Hyees3282L8bH5oqr0PzqjShmFRoA7ls5kKzssp9CG0x5Gs1TqoySKTrf0jlxSFTJpz4vF6EOHj2d1GkFy1PRjUxsLgA3ZNOy3ARoef9HZkW383ZU9NXEvmOJCFArou7Aw3heEBRgLQ-qSFAwWDgU9k2hviv_m9hjm96KxhXjA7AJC3AJnbrL5fDjDjQm2q-AaBBWy6foos4C6-TR0dOePQ4gMs4e1SUcagLdaG3Oial9OcxSlqGevwO3oQ78fomcn94H2dZDtzTzs1EPmCAp0nlh7TSmryPawBIuGdYd9y7JUcGSN7iVAm18NXjBnk_oforb51vh9vVdvMvuHr4b37OQbzGgPFWbKjWZbgf-i7Zz0W797REcAUueDtYTHinU9UOBUofyyAe2x6WiQ9mSoXY04gEcGW1ac7FXbzynsR1lsiicH22gqbs1tLKwIAwj-1MS-PZJIO-IlKZY7VPmGPkQSlD0itQ2tGUUO7tKowpoBv6FNJ1jvzH38vMX6EWkEpVtJgl6Y2fj6UMhJY6wl3vf_5K-MTe4gGGYymaR2ohUV-VRr4kJ7dCqVNLJv8qr67mbowyhioP9hNQjKwqFaQ4pDxySqj1Vqy_IpWzXVXRLztUG7Wxmi2m2Qd1aDOx6oao64vZJycnzuJ5CZ1rvn6Rdw7B6DGaLakpW4CBR9r8Togi_PXU1ofmzNDRwI1WVgAdBGApBcG9GpMKzgPj5Wngkil0nkr2IXOtVaE3-AfqivoeoqJ1hkst8bflO3pl14IPk4gqnb6cETB7vVTBbQ8PROLbXErdbqR8bsQu_noI_zQHaLbnvFOKpNIWLSoaGAP6SkjQ62gq8vyzzzxKyHliWtYiOPqvQT-7aIbheQbhV2GiuYlv0jcVfGr2K1CIwTPXaSNrKUl10CDimInC34Y_K7tGZ8F6v0eajlLwko7UziZ2TqJZ8z0Vc_qzmbuL2KYPA_rj7yRApqogRJib2uPi-CK-jfGaz2xD_ZWmlS8pQuGiu4BHdE-X4AlyRVnWLfFGRps4ln-GZ-ECGTWGyAWM7J7eeFpYFZkPGi5-t9aQg7HgGoXEhlZ57RMqg6m45HmRyEnfu9AhE_yCE3U-ekiRB1juPRidulQhgv1p2znkyv_7mq6XeoErYVdcvUbBi4k9iKc72V59BP5aS5rxAcELgvtg0FhE9XL8GY7AD3ygDHfR6PP7MBIZYcEQu0WeZrvwvFIX3jm5rekZTF0-azKMphOGr5IWOy9jbEa6pHLT-LTcpDar2vszLM2EBoZE_PNDslL0dX6eo0Rk8TCQyoWx8I7dyBMVWABajqJm_7duvHwxVhI-1QRXB2wpkNCLHk-F-cVMpX01xxczAZNvBn1hqY1j9U7Mm2VpHRe-Y0C8NsCdMpbE5yodVIZtrEZ6Ac4weUluss5dU8AFplTyBGbnRybxn3RkSXJiOFgSo2ONyRx5AV8f7EQr1v_wFhFFLFR6clzp9Hv5HKUevzFRNV6VUMQkSLpugu6f2zSU0tlDDHKPUV2sOc_2L_Mcvxw0fzss9C_47yzVnVHYZFkeGz_RIfID5cQneySiGbkiLczsRjzRj-4mA2YrZSaVKuYHCsjk7P-0yERWk3Dt9CcK4mZiw2WqDJ8WYm9z9SWtOjaf3JsAfDmEjDYuOrB5T2i8eHmqEgI4FQP78VcL09hpyOT3XzkHAu3BIQtugabvBrV7rqR0wgUHwEuViE8pPE7c960wrTGQzKoWHn33to-P_IVe9nZGbvYGR1Q1OM07ZZS9EF9T_atoOyEGQNbkHzsiz6yt6dx2I5DtcCfWdsdQtP1mFMu3q-p1CdUAUOcmD9-Q3BioH1hjz9F7qRHQcAsV0Tigca3SXjF7BHvzdJhCcOnRyhsnqnyJGu9TTULJSO7ssc1HBbD1bLV0BZDaHLtErctBWOrax0PBIEsR8mu2FD9lss6KRZewR3VA70idrB76GQ_w1rI4hgnN4eeCZKT-DXJXyv_XRWlhV3f8f8q5S8a03zaJYyz_22ctW-sIKs9swu7LnyC34FK7Dy1UNu-z8rGypGUNQ6unpUCegeH8dxwuFMGdUFDFcrs_1UtKyiJFEv_GrcK9JMTUaftcywQSG1RANnVQ2-1mat3RX465XmPBHT90saOOR-fzPMuO36poASyLKgO3r16auAstJlNuE1Mjko0U6qsPecgmPsMHbigNfxfYt_3nNViOcwXYXAzRpkgKbv8IpznNTPWae7Lqxd7KkqRRmn0ZYiSyNsZ1IfAHBIBOivLOhmTBvbr6va2U4CsLbcgEkyjKzs-nhm78prOhv1NKs4Z2X96QYEPbvU5uQ9SUUgpCwbdKHscNtFKk4waXYhWRSDqsPYdwjdiJuuOHuLf8mQcGTqVDfjss7k-Ozfjt2aHQja7E--pRPhBZtM2VEAC5ne5MEu6HmlV1MLgSK3Y31tKaKaDjA5PQDXvLOnsJxno3_cHj-NwyDYisA4sWfW-YfwyNpUEuGhaw3dL1jqyw2kXs6LiLQH26TvqosDrkzkLYHAKsTUe7CFHumS0rzsS59JARxk7oR6YjKhe79YuNwQU0NWqfK-ImjSxgdDrjXD-QinW64T-RQIJ3JRxOsrh2xtkrl4_nj6miPYDLqLwQCLtqQCL9tgwSth4rkAD-eI3MqDV_EVQgmZ4oby27VQNmBPwgfuxsqjeTgH2RhFl6M3tj4B6xNap324aILamm0bkljIetdbVeBLm0Zkx1_hHMp3DhlxTLlsquWDwIppUUEvIYSaJkN2lGlS9qhpxmSKnuOZfm5kMsZFadJxda-px72c9b9TZy5isjZokKl6Yj1Kej2eBJE9ldA1WxbvnYoN-P4umyrnMG7h6DT1Jfc6SI0sshAdz7sXd6Z6LeB3F8QGpP5bepq_4MVUC22JhjqpvWkjalHeZ2972PynFHEnchG2LgpyBK3e3XcoGsonGz9Xx1Iu3hNtKNMrG3paKSZ-VfBhCwvifTrS3_-EOcyvORAcPLdLlbvaAGEAdF7TcfpGUPhQjfEPlBNW-wGrzzfPBq8AwENBbEltNPjgXHzp0jctVPtbPM_u5oeKuJ34v_xwwHgQjD4GzNwiZgmyAPOHZ8Yqd51XTQ7oAYiBVQdlUC_SmS41vhzbFY-uRjAEvDLjilCVFWA_qo9Ba5lQ3jPfVW2MdDCHQGALF576ERW1XV8_B66QsokQxM0pIKpu3J_k6igDcHeGiQXMihHYhV1Iw6noxipcvDkH_0hisYv7rZ1ukcy_oQSw5Dq5b3D6esyg27Epv_gI-7atzu5egs7b-RmUecPpE0gJHpL5yhEYccPWn-3hblq1FCQyO8X4isN37Ui9fPRyPV7pVkSwtIKxoWp0U37nig6_RJdb7sbIaCdkGE2fvHuqgo_YpwEKoW5SgZ39hemDWPFrqEKPEHEYDRzzKZ78-CEvNm75566g-dd33Y-Px7a7pse3fFFdOpIpXkPLTma2U40uzar67JFhPPgH1LuuTxfvxNlpu7R8BgD0eqoQwu_ENfwzmaAPdrA9-3LorI0UCBedKuekq99O1bwwbZNoRVlchVSlo4LpWTaxh_fpd-xTGIrGISEsLmwNq2NL-Td0o91sKMV0He5qpf2T1WjH_GNCsmMsA2XiSiNK7VKAfJNP9XYAUmftWAbSjyrOajl7SfMaclr4X1vjNT4Wd7MNn_bH3TCdaZlCVE7JZ7vssf3FhjuidU32dSY0J3nKhm1Pk17QaT_DPhsuZabyMDV8FzeXHeHfEYnZGg3ZQCzsiv-Jx0w4pwPLcqJ2SbZtu91a3UWKA0RtoOB7o5qdy-wzjqaZ51JQmZSyRdVoZA8ezDEjRCk2lKDmL4pTbjuxY_IaGzi9GkvNF4sWyspgjsAerXmB6O2nwbyKIUpimFjXvNGIuEF8a73bXsfq-39IvCenti3P_dM1yNeLYN7OQRPeVLNuahCEUT5l8yZays6LAZiwyaP7wYdOPG9hxcQA9TkVX3c5m983Mg98ktU8pqMrI7BuIN5C5zc6-dsgK6CLdTNckM4dH3G2iHQ9oTU6rbyQD7dCTfdSqm0xJzermvrNr6iib3-4RYczGm2CK2Rta4o9O7hZVQFKN11aRH8p7wlkUhmoB_sau77MUfdtCElikXbfjqMIhMUlkNt1JzTnn9-xjjpYIIOM4kKy9TnFHJZk-CwhxuMY6YGCSBB9TYpxBxfEK-_U2wg6cnqibQxw_TG7cDL698BMZCOATNpzLJde_0xxzDayLTGi7kM_8SNvQRwapuu4U9HWZVTNqSip3Y7x2pB5k8nUNMkgolN22jtRP5W4p-Hj8TaYi2qEsRy8FWeXETY3wig3MPefSWlZTQAkGvexvvqa_0nZUNqhA-alF3eLM5IaeOuXGVRkDgc2LtJhhdY_1zRbR50tvk4yuMTZ_xCqpfFoEuqAp_aYc3qQe76sZMaLL2ZigLkwJ08tzipGbfeiC-9Oh879Cuqglnh1AlW1pGOvqdAX_JCokGBV3J5jXp_g6QDoO1AzrOHtn16pRmNgWNqcH7U_pST-HBcijEmYcAW7L4SXbQ8jpYOko8FVSV68sxEKy3Jv4Ui5DFyM29-TRWhU7du203wNomkKME4__tLCW3R87NyA4nx_lVyuXSDUuioLrNN5TA91qCaPg64ojLAVait4xYputUEgtu9gqu9SiYjDBnXs8358K7rAtWbVUZtw__6OMH9Lr-wHMTZyVIlJEewa8mkPcvaYnl4YWfdMgWOJ0bQe5ALW9A4sMcWuz7WDrfXwo32mTwR6XRRgZvusoEjHmlDFJbTkVIH_E4v1PMMOY3PAoWSybFcPM67qYCdqZdwSF8Flj3T5kMINM4Hbo6Z-snxEAM3wkzJ5uPMWFcUxPeFM_QmxH1ZqynNYiGrrRqu-fcCRGWH7z87qYexuWgCJIBkcAQ_TU1_3-V6YYZPZ3Tdmdl-yh2FC90Ebl-yB0bVKJbvgyBfyXoB5k9WpVZde2EwMVFdRUF2d1dgsMunz6CMdq9AIYfAt3dQCsCRHnnpdBZ8azhftfjD0Y6HQTW6dP81lpKtkCzuPjfzBmRSC0YAespc_LwWGBEMPQtYpIDOeHtB2FEbehg4myI_2qghldjtECMoGqyiY7beO-H6BnFogK32L99HNj4jaIgkZ2MIuHbUOmVKDSLHMMZ9zc4xcmWBpjVcRbVqfk0h-lixRgPcWQAPWKQqTjKkyIyAYUJZAkH9ThPsBGTY21mU6Gm8Z44j5SaFbAC3LidpKqUAmrrgIHG2zrwLcUJwIHTO0B5e7wBY04FlDGJ1U8yy22vjC04UW6UP8TVAdudXuMcUwUng2uGF5aF5R7Raok6BtSBNdVBUKOURFQJ1O7whe3Z-OPC0qnOUGmXMFLE1GZH9-tWCEjE0vacBggdwhLdE60rwjRw397zng8z-2j3SGC33wZtljKFKeQaMhj6Qk2IVJNVPnbbqh8-AswwFTxMCg05UxKxkoEnXmGmD1S_f1XQ9RjkaBwRSM-D5ZmNBc5H6r1GUaAOBDKlT31Nbdefm7cVy0kr4-r7NZuJTFcKbCV29pXSblKraEz8UmutvwUk_nvCuuyzBG3Ki-xt76meGcQGS18IvygKCHqt49wVSzJhjb89Vj8yIdp8ShveA7mqmNIz34v8lLf1Ql7Fl-Lo1pydfQx7hYYCm-GKhIAuCJDhKHRYu7Uv-pQEY2tbULctPBpYs8fflVWaLN3LTHZZGVNDaUgdgBLC1CVFR4pX1_Ag8tKnY3Zek8dJEM2TuR4tkrDZB1Bih8-OdWKCnqXLVfKdpPzw5RfnK9EPERCZ0LkDeLybmKFmbapNZR5OUI4GP73r0qgSLOa0b0zEE0Ucjy6cFIN0Xs2QgFXA0ZYE168NKnCCHBw7aRaThYZaRWlPf_7_XjjsvDdYGlrEvpTFAsaqg0bS8hBNWogmT1WuoFJC5OrAjqyKBTqqGEZPgQfkvOGCe1_QlSEly8VBm6A7jNGALCCShMySUffDrqGLI1urJVNfFEhn8uOW0kCQM8O3BDHKXuW5A4dO0i5PfUajXz7PuB0usGJT4Dbc4-ak9Vq3TrTU0KZx_JgKICpoDsTjLmdRUnv-7joXNkNT4c8TH43BP2KR0nVkWb77PxUE2ozkttfDF-7zt26XYmlJYwBd2bZd72i17v6cAtcOAuGqEu3heq31Qx0KbKwDd0exhxi9jWEyAn30Y5bEotj5bsHtT60ZTwwQ7rsYCqw-TtLOfKzQKQpp1K3oFqDYKyzgkPVf0IGGoqvjFYfHggZI6tSqAhTxcTzMJ_CRnnY88_BCddw2KZZB-DJmLsHXRSWXpPTvT9LZnCoycCqWtgMpVWXvVPrYUBzVB0L0yCLTAwez3rFdyckJI9fzo2npxiapkSF8DTM6r4OkRuOcWBl7o-9KW_LMzVOK89IwEUPTTD-Jj7QVy6c3jCOMrlWceraRRBHho2X6mvC9szFkD9siVe0Fqhp2bFZiJ8gx0LY7Po91qm1BAy0JRLdsF1gLBKiIUiYLclgRaTJizsvV08R9Hz2N1-G3F9DxQPK7SHvSTOq4tQxBVuSqHu204BN6louXyeI3CkxkcRJ_XvEQNvOZ4bzqKfekOGfTgbkCARC8eVmBT67WYkKCBmOlAXUyITM1psHOPnXwSX7z_UGIWJ74FT25n-nHdgBXXw_kjceoQ-tdPTpsPCCvMzQ_hpDSzT72SjKrCPJ8c5SltW01J7K9YfW4U0xsfv_WJch0Ibr_HE3bQsbZeLvYyeZVVoDlAJHt5_vh3OY0Zgkrcq6xIwUapTP1CBCon95Gmh5cVNv1d9npBKx4wgij_RoYUkUEAQ7oVajEIdCDIjNzXnhWbSYoma_rIgQnAK5-AijaAqZPrTw36wpNQNc-UbmYYU6GdNbl1OyQFKgOa-l6S-W9CN-76gumXQXcYxus5Hlf65YWGDZv6MC1rsE-ClrmsJ__BQF_r1-X_3yOIoOXt0Xu9EUYNdeWtsaetYt2Z7oB-HFotF5n252Az3pk0hP-uBOFbvgfQ8c3yaNea4loBKqXVBA_DCsgre8CfXIcFHRLQgLFSVgwbGaqUW3wQom2GSrBGL1xOrn7fU1TDZOtYFqHMW0sCcaT7oCpg1OpPQ2vsS2Whilh8QFyr3Zan1LhCud2EzJTjEFlfNVJ2C9XYJuPb3VtNWYsOS5EMf-UFmHe_22P2KVwNvoDrOa9kn674Ecy_obHOmHCsfinJI7v1CFShuej4R3O9Yki0MUZHLLeFn4JuFP_rg9wRfyN-V7CIZGS8LIQWZDDdJHChlOYkC1EjjatjSPnI_5il5WffjegmQAEyZcuUrqkKUHXo2tv9v8UvN60pRMDTQxgfK96ktb0tfwlSGpgHZVHnhHynFgbm9peM7KU0VyNukjOsj4mUW91-1-wXMvm2hRamztAfZn_bjltBdVZ9Jb4oH2v9kPtwxa3r7jAFsjBivdDxhSJ1r3oTRF-qIgCxVC-f5DE7rDraptXfNkyKrq7TJA1I-c4hFnzl3BFWJ-mlP5OW69S6-TpdHBwbKSyJrO-hOoo9DHdi1nqSGf2ynHXXCrCnOZGhRK46gIm8tPpJdT53OYC8oflqiyI5674kalASLpFZ7PEfmleWyfZqXiKmExrBOsm9bqF3k8-BJqpwhzeznmYy-bQ1LNPa6p_kDjpFzPkJSv-hyg6KHG6NsKC8aubSjFcavPcNFVxzx_PbH5zP8-zzjixJ_ihmWF4P-qZwzO_DW3TqgBjLFHESLpmhqxhwG73Lb9Z0Xf_m8awkU47C96QAqdxi5V9leFzuIefhFsKMVAGWjQrQN1tHz4onCLeDSkU7TnwvPmZCwLsNgI0nfJI5K993Y77E_dOgBWCaEy-EKoU1E3RuvP8BpdK-KHwlgLFWoGPrYONjBMoew28Nuce7lWM4LRNbTEx83iWspfTpe3Pd3GzG2h_FqL6_WTY5D02O7kzPkR2kLSym-jRHZ9lCEOD4Z41ujBrSgXXVQVr2NETWOuykTPDdpqFltwKTy0tSzZKnCaLbVkCBsGftgt0BnWJtB4xkEtznWMXj2akiM5TFrrWdO3XMkmmnNgeQQt6Ml8r7qQzNJuK8n8ToWnCN3Cx9coRZhlR3C_vhnOQzPVOtdmgSt2fdq3l3Rc9Hzel95t13weV-OKzVE5b-OrJ8Hgz4WjV67Hulc9BTqOlFlMD9QAvLif_Onzyoa5QKoFy6HT2ZsWpn1hMGu-LAPKwo1NaixppPGcomWSey4pmbgHwLb4CggtHiKbV8mt53t1ffYNdHUu6EBA55NIbmw8oYy6-ynI-Kc65-cF9DqWyYFFzqe2OYBxodHlOjUi5s6-PKieUwDKOUVpTJl-dbOXW6DivUinV7oO1YuAuo_iVBMORpDXbcmL4XBNJpQ7RMwbHDVXuc0J22_LECJ9bwlvkBRlafNwYQBx1be6RJkVBSlZnkCDLHBiIqayEZyh2RKb1PZE7vTAYENtz44KduNKtSX6_lz4K0KCPGbsp6olPCmCjp9PNgURQuJaGeP44MN7yd1ievK5DRcr1zhKAcMIUQzgHn6z8fEl7qCUH_g-4fqosgYjfH9KU_4SmLUS-pdLeD41Yut3U8la8O5xNLrc4YjDZ2-pWtWkw9iD7Es5vLF5TXFSjI_PASlMvdOAp2EcfOmfXrStsftOlwFZXLRZt6HV4oWdKskgGxNG80ZgCOG6LAp3CGZejHx7EPPdwpcLi8mQ9HNVhSqtVy14JUrz7FOTNs7GxFV2G37Te-F9_vd8P2PqejQceQLB5bT18H5iWkg8L8Rct3ozO1Gyy0H4nQSYPlUkRJnpP-oCSh3rB0jse3gwtv5A-h3ZIdVQDGROrWXCftTKzZx4ZW5_9x6gzUAc6_3H4V8wGbl_RDhNWfgQE47faNKPRZj-j3Jyi0jHzUfRBh_wcmNvycJwn_R8NGWkPsXnew1_stmlUFh5ADWlfn-nenuU9hUTYbSRC9RbUxEPGZF3dNhA5tpIrtarZB_ODLHsMRVT5njPWjPIanawQXtzhNWplAaNpRMo_cRt5v7h6_Gq0dBd5AFClEiKiySZDO5jOgKYViHO5_sv6iSWBPypht14zQJ9luT0MPaN2NXa8pV_ryFJ5Ak0sBcl4Du8qKzi6ABkPqJsDUjub58FFujVPxPVhDWm25K7qNsdX6wAk-0HiUiyLwXNMt_vr2sEUeBSpWrL1RN1TslPfi3Jg4LFM7i06j12Vwk59Fh8UK-E1-gQd8gnPEgFWWyuUEFnNjHqP1gl96CD1RLPPenclgFHkO794kGrvoZq8PCsL7MC7ZZhJWRDCULJIiVWFZhMJ3OKK2oIxEO8d2p3uG3WdmMKeCa_1u54EG7-DQkHH8KhjxhbQhiJ893bcHd5wthJyKGEZaD-X2Xk-jcKJSToQ-_HGPfgLzAJVY1dSlMynNhp4HvpLrze9VOQ4d6Duw1I4XUZIjCVlGJH9ISwhrbhIZvWurNqa4NjSZXAom35ZZB3d27UWaHg_rvCcB68J0wzOwXW0AHAIQ0ReJmqSJdk8TUyg9zwyRTFzfhsmjo_rkAQ_m01T0QK-Xu1jchkLSITSBiNM1BbALhxm0A6H8aM4gRjvvLyzuZawjMenpZcx49lLOYQ-oeGyMsKSpMhHlK_ETtfebQimxi6FD4_6tZT_PgxqJUz0Ky7gyNtx4O8Ibj30IwgfAuFOCh81TrCQe62W3aDshDY_Q2ILpqYtdVWd5-J5ioKdFwpZU_eIVEbQjvp1BLMJPywPNN73owXmmfi8Fl6OOOZI8QIYmYqaedJ3n5ONxoOBY3GDNMLNtKdxyuCEMhD8iRfQmdA5GOD-syjHVxALe014JYMTYlTETaalNv0Fn-5xngJy-SCgvz2QCBgoirggplJ01jpa8qdR-5_4OR22Z8bjfev2dhjuTiHuQmnVfA81AxwhKFVIJUwm_MPaPuLpPqjWInauXKT3HSVam6Q8Ily7KYrJQCmmxqG2FNpDZDGXUtBqmiB3NblGk2QBSzVcnsueVlysisK8IjX_kOBIQPZOl333VCtNNzY2eqmzqmP8qnf0jOks097fPtgOBJkyymcyLfK1NYKNfFhaBrPeJAFPm5kDdQuQq2P3IPDN6xCbMyCJrY0mYsiBBixuqkHgWkDIKGkHi3sLbO0WzWYhRzFT3_jCB9oKhKr4dhuzUQbxVjHWZTj72vmzprIZA5aZeTiwFkAyypVkg1aLWJrNq52LI-U0PTWeYSNYGMSX5AGZ0_n9IMqzjNyC_9PlCXglJYMypybcpNw6iCPzmGR1lGgyK5sNGoZ9iMlxiuOZ1v28-ia-J2QiwAj53DbImza9AYC2IIgfs0JsJ3TMCdH4igs_BblNvlZb4HJP4ZFdWj-EpJ2F44onnLSCqQOCpBesCWpvL8I2Fv-xUOauswTOdIu7Uwk90XWaAuRqQ5BuE3AjroXTlnG1JCTNoLkRr5gSy6Sd5kc6X8QCppT5aD766Tbz5FJCLxocAlfEdNAWYZIpKCyKyxbJEiSiQxkNg-ifFrCv-Jv7DuJEvW9AE6YUhXdAhChws3AlPgkSaeZxjzRCxSv47GAUeXeEIBtKFNIvXw_EFDqTvbrxshe8rd0YQhbNoy8Ld-oTAEJpCShdqNUGikiy_86MJcDQk9Zj4zAKfcIqzUlmyZMfUBcle_0_OsLg9gDlMjsa0dsPfs6c3BWQ9fqwsX5ttU1zLrP0igBDfSv8I93yhRelIb_LuaS8yMcqcv5K9uUTBdI-2zukTpkG9w9qVbq24noivOkJbZPuK2RSySS9jtKketLh_zleMZX-9SjxYQjFgy7rCOMvceGj5WHZXlziiK7BYug0A9g56c1KQ8ByFC4OA72At45zEZ7yqiBNVwza4bngA4QRpT5xlAcFUW5BUxSHrx8qFcf4nhR9tqLL7A-m6k1X2VW2IfkSvBmiHovAYzOyCGnqlTYqk9K9d3eQIWshYj8V8VGfIikZ4TySWklZ97UQfDKtIfVaHOK_jN2M7Tj2aSo2m-fxFw_bQo_7u9LihS8R-qsS_Aa0YIjDWkxC90VNxW_yXHRD-r3SS3J82nm5ZDSZFdL1vt2gd3wQ1MWX0TpGif1Ag12YU0exbPG3XE9fisjdniEYYmkmdaY72FP4HpoSCc-54bQH7HyI-M3MBUEKz8XUtzctrdfqx5BdNAZaKyOJI0UYNSWXwxqsJBniupxCulcjkYQD_BO9v-iZ1HjuanqbP_e5k0Ynv6pIHGDWeRUwQAepw-Spj962RhD4qsaHh6VJhcc5jH6KE0XDp3X5UZtSZq9N9EIu25HoZ4_j5Pa0nW4p8jW0IAS2czguEwwSHC7fL1gvCJC5cElztQOw20wY1qDOZ0jKbARLHpB0v_DKSCxZSu26xsjZZxNu4LHBy_h12eHB6yC9hxmVAWXdNf85DsHiUyUotAhezikIOdZm8VoG7k75Gi_5F5_NZfYRU7B4Rbz3fG6Waz0kbwNKSOp4zE18oxbcw0TrxZ2jyiuJWVM-YcJsdXjp5ZYPZ1fkZ2139HJgIOaJbaKVRTG2LoalwRh2Dw0OxrsrjoyDeqPir-rBG5Zr9yaF-Q2Lbs5uwUjNSqeUWspn6QoJALx1LMRpWMdyo4-DuFWTCTIuRSOryxCtd-rPRm6snR1zS-3PH4VawTA9qSTI2l_vMECcwW23i6UG5zIzES9pcfekadtyZpLP-GKTA5GlqIVesK2Y507h42VSWMvOp40XZqryZBSLGx6EUKlKLSXNu2fXgJinkSNPsUrVXY2k8OFIthluLTAHbpk2GT_81Kp0JtxofCgWA15-0U_1AMzIlUnB9DkpH16xi_HD75ZMy5sbdHHdEeiEW8oGvzSor_BNO8yO8yG4AxjDtuAyGhiP57R0edaHbgtbR25d3nJ0guG4wyTdrhQeRANPEjl9v3s-924C6Rvq9R58lXsjEIX5caHteFEYrvkR5lC9-mj9gARAdgcIZixqPRVJuxjoNEn5IXQYeyFry-X68meg4Vdlng4Ke_OJ0FTWbccgoEChYBtWpn0-yrvqyPSWrjuxQSufulsaCoaACIMlOKmBPiFYO77SJLXBXMH9S2m_IXx94XNR9aRo5SlAomWKWVNwEVedzZcMCy20j6pgAT5wNSZPl-mEAPOx9Xd4uAxBSOr2F5kBw2_l-By1jVF491dy7EcgJZb_nRY-DyL77IsAXkVPWgokH0lVB7Lbwj0LUGkrXTb2dTRWLMkCrHO6wSf9FNoKtQ202dAXsnGu8WN-7FsFDOTER-WeLc56WOmUkiPkQ_JC6q_1ioCewQ-C6La0QqWCqUzDwrtOFNl7wCXUbSSJUV4XWBM7UTiAbU0rzo3-CAoVgkIHGFodoxrtaMj10cIn2vO2-tYqxUVgt0PpV1f5-4rdp09jRweJdldYjfSkK7iKB00PEbCfns9XI521Kgg6m6UvQFyTn6hKU9VvgwVNMdbVQKQtNjVimi_NU8Qxm-orjVolb4MfwjN3bToTKh7J0xPkGHTdN4carg5fvgwfqAxO-S0pYNSXGt9KDp8UFh7mJLZTB_HJvDFmg=="}}
+codex
+`codex exec --help` 결과로 볼 때 현재 버전 CLI에는 `low/medium/high/xhigh` 같은 추론 깊이 플래그가 없고, 옵션으로는 `-c`를 통해 설정 값을 오버라이드하는 형태만 보입니다. `codex`는 이런 키를 내부 설정(`model_reasoning_effort`)으로 받는지 확인하겠습니다.
+exec
+/bin/zsh -lc "sed -n '1,140p' ~/.codex/models_cache.json" in /Users/admin/mkp/aa-mcp succeeded in 51ms:
+Total output lines: 140
+
+{
+  "fetched_at": "2026-02-16T15:03:42.334892Z",
+  "etag": "W/\"a152b492560d015c07cc5a6ed1b8b4ca\"",
+  "client_version": "0.101.0",
+  "models": [
+    {
+      "slug": "gpt-5.3-codex",
+      "display_name": "gpt-5.3-codex",
+      "description": "Latest frontier agentic coding model.",
+      "default_reasoning_level": "medium",
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks"
+codex
+좋은 포인트 3개를 모두 짚으셨어요. 결론부터 정리하면:
+
+1) 맞습니다. 현재 구현은 `analysisLevel`이 항상 존재합니다.  
+- `src/agents/codex-agent.ts`에서 `analysisLevel` 계산은 `options.analysisLevel ?? this.config.defaultAnalysisLevel ?? "medium"`라서, 항상 `"low|medium|high|xhigh"` 또는 `"medium"`이 됩니다.  
+- 따라서 `...(analysisLevel ? [analysisLevel] : [])`는 사실상 항상 추가됩니다.
+
+2) `reasoning effort`는 현재 `codex exec` CLI 플래그로 직접 들어가지 않습니다.  
+- 사용자가 준 `codex exec --help`(Usage 기준)에는 `low/medium/high/xhigh` 같은 별도 옵션이 없습니다.  
+- 따라서 `["...","xhigh",...]` 같은 값은 플래그가 아니면 위치 인자로 해석됩니다.  
+- 현재 환경에서는 `model_reasoning_effort`를 설정을 통해 주는 방식이 맞습니다. 즉:
+  - 권장: `-c model_reasoning_effort=xhigh` (가능한 CLI라면)
+  - 또는 `~/.codex/config.toml`의 `model_reasoning_effort = "xhigh"` (전역/프로필 기준)
+
+3) 올바른 호출 패턴은 `OPTIONS` 먼저, 그 다음 `[PROMPT]`입니다.  
+- `codex exec [OPTIONS] [PROMPT] [COMMAND]`
+- stdin 사용 시: `-`를 PROMPT 위치에 둡니다.
+
+현재 코드가 바르게 동작하려면 `analysisLevel`은 플래그 없이 값만 넣지 말고, 설정 오버라이드로 넣어야 합니다.
+
+최소 수정 형태 예시:
+```ts
+const args = [
+  "exec",
+  "--model", model,
+  "--config", `model_reasoning_effort=${analysisLevel}`,
+  "--sandbox", "read-only",
+  "--output-last-message", outputFile,
+  "-",
+];
+```
+
+`--config`가 없다면(사용자 help가 그 버전이라면) CLI 전달은 불가능하므로, `~/.codex/config.toml`에서만 설정하세요.
+
+참고 파일: `src/agents/codex-agent.ts`.
+tokens used
+48,345
+좋은 포인트 3개를 모두 짚으셨어요. 결론부터 정리하면:
+
+1) 맞습니다. 현재 구현은 `analysisLevel`이 항상 존재합니다.  
+- `src/agents/codex-agent.ts`에서 `analysisLevel` 계산은 `options.analysisLevel ?? this.config.defaultAnalysisLevel ?? "medium"`라서, 항상 `"low|medium|high|xhigh"` 또는 `"medium"`이 됩니다.  
+- 따라서 `...(analysisLevel ? [analysisLevel] : [])`는 사실상 항상 추가됩니다.
+
+2) `reasoning effort`는 현재 `codex exec` CLI 플래그로 직접 들어가지 않습니다.  
+- 사용자가 준 `codex exec --help`(Usage 기준)에는 `low/medium/high/xhigh` 같은 별도 옵션이 없습니다.  
+- 따라서 `["...","xhigh",...]` 같은 값은 플래그가 아니면 위치 인자로 해석됩니다.  
+- 현재 환경에서는 `model_reasoning_effort`를 설정을 통해 주는 방식이 맞습니다. 즉:
+  - 권장: `-c model_reasoning_effort=xhigh` (가능한 CLI라면)
+  - 또는 `~/.codex/config.toml`의 `model_reasoning_effort = "xhigh"` (전역/프로필 기준)
+
+3) 올바른 호출 패턴은 `OPTIONS` 먼저, 그 다음 `[PROMPT]`입니다.  
+- `codex exec [OPTIONS] [PROMPT] [COMMAND]`
+- stdin 사용 시: `-`를 PROMPT 위치에 둡니다.
+
+현재 코드가 바르게 동작하려면 `analysisLevel`은 플래그 없이 값만 넣지 말고, 설정 오버라이드로 넣어야 합니다.
+
+최소 수정 형태 예시:
+```ts
+const args = [
+  "exec",
+  "--model", model,
+  "--config", `model_reasoning_effort=${analysisLevel}`,
+  "--sandbox", "read-only",
+  "--output-last-message", outputFile,
+  "-",
+];
+```
+
+`--config`가 없다면(사용자 help가 그 버전이라면) CLI 전달은 불가능하므로, `~/.codex/config.toml`에서만 설정하세요.
+
+참고 파일: `src/agents/codex-agent.ts`.

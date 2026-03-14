@@ -1,0 +1,35 @@
+{
+  "session_id": "abc6b962-8eae-4afd-a5a5-0870ee99828c",
+  "project_path": "/Users/admin/project/legacy/searchapi-elastic",
+  "start_time": "2026-02-26T06:08:03.326Z",
+  "duration_minutes": 2,
+  "user_message_count": 1,
+  "assistant_message_count": 17,
+  "tool_counts": {
+    "Task": 1,
+    "Bash": 13
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 25,
+  "output_tokens": 3006,
+  "first_prompt": "/product/attribute, /product/attribute/value 두 api 차이와 마지막으로 개발한 사람을 알려줘",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-02-26T06:08:30.760Z"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "session_id": "d2619c57-ab3f-4f57-80fd-f3f0739ee30a",
+  "project_path": "/Users/admin/project/shopping-k8s-manifest/.claude/worktrees/legacy-sync",
+  "start_time": "2026-02-23T02:14:03.913Z",
+  "duration_minutes": 10,
+  "user_message_count": 4,
+  "assistant_message_count": 14,
+  "tool_counts": {
+    "Task": 3,
+    "Write": 1,
+    "ExitPlanMode": 1,
+    "Edit": 3
+  },
+  "languages": {
+    "Markdown": 4
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 24,
+  "output_tokens": 2640,
+  "first_prompt": "! ls",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "User Rejected": 1
+  },
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 72,
+  "lines_removed": 4,
+  "files_modified": 1,
+  "message_hours": [
+    11,
+    11,
+    11,
+    11
+  ],
+  "user_message_timestamps": [
+    "2026-02-23T02:16:04.883Z",
+    "2026-02-23T02:16:03.995Z",
+    "2026-02-23T02:16:04.883Z",
+    "2026-02-23T02:17:53.996Z"
+  ]
+}

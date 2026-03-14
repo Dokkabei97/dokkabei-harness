@@ -1,0 +1,116 @@
+2026-02-23T08:37:40.996Z [DEBUG] Failed to check enabledPlatforms: TypeError: undefined is not an object (evaluating 'pK.join')
+2026-02-23T08:37:41.055Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-23T08:37:41.055Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-23T08:37:41.055Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-23T08:37:41.055Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-23T08:37:41.059Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-02-23T08:37:41.060Z [DEBUG] [ToolSearch:optimistic] mode=tst-auto, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-02-23T08:37:41.061Z [DEBUG] [STARTUP] Running setup()...
+2026-02-23T08:37:41.062Z [DEBUG] [TeammateModeSnapshot] Captured from config: auto
+2026-02-23T08:37:41.063Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-23T08:37:41.065Z [DEBUG] Error log sink initialized
+2026-02-23T08:37:41.067Z [DEBUG] [STARTUP] setup() completed in 6ms
+2026-02-23T08:37:41.067Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-02-23T08:37:41.070Z [DEBUG] [Claude in Chrome] Found chrome profiles: Default
+2026-02-23T08:37:41.075Z [DEBUG] [Claude in Chrome] Extension fcoeoabgfenejglbffodgkkbkcdhcgfn found in chrome Default
+2026-02-23T08:37:41.078Z [DEBUG] Git remote URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-23T08:37:41.078Z [DEBUG] Could not parse repository from: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-23T08:37:41.078Z [DEBUG] Parsed repository: null from URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-23T08:37:41.094Z [DEBUG] Loading plugin context7 from source: "./external_plugins/context7"
+2026-02-23T08:37:41.095Z [DEBUG] Loading plugin serena from source: "./external_plugins/serena"
+2026-02-23T08:37:41.095Z [DEBUG] Loading plugin ralph-loop from source: "./plugins/ralph-loop"
+2026-02-23T08:37:41.096Z [DEBUG] Loading plugin feature-dev from source: "./plugins/feature-dev"
+2026-02-23T08:37:41.097Z [DEBUG] Loading plugin gopls-lsp from source: "./plugins/gopls-lsp"
+2026-02-23T08:37:41.098Z [DEBUG] Loading plugin playwright from source: "./external_plugins/playwright"
+2026-02-23T08:37:41.099Z [DEBUG] Loading plugin frontend-design from source: "./plugins/frontend-design"
+2026-02-23T08:37:41.099Z [DEBUG] Loading plugin jdtls-lsp from source: "./plugins/jdtls-lsp"
+2026-02-23T08:37:41.099Z [DEBUG] Loading plugin typescript-lsp from source: "./plugins/typescript-lsp"
+2026-02-23T08:37:41.101Z [DEBUG] Loading plugin kotlin-lsp from source: "./plugins/kotlin-lsp"
+2026-02-23T08:37:41.101Z [DEBUG] Loading plugin pyright-lsp from source: "./plugins/pyright-lsp"
+2026-02-23T08:37:41.102Z [DEBUG] Loading plugin learning-output-style from source: "./plugins/learning-output-style"
+2026-02-23T08:37:41.104Z [DEBUG] Loading plugin code-review from source: "./plugins/code-review"
+2026-02-23T08:37:41.110Z [DEBUG] Loaded 21 unique skills (21 unconditional, 0 conditional, managed: 0, user: 12, project: 0, additional: 0, legacy commands: 9)
+2026-02-23T08:37:41.110Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-23T08:37:41.111Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-23T08:37:41.111Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-23T08:37:41.111Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-23T08:37:41.111Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin pyright-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Resolved local plugin pyright-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin kotlin-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Resolved local plugin kotlin-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin typescript-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Resolved local plugin typescript-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin gopls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Resolved local plugin gopls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin jdtls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Resolved local plugin jdtls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-23T08:37:41.113Z [DEBUG] Plugin pyright-lsp has no entry.skills defined
+2026-02-23T08:37:41.113Z [DEBUG] Plugin kotlin-lsp has no entry.skills defined
+2026-02-23T08:37:41.114Z [DEBUG] Plugin typescript-lsp has no entry.skills defined
+2026-02-23T08:37:41.114Z [DEBUG] Plugin gopls-lsp has no entry.skills defined
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin jdtls-lsp has no entry.skills defined
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for code-review@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for context7@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for playwright@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Using git SHA for serena@claude-plugins-official: aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin feature-dev@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin feature-dev to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin learning-output-style@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin learning-output-style to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin code-review@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin code-review to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin serena@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin serena to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin frontend-design@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin frontend-design to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin playwright@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin playwright to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin context7@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin context7 to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Plugin ralph-loop@claude-plugins-official version aa296ec81e8c already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/aa296ec81e8c
+2026-02-23T08:37:41.114Z [DEBUG] Resolved local plugin ralph-loop to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/aa296ec81e8c
+2026-02-23T08:37:41.121Z [DEBUG] Loaded hooks from standard location for plugin learning-output-style: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/aa296ec81e8c/hooks/hooks.json
+2026-02-23T08:37:41.122Z [DEBUG] Loaded hooks from standard location for plugin ralph-loop: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/aa296ec81e8c/hooks/hooks.json
+2026-02-23T08:37:41.122Z [DEBUG] Found 13 plugins (13 enabled, 0 disabled)
+2026-02-23T08:37:41.122Z [DEBUG] getPluginSkills: Processing 13 enabled plugins
+2026-02-23T08:37:41.122Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-23T08:37:41.122Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/aa296ec81e8c/skills
+2026-02-23T08:37:41.123Z [DEBUG] Loading hooks from plugin: ralph-loop
+2026-02-23T08:37:41.123Z [DEBUG] Loading hooks from plugin: learning-output-style
+2026-02-23T08:37:41.123Z [DEBUG] Registered 2 hooks from 13 plugins
+2026-02-23T08:37:41.138Z [DEBUG] Loaded 3 agents from plugin feature-dev default directory
+2026-02-23T08:37:41.138Z [DEBUG] Total plugin agents loaded: 3
+2026-02-23T08:37:41.138Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.138Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-23T08:37:41.147Z [DEBUG] Total plugin skills loaded: 1
+2026-02-23T08:37:41.147Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-23T08:37:41.153Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-23T08:37:41.154Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-23T08:37:41.154Z [DEBUG] Total plugin commands loaded: 5
+2026-02-23T08:37:41.155Z [DEBUG] getSkills returning: 21 skill dir commands, 1 plugin skills, 3 bundled skills
+2026-02-23T08:37:41.155Z [DEBUG] [STARTUP] Commands and agents loaded in 88ms
+2026-02-23T08:37:41.158Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-02-23T08:37:41.161Z [DEBUG] [keybindings] KeybindingSetup initialized with 103 bindings, 0 warnings
+2026-02-23T08:37:41.194Z [DEBUG] [keybindings] Watching for changes to /Users/admin/.claude/keybindings.json
+2026-02-23T08:37:41.462Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.51749.1771835861462
+2026-02-23T08:37:41.462Z [DEBUG] Preserving file permissions: 100644
+2026-02-23T08:37:41.463Z [DEBUG] Temp file written successfully, size: 18743 bytes
+2026-02-23T08:37:41.463Z [DEBUG] Applied original permissions to temp file
+2026-02-23T08:37:41.463Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.51749.1771835861462 to /Users/admin/.claude.json
+2026-02-23T08:37:41.464Z [DEBUG] File /Users/admin/.claude.json written atomically

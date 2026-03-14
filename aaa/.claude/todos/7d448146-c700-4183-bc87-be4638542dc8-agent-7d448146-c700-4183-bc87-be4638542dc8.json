@@ -1,0 +1,22 @@
+[
+  {
+    "content": "kiwipiepy 공식 문서에서 사전 추가/변경 관련 API 조사",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "형태소 분석 점수 계산 방법 파악",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "실시간 분석 결과 확인 기능 구현 가능성 검토",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "백엔드 아키텍처 설계안 작성",
+    "status": "completed",
+    "id": "4"
+  }
+]

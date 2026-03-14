@@ -1,0 +1,54 @@
+{
+  "session_id": "669bc327-e82c-4726-b880-94a2f32fc070",
+  "project_path": "/Users/admin/project/integrated-search",
+  "start_time": "2026-03-05T06:43:37.194Z",
+  "duration_minutes": 8,
+  "user_message_count": 7,
+  "assistant_message_count": 47,
+  "tool_counts": {
+    "ToolSearch": 2,
+    "Bash": 12,
+    "Read": 11,
+    "Grep": 1
+  },
+  "languages": {},
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 1884,
+  "output_tokens": 7833,
+  "first_prompt": "혹시 gitlab에 mr 69 접근해서 있는 댓글들을 확인하여 코드리뷰 잘 반영되었는지 확인할수 있어?",
+  "user_interruptions": 0,
+  "user_response_times": [
+    77.578,
+    75.903,
+    47.405,
+    30.728
+  ],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-05T06:43:37.279Z",
+    "2026-03-05T06:43:37.193Z",
+    "2026-03-05T06:44:20.282Z",
+    "2026-03-05T06:47:02.308Z",
+    "2026-03-05T06:48:44.060Z",
+    "2026-03-05T06:49:53.797Z",
+    "2026-03-05T06:50:56.471Z"
+  ]
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "content": "Examine project structure and configuration files",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Analyze main.go for code quality and architecture patterns",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Review proto service definitions and gRPC-gateway integration",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Evaluate security, performance, and operational concerns",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Assess OpenTelemetry integration and observability setup",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "Check Dockerfile and deployment configuration",
+    "status": "completed",
+    "id": "6"
+  },
+  {
+    "content": "Generate comprehensive report with findings and recommendations",
+    "status": "completed",
+    "id": "7"
+  }
+]

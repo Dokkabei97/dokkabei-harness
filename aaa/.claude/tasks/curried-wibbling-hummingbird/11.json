@@ -1,0 +1,11 @@
+{
+  "id": "11",
+  "subject": "es-expert",
+  "description": "당신은 Elasticsearch 전문가입니다. Java→Kotlin으로 마이그레이션된 ES 커스텀 한글 형태소분석기 플러그인이 ES 9.x에서 정상 동작하는지 검토해주세요.\n\n프로",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "content": "DictionaryCacheListener에 stop_listening() 메소드 추가",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "자체 메시지 필터링 해제 - ignore_own_messages=False로 변경",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "브로드캐스트 실패 처리 강화 - 에러 로깅 및 처리 개선",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "트랜잭션 안정성 보장 - MongoDB 커밋 후 브로드캐스트 순서 확인",
+    "status": "completed",
+    "priority": "medium",
+    "id": "4"
+  },
+  {
+    "content": "헬스체크 개선 - 리스너 상태 실제 확인",
+    "status": "completed",
+    "priority": "low",
+    "id": "5"
+  }
+]

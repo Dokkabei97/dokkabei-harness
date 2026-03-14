@@ -1,0 +1,471 @@
+package cycle
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+
+	"github.com/plane-cli/plane-cli/internal/api"
+	"github.com/plane-cli/plane-cli/internal/cmdutil"
+	"github.com/plane-cli/plane-cli/internal/output"
+)
+
+// NewCmd creates the cycle command.
+func NewCmd(f *cmdutil.Factory) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "cycle",
+		Aliases: []string{"cy"},
+		Short:   "Manage cycles",
+	}
+
+	cmd.AddCommand(newListCmd(f))
+	cmd.AddCommand(newGetCmd(f))
+	cmd.AddCommand(newCreateCmd(f))
+	cmd.AddCommand(newUpdateCmd(f))
+	cmd.AddCommand(newDeleteCmd(f))
+	cmd.AddCommand(newListItemsCmd(f))
+	cmd.AddCommand(newAddItemsCmd(f))
+	cmd.AddCommand(newRemoveItemCmd(f))
+	cmd.AddCommand(newTransferCmd(f))
+	cmd.AddCommand(newArchiveCmd(f))
+	cmd.AddCommand(newUnarchiveCmd(f))
+
+	return cmd
+}
+
+var cycleColumns = []output.Column{
+	{Header: "ID", Field: "id"},
+	{Header: "NAME", Field: "name"},
+	{Header: "START_DATE", Field: "start_date"},
+	{Header: "END_DATE", Field: "end_date"},
+	{Header: "STATUS", Field: "status"},
+}
+
+func cyclePath() string {
+	return "workspaces/{workspace_slug}/projects/{project_id}/cycles/"
+}
+
+func newListCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list",
+		Short: "List all cycles in a project",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()).
+				Workspace(ws).Project(proj).Build()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get(path)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+}
+
+func newGetCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "get <cycle-id>",
+		Short: "Get cycle details",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get(path)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+}
+
+func newCreateCmd(f *cmdutil.Factory) *cobra.Command {
+	var name, description, startDate, endDate string
+
+	cmd := &cobra.Command{
+		Use:   "create",
+		Short: "Create a new cycle",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if name == "" {
+				return fmt.Errorf("--name is required")
+			}
+
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()).
+				Workspace(ws).Project(proj).Build()
+			if err != nil {
+				return err
+			}
+
+			body := map[string]interface{}{
+				"name": name,
+			}
+			if description != "" {
+				body["description"] = description
+			}
+			if startDate != "" {
+				body["start_date"] = startDate
+			}
+			if endDate != "" {
+				body["end_date"] = endDate
+			}
+
+			resp, err := client.Post(path, body)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+
+	cmd.Flags().StringVar(&name, "name", "", "Cycle name (required)")
+	cmd.Flags().StringVar(&description, "description", "", "Cycle description")
+	cmd.Flags().StringVar(&startDate, "start-date", "", "Start date (YYYY-MM-DD)")
+	cmd.Flags().StringVar(&endDate, "end-date", "", "End date (YYYY-MM-DD)")
+
+	return cmd
+}
+
+func newUpdateCmd(f *cmdutil.Factory) *cobra.Command {
+	var name, description, startDate, endDate string
+
+	cmd := &cobra.Command{
+		Use:   "update <cycle-id>",
+		Short: "Update a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			body := make(map[string]interface{})
+			if cmd.Flags().Changed("name") {
+				body["name"] = name
+			}
+			if cmd.Flags().Changed("description") {
+				body["description"] = description
+			}
+			if cmd.Flags().Changed("start-date") {
+				body["start_date"] = startDate
+			}
+			if cmd.Flags().Changed("end-date") {
+				body["end_date"] = endDate
+			}
+
+			if len(body) == 0 {
+				return fmt.Errorf("at least one field must be specified to update")
+			}
+
+			resp, err := client.Patch(path, body)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+
+	cmd.Flags().StringVar(&name, "name", "", "Cycle name")
+	cmd.Flags().StringVar(&description, "description", "", "Cycle description")
+	cmd.Flags().StringVar(&startDate, "start-date", "", "Start date (YYYY-MM-DD)")
+	cmd.Flags().StringVar(&endDate, "end-date", "", "End date (YYYY-MM-DD)")
+
+	return cmd
+}
+
+func newDeleteCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "delete <cycle-id>",
+		Short: "Delete a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			_, err = client.Delete(path)
+			if err != nil {
+				return err
+			}
+
+			output.Println("Cycle deleted:", args[0])
+			return nil
+		},
+	}
+}
+
+func newListItemsCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list-items <cycle-id>",
+		Short: "List work items in a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			resp, err := client.Get(path)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+}
+
+func newAddItemsCmd(f *cmdutil.Factory) *cobra.Command {
+	var items []string
+
+	cmd := &cobra.Command{
+		Use:   "add-items <cycle-id>",
+		Short: "Add work items to a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(items) == 0 {
+				return fmt.Errorf("--items is required")
+			}
+
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			body := map[string]interface{}{
+				"work_items": items,
+			}
+
+			resp, err := client.Post(path, body)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+
+	cmd.Flags().StringSliceVar(&items, "items", nil, "Work item IDs to add (comma-separated or repeated)")
+
+	return cmd
+}
+
+func newRemoveItemCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "remove-item <cycle-id> <item-id>",
+		Short: "Remove a work item from a cycle",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/cycle-work-items/{item_id}/").
+				Workspace(ws).Project(proj).
+				Param("cycle_id", args[0]).Param("item_id", args[1]).Build()
+			if err != nil {
+				return err
+			}
+
+			_, err = client.Delete(path)
+			if err != nil {
+				return err
+			}
+
+			output.Println("Work item removed from cycle:", args[1])
+			return nil
+		},
+	}
+}
+
+func newTransferCmd(f *cmdutil.Factory) *cobra.Command {
+	var newCycle string
+
+	cmd := &cobra.Command{
+		Use:   "transfer <cycle-id>",
+		Short: "Transfer incomplete work items to another cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if newCycle == "" {
+				return fmt.Errorf("--new-cycle is required")
+			}
+
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/transfer/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			body := map[string]interface{}{
+				"new_cycle_id": newCycle,
+			}
+
+			resp, err := client.Post(path, body)
+			if err != nil {
+				return err
+			}
+
+			return output.FormatRaw(f.Format, resp, cycleColumns)
+		},
+	}
+
+	cmd.Flags().StringVar(&newCycle, "new-cycle", "", "Target cycle ID to transfer items to (required)")
+
+	return cmd
+}
+
+func newArchiveCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "archive <cycle-id>",
+		Short: "Archive a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/archive/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			_, err = client.Post(path, nil)
+			if err != nil {
+				return err
+			}
+
+			output.Println("Cycle archived:", args[0])
+			return nil
+		},
+	}
+}
+
+func newUnarchiveCmd(f *cmdutil.Factory) *cobra.Command {
+	return &cobra.Command{
+		Use:   "unarchive <cycle-id>",
+		Short: "Unarchive a cycle",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := f.Client()
+			if err != nil {
+				return err
+			}
+			ws, proj, err := f.RequireWorkspaceAndProject()
+			if err != nil {
+				return err
+			}
+
+			path, err := api.NewPath(cyclePath()+"{cycle_id}/unarchive/").
+				Workspace(ws).Project(proj).Param("cycle_id", args[0]).Build()
+			if err != nil {
+				return err
+			}
+
+			_, err = client.Post(path, nil)
+			if err != nil {
+				return err
+			}
+
+			output.Println("Cycle unarchived:", args[0])
+			return nil
+		},
+	}
+}

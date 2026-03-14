@@ -1,0 +1,1768 @@
+2026-02-27T01:42:12.176Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T01:42:12.177Z [DEBUG] MDM settings load completed in 14ms
+2026-02-27T01:42:12.260Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-27T01:42:12.260Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-27T01:42:12.260Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-27T01:42:12.260Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-27T01:42:12.266Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-02-27T01:42:12.268Z [DEBUG] [ToolSearch:optimistic] mode=tst-auto, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-02-27T01:42:12.268Z [DEBUG] [STARTUP] Running setup()...
+2026-02-27T01:42:12.276Z [DEBUG] [TeammateModeSnapshot] Captured from config: auto
+2026-02-27T01:42:12.277Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-27T01:42:12.285Z [DEBUG] Error log sink initialized
+2026-02-27T01:42:12.289Z [DEBUG] [STARTUP] setup() completed in 21ms
+2026-02-27T01:42:12.289Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-02-27T01:42:12.293Z [DEBUG] [Claude in Chrome] Found chrome profiles: Default
+2026-02-27T01:42:12.294Z [DEBUG] Loaded 17 installed plugins from /Users/admin/.claude/plugins/installed_plugins.json
+2026-02-27T01:42:12.297Z [DEBUG] [Claude in Chrome] Extension fcoeoabgfenejglbffodgkkbkcdhcgfn found in chrome Default
+2026-02-27T01:42:12.298Z [DEBUG] Git remote URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-27T01:42:12.298Z [DEBUG] Parsed repository: null from URL: https://labs.cowave.kr/consumer-commerce-dev/search/integrated-search.git
+2026-02-27T01:42:12.306Z [DEBUG] Loading plugin pyright-lsp from source: "./plugins/pyright-lsp"
+2026-02-27T01:42:12.307Z [DEBUG] Loading plugin frontend-design from source: "./plugins/frontend-design"
+2026-02-27T01:42:12.307Z [DEBUG] Loading plugin ralph-loop from source: "./plugins/ralph-loop"
+2026-02-27T01:42:12.308Z [DEBUG] Loading plugin code-review from source: "./plugins/code-review"
+2026-02-27T01:42:12.308Z [DEBUG] Loading plugin jdtls-lsp from source: "./plugins/jdtls-lsp"
+2026-02-27T01:42:12.309Z [DEBUG] Loading plugin playwright from source: "./external_plugins/playwright"
+2026-02-27T01:42:12.309Z [DEBUG] Loading plugin serena from source: "./external_plugins/serena"
+2026-02-27T01:42:12.310Z [DEBUG] Loading plugin kotlin-lsp from source: "./plugins/kotlin-lsp"
+2026-02-27T01:42:12.310Z [DEBUG] Loading plugin typescript-lsp from source: "./plugins/typescript-lsp"
+2026-02-27T01:42:12.311Z [DEBUG] Loading plugin learning-output-style from source: "./plugins/learning-output-style"
+2026-02-27T01:42:12.311Z [DEBUG] Loading plugin context7 from source: "./external_plugins/context7"
+2026-02-27T01:42:12.311Z [DEBUG] Loading plugin feature-dev from source: "./plugins/feature-dev"
+2026-02-27T01:42:12.312Z [DEBUG] Loading plugin gopls-lsp from source: "./plugins/gopls-lsp"
+2026-02-27T01:42:12.314Z [DEBUG] Loaded 22 unique skills (22 unconditional, 0 conditional, managed: 0, user: 13, project: 0, additional: 0, legacy commands: 9)
+2026-02-27T01:42:12.314Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:12.314Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:12.314Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:12.314Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:12.315Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Plugin gopls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Resolved local plugin gopls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Plugin kotlin-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Resolved local plugin kotlin-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/kotlin-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Plugin typescript-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Resolved local plugin typescript-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Plugin jdtls-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Resolved local plugin jdtls-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/jdtls-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Plugin pyright-lsp@claude-plugins-official version 1.0.0 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-27T01:42:12.346Z [DEBUG] Resolved local plugin pyright-lsp to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/pyright-lsp/1.0.0
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for serena@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Using git SHA for context7@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin kotlin-lsp has no entry.skills defined
+2026-02-27T01:42:12.347Z [DEBUG] Plugin gopls-lsp has no entry.skills defined
+2026-02-27T01:42:12.347Z [DEBUG] Plugin pyright-lsp has no entry.skills defined
+2026-02-27T01:42:12.347Z [DEBUG] Plugin typescript-lsp has no entry.skills defined
+2026-02-27T01:42:12.347Z [DEBUG] Plugin jdtls-lsp has no entry.skills defined
+2026-02-27T01:42:12.347Z [DEBUG] Plugin frontend-design@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin frontend-design to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin serena@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin serena to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/serena/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin ralph-loop@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin ralph-loop to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin playwright@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin playwright to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/playwright/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin feature-dev@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin feature-dev to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/feature-dev/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin learning-output-style@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin learning-output-style to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin context7@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin context7 to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/context7/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Plugin code-review@claude-plugins-official version 55b58ec6e564 already cached at /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/55b58ec6e564
+2026-02-27T01:42:12.347Z [DEBUG] Resolved local plugin code-review to versioned cache: /Users/admin/.claude/plugins/cache/claude-plugins-official/code-review/55b58ec6e564
+2026-02-27T01:42:12.349Z [DEBUG] Loaded hooks from standard location for plugin ralph-loop: /Users/admin/.claude/plugins/cache/claude-plugins-official/ralph-loop/55b58ec6e564/hooks/hooks.json
+2026-02-27T01:42:12.349Z [DEBUG] Loaded hooks from standard location for plugin learning-output-style: /Users/admin/.claude/plugins/cache/claude-plugins-official/learning-output-style/55b58ec6e564/hooks/hooks.json
+2026-02-27T01:42:12.349Z [DEBUG] Found 13 plugins (13 enabled, 0 disabled)
+2026-02-27T01:42:12.350Z [DEBUG] getPluginSkills: Processing 13 enabled plugins
+2026-02-27T01:42:12.350Z [DEBUG] Checking plugin frontend-design: skillsPath=exists, skillsPaths=0 paths
+2026-02-27T01:42:12.350Z [DEBUG] Attempting to load skills from plugin frontend-design default skillsPath: /Users/admin/.claude/plugins/cache/claude-plugins-official/frontend-design/55b58ec6e564/skills
+2026-02-27T01:42:12.350Z [DEBUG] Loading hooks from plugin: ralph-loop
+2026-02-27T01:42:12.350Z [DEBUG] Loading hooks from plugin: learning-output-style
+2026-02-27T01:42:12.350Z [DEBUG] Registered 2 hooks from 13 plugins
+2026-02-27T01:42:12.352Z [DEBUG] Loaded 3 agents from plugin feature-dev default directory
+2026-02-27T01:42:12.352Z [DEBUG] Total plugin agents loaded: 3
+2026-02-27T01:42:12.352Z [DEBUG] Loaded 1 skills from plugin frontend-design default directory
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin serena: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin context7: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin playwright: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin feature-dev: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin code-review: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin ralph-loop: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin typescript-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin kotlin-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin jdtls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin pyright-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.352Z [DEBUG] Checking plugin gopls-lsp: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.354Z [DEBUG] Checking plugin learning-output-style: skillsPath=none, skillsPaths=0 paths
+2026-02-27T01:42:12.354Z [DEBUG] Total plugin skills loaded: 1
+2026-02-27T01:42:12.354Z [DEBUG] Loaded 1 commands from plugin feature-dev default directory
+2026-02-27T01:42:12.355Z [DEBUG] Loaded 1 commands from plugin code-review default directory
+2026-02-27T01:42:12.357Z [DEBUG] Loaded 3 commands from plugin ralph-loop default directory
+2026-02-27T01:42:12.357Z [DEBUG] Total plugin commands loaded: 5
+2026-02-27T01:42:12.357Z [DEBUG] getSkills returning: 22 skill dir commands, 1 plugin skills, 3 bundled skills
+2026-02-27T01:42:12.358Z [DEBUG] [STARTUP] Commands and agents loaded in 69ms
+2026-02-27T01:42:12.359Z [DEBUG] [STARTUP] Running showSetupScreens()...
+2026-02-27T01:42:12.377Z [DEBUG] Grove: Using fresh cached config
+2026-02-27T01:42:12.390Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2026-02-27T01:42:12.390Z [DEBUG] [Perfetto] initializePerfettoTracing called, env value: undefined
+2026-02-27T01:42:12.390Z [DEBUG] [3P telemetry] isTelemetryEnabled=false (CLAUDE_CODE_ENABLE_TELEMETRY=undefined)
+2026-02-27T01:42:12.392Z [DEBUG] [keybindings] KeybindingSetup initialized with 102 bindings, 0 warnings
+2026-02-27T01:42:12.395Z [DEBUG] [keybindings] Watching for changes to /Users/admin/.claude/keybindings.json
+2026-02-27T01:42:15.400Z [DEBUG] Failed to fetch Grove notice config: AxiosError: timeout of 3000ms exceeded
+2026-02-27T01:42:15.730Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156535730
+2026-02-27T01:42:15.730Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:42:15.732Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T01:42:15.732Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:42:15.732Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156535730 to /Users/admin/.claude.json
+2026-02-27T01:42:15.733Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:42:16.347Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156536347
+2026-02-27T01:42:16.347Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:42:16.348Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T01:42:16.349Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:42:16.349Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156536347 to /Users/admin/.claude.json
+2026-02-27T01:42:16.349Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:42:17.074Z [ERROR] AxiosError: [url=https://api.anthropic.com/api/oauth/claude_cli/client_data,status=401,body=OAuth token has expired. Please obtain a new token or refresh your existing token.] Error
+    at DM (/$bunfs/root/claude:92:1144)
+    at <anonymous> (/$bunfs/root/claude:93:10067)
+    at emit (node:events:92:22)
+    at endReadableNT (internal:streams/readable:861:50)
+    at processTicksAndRejections (native:7:39)
+    at request (/$bunfs/root/claude:95:2149)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:17.618Z [DEBUG] [STARTUP] showSetupScreens() completed in 5259ms
+2026-02-27T01:42:17.618Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2026-02-27T01:42:17.618Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2026-02-27T01:42:17.618Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2026-02-27T01:42:17.619Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:42:17.619Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:42:17.619Z [DEBUG] Passes: Cache stale, returning cached data and refreshing in background
+2026-02-27T01:42:17.622Z [DEBUG] [STARTUP] MCP configs loaded in 5356ms
+2026-02-27T01:42:17.628Z [DEBUG] MCP server "plugin:serena:serena": Starting connection with timeout of 30000ms
+2026-02-27T01:42:17.631Z [DEBUG] MCP server "plugin:context7:context7": Starting connection with timeout of 30000ms
+2026-02-27T01:42:17.635Z [DEBUG] MCP server "plugin:playwright:playwright": Starting connection with timeout of 30000ms
+2026-02-27T01:42:17.651Z [DEBUG] All plugins already exist, skipping migration
+2026-02-27T01:42:17.651Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:42:17.653Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2026-02-27T01:42:17.653Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T01:42:17.653Z [DEBUG] Matched 1 unique hooks for query "startup" (1 before deduplication)
+2026-02-27T01:42:17.653Z [DEBUG] Initialized versioned plugins system with 17 plugins
+2026-02-27T01:42:17.695Z [DEBUG] [Reconnection] computeInitialTeamContext: No teammate context set (not a teammate)
+2026-02-27T01:42:17.696Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156537696
+2026-02-27T01:42:17.696Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:42:17.697Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T01:42:17.697Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:42:17.697Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156537696 to /Users/admin/.claude.json
+2026-02-27T01:42:17.697Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:42:17.707Z [DEBUG] [keybindings] KeybindingSetup initialized with 102 bindings, 0 warnings
+2026-02-27T01:42:17.712Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:17.715Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:17.725Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T01:42:17.726Z [DEBUG] [REPL:mount] REPL mounted, disabled=false
+2026-02-27T01:42:17.727Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T01:42:17.727Z [DEBUG] Official marketplace auto-install skipped: already_attempted
+2026-02-27T01:42:17.727Z [DEBUG] performStartupChecks called
+2026-02-27T01:42:17.727Z [DEBUG] Starting background plugin installations
+2026-02-27T01:42:17.727Z [DEBUG] performBackgroundPluginInstallations called
+2026-02-27T01:42:17.728Z [DEBUG] Loaded 11 CLAUDE.md/rules files:
+  [User] /Users/admin/.claude/CLAUDE.md (847 chars)
+  [Project] /Users/admin/project/integrated-search/CLAUDE.md (10070 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/hexagonal-architecture.md (1880 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/external-clients.md (1076 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/spring-config.md (1729 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/valkey-cache.md (1226 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/testing.md (891 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/kafka-avro.md (1327 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/elasticsearch.md (1250 chars)
+  [Project] /Users/admin/project/integrated-search/.claude/rules/ci-cd.md (1865 chars)
+  [AutoMem] /Users/admin/.claude/projects/-Users-admin-project-integrated-search/memory/MEMORY.md (1770 chars)
+2026-02-27T01:42:17.729Z [DEBUG] Watching for changes in setting files /Users/admin/.claude/settings.json, /Users/admin/project/integrated-search/.claude/settings.json, /Users/admin/project/integrated-search/.claude/settings.local.json...
+2026-02-27T01:42:17.730Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-27T01:42:18.098Z [DEBUG] [claudeai-mcp] Checking gate (cached)...
+2026-02-27T01:42:18.098Z [DEBUG] [claudeai-mcp] Gate returned: true
+2026-02-27T01:42:18.098Z [DEBUG] [claudeai-mcp] Fetching from https://api.anthropic.com/v1/mcp_servers?limit=1000
+2026-02-27T01:42:18.100Z [DEBUG] Found 13 enabled plugins
+2026-02-27T01:42:18.101Z [DEBUG] All plugins already exist, skipping migration
+2026-02-27T01:42:18.101Z [DEBUG] Found 17 installed plugins
+2026-02-27T01:42:18.101Z [DEBUG] Found 0 missing plugins (not installed):
+2026-02-27T01:42:18.101Z [DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+2026-02-27T01:42:18.104Z [DEBUG] Fetching plugin security messages from https://raw.githubusercontent.com/anthropics/claude-plugins-official/refs/heads/security/security.json
+2026-02-27T01:42:18.104Z [DEBUG] Org fast mode: enabled
+2026-02-27T01:42:18.105Z [DEBUG] Watching for changes in skill/command directories: /Users/admin/.claude/skills, /Users/admin/.claude/commands...
+2026-02-27T01:42:18.109Z [DEBUG] Loaded 1 LSP server(s) from plugin: typescript-lsp
+2026-02-27T01:42:18.110Z [DEBUG] Loaded 1 LSP server(s) from plugin: kotlin-lsp
+2026-02-27T01:42:18.112Z [DEBUG] Loaded 1 LSP server(s) from plugin: jdtls-lsp
+2026-02-27T01:42:18.113Z [DEBUG] Loaded 1 LSP server(s) from plugin: pyright-lsp
+2026-02-27T01:42:18.116Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:18.120Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T01:42:18.131Z [DEBUG] Loaded 1 LSP server(s) from plugin: gopls-lsp
+2026-02-27T01:42:18.133Z [DEBUG] Total LSP servers loaded: 5
+2026-02-27T01:42:18.133Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 5 server(s)
+2026-02-27T01:42:18.134Z [DEBUG] Queued request handler for plugin:typescript-lsp:typescript.workspace/configuration (connection not ready)
+2026-02-27T01:42:18.134Z [DEBUG] Starting LSP server instance: plugin:typescript-lsp:typescript
+2026-02-27T01:42:18.134Z [DEBUG] Queued request handler for plugin:kotlin-lsp:kotlin-lsp.workspace/configuration (connection not ready)
+2026-02-27T01:42:18.134Z [DEBUG] Starting LSP server instance: plugin:kotlin-lsp:kotlin-lsp
+2026-02-27T01:42:18.134Z [DEBUG] Queued request handler for plugin:jdtls-lsp:jdtls.workspace/configuration (connection not ready)
+2026-02-27T01:42:18.134Z [DEBUG] Starting LSP server instance: plugin:jdtls-lsp:jdtls
+2026-02-27T01:42:18.135Z [DEBUG] Queued request handler for plugin:pyright-lsp:pyright.workspace/configuration (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Starting LSP server instance: plugin:pyright-lsp:pyright
+2026-02-27T01:42:18.135Z [DEBUG] Queued request handler for plugin:gopls-lsp:gopls.workspace/configuration (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Starting LSP server instance: plugin:gopls-lsp:gopls
+2026-02-27T01:42:18.135Z [DEBUG] LSP manager initialized with 5 servers
+2026-02-27T01:42:18.135Z [DEBUG] LSP server manager initialized successfully
+2026-02-27T01:42:18.135Z [DEBUG] Queued notification handler for plugin:typescript-lsp:typescript.textDocument/publishDiagnostics (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Registered diagnostics handler for plugin:typescript-lsp:typescript
+2026-02-27T01:42:18.135Z [DEBUG] Queued notification handler for plugin:kotlin-lsp:kotlin-lsp.textDocument/publishDiagnostics (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Registered diagnostics handler for plugin:kotlin-lsp:kotlin-lsp
+2026-02-27T01:42:18.135Z [DEBUG] Queued notification handler for plugin:jdtls-lsp:jdtls.textDocument/publishDiagnostics (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Registered diagnostics handler for plugin:jdtls-lsp:jdtls
+2026-02-27T01:42:18.135Z [DEBUG] Queued notification handler for plugin:pyright-lsp:pyright.textDocument/publishDiagnostics (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Registered diagnostics handler for plugin:pyright-lsp:pyright
+2026-02-27T01:42:18.135Z [DEBUG] Queued notification handler for plugin:gopls-lsp:gopls.textDocument/publishDiagnostics (connection not ready)
+2026-02-27T01:42:18.135Z [DEBUG] Registered diagnostics handler for plugin:gopls-lsp:gopls
+2026-02-27T01:42:18.135Z [DEBUG] LSP notification handlers registered successfully for all 5 server(s)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: LSP server plugin:typescript-lsp:typescript failed to start: Executable not found in $PATH: "typescript-language-server"
+    at start (/$bunfs/root/claude:2678:22319)
+    at async H (/$bunfs/root/claude:2678:24631)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: LSP server plugin:kotlin-lsp:kotlin-lsp failed to start: Executable not found in $PATH: "kotlin-lsp"
+    at start (/$bunfs/root/claude:2678:22319)
+    at async H (/$bunfs/root/claude:2678:24631)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: LSP server plugin:jdtls-lsp:jdtls failed to start: Executable not found in $PATH: "jdtls"
+    at start (/$bunfs/root/claude:2678:22319)
+    at async H (/$bunfs/root/claude:2678:24631)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: LSP server plugin:pyright-lsp:pyright failed to start: Executable not found in $PATH: "pyright-langserver"
+    at start (/$bunfs/root/claude:2678:22319)
+    at async H (/$bunfs/root/claude:2678:24631)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: LSP server plugin:gopls-lsp:gopls failed to start: Executable not found in $PATH: "gopls"
+    at start (/$bunfs/root/claude:2678:22319)
+    at async H (/$bunfs/root/claude:2678:24631)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [DEBUG] LSP client stopped for plugin:typescript-lsp:typescript
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Executable not found in $PATH: "typescript-language-server"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2678:20845)
+    at H (/$bunfs/root/claude:2678:24631)
+    at _ (/$bunfs/root/claude:2678:32740)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [DEBUG] LSP client stopped for plugin:kotlin-lsp:kotlin-lsp
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Executable not found in $PATH: "kotlin-lsp"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2678:20845)
+    at H (/$bunfs/root/claude:2678:24631)
+    at _ (/$bunfs/root/claude:2678:32740)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [DEBUG] LSP client stopped for plugin:jdtls-lsp:jdtls
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Executable not found in $PATH: "jdtls"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2678:20845)
+    at H (/$bunfs/root/claude:2678:24631)
+    at _ (/$bunfs/root/claude:2678:32740)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [DEBUG] LSP client stopped for plugin:pyright-lsp:pyright
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Executable not found in $PATH: "pyright-langserver"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2678:20845)
+    at H (/$bunfs/root/claude:2678:24631)
+    at _ (/$bunfs/root/claude:2678:32740)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [DEBUG] LSP client stopped for plugin:gopls-lsp:gopls
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Executable not found in $PATH: "gopls"
+    at spawn (unknown)
+    at spawn (node:child_process:667:35)
+    at spawn (node:child_process:14:39)
+    at start (/$bunfs/root/claude:2678:20845)
+    at H (/$bunfs/root/claude:2678:24631)
+    at _ (/$bunfs/root/claude:2678:32740)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Failed to start LSP server plugin:typescript-lsp:typescript: Executable not found in $PATH: "typescript-language-server"
+    at <anonymous> (/$bunfs/root/claude:2678:32762)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Failed to start LSP server plugin:kotlin-lsp:kotlin-lsp: Executable not found in $PATH: "kotlin-lsp"
+    at <anonymous> (/$bunfs/root/claude:2678:32762)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Failed to start LSP server plugin:jdtls-lsp:jdtls: Executable not found in $PATH: "jdtls"
+    at <anonymous> (/$bunfs/root/claude:2678:32762)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Failed to start LSP server plugin:pyright-lsp:pyright: Executable not found in $PATH: "pyright-langserver"
+    at <anonymous> (/$bunfs/root/claude:2678:32762)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.135Z [ERROR] Error: Error: Failed to start LSP server plugin:gopls-lsp:gopls: Executable not found in $PATH: "gopls"
+    at <anonymous> (/$bunfs/root/claude:2678:32762)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:42:18.176Z [DEBUG] Security messages saved successfully
+2026-02-27T01:42:18.210Z [DEBUG] Loaded plugins - Enabled: 13, Disabled: 0, Commands: 5, Agents: 3, Errors: 0
+2026-02-27T01:42:18.222Z [DEBUG] Hooks: Checking initial response for async: {
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-27T01:42:18.222Z [DEBUG] Hooks: Parsed initial response: {"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."}}
+2026-02-27T01:42:18.222Z [DEBUG] Hooks: Initial response is not async, continuing normal processing
+2026-02-27T01:42:18.223Z [DEBUG] Successfully parsed and validated hook JSON output
+2026-02-27T01:42:18.223Z [DEBUG] Hook SessionStart:startup (SessionStart) success:
+{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "You are in 'learning' output style mode, which combines interactive learning with educational explanations. This mode differs from the original unshipped Learning output style by also incorporating explanatory functionality.\n\n## Learning Mode Philosophy\n\nInstead of implementing everything yourself, identify opportunities where the user can write 5-10 lines of meaningful code that shapes the solution. Focus on business logic, design choices, and implementation strategies where their input truly matters.\n\n## When to Request User Contributions\n\nRequest code contributions for:\n- Business logic with multiple valid approaches\n- Error handling strategies\n- Algorithm implementation choices\n- Data structure decisions\n- User experience decisions\n- Design patterns and architecture choices\n\n## How to Request Contributions\n\nBefore requesting code:\n1. Create the file with surrounding context\n2. Add function signature with clear parameters/return type\n3. Include comments explaining the purpose\n4. Mark the location with TODO or clear placeholder\n\nWhen requesting:\n- Explain what you've built and WHY this decision matters\n- Reference the exact file and prepared location\n- Describe trade-offs to consider, constraints, or approaches\n- Frame it as valuable input that shapes the feature, not busy work\n- Keep requests focused (5-10 lines of code)\n\n## Example Request Pattern\n\nContext: I've set up the authentication middleware. The session timeout behavior is a security vs. UX trade-off - should sessions auto-extend on activity, or have a hard timeout? This affects both security posture and user experience.\n\nRequest: In auth/middleware.ts, implement the handleSessionTimeout() function to define the timeout behavior.\n\nGuidance: Consider: auto-extending improves UX but may leave sessions open longer; hard timeouts are more secure but might frustrate active users.\n\n## Balance\n\nDon't request contributions for:\n- Boilerplate or repetitive code\n- Obvious implementations with no meaningful choices\n- Configuration or setup code\n- Simple CRUD operations\n\nDo request contributions when:\n- There are meaningful trade-offs to consider\n- The decision shapes the feature's behavior\n- Multiple valid approaches exist\n- The user's domain knowledge would improve the solution\n\n## Explanatory Mode\n\nAdditionally, provide educational insights about the codebase as you help with tasks. Be clear and educational, providing helpful explanations while remaining focused on the task. Balance educational content with task completion.\n\n### Insights\nBefore and after writing code, provide brief educational explanations about implementation choices using:\n\n\"`★ Insight ─────────────────────────────────────`\n[2-3 key educational points]\n`─────────────────────────────────────────────────`\"\n\nThese insights should be included in the conversation, not in the codebase. Focus on interesting insights specific to the codebase or the code you just wrote, rather than general programming concepts. Provide insights as you write code, not just at the end."
+  }
+}
+2026-02-27T01:42:18.223Z [DEBUG] Hook SessionStart (${CLAUDE_PLUGIN_ROOT}/hooks-handlers/session-start.sh) provided additionalContext (3034 chars)
+2026-02-27T01:42:18.227Z [DEBUG] [useDeferredValue] Messages deferred by 3 (0→3)
+2026-02-27T01:42:18.232Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:18.284Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/opt/homebrew/Caskroom/claude-code/2.1.59/claude)
+2026-02-27T01:42:18.397Z [DEBUG] [claudeai-mcp] Fetched 3 servers
+2026-02-27T01:42:18.397Z [DEBUG] MCP server "claude.ai Google Calendar": Initializing claude.ai proxy transport for server mcpsrv_015ThqTZRhAeXKX1KXDSLsec
+2026-02-27T01:42:18.397Z [DEBUG] MCP server "claude.ai Google Calendar": Using claude.ai proxy at https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_015ThqTZRhAeXKX1KXDSLsec
+2026-02-27T01:42:18.397Z [DEBUG] MCP server "claude.ai Google Calendar": claude.ai proxy transport created successfully
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Google Calendar": Starting connection with timeout of 30000ms
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Gmail": Initializing claude.ai proxy transport for server mcpsrv_01DhRwqhZCSLdkps7kQeiCzH
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Gmail": Using claude.ai proxy at https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_01DhRwqhZCSLdkps7kQeiCzH
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Gmail": claude.ai proxy transport created successfully
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Gmail": Starting connection with timeout of 30000ms
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Notion": Initializing claude.ai proxy transport for server mcpsrv_01XcvE42nBbcN6wKoutnXWp3
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Notion": Using claude.ai proxy at https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_01XcvE42nBbcN6wKoutnXWp3
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Notion": claude.ai proxy transport created successfully
+2026-02-27T01:42:18.398Z [DEBUG] MCP server "claude.ai Notion": Starting connection with timeout of 30000ms
+2026-02-27T01:42:18.399Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:18.433Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.61
+2026-02-27T01:42:18.764Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156538764
+2026-02-27T01:42:18.764Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:42:18.765Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T01:42:18.765Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:42:18.765Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156538764 to /Users/admin/.claude.json
+2026-02-27T01:42:18.765Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:42:18.765Z [DEBUG] Passes eligibility cached for org 3e7c54d5-dea8-4689-9feb-5587da38d641: true
+2026-02-27T01:42:18.840Z [DEBUG] MCP server "claude.ai Gmail": claude.ai proxy connection failed after 442ms: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqkQqd1k5C79vBUyz"}
+2026-02-27T01:42:18.840Z [ERROR] MCP server "claude.ai Gmail" Error: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqkQqd1k5C79vBUyz"}
+2026-02-27T01:42:18.841Z [DEBUG] MCP server "claude.ai Gmail": Authentication required for claude.ai proxy server
+2026-02-27T01:42:18.859Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:18.904Z [DEBUG] MCP server "claude.ai Notion": claude.ai proxy connection failed after 506ms: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqmekdkN8uu1tnnHf"}
+2026-02-27T01:42:18.904Z [ERROR] MCP server "claude.ai Notion" Error: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqmekdkN8uu1tnnHf"}
+2026-02-27T01:42:18.905Z [DEBUG] MCP server "claude.ai Notion": Authentication required for claude.ai proxy server
+2026-02-27T01:42:18.913Z [DEBUG] MCP server "claude.ai Google Calendar": claude.ai proxy connection failed after 516ms: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqmA9iYHvRzA3gNoa"}
+2026-02-27T01:42:18.913Z [ERROR] MCP server "claude.ai Google Calendar" Error: Streamable HTTP error: Error POSTing to endpoint: {"type":"error","error":{"type":"authentication_error","message":"MCP server requires authentication but no OAuth token is configured."},"request_id":"req_011CYXixqmA9iYHvRzA3gNoa"}
+2026-02-27T01:42:18.913Z [DEBUG] MCP server "claude.ai Google Calendar": Authentication required for claude.ai proxy server
+2026-02-27T01:42:18.923Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:19.919Z [ERROR] MCP server "plugin:context7:context7" Server stderr: WARNING: Using default CLIENT_IP_ENCRYPTION_KEY.
+Context7 Documentation MCP Server v2.0.2 running on stdio
+2026-02-27T01:42:19.919Z [DEBUG] MCP server "plugin:context7:context7": Successfully connected to undefined server in 2289ms
+2026-02-27T01:42:19.919Z [DEBUG] MCP server "plugin:context7:context7": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"hasResourceSubscribe":false,"serverVersion":{"name":"Context7","version":"2.0.2"}}
+2026-02-27T01:42:19.919Z [DEBUG] [MCP] Server "plugin:context7:context7" connected with subscribe=false
+2026-02-27T01:42:19.944Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:20.045Z [DEBUG] MCP server "plugin:playwright:playwright": Successfully connected to undefined server in 2411ms
+2026-02-27T01:42:20.045Z [DEBUG] MCP server "plugin:playwright:playwright": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"hasResourceSubscribe":false,"serverVersion":{"name":"Playwright","version":"0.0.68"}}
+2026-02-27T01:42:20.045Z [DEBUG] [MCP] Server "plugin:playwright:playwright" connected with subscribe=false
+2026-02-27T01:42:20.067Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:20.558Z [ERROR] MCP server "plugin:serena:serena" Server stderr: INFO  2026-02-27 10:42:20,180 [MainThread] serena.cli:start_mcp_server:268 - Initializing Serena MCP server
+INFO  2026-02-27 10:42:20,180 [MainThread] serena.cli:start_mcp_server:269 - Storing logs in /Users/admin/.serena/logs/2026-02-27/mcp_20260227-104220.txt
+INFO  2026-02-27 10:42:20,181 [MainThread] serena.config.serena_config:from_config_file:637 - Loading Serena configuration from /Users/admin/.serena/serena_config.yml
+WARNING 2026-02-27 10:42:20,213 [MainThread] serena.config.serena_config:from_config_file:665 - Project path /Users/admin/project/shopping-k8s-manifest/.claude/worktrees/search-chart does not exist or does not contain a project configuration file, skipping.
+INFO  2026-02-27 10:42:20,213 [MainThread] serena.agent:__init__:300 - Will record tool usage statistics with token count estimator: TIKTOKEN_GPT4O.
+INFO  2026-02-27 10:42:20,273 [MainThread] serena.analytics:__init__:39 - Loading tiktoken encoding for model gpt-4o, this may take a while on the first run.
+INFO  2026-02-27 10:42:20,516 [MainThread] serena.agent:__init__:304 - Starting Serena server (version=0.1.4-6ce392aa-dirty, process id=32578, parent process id=32517; language backend=LSP)
+INFO  2026-02-27 10:42:20,516 [MainThread] serena.agent:__init__:308 - Configuration file: /Users/admin/.serena/serena_config.yml
+INFO  2026-02-27 10:42:20,516 [MainThread] serena.agent:__init__:309 - Available projects: admin, analysis-danuri, analysis-product, dsearch-console, dsearch-indexer, dsearch-server, findining, findining-crawl, integrated-search, search-admin, searchapi-elastic
+INFO  2026-02-27 10:42:20,516 [MainThread] serena.agent:__init__:310 - Loaded tools (41): read_file, create_text_file, list_dir, find_file, replace_content, delete_lines, replace_lines, insert_at_line, search_for_pattern, restart_language_server, get_symbols_overview, find_symbol, find_referencing_symbols, replace_symbol_body, insert_after_symbol, insert_before_symbol, rename_symbol, write_memory, read_memory, list_memories, delete_memory, rename_memory, edit_memory, execute_shell_command, open_dashboard, activate_project, remove_project, switch_modes, get_current_config, check_onboarding_performed, onboarding, think_about_collected_information, think_about_task_adherence, think_about_whether_you_are_done, summarize_changes, prepare_for_new_conversation, initial_instructions, jet_brains_find_symbol, jet_brains_find_referencing_symbols, jet_brains_get_symbols_overview, jet_brains_type_hierarchy
+INFO  2026-02-27 10:42:20,516 [MainThread] serena.agent:__init__:322 - Using language backend from global configuration: LSP
+INFO  2026-02-27 10:42:20,517 [MainThread] serena.agent:apply:148 - SerenaAgentContext[name='desktop-app'] included 1 tools: switch_modes
+INFO  2026-02-27 10:42:20,518 [MainThread] serena.agent:__init__:346 - Number of exposed tools: 27
+INFO  2026-02-27 10:42:20,525 [MainThread] serena.agent:get_mode_names:205 - Active modes: ['editing', 'interactive']
+INFO  2026-02-27 10:42:20,527 [MainThread] serena.agent:_update_active_modes_and_tools:609 - Active tools (27): activate_project, check_onboarding_performed, create_text_file, delete_memory, edit_memory, execute_shell_command, find_file, find_referencing_symbols, find_symbol, get_current_config, get_symbols_overview, initial_instructions, insert_after_symbol, insert_before_symbol, list_dir, list_memories, onboarding, prepare_for_new_conversation, read_file, read_memory, rename_memory, rename_symbol, replace_content, replace_symbol_body, search_for_pattern, switch_modes, write_memory
+INFO  2026-02-27 10:42:20,530 [MainThread] serena.dashboard:run_in_thread:642 - Starting dashboard (listen_address=127.0.0.1, port=24282)
+INFO  2026-02-27 10:42:20,530 [MainThread] serena.agent:__init__:382 - Serena web dashboard started at http://127.0.0.1:24282/dashboard/index.html
+INFO  2026-02-27 10:42:20,533 [MainThread] serena.agent:create_system_prompt:568 - Generating system prompt with available_tools=(see active tools), available_markers={'ToolMarkerCanEdit', 'RenameSymbolTool', 'FindReferencingSymbolsTool', 'SwitchModesTool', 'ReplaceContentTool', 'RenameMemoryTool', 'InsertAfterSymbolTool', 'ExecuteShellCommandTool', 'ToolMarkerOptional', 'DeleteMemoryTool', 'EditMemoryTool', 'ToolMarkerDoesNotRequireActiveProject', 'ActivateProjectTool', 'ToolMarkerSymbolicEdit', 'ReplaceSymbolBodyTool', 'WriteMemoryTool', 'CreateTextFileTool', 'GetSymbolsOverviewTool', 'FindSymbolTool', 'ToolMarkerSymbolicRead', 'InsertBeforeSymbolTool', 'InitialInstructionsTool'}
+INFO  2026-02-27 10:42:20,535 [MainThread] serena.agent:create_system_prompt:580 - System prompt:
+You are a professional coding agent. 
+You have access to semantic coding tools upon which you rely heavily for all your work.
+You operate in a resource-efficient and intelligent manner, always keeping in mind to not read or generate
+content that is not needed for the task at hand.
+
+Some tasks may require you to understand the architecture of large parts of the codebase, while for others,
+it may be enough to read a small set of symbols or a single file.
+You avoid reading entire files unless it is absolutely necessary, instead relying on intelligent step-by-step 
+acquisition of information. Once you have read a full file, it does not make
+sense to analyse it with the symbolic read tools; you already have the information.
+
+You can achieve intelligent reading of code by using the symbolic tools for getting an overview of symbols and
+the relations between them, and then only reading the bodies of symbols that are necessary to complete the task at hand. 
+You can use the standard tools like list_dir, find_file and search_for_pattern if you need to.
+Where appropriate, you pass the `relative_path` parameter to restrict the search to a specific file or directory.
+
+If you are unsure about a symbol's name or location (to the extent that substring_matching for the symbol name is not enough), you can use the `search_for_pattern` tool, which allows fast
+and flexible search for patterns in the codebase. In this way, you can first find candidates for symbols or files,
+and then proceed with the symbolic tools.
+
+
+
+Symbols are identified by their `name_path` and `relative_path` (see the description of the `find_symbol` tool).
+You can get information about the symbols in a file by using the `get_symbols_overview` tool or use the `find_symbol` to search. 
+You only read the bodies of symbols when you need to (e.g. if you want to fully understand or edit it).
+For example, if you are working with Python code and already know that you need to read the body of the constructor of the class Foo, you can directly
+use `find_symbol` with name path pattern `Foo/__init__` and `include_body=True`. If you don't know yet which methods in `Foo` you need to read or edit,
+you can use `find_symbol` with name path pattern `Foo`, `include_body=False` and `depth=1` to get all (top-level) methods of `Foo` before proceeding
+to read the desired methods with `include_body=True`.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool.
+
+
+
+You generally have access to memories and it may be useful for you to read them.
+You infer whether memories are relevant based on their names.
+
+
+The context and modes of operation are described below. These determine how to interact with your user
+and which kinds of interactions are expected of you.
+
+Context description:
+You are running in a desktop application context.
+Serena's tools give you access to the code base as well as some access to the file system (if enabled). 
+You interact with the user through a chat interface that is separated from the code base. 
+As a consequence, if you are in interactive mode, your communication with the user should
+involve high-level thinking and planning as well as some summarization of any code edits that you make.
+To view the code edits you make, the user will have switch to a separate application.
+To illustrate complex relationships, consider creating diagrams in addition to your text-based communication
+(depending on the options for text, html, mermaid diagrams, etc. that you are provided with in your initial instructions).
+
+Modes descriptions:
+
+You are operating in editing mode. You can edit files with the provided tools.
+You adhere to the project's code style and patterns.
+
+Use symbolic editing tools whenever possible for precise code modifications.
+If no explicit editing task has yet been provided, wait for the user to provide one. Do not be overly eager.
+
+When writing new code, think about where it belongs best. Don't generate new files if you don't plan on actually
+properly integrating them into the codebase.
+
+You have two main approaches for editing code: (a) editing at the symbol level and (b) file-based editing.
+The symbol-based approach is appropriate if you need to adjust an entire symbol, e.g. a method, a class, a function, etc.
+It is not appropriate if you need to adjust just a few lines of code within a larger symbol.
+
+**Symbolic editing**
+Use symbolic retrieval tools to identify the symbols you need to edit.
+If you need to replace the definition of a symbol, use the `replace_symbol_body` tool.
+If you want to add some new code at the end of the file, use the `insert_after_symbol` tool with the last top-level symbol in the file. 
+Similarly, you can use `insert_before_symbol` with the first top-level symbol in the file to insert code at the beginning of a file.
+You can understand relationships between symbols by using the `find_referencing_symbols` tool. If not explicitly requested otherwise by the user,
+you make sure that when you edit a symbol, the change is either backward-compatible or you find and update all references as needed.
+The `find_referencing_symbols` tool will give you code snippets around the references as well as symbolic information.
+You can assume that all symbol editing tools are reliable, so you never need to verify the results if the tools return without error.
+
+
+**File-based editing**
+The `replace_content` tool allows you to perform regex-based replacements within files (as well as simple string replacements).
+This is your primary tool for editing code whenever replacing or deleting a whole symbol would be a more expensive operation,
+e.g. if you need to adjust just a few lines of code within a method.
+You are extremely good at regex, so you never need to check whether the replacement produced the correct result.
+In particular, you know how to use wildcards effectively in order to avoid specifying the full original text to be replaced!
+
+
+You are operating in interactive mode. You should engage with the user throughout the task, asking for clarification
+whenever anything is unclear, insufficiently specified, or ambiguous.
+
+Break down complex tasks into smaller steps and explain your thinking at each stage. When you're uncertain about
+a decision, present options to the user and ask for guidance rather than making assumptions.
+
+Focus on providing informative results for intermediate steps, such that the user can follow along with your progress and
+provide feedback as needed.
+
+
+You have hereby read the 'Serena Instructions Manual' and do not need to read it again.
+INFO  2026-02-27 10:42:20,537 [MainThread] serena.cli:start_mcp_server:300 - Starting MCP server …
+INFO  2026-02-27 10:42:20,556 [MainThread] serena.mcp:_set_mcp_tools:261 - Starting MCP server with 27 tools: ['read_file', 'create_text_file', 'list_dir', 'find_file', 'replace_content', 'search_for_pattern', 'get_symbols_overview', 'find_symbol', 'find_referencing_symbols', 'replace_symbol_body', 'insert_after_symbol', 'insert_before_symbol', 'rename_symbol', 'write_memory', 'read_memory', 'list_memories', 'delete_memory', 'rename_memory', 'edit_memory', 'execute_shell_command', 'activate_project', 'switch_modes', 'get_current_config', 'check_onboarding_performed', 'onboarding', 'prepare_for_new_conversation', 'initial_instructions']
+INFO  2026-02-27 10:42:20,556 [MainThread] serena.mcp:server_lifespan:343 - MCP server lifetime setup complete
+2026-02-27T01:42:20.558Z [DEBUG] MCP server "plugin:serena:serena": Successfully connected to undefined server in 2934ms
+2026-02-27T01:42:20.558Z [DEBUG] MCP server "plugin:serena:serena": Connection established with capabilities: {"hasTools":true,"hasPrompts":true,"hasResources":true,"hasResourceSubscribe":false,"serverVersion":{"name":"FastMCP","version":"1.23.0"}}
+2026-02-27T01:42:20.558Z [DEBUG] [MCP] Server "plugin:serena:serena" connected with subscribe=false
+2026-02-27T01:42:20.583Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:46.222Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:46.227Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:47.798Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:51.675Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:51.680Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:56.615Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:42:56.615Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:42:56.615Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:42:56.615Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:42:56.616Z [DEBUG] Sending 30 skills via attachment (initial, 30 total sent)
+2026-02-27T01:42:56.616Z [DEBUG] Skill prompt: showing "frontend-design:frontend-design" (userFacingName="frontend-design")
+2026-02-27T01:42:56.617Z [WARN] [3P telemetry] Event dropped (no event logger initialized): user_prompt
+2026-02-27T01:42:56.618Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-27T01:42:56.618Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T01:42:56.618Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-27T01:42:56.618Z [DEBUG] FileHistory: Added snapshot for 8cd9037f-3d78-4cd4-bfee-f79012c91e95, tracking 0 files
+2026-02-27T01:42:56.620Z [DEBUG] [useDeferredValue] Messages deferred by 3 (3→6)
+2026-02-27T01:42:56.628Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:56.635Z [DEBUG] High write ratio: blit=0, write=5266 (100.0% writes), screen=36x212
+2026-02-27T01:42:56.649Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T01:42:56.653Z [DEBUG] Stored paste b317d94ad2792c04 to /Users/admin/.claude/paste-cache/b317d94ad2792c04.txt
+2026-02-27T01:42:56.663Z [DEBUG] git pull: cwd=/Users/admin/.claude/plugins/marketplaces/claude-plugins-official ref=default
+2026-02-27T01:42:56.670Z [DEBUG] Total plugin output styles loaded: 0
+2026-02-27T01:42:56.672Z [DEBUG] autocompact: tokens=3074 threshold=967000 effectiveWindow=980000
+2026-02-27T01:42:56.677Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156576677
+2026-02-27T01:42:56.677Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:42:56.677Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:42:56.677Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:42:56.677Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156576677 to /Users/admin/.claude.json
+2026-02-27T01:42:56.677Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:42:56.678Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:42:56.678Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:42:56.678Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:42:56.680Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:42:56.684Z [DEBUG] High write ratio: blit=0, write=5266 (100.0% writes), screen=36x212
+2026-02-27T01:42:57.285Z [DEBUG] Successfully refreshed marketplace: claude-plugins-official
+2026-02-27T01:42:57.285Z [DEBUG] Plugin autoupdate: checking installed plugins
+2026-02-27T01:42:57.290Z [DEBUG] Using provided version for pyright-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:57.294Z [DEBUG] Using provided version for gopls-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:57.294Z [DEBUG] Using provided version for jdtls-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:57.295Z [DEBUG] Caching plugin from source: {"source":"url","url":"https://github.com/figma/mcp-server-guide.git"} to temporary path /Users/admin/.claude/plugins/cache/temp_git_1772156577295_frtuez
+2026-02-27T01:42:57.297Z [DEBUG] Using provided version for kotlin-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:57.297Z [DEBUG] Using provided version for typescript-lsp@claude-plugins-official: 1.0.0
+2026-02-27T01:42:57.299Z [DEBUG] Using git SHA for commit-commands@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.299Z [DEBUG] Using git SHA for code-review@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for frontend-design@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for learning-output-style@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for serena@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for plugin-dev@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for ralph-loop@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for hookify@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for feature-dev@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for playwright@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:57.300Z [DEBUG] Using git SHA for context7@claude-plugins-official: 55b58ec6e564
+2026-02-27T01:42:59.722Z [DEBUG] Cloned repository from https://github.com/figma/mcp-server-guide.git to /Users/admin/.claude/plugins/cache/temp_git_1772156577295_frtuez
+2026-02-27T01:42:59.722Z [DEBUG] Successfully cached plugin figma to /Users/admin/.claude/plugins/cache/figma
+2026-02-27T01:42:59.722Z [DEBUG] Using manifest version for figma@claude-plugins-official: 1.1.0
+2026-02-27T01:43:01.242Z [ERROR] Error: Error: 1P event logging: 1 events failed to export (code=ECONNABORTED, timeout of 10000ms exceeded)
+    at queueFailedEvents (/$bunfs/root/claude:6252:2350)
+    at async doExport (/$bunfs/root/claude:6252:1257)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:43:01.242Z [ERROR] Error: Error: {"message":"Failed to export 1 events (code=ECONNABORTED, timeout of 10000ms exceeded)","originalLine":"6252","originalColumn":"1409","line":"6252","column":"1409","sourceURL":"/$bunfs/root/claude","stack":"Error: Failed to export 1 events (code=ECONNABORTED, timeout of 10000ms exceeded)\n    at doExport (/$bunfs/root/claude:6252:1409)\n    at processTicksAndRejections (native:7:39)","name":"Error"}
+    at error (/$bunfs/root/claude:2407:25028)
+    at <anonymous> (/$bunfs/root/claude:119:92467)
+    at l$D (/$bunfs/root/claude:119:93011)
+    at <anonymous> (/$bunfs/root/claude:120:17366)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:43:01.242Z [ERROR] [3P telemetry] OTEL diag error: {"message":"Failed to export 1 events (code=ECONNABORTED, timeout of 10000ms exceeded)","originalLine":"6252","originalColumn":"1409","line":"6252","column":"1409","sourceURL":"/$bunfs/root/claude","stack":"Error: Failed to export 1 events (code=ECONNABORTED, timeout of 10000ms exceeded)\n    at doExport (/$bunfs/root/claude:6252:1409)\n    at processTicksAndRejections (native:7:39)","name":"Error"}
+2026-02-27T01:43:01.671Z [ERROR] AxiosError: [url=https://api.anthropic.com/api/oauth/claude_cli/client_data] Error
+    at <anonymous> (/$bunfs/root/claude:93:10649)
+    at emit (node:events:92:22)
+    at <anonymous> (/$bunfs/root/claude:92:5642)
+    at request (/$bunfs/root/claude:95:2149)
+    at processTicksAndRejections (native:7:39)
+2026-02-27T01:43:41.320Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:43:41.346Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:43:41.348Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:43:41.348Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:43:41.349Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:43:41.355Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:41.721Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156621721
+2026-02-27T01:43:41.721Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:43:41.722Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:43:41.722Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:43:41.722Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156621721 to /Users/admin/.claude.json
+2026-02-27T01:43:41.722Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:43:44.632Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:43:47.659Z [DEBUG] [useDeferredValue] Messages deferred by 1 (6→7)
+2026-02-27T01:43:47.661Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:47.663Z [DEBUG] [useDeferredValue] Messages deferred by 1 (6→7)
+2026-02-27T01:43:47.676Z [DEBUG] High write ratio: blit=0, write=5302 (100.0% writes), screen=36x212
+2026-02-27T01:43:48.703Z [DEBUG] [useDeferredValue] Messages deferred by 1 (7→8)
+2026-02-27T01:43:48.708Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:48.713Z [DEBUG] High write ratio: blit=0, write=5376 (100.0% writes), screen=38x212
+2026-02-27T01:43:48.715Z [DEBUG] [useDeferredValue] Messages deferred by 1 (7→8)
+2026-02-27T01:43:48.729Z [DEBUG] High write ratio: blit=0, write=5457 (100.0% writes), screen=40x212
+2026-02-27T01:43:49.937Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:49.937Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:49.937Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:43:49.938Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:43:49.939Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:43:49.941Z [DEBUG] [useDeferredValue] Messages deferred by 2 (8→10)
+2026-02-27T01:43:49.944Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:49.950Z [DEBUG] High write ratio: blit=0, write=5457 (100.0% writes), screen=40x212
+2026-02-27T01:43:49.971Z [DEBUG] High write ratio: blit=0, write=5603 (100.0% writes), screen=43x212
+2026-02-27T01:43:49.974Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 35ms
+2026-02-27T01:43:49.976Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:49.976Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:43:49.976Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:43:49.978Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:50.240Z [DEBUG] [useDeferredValue] Messages deferred by 2 (10→12)
+2026-02-27T01:43:50.245Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:50.251Z [DEBUG] High write ratio: blit=0, write=5590 (100.0% writes), screen=42x212
+2026-02-27T01:43:50.260Z [DEBUG] [useDeferredValue] Messages deferred by 2 (10→12)
+2026-02-27T01:43:50.271Z [DEBUG] High write ratio: blit=0, write=5929 (100.0% writes), screen=46x212
+2026-02-27T01:43:50.584Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:50.585Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:50.585Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:43:50.585Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:43:50.585Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:43:50.586Z [DEBUG] [useDeferredValue] Messages deferred by 1 (12→13)
+2026-02-27T01:43:50.589Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:50.594Z [DEBUG] High write ratio: blit=0, write=5888 (100.0% writes), screen=44x212
+2026-02-27T01:43:50.596Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 11ms
+2026-02-27T01:43:50.596Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:43:50.596Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:43:50.596Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:43:50.599Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156630599
+2026-02-27T01:43:50.599Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:43:50.599Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:43:50.599Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:43:50.599Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156630599 to /Users/admin/.claude.json
+2026-02-27T01:43:50.600Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:43:50.601Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:43:50.601Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:43:50.601Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:43:50.601Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:43:50.601Z [DEBUG] autocompact: tokens=59347 threshold=967000 effectiveWindow=980000
+2026-02-27T01:43:50.602Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:43:50.602Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:43:50.602Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:43:50.602Z [DEBUG] [useDeferredValue] Messages deferred by 5 (12→17)
+2026-02-27T01:43:50.605Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:50.610Z [DEBUG] High write ratio: blit=0, write=5888 (100.0% writes), screen=44x212
+2026-02-27T01:43:50.626Z [DEBUG] High write ratio: blit=0, write=6387 (100.0% writes), screen=50x212
+2026-02-27T01:43:50.920Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:43:50.924Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156630924
+2026-02-27T01:43:50.924Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:43:50.925Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:43:50.925Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:43:50.925Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156630924 to /Users/admin/.claude.json
+2026-02-27T01:43:50.925Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:43:50.926Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:43:50.926Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:43:50.926Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:43:50.927Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:43:50.929Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:53.418Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:43:53.447Z [DEBUG] High write ratio: blit=0, write=6443 (100.0% writes), screen=52x212
+2026-02-27T01:43:53.574Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__activate_project
+2026-02-27T01:43:53.574Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__activate_project
+2026-02-27T01:43:53.574Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:43:53.574Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__activate_project" (0 before deduplication)
+2026-02-27T01:43:53.574Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: activate_project
+2026-02-27T01:43:53.575Z [DEBUG] [useDeferredValue] Messages deferred by 1 (17→18)
+2026-02-27T01:43:53.578Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:53.591Z [DEBUG] High write ratio: blit=0, write=6486 (100.0% writes), screen=53x212
+2026-02-27T01:43:53.636Z [DEBUG] [useDeferredValue] Messages deferred by 1 (18→19)
+2026-02-27T01:43:53.639Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:53.643Z [DEBUG] High write ratio: blit=0, write=6486 (100.0% writes), screen=53x212
+2026-02-27T01:43:53.648Z [DEBUG] [useDeferredValue] Messages deferred by 1 (18→19)
+2026-02-27T01:43:53.649Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:53.659Z [DEBUG] High write ratio: blit=0, write=6486 (100.0% writes), screen=53x212
+2026-02-27T01:43:53.673Z [DEBUG] MCP server "plugin:serena:serena": Tool 'activate_project' completed successfully in 99ms
+2026-02-27T01:43:53.674Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__activate_project
+2026-02-27T01:43:53.674Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:43:53.674Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__activate_project" (0 before deduplication)
+2026-02-27T01:43:53.674Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:43:53.674Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:43:53.674Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:43:53.674Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:43:53.675Z [DEBUG] autocompact: tokens=59630 threshold=967000 effectiveWindow=980000
+2026-02-27T01:43:53.675Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:43:53.678Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156633678
+2026-02-27T01:43:53.678Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:43:53.678Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:43:53.678Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:43:53.678Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156633678 to /Users/admin/.claude.json
+2026-02-27T01:43:53.679Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:43:53.679Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:43:53.679Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:43:53.679Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:43:53.679Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:43:53.681Z [DEBUG] [useDeferredValue] Messages deferred by 3 (19→22)
+2026-02-27T01:43:53.684Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:43:53.689Z [DEBUG] High write ratio: blit=0, write=6473 (100.0% writes), screen=52x212
+2026-02-27T01:43:53.708Z [DEBUG] High write ratio: blit=0, write=6912 (100.0% writes), screen=56x212
+2026-02-27T01:44:02.097Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:44:02.124Z [DEBUG] High write ratio: blit=0, write=6955 (100.0% writes), screen=58x212
+2026-02-27T01:44:02.866Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:02.867Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:02.867Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:44:02.867Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:02.867Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:44:02.869Z [DEBUG] [useDeferredValue] Messages deferred by 2 (22→24)
+2026-02-27T01:44:02.872Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:02.884Z [DEBUG] High write ratio: blit=0, write=7101 (100.0% writes), screen=61x212
+2026-02-27T01:44:02.980Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 113ms
+2026-02-27T01:44:02.981Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:02.981Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:44:02.981Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:02.982Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:03.109Z [DEBUG] [useDeferredValue] Messages deferred by 2 (24→26)
+2026-02-27T01:44:03.113Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:03.120Z [DEBUG] High write ratio: blit=0, write=7088 (100.0% writes), screen=60x212
+2026-02-27T01:44:03.125Z [DEBUG] [useDeferredValue] Messages deferred by 2 (24→26)
+2026-02-27T01:44:03.137Z [DEBUG] High write ratio: blit=0, write=7527 (100.0% writes), screen=64x212
+2026-02-27T01:44:03.447Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:03.448Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:03.448Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:44:03.448Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:03.449Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:44:03.449Z [DEBUG] [useDeferredValue] Messages deferred by 1 (26→27)
+2026-02-27T01:44:03.453Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:03.466Z [DEBUG] High write ratio: blit=0, write=7486 (100.0% writes), screen=62x212
+2026-02-27T01:44:03.469Z [DEBUG] [useDeferredValue] Messages deferred by 2 (26→28)
+2026-02-27T01:44:03.473Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:03.478Z [DEBUG] High write ratio: blit=0, write=7486 (100.0% writes), screen=62x212
+2026-02-27T01:44:03.495Z [DEBUG] High write ratio: blit=0, write=7659 (100.0% writes), screen=65x212
+2026-02-27T01:44:03.507Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 58ms
+2026-02-27T01:44:03.508Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:03.508Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:44:03.508Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:03.509Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:44:03.509Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:44:03.509Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:44:03.509Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:44:03.510Z [DEBUG] autocompact: tokens=60510 threshold=967000 effectiveWindow=980000
+2026-02-27T01:44:03.510Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:44:03.513Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156643513
+2026-02-27T01:44:03.513Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:44:03.514Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:44:03.514Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:44:03.514Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156643513 to /Users/admin/.claude.json
+2026-02-27T01:44:03.514Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:44:03.515Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:44:03.516Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:44:03.516Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:44:03.516Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:44:03.519Z [DEBUG] [useDeferredValue] Messages deferred by 3 (28→31)
+2026-02-27T01:44:03.522Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:03.527Z [DEBUG] High write ratio: blit=0, write=7646 (100.0% writes), screen=64x212
+2026-02-27T01:44:03.546Z [DEBUG] High write ratio: blit=0, write=8085 (100.0% writes), screen=68x212
+2026-02-27T01:44:06.293Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:44:06.314Z [DEBUG] High write ratio: blit=0, write=8127 (100.0% writes), screen=70x212
+2026-02-27T01:44:07.245Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:07.246Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:07.246Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:44:07.246Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:07.247Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:44:07.250Z [DEBUG] [useDeferredValue] Messages deferred by 2 (31→33)
+2026-02-27T01:44:07.254Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:07.270Z [DEBUG] High write ratio: blit=0, write=8247 (100.0% writes), screen=71x212
+2026-02-27T01:44:07.363Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 116ms
+2026-02-27T01:44:07.364Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:44:07.364Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:44:07.364Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:44:07.365Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:44:07.365Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:44:07.365Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:44:07.365Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:44:07.366Z [DEBUG] autocompact: tokens=61262 threshold=967000 effectiveWindow=980000
+2026-02-27T01:44:07.366Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:44:07.369Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772156647369
+2026-02-27T01:44:07.369Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:44:07.369Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:44:07.369Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:44:07.369Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772156647369 to /Users/admin/.claude.json
+2026-02-27T01:44:07.369Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:44:07.370Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:44:07.370Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:44:07.370Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:44:07.370Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:44:07.372Z [DEBUG] [useDeferredValue] Messages deferred by 3 (33→36)
+2026-02-27T01:44:07.376Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:07.381Z [DEBUG] High write ratio: blit=0, write=8234 (100.0% writes), screen=70x212
+2026-02-27T01:44:07.398Z [DEBUG] High write ratio: blit=0, write=8673 (100.0% writes), screen=74x212
+2026-02-27T01:44:09.936Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:44:24.512Z [DEBUG] [useDeferredValue] Messages deferred by 1 (36→37)
+2026-02-27T01:44:24.516Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:24.544Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-27T01:44:24.544Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T01:44:24.544Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-27T01:44:24.548Z [DEBUG] [useDeferredValue] Messages deferred by 2 (36→38)
+2026-02-27T01:44:24.549Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:24.577Z [DEBUG] High write ratio: blit=0, write=9841 (100.0% writes), screen=113x212
+2026-02-27T01:44:24.880Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-27T01:44:24.882Z [DEBUG] [useDeferredValue] Messages deferred by 3 (38→41)
+2026-02-27T01:44:24.886Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:44:24.893Z [DEBUG] High write ratio: blit=0, write=9791 (100.0% writes), screen=113x212
+2026-02-27T01:44:24.893Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T01:45:24.905Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2026-02-27T01:45:24.905Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T01:45:24.905Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2026-02-27T01:52:46.057Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:52:50.376Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:22.208Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:22.891Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:23.022Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:34.343Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:54:34.343Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:54:34.343Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:54:34.343Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:54:34.349Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-27T01:54:34.349Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T01:54:34.349Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-27T01:54:34.349Z [DEBUG] FileHistory: Making snapshot for message 62fe4e5a-c310-444c-a640-3df3fa841b7c
+2026-02-27T01:54:34.350Z [DEBUG] FileHistory: Added snapshot for 62fe4e5a-c310-444c-a640-3df3fa841b7c, tracking 0 files
+2026-02-27T01:54:34.352Z [DEBUG] [useDeferredValue] Messages deferred by 2 (41→43)
+2026-02-27T01:54:34.365Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:34.376Z [DEBUG] High write ratio: blit=0, write=9833 (100.0% writes), screen=117x212
+2026-02-27T01:54:34.385Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T01:54:34.391Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157274391
+2026-02-27T01:54:34.391Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:54:34.391Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:54:34.391Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:54:34.391Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157274391 to /Users/admin/.claude.json
+2026-02-27T01:54:34.392Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:54:34.392Z [DEBUG] autocompact: tokens=62173 threshold=967000 effectiveWindow=980000
+2026-02-27T01:54:34.393Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:54:34.396Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157274396
+2026-02-27T01:54:34.396Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:54:34.397Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:54:34.397Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:54:34.397Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157274396 to /Users/admin/.claude.json
+2026-02-27T01:54:34.397Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:54:34.398Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:54:34.398Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:54:34.398Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:54:34.398Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:54:34.405Z [DEBUG] [useDeferredValue] Messages deferred by 2 (41→43)
+2026-02-27T01:54:34.407Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:34.434Z [DEBUG] High write ratio: blit=0, write=9833 (100.0% writes), screen=117x212
+2026-02-27T01:54:38.140Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:54:51.448Z [DEBUG] [useDeferredValue] Messages deferred by 1 (43→44)
+2026-02-27T01:54:51.452Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:51.484Z [DEBUG] High write ratio: blit=0, write=9850 (100.0% writes), screen=117x212
+2026-02-27T01:54:52.901Z [DEBUG] [useDeferredValue] Messages deferred by 1 (44→45)
+2026-02-27T01:54:52.908Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:52.919Z [DEBUG] High write ratio: blit=0, write=9893 (100.0% writes), screen=119x212
+2026-02-27T01:54:52.959Z [DEBUG] High write ratio: blit=0, write=9963 (100.0% writes), screen=121x212
+2026-02-27T01:54:54.478Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:54.479Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:54.479Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:54:54.479Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:54:54.481Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:54:54.483Z [DEBUG] [useDeferredValue] Messages deferred by 2 (45→47)
+2026-02-27T01:54:54.487Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:54.502Z [DEBUG] High write ratio: blit=0, write=10133 (100.0% writes), screen=124x212
+2026-02-27T01:54:54.548Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 67ms
+2026-02-27T01:54:54.549Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:54.549Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:54:54.549Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:54:54.551Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:54.725Z [DEBUG] [useDeferredValue] Messages deferred by 2 (47→49)
+2026-02-27T01:54:54.730Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:54.739Z [DEBUG] High write ratio: blit=0, write=10120 (100.0% writes), screen=123x212
+2026-02-27T01:54:54.744Z [DEBUG] [useDeferredValue] Messages deferred by 2 (47→49)
+2026-02-27T01:54:54.759Z [DEBUG] High write ratio: blit=0, write=10560 (100.0% writes), screen=127x212
+2026-02-27T01:54:55.025Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:55.026Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:55.026Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:54:55.026Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:54:55.026Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:54:55.027Z [DEBUG] [useDeferredValue] Messages deferred by 1 (49→50)
+2026-02-27T01:54:55.031Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:55.048Z [DEBUG] High write ratio: blit=0, write=10519 (100.0% writes), screen=125x212
+2026-02-27T01:54:55.060Z [DEBUG] High write ratio: blit=0, write=10673 (100.0% writes), screen=128x212
+2026-02-27T01:54:55.066Z [DEBUG] [useDeferredValue] Messages deferred by 1 (50→51)
+2026-02-27T01:54:55.069Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:55.076Z [DEBUG] High write ratio: blit=0, write=10673 (100.0% writes), screen=128x212
+2026-02-27T01:54:55.096Z [DEBUG] High write ratio: blit=0, write=10673 (100.0% writes), screen=128x212
+2026-02-27T01:54:55.097Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 71ms
+2026-02-27T01:54:55.098Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:54:55.098Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:54:55.098Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:54:55.099Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:54:55.099Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:54:55.099Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:54:55.099Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:54:55.100Z [DEBUG] autocompact: tokens=64558 threshold=967000 effectiveWindow=980000
+2026-02-27T01:54:55.100Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:54:55.103Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157295103
+2026-02-27T01:54:55.103Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:54:55.103Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:54:55.103Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:54:55.103Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157295103 to /Users/admin/.claude.json
+2026-02-27T01:54:55.103Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:54:55.104Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:54:55.104Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:54:55.104Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:54:55.105Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:54:55.106Z [DEBUG] [useDeferredValue] Messages deferred by 4 (51→55)
+2026-02-27T01:54:55.109Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:54:55.115Z [DEBUG] High write ratio: blit=0, write=10660 (100.0% writes), screen=127x212
+2026-02-27T01:54:55.132Z [DEBUG] High write ratio: blit=0, write=11099 (100.0% writes), screen=131x212
+2026-02-27T01:54:58.333Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:54:58.348Z [DEBUG] High write ratio: blit=0, write=11140 (100.0% writes), screen=133x212
+2026-02-27T01:55:00.128Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:55:00.129Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:55:00.129Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T01:55:00.129Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:55:00.129Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T01:55:00.131Z [DEBUG] [useDeferredValue] Messages deferred by 2 (55→57)
+2026-02-27T01:55:00.135Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:55:00.143Z [DEBUG] High write ratio: blit=0, write=11099 (100.0% writes), screen=131x212
+2026-02-27T01:55:00.159Z [DEBUG] High write ratio: blit=0, write=11274 (100.0% writes), screen=134x212
+2026-02-27T01:55:00.198Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 69ms
+2026-02-27T01:55:00.199Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T01:55:00.199Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T01:55:00.199Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T01:55:00.200Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T01:55:00.200Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T01:55:00.200Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T01:55:00.200Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T01:55:00.200Z [DEBUG] autocompact: tokens=65744 threshold=967000 effectiveWindow=980000
+2026-02-27T01:55:00.200Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T01:55:00.203Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157300203
+2026-02-27T01:55:00.203Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T01:55:00.203Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T01:55:00.203Z [DEBUG] Applied original permissions to temp file
+2026-02-27T01:55:00.203Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157300203 to /Users/admin/.claude.json
+2026-02-27T01:55:00.203Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T01:55:00.204Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T01:55:00.204Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T01:55:00.204Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T01:55:00.204Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T01:55:00.205Z [DEBUG] [useDeferredValue] Messages deferred by 3 (57→60)
+2026-02-27T01:55:00.208Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:55:00.214Z [DEBUG] High write ratio: blit=0, write=11261 (100.0% writes), screen=133x212
+2026-02-27T01:55:00.232Z [DEBUG] High write ratio: blit=0, write=11701 (100.0% writes), screen=137x212
+2026-02-27T01:55:03.948Z [DEBUG] Stream started - received first chunk
+2026-02-27T01:55:18.780Z [DEBUG] [useDeferredValue] Messages deferred by 1 (60→61)
+2026-02-27T01:55:18.783Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:55:18.810Z [DEBUG] High write ratio: blit=0, write=12727 (100.0% writes), screen=173x212
+2026-02-27T01:55:18.817Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-27T01:55:18.817Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T01:55:18.817Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-27T01:55:18.820Z [DEBUG] [useDeferredValue] Messages deferred by 1 (61→62)
+2026-02-27T01:55:18.822Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:55:18.836Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-27T01:55:18.838Z [DEBUG] [useDeferredValue] Messages deferred by 3 (62→65)
+2026-02-27T01:55:18.840Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T01:55:18.848Z [DEBUG] High write ratio: blit=0, write=12688 (100.0% writes), screen=173x212
+2026-02-27T01:55:18.849Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T01:55:45.823Z [DEBUG] High write ratio: blit=6148, write=7930 (56.3% writes), screen=173x212
+2026-02-27T01:56:35.187Z [DEBUG] High write ratio: blit=6148, write=7930 (56.3% writes), screen=173x212
+2026-02-27T01:56:38.217Z [DEBUG] High write ratio: blit=6148, write=7930 (56.3% writes), screen=173x212
+2026-02-27T02:00:21.738Z [DEBUG] High write ratio: blit=6148, write=7930 (56.3% writes), screen=173x212
+2026-02-27T02:00:23.358Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:24.484Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:25.089Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:29.638Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:29.648Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:31.968Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:00:31.968Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:00:31.968Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:00:31.968Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:00:31.972Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-27T02:00:31.972Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T02:00:31.972Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-27T02:00:31.972Z [DEBUG] FileHistory: Making snapshot for message c352c19d-b4e8-4ce4-8435-4973b61b82e2
+2026-02-27T02:00:31.973Z [DEBUG] FileHistory: Added snapshot for c352c19d-b4e8-4ce4-8435-4973b61b82e2, tracking 0 files
+2026-02-27T02:00:31.974Z [DEBUG] [useDeferredValue] Messages deferred by 2 (65→67)
+2026-02-27T02:00:31.984Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:32.027Z [DEBUG] High write ratio: blit=0, write=81951 (100.0% writes), screen=509x212
+2026-02-27T02:00:32.059Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T02:00:32.065Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157632065
+2026-02-27T02:00:32.065Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:00:32.066Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:00:32.067Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:00:32.067Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157632065 to /Users/admin/.claude.json
+2026-02-27T02:00:32.067Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:00:32.069Z [DEBUG] autocompact: tokens=74829 threshold=967000 effectiveWindow=980000
+2026-02-27T02:00:32.069Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:00:32.073Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157632073
+2026-02-27T02:00:32.073Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:00:32.073Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:00:32.073Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:00:32.073Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157632073 to /Users/admin/.claude.json
+2026-02-27T02:00:32.073Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:00:32.074Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:00:32.074Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:00:32.074Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:00:32.075Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:00:32.077Z [DEBUG] Stored paste f3f95b4043ab89c3 to /Users/admin/.claude/paste-cache/f3f95b4043ab89c3.txt
+2026-02-27T02:00:32.080Z [DEBUG] [useDeferredValue] Messages deferred by 2 (65→67)
+2026-02-27T02:00:32.082Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:32.106Z [DEBUG] High write ratio: blit=35192, write=69886 (66.5% writes), screen=509x212
+2026-02-27T02:00:32.156Z [DEBUG] High write ratio: blit=0, write=81951 (100.0% writes), screen=509x212
+2026-02-27T02:00:35.657Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:00:50.379Z [DEBUG] [useDeferredValue] Messages deferred by 1 (67→68)
+2026-02-27T02:00:50.381Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:50.431Z [DEBUG] High write ratio: blit=0, write=81968 (100.0% writes), screen=509x212
+2026-02-27T02:00:54.956Z [DEBUG] [useDeferredValue] Messages deferred by 1 (68→69)
+2026-02-27T02:00:54.967Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:55.013Z [DEBUG] High write ratio: blit=0, write=81999 (100.0% writes), screen=511x212
+2026-02-27T02:00:55.014Z [DEBUG] [useDeferredValue] Messages deferred by 1 (68→69)
+2026-02-27T02:00:55.063Z [DEBUG] High write ratio: blit=0, write=82446 (100.0% writes), screen=524x212
+2026-02-27T02:00:56.923Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:56.924Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:56.924Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:00:56.924Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:00:56.925Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:00:56.927Z [DEBUG] [useDeferredValue] Messages deferred by 2 (69→71)
+2026-02-27T02:00:56.931Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:56.976Z [DEBUG] High write ratio: blit=0, write=82666 (100.0% writes), screen=527x212
+2026-02-27T02:00:57.044Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 119ms
+2026-02-27T02:00:57.045Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:57.045Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:00:57.045Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:00:57.047Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:57.534Z [DEBUG] [useDeferredValue] Messages deferred by 2 (71→73)
+2026-02-27T02:00:57.539Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:57.540Z [DEBUG] [useDeferredValue] Messages deferred by 2 (71→73)
+2026-02-27T02:00:57.584Z [DEBUG] High write ratio: blit=0, write=83092 (100.0% writes), screen=530x212
+2026-02-27T02:00:57.868Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:57.868Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:57.868Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:00:57.868Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:00:57.869Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:00:57.869Z [DEBUG] [useDeferredValue] Messages deferred by 1 (73→74)
+2026-02-27T02:00:57.872Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:57.917Z [DEBUG] High write ratio: blit=0, write=83219 (100.0% writes), screen=531x212
+2026-02-27T02:00:57.923Z [DEBUG] [useDeferredValue] Messages deferred by 1 (74→75)
+2026-02-27T02:00:57.926Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:57.959Z [DEBUG] High write ratio: blit=0, write=83219 (100.0% writes), screen=531x212
+2026-02-27T02:00:58.001Z [DEBUG] High write ratio: blit=0, write=83219 (100.0% writes), screen=531x212
+2026-02-27T02:00:58.026Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 157ms
+2026-02-27T02:00:58.028Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:00:58.028Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:00:58.028Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:00:58.028Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:00:58.028Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:00:58.029Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:00:58.029Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:00:58.029Z [DEBUG] autocompact: tokens=80118 threshold=967000 effectiveWindow=980000
+2026-02-27T02:00:58.029Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:00:58.032Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157658032
+2026-02-27T02:00:58.032Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:00:58.033Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:00:58.033Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:00:58.033Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157658032 to /Users/admin/.claude.json
+2026-02-27T02:00:58.033Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:00:58.034Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:00:58.034Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:00:58.034Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:00:58.034Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:00:58.036Z [DEBUG] [useDeferredValue] Messages deferred by 3 (75→78)
+2026-02-27T02:00:58.038Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:00:58.070Z [DEBUG] High write ratio: blit=0, write=83206 (100.0% writes), screen=530x212
+2026-02-27T02:00:58.110Z [DEBUG] High write ratio: blit=0, write=83646 (100.0% writes), screen=534x212
+2026-02-27T02:01:01.630Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:01:01.676Z [DEBUG] High write ratio: blit=0, write=83687 (100.0% writes), screen=536x212
+2026-02-27T02:01:03.371Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__find_symbol
+2026-02-27T02:01:03.371Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T02:01:03.371Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:01:03.371Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T02:01:03.372Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: find_symbol
+2026-02-27T02:01:03.373Z [DEBUG] [useDeferredValue] Messages deferred by 2 (78→80)
+2026-02-27T02:01:03.378Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:03.423Z [DEBUG] High write ratio: blit=0, write=83896 (100.0% writes), screen=539x212
+2026-02-27T02:01:03.688Z [DEBUG] MCP server "plugin:serena:serena": Tool 'find_symbol' completed successfully in 316ms
+2026-02-27T02:01:03.689Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__find_symbol
+2026-02-27T02:01:03.689Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:01:03.689Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__find_symbol" (0 before deduplication)
+2026-02-27T02:01:03.690Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:04.293Z [DEBUG] [useDeferredValue] Messages deferred by 2 (80→82)
+2026-02-27T02:01:04.297Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:04.335Z [DEBUG] High write ratio: blit=0, write=83883 (100.0% writes), screen=538x212
+2026-02-27T02:01:04.340Z [DEBUG] [useDeferredValue] Messages deferred by 2 (80→82)
+2026-02-27T02:01:04.389Z [DEBUG] High write ratio: blit=0, write=84323 (100.0% writes), screen=542x212
+2026-02-27T02:01:05.439Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:05.440Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:05.440Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:01:05.440Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:05.440Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:01:05.441Z [DEBUG] [useDeferredValue] Messages deferred by 1 (82→83)
+2026-02-27T02:01:05.444Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:05.489Z [DEBUG] High write ratio: blit=0, write=84559 (100.0% writes), screen=544x212
+2026-02-27T02:01:05.490Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 50ms
+2026-02-27T02:01:05.491Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:05.491Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:01:05.491Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:05.495Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:01:05.495Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:01:05.495Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:01:05.495Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:01:05.495Z [DEBUG] autocompact: tokens=81764 threshold=967000 effectiveWindow=980000
+2026-02-27T02:01:05.496Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:01:05.498Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157665498
+2026-02-27T02:01:05.498Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:01:05.498Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:01:05.498Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:01:05.498Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157665498 to /Users/admin/.claude.json
+2026-02-27T02:01:05.499Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:01:05.499Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:01:05.499Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:01:05.499Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:01:05.499Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:01:05.501Z [DEBUG] [useDeferredValue] Messages deferred by 4 (83→87)
+2026-02-27T02:01:05.503Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:05.534Z [DEBUG] High write ratio: blit=0, write=84546 (100.0% writes), screen=543x212
+2026-02-27T02:01:05.587Z [DEBUG] High write ratio: blit=0, write=84569 (100.0% writes), screen=546x212
+2026-02-27T02:01:06.581Z [DEBUG] High write ratio: blit=6148, write=79812 (92.8% writes), screen=546x212
+2026-02-27T02:01:10.167Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:01:10.223Z [DEBUG] High write ratio: blit=0, write=84617 (100.0% writes), screen=548x212
+2026-02-27T02:01:11.059Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:11.062Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:11.062Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:01:11.062Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:11.066Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:01:11.070Z [DEBUG] [useDeferredValue] Messages deferred by 1 (87→88)
+2026-02-27T02:01:11.077Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:11.117Z [DEBUG] High write ratio: blit=0, write=84569 (100.0% writes), screen=546x212
+2026-02-27T02:01:11.124Z [DEBUG] [useDeferredValue] Messages deferred by 2 (87→89)
+2026-02-27T02:01:11.126Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:11.158Z [DEBUG] High write ratio: blit=0, write=84569 (100.0% writes), screen=546x212
+2026-02-27T02:01:11.197Z [DEBUG] High write ratio: blit=0, write=84793 (100.0% writes), screen=549x212
+2026-02-27T02:01:11.200Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 134ms
+2026-02-27T02:01:11.202Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:11.202Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:01:11.202Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:11.203Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:01:11.203Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:01:11.203Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:01:11.203Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:01:11.205Z [DEBUG] autocompact: tokens=82368 threshold=967000 effectiveWindow=980000
+2026-02-27T02:01:11.205Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:01:11.208Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157671208
+2026-02-27T02:01:11.208Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:01:11.208Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:01:11.209Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:01:11.209Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157671208 to /Users/admin/.claude.json
+2026-02-27T02:01:11.209Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:01:11.209Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:01:11.210Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:01:11.210Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:01:11.210Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:01:11.216Z [DEBUG] [useDeferredValue] Messages deferred by 3 (89→92)
+2026-02-27T02:01:11.220Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:11.252Z [DEBUG] High write ratio: blit=0, write=84780 (100.0% writes), screen=548x212
+2026-02-27T02:01:11.294Z [DEBUG] High write ratio: blit=0, write=85171 (100.0% writes), screen=552x212
+2026-02-27T02:01:17.093Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:01:17.170Z [DEBUG] High write ratio: blit=0, write=85210 (100.0% writes), screen=554x212
+2026-02-27T02:01:17.625Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__read_file
+2026-02-27T02:01:17.627Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__read_file
+2026-02-27T02:01:17.627Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:01:17.627Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__read_file" (0 before deduplication)
+2026-02-27T02:01:17.628Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: read_file
+2026-02-27T02:01:17.630Z [DEBUG] [useDeferredValue] Messages deferred by 2 (92→94)
+2026-02-27T02:01:17.635Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:17.681Z [DEBUG] High write ratio: blit=0, write=85219 (100.0% writes), screen=554x212
+2026-02-27T02:01:17.737Z [DEBUG] High write ratio: blit=0, write=85355 (100.0% writes), screen=557x212
+2026-02-27T02:01:17.738Z [DEBUG] MCP server "plugin:serena:serena": Tool 'read_file' completed successfully in 110ms
+2026-02-27T02:01:17.740Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__read_file
+2026-02-27T02:01:17.740Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:01:17.740Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__read_file" (0 before deduplication)
+2026-02-27T02:01:17.744Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:18.115Z [DEBUG] [useDeferredValue] Messages deferred by 2 (94→96)
+2026-02-27T02:01:18.117Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:18.149Z [DEBUG] High write ratio: blit=0, write=85341 (100.0% writes), screen=556x212
+2026-02-27T02:01:18.155Z [DEBUG] [useDeferredValue] Messages deferred by 2 (94→96)
+2026-02-27T02:01:18.225Z [DEBUG] High write ratio: blit=0, write=85780 (100.0% writes), screen=560x212
+2026-02-27T02:01:18.426Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:18.426Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:18.426Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:01:18.426Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:18.427Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:01:18.427Z [DEBUG] [useDeferredValue] Messages deferred by 1 (96→97)
+2026-02-27T02:01:18.431Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:18.475Z [DEBUG] High write ratio: blit=0, write=85915 (100.0% writes), screen=561x212
+2026-02-27T02:01:18.478Z [DEBUG] [useDeferredValue] Messages deferred by 1 (97→98)
+2026-02-27T02:01:18.480Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:18.520Z [DEBUG] High write ratio: blit=0, write=85915 (100.0% writes), screen=561x212
+2026-02-27T02:01:18.573Z [DEBUG] High write ratio: blit=0, write=85915 (100.0% writes), screen=561x212
+2026-02-27T02:01:18.576Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 149ms
+2026-02-27T02:01:18.577Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:01:18.577Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:01:18.577Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:01:18.578Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:01:18.578Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:01:18.578Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:01:18.578Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:01:18.578Z [DEBUG] autocompact: tokens=83236 threshold=967000 effectiveWindow=980000
+2026-02-27T02:01:18.578Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:01:18.581Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772157678581
+2026-02-27T02:01:18.581Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:01:18.581Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:01:18.581Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:01:18.581Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772157678581 to /Users/admin/.claude.json
+2026-02-27T02:01:18.581Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:01:18.582Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:01:18.582Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:01:18.582Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:01:18.582Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:01:18.586Z [DEBUG] [useDeferredValue] Messages deferred by 4 (98→102)
+2026-02-27T02:01:18.588Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:18.620Z [DEBUG] High write ratio: blit=0, write=85902 (100.0% writes), screen=560x212
+2026-02-27T02:01:18.659Z [DEBUG] High write ratio: blit=0, write=86241 (100.0% writes), screen=564x212
+2026-02-27T02:01:20.976Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:01:22.445Z [DEBUG] High write ratio: blit=6148, write=81484 (93.0% writes), screen=564x212
+2026-02-27T02:01:33.251Z [DEBUG] [useDeferredValue] Messages deferred by 1 (102→103)
+2026-02-27T02:01:33.256Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:33.319Z [DEBUG] High write ratio: blit=0, write=87282 (100.0% writes), screen=593x212
+2026-02-27T02:01:33.326Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-27T02:01:33.326Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T02:01:33.326Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-27T02:01:33.329Z [DEBUG] [useDeferredValue] Messages deferred by 1 (103→104)
+2026-02-27T02:01:33.330Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:33.383Z [DEBUG] High write ratio: blit=0, write=87302 (100.0% writes), screen=593x212
+2026-02-27T02:01:33.384Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-27T02:01:33.387Z [DEBUG] [useDeferredValue] Messages deferred by 3 (104→107)
+2026-02-27T02:01:33.391Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:01:33.422Z [DEBUG] High write ratio: blit=0, write=87270 (100.0% writes), screen=593x212
+2026-02-27T02:01:33.423Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T02:02:18.186Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:05:08.303Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:05:10.794Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:12:41.840Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T02:12:45.297Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T02:12:48.690Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:14:28.189Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:16:26.663Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:16:27.670Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:16:41.759Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:17:21.001Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:17:34.298Z [DEBUG] High write ratio: blit=6148, write=82514 (93.1% writes), screen=593x212
+2026-02-27T02:17:34.918Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:17:35.147Z [DEBUG] [FileIndex] getProjectFiles called, respectGitignore=true
+2026-02-27T02:17:35.148Z [DEBUG] [FileIndex] getFilesUsingGit called
+2026-02-27T02:17:35.157Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158655157
+2026-02-27T02:17:35.157Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:17:35.157Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:17:35.158Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:17:35.158Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158655157 to /Users/admin/.claude.json
+2026-02-27T02:17:35.158Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:17:35.199Z [WARN] Failed to parse YAML frontmatter in /Users/admin/.claude/skills/search-platform-best-practices/references/mapping-explicit-mapping.md: YAML Parse error: Unexpected token
+2026-02-27T02:17:35.202Z [DEBUG] [FileIndex] git ls-files (tracked) took 44ms
+2026-02-27T02:17:35.205Z [DEBUG] [FileIndex] git ls-files: 363 tracked files in 57ms
+2026-02-27T02:17:35.207Z [DEBUG] [FileIndex] using git ls-files result (363 files)
+2026-02-27T02:17:35.593Z [DEBUG] [FileIndex] cache refresh completed in 448ms (rust index)
+2026-02-27T02:17:35.593Z [DEBUG] [FileIndex] background untracked fetch: 1 files
+2026-02-27T02:17:35.595Z [DEBUG] [FileIndex] rebuilt Rust index with 363 tracked + 1 untracked files
+2026-02-27T02:19:50.195Z [DEBUG] High write ratio: blit=6148, write=82563 (93.1% writes), screen=593x212
+2026-02-27T02:20:35.494Z [DEBUG] High write ratio: blit=6148, write=82563 (93.1% writes), screen=593x212
+2026-02-27T02:22:25.995Z [DEBUG] High write ratio: blit=6148, write=82568 (93.1% writes), screen=593x212
+2026-02-27T02:22:33.236Z [DEBUG] High write ratio: blit=6148, write=82568 (93.1% writes), screen=593x212
+2026-02-27T02:22:36.680Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:36.695Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T02:22:36.697Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:36.699Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-27T02:22:38.036Z [DEBUG] Stored paste 4e4be84ac21f5c86 to /Users/admin/.claude/paste-cache/4e4be84ac21f5c86.txt
+2026-02-27T02:22:38.042Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:38.110Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:22:38.110Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:22:38.110Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:22:38.110Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:22:38.126Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-27T02:22:38.126Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T02:22:38.126Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-27T02:22:38.126Z [DEBUG] FileHistory: Making snapshot for message 7b150eae-d24a-4199-bb3a-41825ee44265
+2026-02-27T02:22:38.126Z [DEBUG] FileHistory: Added snapshot for 7b150eae-d24a-4199-bb3a-41825ee44265, tracking 0 files
+2026-02-27T02:22:38.128Z [DEBUG] [useDeferredValue] Messages deferred by 3 (107→110)
+2026-02-27T02:22:38.136Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:38.192Z [DEBUG] High write ratio: blit=0, write=147694 (100.0% writes), screen=887x212
+2026-02-27T02:22:38.194Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T02:22:38.198Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158958198
+2026-02-27T02:22:38.198Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:22:38.198Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:22:38.198Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:22:38.198Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158958198 to /Users/admin/.claude.json
+2026-02-27T02:22:38.198Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:22:38.201Z [DEBUG] autocompact: tokens=89506 threshold=967000 effectiveWindow=980000
+2026-02-27T02:22:38.201Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:22:38.204Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158958204
+2026-02-27T02:22:38.204Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:22:38.205Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:22:38.205Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:22:38.205Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158958204 to /Users/admin/.claude.json
+2026-02-27T02:22:38.207Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:22:38.207Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:22:38.208Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:22:38.208Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:22:38.208Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:22:38.214Z [DEBUG] [useDeferredValue] Messages deferred by 3 (107→110)
+2026-02-27T02:22:38.216Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:38.303Z [DEBUG] High write ratio: blit=0, write=147837 (100.0% writes), screen=888x212
+2026-02-27T02:22:40.021Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T02:22:42.459Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:22:57.229Z [DEBUG] High write ratio: blit=6148, write=143137 (95.9% writes), screen=888x212
+2026-02-27T02:22:58.959Z [DEBUG] [useDeferredValue] Messages deferred by 1 (110→111)
+2026-02-27T02:22:58.961Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:22:59.058Z [DEBUG] High write ratio: blit=0, write=147901 (100.0% writes), screen=888x212
+2026-02-27T02:23:01.404Z [DEBUG] [useDeferredValue] Messages deferred by 1 (111→112)
+2026-02-27T02:23:01.407Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:01.413Z [DEBUG] [useDeferredValue] Messages deferred by 1 (111→112)
+2026-02-27T02:23:01.497Z [DEBUG] High write ratio: blit=0, write=147932 (100.0% writes), screen=890x212
+2026-02-27T02:23:01.558Z [DEBUG] High write ratio: blit=0, write=148078 (100.0% writes), screen=894x212
+2026-02-27T02:23:03.471Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:23:03.472Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:23:03.472Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:23:03.473Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:23:03.475Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: search_for_pattern
+2026-02-27T02:23:03.477Z [DEBUG] [useDeferredValue] Messages deferred by 2 (112→114)
+2026-02-27T02:23:03.487Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:03.557Z [DEBUG] High write ratio: blit=0, write=148030 (100.0% writes), screen=892x212
+2026-02-27T02:23:03.560Z [DEBUG] MCP server "plugin:serena:serena": Tool 'search_for_pattern' completed successfully in 85ms
+2026-02-27T02:23:03.561Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__search_for_pattern
+2026-02-27T02:23:03.561Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:23:03.561Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__search_for_pattern" (0 before deduplication)
+2026-02-27T02:23:03.565Z [DEBUG] [useDeferredValue] Messages deferred by 2 (112→114)
+2026-02-27T02:23:03.566Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:03.640Z [DEBUG] High write ratio: blit=0, write=148263 (100.0% writes), screen=896x212
+2026-02-27T02:23:04.519Z [DEBUG] [useDeferredValue] Messages deferred by 2 (114→116)
+2026-02-27T02:23:04.525Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:04.600Z [DEBUG] High write ratio: blit=0, write=148250 (100.0% writes), screen=895x212
+2026-02-27T02:23:04.603Z [DEBUG] [useDeferredValue] Messages deferred by 2 (114→116)
+2026-02-27T02:23:04.676Z [DEBUG] High write ratio: blit=0, write=148419 (100.0% writes), screen=898x212
+2026-02-27T02:23:04.810Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-27T02:23:04.811Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-27T02:23:04.811Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:23:04.811Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:23:04.833Z [DEBUG] [useDeferredValue] Messages deferred by 1 (116→117)
+2026-02-27T02:23:04.836Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:04.889Z [DEBUG] High write ratio: blit=0, write=148419 (100.0% writes), screen=898x212
+2026-02-27T02:23:04.895Z [DEBUG] tree-sitter: loaded from embedded
+2026-02-27T02:23:04.908Z [DEBUG] Creating shell snapshot for zsh (/bin/zsh)
+2026-02-27T02:23:04.908Z [DEBUG] Looking for shell config file: /Users/admin/.zshrc
+2026-02-27T02:23:04.908Z [DEBUG] Snapshots directory: /Users/admin/.claude/shell-snapshots
+2026-02-27T02:23:04.909Z [DEBUG] [useDeferredValue] Messages deferred by 1 (116→117)
+2026-02-27T02:23:04.911Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:04.913Z [DEBUG] Creating snapshot at: /Users/admin/.claude/shell-snapshots/snapshot-zsh-1772158984908-iemw4o.sh
+2026-02-27T02:23:04.913Z [DEBUG] Execution timeout: 10000ms
+2026-02-27T02:23:04.987Z [DEBUG] High write ratio: blit=0, write=148585 (100.0% writes), screen=901x212
+2026-02-27T02:23:05.778Z [DEBUG] Shell snapshot created successfully (271920 bytes)
+2026-02-27T02:23:05.779Z [DEBUG] No session environment scripts found
+2026-02-27T02:23:05.779Z [DEBUG] Spawning shell without login (-l flag skipped)
+2026-02-27T02:23:05.907Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-27T02:23:05.909Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.3fc; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:23:05.909Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:23:05.909Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:23:05.909Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:23:05.910Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-27T02:23:05.910Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:23:05.910Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:23:05.911Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:23:05.911Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:23:05.911Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:23:05.911Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:23:05.911Z [DEBUG] autocompact: tokens=92634 threshold=967000 effectiveWindow=980000
+2026-02-27T02:23:05.911Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:23:05.915Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158985915
+2026-02-27T02:23:05.915Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:23:05.915Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:23:05.915Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:23:05.915Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158985915 to /Users/admin/.claude.json
+2026-02-27T02:23:05.915Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:23:05.916Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:23:05.916Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:23:05.916Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:23:05.916Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:23:05.917Z [DEBUG] [useDeferredValue] Messages deferred by 2 (117→119)
+2026-02-27T02:23:05.920Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:05.976Z [DEBUG] High write ratio: blit=0, write=148585 (100.0% writes), screen=901x212
+2026-02-27T02:23:06.054Z [DEBUG] High write ratio: blit=0, write=148699 (100.0% writes), screen=901x212
+2026-02-27T02:23:06.501Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:23:08.482Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:23:12.611Z [DEBUG] [useDeferredValue] Messages deferred by 1 (119→120)
+2026-02-27T02:23:12.617Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:12.691Z [DEBUG] High write ratio: blit=0, write=148757 (100.0% writes), screen=903x212
+2026-02-27T02:23:12.770Z [DEBUG] High write ratio: blit=0, write=149461 (100.0% writes), screen=922x212
+2026-02-27T02:23:13.000Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__read_file
+2026-02-27T02:23:13.001Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__read_file
+2026-02-27T02:23:13.001Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:23:13.001Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__read_file" (0 before deduplication)
+2026-02-27T02:23:13.002Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: read_file
+2026-02-27T02:23:13.002Z [DEBUG] [useDeferredValue] Messages deferred by 1 (120→121)
+2026-02-27T02:23:13.006Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:13.071Z [DEBUG] High write ratio: blit=0, write=149422 (100.0% writes), screen=920x212
+2026-02-27T02:23:13.078Z [DEBUG] [useDeferredValue] Messages deferred by 2 (120→122)
+2026-02-27T02:23:13.081Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:13.138Z [DEBUG] High write ratio: blit=0, write=149422 (100.0% writes), screen=920x212
+2026-02-27T02:23:13.139Z [DEBUG] MCP server "plugin:serena:serena": Tool 'read_file' completed successfully in 137ms
+2026-02-27T02:23:13.140Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__read_file
+2026-02-27T02:23:13.140Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:23:13.140Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__read_file" (0 before deduplication)
+2026-02-27T02:23:13.140Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:23:13.140Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:23:13.140Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:23:13.140Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:23:13.141Z [DEBUG] autocompact: tokens=93176 threshold=967000 effectiveWindow=980000
+2026-02-27T02:23:13.141Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:23:13.143Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158993143
+2026-02-27T02:23:13.143Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:23:13.144Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:23:13.144Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:23:13.144Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158993143 to /Users/admin/.claude.json
+2026-02-27T02:23:13.144Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:23:13.145Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:23:13.145Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:23:13.145Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:23:13.145Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:23:13.150Z [DEBUG] [useDeferredValue] Messages deferred by 5 (120→125)
+2026-02-27T02:23:13.152Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:13.208Z [DEBUG] High write ratio: blit=0, write=149422 (100.0% writes), screen=920x212
+2026-02-27T02:23:13.282Z [DEBUG] High write ratio: blit=0, write=149985 (100.0% writes), screen=926x212
+2026-02-27T02:23:16.280Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:23:16.362Z [DEBUG] High write ratio: blit=0, write=150030 (100.0% writes), screen=928x212
+2026-02-27T02:23:17.262Z [DEBUG] executePreToolHooks called for tool: mcp__plugin_serena_serena__replace_content
+2026-02-27T02:23:17.264Z [DEBUG] Getting matching hook commands for PreToolUse with query: mcp__plugin_serena_serena__replace_content
+2026-02-27T02:23:17.264Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:23:17.264Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__replace_content" (0 before deduplication)
+2026-02-27T02:23:17.265Z [DEBUG] MCP server "plugin:serena:serena": Calling MCP tool: replace_content
+2026-02-27T02:23:17.266Z [DEBUG] [useDeferredValue] Messages deferred by 1 (125→126)
+2026-02-27T02:23:17.271Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:17.346Z [DEBUG] High write ratio: blit=0, write=150191 (100.0% writes), screen=929x212
+2026-02-27T02:23:17.348Z [DEBUG] MCP server "plugin:serena:serena": Tool 'replace_content' completed successfully in 83ms
+2026-02-27T02:23:17.349Z [DEBUG] Getting matching hook commands for PostToolUse with query: mcp__plugin_serena_serena__replace_content
+2026-02-27T02:23:17.349Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:23:17.349Z [DEBUG] Matched 0 unique hooks for query "mcp__plugin_serena_serena__replace_content" (0 before deduplication)
+2026-02-27T02:23:17.358Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:23:17.358Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:23:17.358Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:23:17.358Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:23:17.359Z [DEBUG] autocompact: tokens=93364 threshold=967000 effectiveWindow=980000
+2026-02-27T02:23:17.359Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:23:17.362Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772158997362
+2026-02-27T02:23:17.362Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:23:17.362Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:23:17.362Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:23:17.362Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772158997362 to /Users/admin/.claude.json
+2026-02-27T02:23:17.362Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:23:17.363Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:23:17.364Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:23:17.364Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:23:17.364Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:23:17.366Z [DEBUG] [useDeferredValue] Messages deferred by 4 (126→130)
+2026-02-27T02:23:17.372Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:17.433Z [DEBUG] High write ratio: blit=0, write=150178 (100.0% writes), screen=928x212
+2026-02-27T02:23:17.513Z [DEBUG] High write ratio: blit=0, write=150201 (100.0% writes), screen=931x212
+2026-02-27T02:23:20.062Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:23:27.029Z [DEBUG] [useDeferredValue] Messages deferred by 1 (130→131)
+2026-02-27T02:23:27.033Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:27.114Z [DEBUG] High write ratio: blit=0, write=150693 (100.0% writes), screen=941x212
+2026-02-27T02:23:27.120Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-27T02:23:27.120Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T02:23:27.120Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-27T02:23:27.124Z [DEBUG] [useDeferredValue] Messages deferred by 1 (131→132)
+2026-02-27T02:23:27.125Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:27.139Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-27T02:23:27.141Z [DEBUG] [useDeferredValue] Messages deferred by 3 (132→135)
+2026-02-27T02:23:27.144Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:23:27.200Z [DEBUG] High write ratio: blit=0, write=150677 (100.0% writes), screen=941x212
+2026-02-27T02:23:27.201Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T02:24:27.208Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2026-02-27T02:24:27.208Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T02:24:27.209Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2026-02-27T02:30:58.588Z [DEBUG] High write ratio: blit=6148, write=145919 (96.0% writes), screen=941x212
+2026-02-27T02:31:30.730Z [DEBUG] High write ratio: blit=6148, write=145919 (96.0% writes), screen=941x212
+2026-02-27T02:32:56.455Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:32:56.526Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:15.418Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:15.863Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:16.217Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:16.345Z [DEBUG] High write ratio: blit=0, write=163348 (100.0% writes), screen=934x233
+2026-02-27T02:33:20.050Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:20.376Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:26.781Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:26.934Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:27.045Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:27.126Z [DEBUG] High write ratio: blit=0, write=163348 (100.0% writes), screen=934x233
+2026-02-27T02:33:36.578Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:37.336Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:44.361Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:44.780Z [DEBUG] High write ratio: blit=0, write=149334 (100.0% writes), screen=942x210
+2026-02-27T02:33:45.033Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:33:45.148Z [DEBUG] High write ratio: blit=0, write=163348 (100.0% writes), screen=934x233
+2026-02-27T02:33:48.213Z [DEBUG] High write ratio: blit=6757, write=158129 (95.9% writes), screen=934x233
+2026-02-27T02:33:51.225Z [DEBUG] High write ratio: blit=6757, write=158129 (95.9% writes), screen=934x233
+2026-02-27T02:34:02.194Z [DEBUG] High write ratio: blit=6757, write=158129 (95.9% writes), screen=934x233
+2026-02-27T02:34:03.082Z [DEBUG] High write ratio: blit=6757, write=158129 (95.9% writes), screen=934x233
+2026-02-27T02:35:28.440Z [DEBUG] High write ratio: blit=6757, write=158129 (95.9% writes), screen=934x233
+2026-02-27T02:35:29.638Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:29.665Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:35.375Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:35:35.375Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:35:35.375Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:35:35.375Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:35:35.377Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2026-02-27T02:35:35.377Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T02:35:35.377Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2026-02-27T02:35:35.377Z [DEBUG] FileHistory: Making snapshot for message 6f5bd6c4-032f-4e15-bd4c-42d7ae1432a7
+2026-02-27T02:35:35.378Z [DEBUG] FileHistory: Added snapshot for 6f5bd6c4-032f-4e15-bd4c-42d7ae1432a7, tracking 0 files
+2026-02-27T02:35:35.380Z [DEBUG] [useDeferredValue] Messages deferred by 2 (135→137)
+2026-02-27T02:35:35.393Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:35.513Z [DEBUG] High write ratio: blit=0, write=280805 (100.0% writes), screen=1450x233
+2026-02-27T02:35:35.538Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T02:35:35.547Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772159735547
+2026-02-27T02:35:35.547Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:35:35.548Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:35:35.548Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:35:35.548Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772159735547 to /Users/admin/.claude.json
+2026-02-27T02:35:35.548Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:35:35.550Z [DEBUG] autocompact: tokens=102159 threshold=967000 effectiveWindow=980000
+2026-02-27T02:35:35.550Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:35:35.553Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772159735553
+2026-02-27T02:35:35.553Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:35:35.553Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:35:35.553Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:35:35.553Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772159735553 to /Users/admin/.claude.json
+2026-02-27T02:35:35.554Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:35:35.555Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:35.555Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:35.555Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:35.556Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:35.564Z [DEBUG] Stored paste 1f7547d4ba90648d to /Users/admin/.claude/paste-cache/1f7547d4ba90648d.txt
+2026-02-27T02:35:35.564Z [DEBUG] [useDeferredValue] Messages deferred by 2 (135→137)
+2026-02-27T02:35:35.566Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:35.742Z [DEBUG] High write ratio: blit=0, write=280805 (100.0% writes), screen=1450x233
+2026-02-27T02:35:39.807Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:35:44.973Z [DEBUG] [useDeferredValue] Messages deferred by 1 (137→138)
+2026-02-27T02:35:44.975Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:45.109Z [DEBUG] High write ratio: blit=0, write=280821 (100.0% writes), screen=1450x233
+2026-02-27T02:35:46.021Z [DEBUG] [useDeferredValue] Messages deferred by 1 (138→139)
+2026-02-27T02:35:46.029Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:46.142Z [DEBUG] High write ratio: blit=0, write=280822 (100.0% writes), screen=1450x233
+2026-02-27T02:35:46.268Z [DEBUG] High write ratio: blit=0, write=280933 (100.0% writes), screen=1452x233
+2026-02-27T02:35:47.352Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-27T02:35:47.353Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-27T02:35:47.353Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:35:47.353Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:47.365Z [DEBUG] Spawning shell without login (-l flag skipped)
+2026-02-27T02:35:47.366Z [DEBUG] [useDeferredValue] Messages deferred by 1 (139→140)
+2026-02-27T02:35:47.368Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:47.482Z [DEBUG] High write ratio: blit=0, write=280933 (100.0% writes), screen=1452x233
+2026-02-27T02:35:47.619Z [DEBUG] High write ratio: blit=0, write=281096 (100.0% writes), screen=1455x233
+2026-02-27T02:35:47.634Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-27T02:35:47.634Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.7ce; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:47.635Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:47.635Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:47.635Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:47.636Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-27T02:35:47.636Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:35:47.636Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:47.636Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:35:47.636Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:35:47.637Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:35:47.637Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:35:47.637Z [DEBUG] autocompact: tokens=105796 threshold=967000 effectiveWindow=980000
+2026-02-27T02:35:47.638Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:35:47.642Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772159747642
+2026-02-27T02:35:47.642Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:35:47.642Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:35:47.643Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:35:47.643Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772159747642 to /Users/admin/.claude.json
+2026-02-27T02:35:47.643Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:35:47.644Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:47.644Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:47.644Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:47.644Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:47.646Z [DEBUG] [useDeferredValue] Messages deferred by 3 (140→143)
+2026-02-27T02:35:47.649Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:47.754Z [DEBUG] High write ratio: blit=0, write=281096 (100.0% writes), screen=1455x233
+2026-02-27T02:35:47.867Z [DEBUG] High write ratio: blit=0, write=281214 (100.0% writes), screen=1455x233
+2026-02-27T02:35:48.381Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:35:50.622Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:35:51.720Z [DEBUG] [useDeferredValue] Messages deferred by 1 (143→144)
+2026-02-27T02:35:51.728Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:51.849Z [DEBUG] High write ratio: blit=0, write=281214 (100.0% writes), screen=1455x233
+2026-02-27T02:35:51.851Z [DEBUG] [useDeferredValue] Messages deferred by 1 (143→144)
+2026-02-27T02:35:51.975Z [DEBUG] High write ratio: blit=0, write=281304 (100.0% writes), screen=1457x233
+2026-02-27T02:35:53.031Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-27T02:35:53.032Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-27T02:35:53.032Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:35:53.032Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:53.039Z [DEBUG] Spawning shell without login (-l flag skipped)
+2026-02-27T02:35:53.039Z [DEBUG] [useDeferredValue] Messages deferred by 1 (144→145)
+2026-02-27T02:35:53.043Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:53.152Z [DEBUG] High write ratio: blit=0, write=281304 (100.0% writes), screen=1457x233
+2026-02-27T02:35:53.286Z [DEBUG] High write ratio: blit=0, write=281426 (100.0% writes), screen=1460x233
+2026-02-27T02:35:53.297Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-27T02:35:53.298Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.5b0; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:53.298Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:53.298Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:53.298Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:53.300Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-27T02:35:53.300Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:35:53.300Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:53.302Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:53.407Z [DEBUG] [useDeferredValue] Messages deferred by 1 (145→146)
+2026-02-27T02:35:53.415Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:53.524Z [DEBUG] High write ratio: blit=0, write=281426 (100.0% writes), screen=1460x233
+2026-02-27T02:35:53.534Z [DEBUG] [useDeferredValue] Messages deferred by 1 (145→146)
+2026-02-27T02:35:53.658Z [DEBUG] High write ratio: blit=0, write=281438 (100.0% writes), screen=1460x233
+2026-02-27T02:35:53.668Z [DEBUG] executePreToolHooks called for tool: Bash
+2026-02-27T02:35:53.669Z [DEBUG] Getting matching hook commands for PreToolUse with query: Bash
+2026-02-27T02:35:53.669Z [DEBUG] Found 4 hook matchers in settings
+2026-02-27T02:35:53.669Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:53.670Z [DEBUG] Spawning shell without login (-l flag skipped)
+2026-02-27T02:35:53.671Z [DEBUG] [useDeferredValue] Messages deferred by 1 (146→147)
+2026-02-27T02:35:53.674Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:53.785Z [DEBUG] High write ratio: blit=0, write=281500 (100.0% writes), screen=1463x233
+2026-02-27T02:35:53.799Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:53.904Z [DEBUG] High write ratio: blit=0, write=281500 (100.0% writes), screen=1463x233
+2026-02-27T02:35:53.911Z [DEBUG] Tool search disabled for model 'claude-haiku-4-5-20251001': model does not support tool_reference blocks. This feature is only available on Claude Sonnet 4+, Opus 4+, and newer models.
+2026-02-27T02:35:53.911Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.f42; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:53.911Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:53.911Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:53.911Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:53.912Z [DEBUG] Getting matching hook commands for PostToolUse with query: Bash
+2026-02-27T02:35:53.912Z [DEBUG] Found 16 hook matchers in settings
+2026-02-27T02:35:53.912Z [DEBUG] Matched 0 unique hooks for query "Bash" (0 before deduplication)
+2026-02-27T02:35:53.913Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2026-02-27T02:35:53.913Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2026-02-27T02:35:53.913Z [DEBUG] Hooks: Found 0 total hooks in registry
+2026-02-27T02:35:53.913Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2026-02-27T02:35:53.914Z [DEBUG] autocompact: tokens=107358 threshold=967000 effectiveWindow=980000
+2026-02-27T02:35:53.914Z [DEBUG] Tool search disabled via experiment (tengu_tst_kx7): below threshold, deferred tools present [source: query]
+2026-02-27T02:35:53.916Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772159753916
+2026-02-27T02:35:53.916Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T02:35:53.917Z [DEBUG] Temp file written successfully, size: 32149 bytes
+2026-02-27T02:35:53.917Z [DEBUG] Applied original permissions to temp file
+2026-02-27T02:35:53.917Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772159753916 to /Users/admin/.claude.json
+2026-02-27T02:35:53.917Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T02:35:53.918Z [DEBUG] attribution header x-anthropic-billing-header: cc_version=2.1.59.077; cc_entrypoint=cli; cch=00000;
+2026-02-27T02:35:53.918Z [DEBUG] [API:request] Creating client, ANTHROPIC_CUSTOM_HEADERS present: false, has Authorization header: false
+2026-02-27T02:35:53.918Z [DEBUG] [API:auth] OAuth token check starting
+2026-02-27T02:35:53.918Z [DEBUG] [API:auth] OAuth token check complete
+2026-02-27T02:35:53.919Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:35:53.920Z [DEBUG] [useDeferredValue] Messages deferred by 2 (147→149)
+2026-02-27T02:35:53.924Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:35:54.029Z [DEBUG] High write ratio: blit=0, write=281500 (100.0% writes), screen=1463x233
+2026-02-27T02:35:54.142Z [DEBUG] High write ratio: blit=0, write=281958 (100.0% writes), screen=1466x233
+2026-02-27T02:35:54.731Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:35:56.695Z [DEBUG] Stream started - received first chunk
+2026-02-27T02:36:01.289Z [DEBUG] [useDeferredValue] Messages deferred by 1 (149→150)
+2026-02-27T02:36:01.293Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:36:01.434Z [DEBUG] High write ratio: blit=0, write=282299 (100.0% writes), screen=1474x233
+2026-02-27T02:36:01.450Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2026-02-27T02:36:01.450Z [DEBUG] Found 1 hook matchers in settings
+2026-02-27T02:36:01.450Z [DEBUG] Matched 1 unique hooks for query "no match query" (1 before deduplication)
+2026-02-27T02:36:01.458Z [DEBUG] [useDeferredValue] Messages deferred by 1 (150→151)
+2026-02-27T02:36:01.461Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:36:01.583Z [DEBUG] High write ratio: blit=0, write=282319 (100.0% writes), screen=1474x233
+2026-02-27T02:36:01.585Z [DEBUG] Hook output does not start with {, treating as plain text
+2026-02-27T02:36:01.588Z [DEBUG] [useDeferredValue] Messages deferred by 2 (151→153)
+2026-02-27T02:36:01.591Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:36:01.690Z [DEBUG] High write ratio: blit=0, write=282272 (100.0% writes), screen=1472x233
+2026-02-27T02:36:01.692Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T02:37:01.702Z [DEBUG] Getting matching hook commands for Notification with query: idle_prompt
+2026-02-27T02:37:01.702Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T02:37:01.702Z [DEBUG] Matched 0 unique hooks for query "idle_prompt" (0 before deduplication)
+2026-02-27T02:37:29.953Z [DEBUG] High write ratio: blit=6757, write=277053 (97.6% writes), screen=1472x233
+2026-02-27T02:37:32.445Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:37:32.582Z [DEBUG] High write ratio: blit=0, write=282272 (100.0% writes), screen=1472x233
+2026-02-27T02:37:35.550Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T02:37:35.680Z [DEBUG] High write ratio: blit=0, write=285803 (100.0% writes), screen=1471x236
+2026-02-27T02:42:41.741Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T02:52:53.164Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T03:14:36.900Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T03:34:23.892Z [DEBUG] Failed to fetch latest from GCS: AxiosError: timeout of 5000ms exceeded
+2026-02-27T03:36:52.747Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:36:52.869Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T03:39:20.486Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:39:20.616Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T03:44:36.815Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T03:48:21.752Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:48:21.869Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T03:49:22.386Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:49:22.511Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T03:50:06.922Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:50:07.044Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T03:54:22.200Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:54:22.320Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T03:55:07.907Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:55:08.028Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T03:59:22.483Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T03:59:22.601Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T04:01:25.823Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:01:25.940Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T04:17:52.895Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T04:17:54.359Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:17:54.482Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T04:17:57.869Z [DEBUG] Failed to fetch latest from GCS: AxiosError: timeout of 5000ms exceeded
+2026-02-27T04:18:38.612Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:18:38.749Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T04:34:29.191Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:34:29.314Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T04:35:13.627Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:35:13.749Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T04:50:22.890Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T04:50:24.451Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:50:24.713Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T04:50:27.859Z [DEBUG] Failed to fetch latest from GCS: AxiosError: timeout of 5000ms exceeded
+2026-02-27T04:51:09.597Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T04:51:09.707Z [DEBUG] High write ratio: blit=0, write=288117 (100.0% writes), screen=1471x238
+2026-02-27T05:04:06.092Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T05:04:06.247Z [DEBUG] High write ratio: blit=0, write=285756 (100.0% writes), screen=1471x236
+2026-02-27T05:20:22.906Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T05:20:23.200Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T05:56:38.028Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T05:56:42.967Z [DEBUG] Failed to fetch latest from GCS: AxiosError: timeout of 5000ms exceeded
+2026-02-27T06:26:38.006Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T06:26:38.145Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T06:56:38.028Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T06:56:38.280Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T07:26:23.262Z [DEBUG] High write ratio: blit=6844, write=280518 (97.6% writes), screen=1471x236
+2026-02-27T07:26:23.840Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:25.579Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:25.613Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T07:26:25.614Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:25.619Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-27T07:26:25.907Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772177185907
+2026-02-27T07:26:25.907Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T07:26:25.907Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T07:26:25.907Z [DEBUG] Applied original permissions to temp file
+2026-02-27T07:26:25.907Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772177185907 to /Users/admin/.claude.json
+2026-02-27T07:26:25.908Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T07:26:26.073Z [DEBUG] High write ratio: blit=0, write=285186 (100.0% writes), screen=1470x236
+2026-02-27T07:26:26.081Z [DEBUG] Passes: Cache stale, returning cached data and refreshing in background
+2026-02-27T07:26:29.000Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T07:26:29.733Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.32481.1772177189733
+2026-02-27T07:26:29.733Z [DEBUG] Preserving file permissions: 100644
+2026-02-27T07:26:29.734Z [DEBUG] Temp file written successfully, size: 32148 bytes
+2026-02-27T07:26:29.735Z [DEBUG] Applied original permissions to temp file
+2026-02-27T07:26:29.735Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.32481.1772177189733 to /Users/admin/.claude.json
+2026-02-27T07:26:29.736Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-27T07:26:29.736Z [DEBUG] Passes eligibility cached for org 3e7c54d5-dea8-4689-9feb-5587da38d641: true
+2026-02-27T07:26:35.745Z [DEBUG] FileHistory: Making snapshot for message 60647485-d830-43ae-8ae5-62687d151882
+2026-02-27T07:26:35.745Z [DEBUG] FileHistory: Added snapshot for 60647485-d830-43ae-8ae5-62687d151882, tracking 0 files
+2026-02-27T07:26:35.750Z [DEBUG] [useDeferredValue] Messages deferred by 3 (153→156)
+2026-02-27T07:26:35.761Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:35.766Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:35.902Z [DEBUG] High write ratio: blit=0, write=285781 (100.0% writes), screen=1475x236
+2026-02-27T07:26:35.910Z [DEBUG] Detected Homebrew cask installation: /opt/homebrew/Caskroom/claude-code/2.1.59/claude
+2026-02-27T07:26:35.913Z [DEBUG] Started caffeinate to prevent sleep
+2026-02-27T07:26:35.916Z [DEBUG] AutoUpdaterWrapper: Installation type: package-manager
+2026-02-27T07:26:35.930Z [DEBUG] [useDeferredValue] Messages deferred by 3 (153→156)
+2026-02-27T07:26:35.940Z [DEBUG] [BackendRegistry] isInProcessEnabled: true (mode=auto, insideTmux=false)
+2026-02-27T07:26:36.069Z [DEBUG] High write ratio: blit=0, write=285807 (100.0% writes), screen=1474x236
+2026-02-27T07:26:36.072Z [DEBUG] Stopped caffeinate, allowing sleep
+2026-02-27T07:26:36.397Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T07:26:38.013Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T07:26:39.519Z [DEBUG] High write ratio: blit=6844, write=280570 (97.6% writes), screen=1474x236
+2026-02-27T07:56:36.327Z [DEBUG] PackageManagerAutoUpdater: Update available 2.1.59 -> 2.1.62
+2026-02-27T07:56:38.023Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-27T07:58:08.963Z [DEBUG] High write ratio: blit=6844, write=280570 (97.6% writes), screen=1474x236
+2026-02-27T07:58:12.586Z [DEBUG] LSP client stopped for plugin:typescript-lsp:typescript
+2026-02-27T07:58:12.609Z [DEBUG] LSP server instance stopped: plugin:typescript-lsp:typescript
+2026-02-27T07:58:12.609Z [DEBUG] LSP client stopped for plugin:kotlin-lsp:kotlin-lsp
+2026-02-27T07:58:12.610Z [DEBUG] LSP server instance stopped: plugin:kotlin-lsp:kotlin-lsp
+2026-02-27T07:58:12.610Z [DEBUG] LSP client stopped for plugin:jdtls-lsp:jdtls
+2026-02-27T07:58:12.610Z [DEBUG] LSP server instance stopped: plugin:jdtls-lsp:jdtls
+2026-02-27T07:58:12.612Z [DEBUG] LSP client stopped for plugin:pyright-lsp:pyright
+2026-02-27T07:58:12.612Z [DEBUG] LSP server instance stopped: plugin:pyright-lsp:pyright
+2026-02-27T07:58:12.612Z [DEBUG] LSP client stopped for plugin:gopls-lsp:gopls
+2026-02-27T07:58:12.612Z [DEBUG] LSP server instance stopped: plugin:gopls-lsp:gopls
+2026-02-27T07:58:12.612Z [DEBUG] LSP server manager shut down successfully
+2026-02-27T07:58:12.618Z [DEBUG] Cleaned up session snapshot: /Users/admin/.claude/shell-snapshots/snapshot-zsh-1772158984908-iemw4o.sh
+2026-02-27T07:58:13.003Z [DEBUG] High write ratio: blit=0, write=285180 (100.0% writes), screen=1467x236
+2026-02-27T07:58:13.463Z [DEBUG] Getting matching hook commands for SessionEnd with query: prompt_input_exit
+2026-02-27T07:58:13.463Z [DEBUG] Found 0 hook matchers in settings
+2026-02-27T07:58:13.463Z [DEBUG] Matched 0 unique hooks for query "prompt_input_exit" (0 before deduplication)
+2026-02-27T07:58:13.590Z [DEBUG] High write ratio: blit=0, write=285180 (100.0% writes), screen=1467x236

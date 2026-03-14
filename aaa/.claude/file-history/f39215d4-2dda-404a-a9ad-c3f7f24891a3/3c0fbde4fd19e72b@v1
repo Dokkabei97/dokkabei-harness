@@ -1,0 +1,116 @@
+---
+title: "5-4 실시간 스트리밍 응답"
+aliases:
+  - "5-4 실시간 스트리밍 응답"
+  - "SSE와 WebSocket Streaming"
+tags:
+  - llm-rag
+  - phase5
+  - streaming
+  - fastapi
+  - sse
+created: ""
+updated: ""
+phase: 5
+status: "todo"
+difficulty: 중급
+---
+
+> [!summary]
+> 스트리밍 응답은 사용성 향상에 직접 영향을 준다.  
+> FastAPI의 StreamingResponse + async generator로 단방향 SSE를 구현하고, 대화형 동작이 필요하면 WebSocket을 추가해 이벤트 상태를 관리한다.
+
+## 관련 노트
+- [[5-1 AI Overview 검색 요약 아키텍처]]
+- [[5-7 프로덕션 배포 고려사항]]
+- [[LangGraph 기본]]
+- [[Async Python 패턴]]
+- [[오류 복구 전략]]
+- [[Redis PubSub]]
+
+## 개념
+- SSE는 텍스트 스트림 처리에 단순하고 캐시/프록시 이슈가 적다.
+- WebSocket은 양방향 채팅에 유리하고 사용자 재질의 질문 반영이 빠르다.
+- 이벤트 타입은 `meta`, `search_status`, `search_chunk`, `llm_chunk`, `sources`, `error`, `done`으로 고정하면 호환성이 좋다.
+- 각 SSE 메시지는 최소 `{type, ts, data}` 포맷으로 직렬화한다.
+- 하트비트는 연결 유지에 필수이며, 모바일/프록시 환경에서는 ping 타임아웃 설정이 중요하다.
+- 재연결(reconnect)은 `last_event_id`를 저장해 중단 시점부터 이어받는 방식이 안정적이다.
+- 메시지 순서 보장: 토큰 스트림은 `seq`를 유지해 정렬한다.
+- 검색 단계의 느린 부분을 먼저 스트리밍해 UX를 개선한다.
+- WebSocket에서 과도한 동시성은 backpressure로 조절하고, 서버 큐를 제한해야 한다.
+- 연결 관리에서는 접속 수, idle timeout, heartbeat 누락 횟수를 모니터링해야 한다.
+- `close` 이벤트 처리 실패 시 리소스가 누수되지 않게 try/finally로 정리한다.
+- 인증 토큰 갱신은 SSE보다 WebSocket이 더 까다롭다.
+- 스트리밍 중 오류가 나도 최종 메시지에서 부분 요약과 오류 사유를 알려야 사용자 신뢰가 유지된다.
+
+## Mermaid 다이어그램
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as FastAPI
+  participant R as Retriever
+  participant L as LLM
+  participant M as Metrics
+  C->>A: GET /stream?q=...
+  A-->>C: SSE open
+  A->>R: 검색 시작
+  R-->>A: source_chunk 이벤트
+  A-->>C: event:search_chunk
+  A->>L: 요약 요청
+  L-->>A: 토큰 단위 응답
+  A-->>C: event:llm_chunk
+  A-->>C: event:sources + done
+  A->>M: latency/event_count 기록
+```
+
+## Python 코드
+```python
+import asyncio, json, time
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+def to_sse(event: str, payload: dict, idx: int = 0) -> str:
+    return f"id:{idx}\nevent:{event}\ndata:{json.dumps(payload, ensure_ascii=False)}\n\n"
+
+async def stream_handler(query: str):
+    idx = 0
+    yield to_sse("meta", {"query": query, "ts": time.time()}, idx); idx += 1
+    yield to_sse("search_status", {"status": "start"}, idx); idx += 1
+    for chunk in ["Doc1", "Doc2", "Doc3"]:
+        await asyncio.sleep(0.05)
+        yield to_sse("search_chunk", {"doc": chunk}, idx); idx += 1
+    yield to_sse("llm_chunk", {"token": "요약 중입니다..."}, idx); idx += 1
+    for i, tok in enumerate("최종 결과입니다.", start=1):
+        await asyncio.sleep(0.02)
+        yield to_sse("llm_token", {"tok": tok, "seq": i}, idx); idx += 1
+    yield to_sse("sources", {"blue_links": [
+        {"title": "example", "url": "https://example.com"}
+    ]}, idx); idx += 1
+    yield to_sse("done", {"status": "completed"}, idx)
+
+@app.get("/stream")
+async def stream(query: str):
+    return StreamingResponse(stream_handler(query), media_type="text/event-stream")
+```
+
+## 표
+| 채널 | 장점 | 단점 | 권장 사용 |
+|---|---|---|---|
+| SSE | 구현 간단, 브라우저 호환 | 단방향 | 읽기형 검색 요약 |
+| WebSocket | 실시간 상호작용 | 세션 관리 복잡 | 대화형 질의 응답 |
+| Polling | 단순 | 지연 커짐, 비용 증가 | 간단 알림 |
+| gRPC stream | 고성능 | 인프라 설정 복잡 | 내부 서비스 간 통신 |
+
+## 실습 체크리스트
+- [ ] SSE 이벤트 타입 스키마를 문서화한다.
+- [ ] `last_event_id` 기반 재연결 테스트를 작성한다.
+- [ ] 30초 무응답 시 heart-beat ping을 발생시킨다.
+- [ ] WebSocket 연결 수를 제한하고 rate limit과 결합한다.
+- [ ] 스트림 중 발생한 오류를 done 이벤트로 종료한다.
+- [ ] 토큰 누락을 막기 위해 seq 번호를 체크한다.
+- [ ] 클라이언트에서 event type별 렌더러를 분리한다.
+- [ ] 모바일에서 연결이 끊어지는 지점을 로그로 추적한다.
+- [ ] 연결 종료 시 세션 정리 루틴을 테스트한다.
+- [ ] 스트리밍 지표를 Grafana로 시각화한다.

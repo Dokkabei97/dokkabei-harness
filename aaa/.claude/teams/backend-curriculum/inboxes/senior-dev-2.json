@@ -1,0 +1,14 @@
+[
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"5\",\"subject\":\"Java->Kotlin 전환 시 흔한 실수와 주니어 개발자 실수 포인트 조사\",\"description\":\"기존 Java 개발자가 Kotlin으로 전환할 때 자주 하는 실수와 놓치는 포인트를 조사한다. 또한 주니어 개발자가 자주 하는 실수와 시니어로 성장하기 위해 필요한 역량을 조사하여 보고한다. 예: null safety 무시, Java 스타일 코드 작성, data class 남용, 코루틴 오용, Spring과의 호환성 이슈 등.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-02-15T15:25:40.354Z\"}",
+    "timestamp": "2026-02-15T15:25:40.354Z",
+    "read": true
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"shutdown_request\",\"requestId\":\"shutdown-1771170197781@senior-dev-2\",\"from\":\"team-lead\",\"reason\":\"모든 커리큘럼 작성이 완료되었습니다. 수고하셨습니다.\",\"timestamp\":\"2026-02-15T15:43:17.781Z\"}",
+    "timestamp": "2026-02-15T15:43:17.781Z",
+    "read": true
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "content": "Examine project structure and Next.js configuration",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Create optimized multi-stage Dockerfile with Alpine Linux",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Create .dockerignore file to exclude unnecessary files",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Create docker-compose.yml for local development",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Create docker-compose.production.yml for production environment",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "Create Docker build and run scripts",
+    "status": "completed",
+    "id": "6"
+  },
+  {
+    "content": "Create GitHub Actions workflow for Docker builds",
+    "status": "completed",
+    "id": "7"
+  },
+  {
+    "content": "Update Next.js config for standalone output if needed",
+    "status": "completed",
+    "id": "8"
+  }
+]

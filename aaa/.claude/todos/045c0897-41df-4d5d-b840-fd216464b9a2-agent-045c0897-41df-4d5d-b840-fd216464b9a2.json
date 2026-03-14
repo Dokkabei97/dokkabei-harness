@@ -1,0 +1,26 @@
+[
+  {
+    "content": "프로젝트 구조 분석 및 파일 트리 파악",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "아키텍처 설계 구조 분석",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Gemini와 상의하여 분석 결과 검토",
+    "status": "completed",
+    "priority": "medium",
+    "id": "3"
+  },
+  {
+    "content": "PROJECT.md 파일 작성 및 업데이트",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  }
+]

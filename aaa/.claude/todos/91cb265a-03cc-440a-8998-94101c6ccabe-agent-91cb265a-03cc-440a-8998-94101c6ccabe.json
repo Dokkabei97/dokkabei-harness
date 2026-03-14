@@ -1,0 +1,47 @@
+[
+  {
+    "content": "쿠버네티스 Deployment/ConfigMap 확인",
+    "status": "pending",
+    "activeForm": "K8s 설정 확인중"
+  },
+  {
+    "content": "ppuri Pod 환경변수 점검",
+    "status": "pending",
+    "activeForm": "Pod 환경변수 점검중"
+  },
+  {
+    "content": "Valkey 클러스터 Service 엔드포인트 확인",
+    "status": "pending",
+    "activeForm": "Service 엔드포인트 확인중"
+  },
+  {
+    "content": "REDIS_CLUSTER_MODE=true 설정 추가",
+    "status": "pending",
+    "activeForm": "클러스터 모드 활성화중"
+  },
+  {
+    "content": "클러스터 노드 주소 설정",
+    "status": "pending",
+    "activeForm": "노드 주소 설정중"
+  },
+  {
+    "content": "ConfigMap/Secret 업데이트",
+    "status": "pending",
+    "activeForm": "ConfigMap 업데이트중"
+  },
+  {
+    "content": "ppuri Deployment 재배포",
+    "status": "pending",
+    "activeForm": "Deployment 재배포중"
+  },
+  {
+    "content": "클러스터 연결 테스트",
+    "status": "pending",
+    "activeForm": "연결 테스트중"
+  },
+  {
+    "content": "모니터링 및 로그 확인",
+    "status": "pending",
+    "activeForm": "로그 모니터링중"
+  }
+]

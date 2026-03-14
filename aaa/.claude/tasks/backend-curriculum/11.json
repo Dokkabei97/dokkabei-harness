@@ -1,0 +1,11 @@
+{
+  "id": "11",
+  "subject": "kotlin-expert",
+  "description": "당신은 **Kotlin 전문가**입니다. Kotlin in Action과 Effective Kotlin 서적의 핵심 내용을 커리큘럼에 반영하고, Java 개발자의 Kotlin 전환",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

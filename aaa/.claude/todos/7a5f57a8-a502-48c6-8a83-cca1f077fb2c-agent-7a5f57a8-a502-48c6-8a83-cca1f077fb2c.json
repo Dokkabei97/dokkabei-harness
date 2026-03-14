@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Add httpx dependency to pyproject.toml",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Add Darae service configuration to ppuri_constant.py",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "Create Darae API client service",
+    "status": "completed",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "Integrate Darae API client into dictionary sync service",
+    "status": "completed",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "Add OpenTelemetry metrics for Darae API calls",
+    "status": "completed",
+    "priority": "medium",
+    "id": "5"
+  }
+]

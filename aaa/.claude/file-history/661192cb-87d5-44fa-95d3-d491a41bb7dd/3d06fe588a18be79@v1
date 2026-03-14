@@ -1,0 +1,99 @@
+.bootstrap_legacy-sync_define:
+  variables:
+    PROJECT_PATH: bootstrap/legacy-sync
+    IMAGE_REPO_PATH: legacy-sync
+
+.legacy_sync_changes: &legacy_sync_changes
+  - .gitlab-ci.yml
+  - .gitlab/**/*
+  - bootstrap/legacy-sync/**/*
+  - shared/**/*
+  - domain/cdc/**/*
+  - domain/index/**/*
+  - domain/proxy/**/*
+  - application/index/**/*
+  - inbound-adapter/legacy/**/*
+  - outbound-adapter/proxy/**/*
+  - outbound-adapter/legacy/**/*
+  - outbound/client/legacy-api/**/*
+  - outbound/client/proxy-api/**/*
+  - outbound/repository/cache/**/*
+
+legacy_sync_gradle_test:
+  tags:
+    - danuri
+  stage: test
+  extends:
+    - .bootstrap_legacy-sync_define
+    - .all_build_test
+
+legacy_sync_gradle_build:
+  stage: build
+  extends:
+    - .bootstrap_legacy-sync_define
+    - .gradle_build_script
+  tags:
+    - danuri
+  needs:
+    - job: legacy_sync_gradle_test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $FORCE_BUILD_TARGET != "" && ($FORCE_BUILD_TARGET == "all" || $FORCE_BUILD_TARGET == $PROJECT_PATH)'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main")'
+      changes: *legacy_sync_changes
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main")'
+      changes: *legacy_sync_changes
+    - when: never
+
+legacy_sync_docker_build_push:
+  stage: docker_build_push
+  extends:
+    - .bootstrap_legacy-sync_define
+    - .docker_build_script
+  tags:
+    - danuri
+  dependencies:
+    - legacy_sync_gradle_build
+  needs:
+    - job: legacy_sync_gradle_build
+  allow_failure: false
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $FORCE_BUILD_TARGET != "" && ($FORCE_BUILD_TARGET == "all" || $FORCE_BUILD_TARGET == $PROJECT_PATH)'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main")'
+      changes: *legacy_sync_changes
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main")'
+      changes: *legacy_sync_changes
+    - when: never
+
+# Manifest 업데이트 (개발)
+legacy_sync_manifest_dev_push:
+  stage: manifest_deploy
+  extends:
+    - .bootstrap_legacy-sync_define
+    - .manifest_push
+  variables:
+    MANIFEST_VALUES: apps/next-search/legacy-sync/values/values-dev.yaml
+  tags:
+    - danuri
+  needs:
+    - job: legacy_sync_docker_build_push
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *legacy_sync_changes
+    - when: never
+
+# Manifest 업데이트 (운영)
+legacy_sync_manifest_prod_push:
+  stage: manifest_deploy
+  extends:
+    - .bootstrap_legacy-sync_define
+    - .manifest_push
+  variables:
+    MANIFEST_VALUES: apps/next-search/legacy-sync/values/values-prod.yaml
+  tags:
+    - danuri
+  needs:
+    - job: legacy_sync_docker_build_push
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *legacy_sync_changes
+    - when: never

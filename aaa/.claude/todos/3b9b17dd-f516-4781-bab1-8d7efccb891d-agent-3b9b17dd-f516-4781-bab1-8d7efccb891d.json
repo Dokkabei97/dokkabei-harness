@@ -1,0 +1,37 @@
+[
+  {
+    "content": "Phase 1: 도메인 모델 + 설정 (BackupType, StorageBackend, IndexMetadata, BackupRecord, IndexTemplate, IndexManagementConfig)",
+    "status": "completed",
+    "activeForm": "도메인 모델과 설정 클래스 생성 중"
+  },
+  {
+    "content": "Phase 2: Repository 인터페이스 (IndexRepository, BackupStorageRepository)",
+    "status": "completed",
+    "activeForm": "Repository 인터페이스 정의 중"
+  },
+  {
+    "content": "Phase 3: ES 구현체 (IndexRepositoryImpl)",
+    "status": "in_progress",
+    "activeForm": "ES 클라이언트 구현체 작성 중"
+  },
+  {
+    "content": "Phase 4: 로컬 저장소 구현 (LocalFileStorageRepository)",
+    "status": "pending",
+    "activeForm": "로컬 파일 저장소 구현 중"
+  },
+  {
+    "content": "Phase 5: Service 레이어 (IndexManagementService)",
+    "status": "pending",
+    "activeForm": "Service 레이어 작성 중"
+  },
+  {
+    "content": "Phase 6: Controller + DTO (IndexController, IndexDto)",
+    "status": "pending",
+    "activeForm": "Controller와 DTO 작성 중"
+  },
+  {
+    "content": "Phase 7: application.yml 설정 추가",
+    "status": "pending",
+    "activeForm": "설정 파일 업데이트 중"
+  }
+]

@@ -1,0 +1,3498 @@
+diff --git a/.idea/dictionaries/project.xml b/.idea/dictionaries/project.xml
+index 748386c..ae93dce 100644
+--- a/.idea/dictionaries/project.xml
++++ b/.idea/dictionaries/project.xml
+@@ -6,6 +6,7 @@
+       <w>datas</w>
+       <w>enuri</w>
+       <w>kotest</w>
++      <w>mset</w>
+       <w>stopword</w>
+       <w>valkey</w>
+     </words>
+diff --git a/.idea/kotlinc.xml b/.idea/kotlinc.xml
+index 4cb7457..5be1322 100644
+--- a/.idea/kotlinc.xml
++++ b/.idea/kotlinc.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="KotlinJpsPluginSettings">
+-    <option name="version" value="1.9.25" />
++    <option name="version" value="2.3.10" />
+   </component>
+ </project>
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/Dependency.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/Dependency.kt
+index 096bec7..12b4f5d 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/Dependency.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/Dependency.kt
+@@ -1,13 +1,13 @@
+ package com.cowave.search.application.index.dto
+ 
+-import com.cowave.search.domain.proxy.brand.Brand
+-import com.cowave.search.domain.proxy.category.Category
+-import com.cowave.search.domain.proxy.mall.Mall
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
+ 
+ data class Dependency(
+-    val categories: Map<Int, Category>,
+-    val brands: Map<Long, Brand>,
+-    val manufacturers: Map<Long, Manufacturer>,
+-    val malls: Map<Int, Mall>,
++    val categories: Map<Int, CategoryProjection>,
++    val brands: Map<Long, BrandProjection>,
++    val manufacturers: Map<Long, ManufacturerProjection>,
++    val malls: Map<Int, MallProjection>,
+ )
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt
+new file mode 100644
+index 0000000..543f361
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/LinkedProductRequest.kt
+@@ -0,0 +1,7 @@
++package com.cowave.search.application.index.dto
++
++data class LinkedProductRequest(
++    val shopProductCode: String,
++    val shopCode: String,
++    val prodKind: String = "LINK",
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt
+new file mode 100644
+index 0000000..71883b7
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductDeleteRequest.kt
+@@ -0,0 +1,6 @@
++package com.cowave.search.application.index.dto
++
++data class UnlinkedProductDeleteRequest(
++    val shopCode: String,
++    val shopProductCode: String,
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt
+new file mode 100644
+index 0000000..a8672e3
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/dto/UnlinkedProductRequest.kt
+@@ -0,0 +1,66 @@
++package com.cowave.search.application.index.dto
++
++import com.fasterxml.jackson.annotation.JsonProperty
++
++data class UnlinkedProductRequest(
++    val shopProductCode: String,
++    val shopCode: String,
++    val productName: String,
++    val stockYN: String,
++    val couponDownloadYN: String,
++    val brandCertification: String,
++    @JsonProperty("event_info")
++    val eventInfo: String,
++    val differentialPostYN: String,
++    val mobilePrice: Long,
++    val cmpnyCateCode: Long,
++    @JsonProperty("seller_id")
++    val sellerId: String,
++    val productImageUrl: String,
++    val addDescription: String,
++    val shopGift: String,
++    val modifyDate: String,
++    val categoryCode1: Int,
++    val categoryCode2: Int,
++    val categoryCode3: Int,
++    val categoryCode4: Int,
++    val brand: String,
++    val importYN: String,
++    val totalOrderPrice: Long,
++    val condition: String,
++    @JsonProperty("promotion_info")
++    val promotionInfo: String,
++    val dataStat: String,
++    val orderDate: String,
++    val installationFeeYN: String,
++    @JsonProperty("shipping_info")
++    val shippingInfo: String,
++    val bestGoodsSort: String,
++    val promotionPrice: Long,
++    val isbn: String,
++    val model: String,
++    @JsonProperty("mobile_url")
++    val mobileUrl: String,
++    val differentialPost: String,
++    val adultYN: String,
++    val point: Int,
++    val groupSeq: Long,
++    val pcPrice: Long,
++    @JsonProperty("vender_id")
++    val venderId: String,
++    val nointerest: String,
++    val promotionName: String,
++    val quickTime: Int,
++    val makeDate: String,
++    val registerDate: String,
++    val promotionType: Int,
++    val memberPrice: Long,
++    val productMaker: String,
++    val orderCount: Int,
++    val deliveryPrice: Int,
++    val shopCoupon: String,
++    val linkUrl: String,
++    val barcode: String,
++    val reviewCount: Int,
++    val shipping: Int,
++)
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/CatalogIndexDocumentMapper.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/CatalogIndexDocumentMapper.kt
+index e0524df..dff82be 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/CatalogIndexDocumentMapper.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/CatalogIndexDocumentMapper.kt
+@@ -5,9 +5,9 @@ import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.ChannelDa
+ import com.cowave.search.domain.index.dto.ChangedData
+ import com.cowave.search.domain.index.dto.IndexDocument
+ import com.cowave.search.domain.index.enums.Operation
+-import com.cowave.search.domain.proxy.brand.Brand
+-import com.cowave.search.domain.proxy.category.Category
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
+ import com.cowave.search.domain.search.document.CatalogChannelBenefit
+ import com.cowave.search.domain.search.document.CatalogChannelData
+ import com.cowave.search.domain.search.document.CatalogChannelPrice
+@@ -20,9 +20,9 @@ import com.cowave.search.domain.search.document.ProductChannelData
+ import com.cowave.search.domain.search.document.enums.CatalogStatus
+ 
+ fun ChangedData<Catalog>.toIndexDocument(
+-    category: Category?,
+-    brand: Brand?,
+-    manufacturer: Manufacturer?,
++    category: CategoryProjection?,
++    brandProjection: BrandProjection?,
++    manufacturerProjection: ManufacturerProjection?,
+ ): IndexDocument<CatalogDocument> =
+     with(this) {
+         IndexDocument(
+@@ -31,18 +31,18 @@ fun ChangedData<Catalog>.toIndexDocument(
+             // CREATE 시 category, brand, manufacturer 모두 not null을 보장 (validated from caller)
+             createDocument =
+                 if (op == Operation.CREATE) {
+-                    this.afterData!!.toCatalogDocument(category!!, brand!!, manufacturer!!)
++                    this.afterData!!.toCatalogDocument(category!!, brandProjection!!, manufacturerProjection!!)
+                 } else null,
+-            updateData = if (op == Operation.UPDATE) this.afterData!!.toMap(category, brand, manufacturer) else null,
++            updateData = if (op == Operation.UPDATE) this.afterData!!.toMap(category, brandProjection, manufacturerProjection) else null,
+         )
+     }
+ 
+ private fun Catalog.getId(): Long = `id$1`
+ 
+ private fun Catalog.toCatalogDocument(
+-    category: Category,
+-    brand: Brand,
+-    manufacturer: Manufacturer,
++    category: CategoryProjection,
++    brandProjection: BrandProjection,
++    manufacturerProjection: ManufacturerProjection,
+ ): CatalogDocument =
+     with(this) {
+         CatalogDocument(
+@@ -56,9 +56,9 @@ private fun Catalog.toCatalogDocument(
+             categoryNames = category.categoryNames,
+             isActiveCategory = category.isActiveCategory,
+             brandId = brandId,
+-            brandName = brand.name,
++            brandName = brandProjection.name,
+             manufacturerId = manufacturerId,
+-            manufacturerName = manufacturer.name,
++            manufacturerName = manufacturerProjection.name,
+             enuriId = enuriId,
+             mainCatalogId = purchaseOptions.mainCatalogId,
+             bundleName = purchaseOptions.purchaseName,
+@@ -110,9 +110,9 @@ private fun convertToCatalogChannelData(channelData: ChannelData?): CatalogChann
+     } else CatalogChannelData.empty()
+ 
+ private fun Catalog.toMap(
+-    category: Category?,
+-    brand: Brand?,
+-    manufacturer: Manufacturer?,
++    category: CategoryProjection?,
++    brandProjection: BrandProjection?,
++    manufacturerProjection: ManufacturerProjection?,
+ ): Map<String, Any?> =
+     mutableMapOf(
+         CatalogDocument::id.name to getId(),
+@@ -144,10 +144,10 @@ private fun Catalog.toMap(
+             isDisplayed = isDisplayed,
+         ),
+     ).apply {
+-        brand?.let {
++        brandProjection?.let {
+             put(CatalogDocument::brandName.name, it.name)
+         }
+-        manufacturer?.let {
++        manufacturerProjection?.let {
+             put(CatalogDocument::manufacturerName.name, it.name)
+         }
+         category?.let {
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt
+new file mode 100644
+index 0000000..a36bd07
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/LegacySyncMapper.kt
+@@ -0,0 +1,203 @@
++package com.cowave.search.application.index.mapper
++
++import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.domain.index.dto.ChangedData
++import com.cowave.search.domain.index.dto.LegacyProductData
++import com.cowave.search.domain.proxy.category.Category
++import com.cowave.search.domain.proxy.mall.Mall
++import java.time.Instant
++import java.time.ZoneId
++import java.time.format.DateTimeFormatter
++
++object LegacySyncMapper {
++    private val dateFormatter =
++        DateTimeFormatter
++            .ofPattern("yyyy-MM-dd HH:mm:ss")
++            .withZone(ZoneId.of("Asia/Seoul"))
++
++    fun toLinkedRequest(
++        data: LegacyProductData,
++        mall: Mall?,
++    ): LinkedProductRequest =
++        LinkedProductRequest(
++            shopProductCode = data.mallProductId,
++            shopCode = mall?.mallIdDanawa ?: "",
++            prodKind = "LINK",
++        )
++
++    fun toUnlinkedRequest(
++        data: LegacyProductData,
++        category: Category?,
++        mall: Mall?,
++    ): UnlinkedProductRequest {
++        val firstPromo = data.promotions?.firstOrNull()
++        return UnlinkedProductRequest(
++            shopProductCode = data.mallProductId,
++            shopCode = mall?.mallIdDanawa ?: "",
++            productName = data.name,
++            stockYN = data.hasStock.toYN(),
++            couponDownloadYN = (data.benefit?.hasCouponDownload ?: false).toYN(),
++            brandCertification = data.isBrandCertification.toYOrEmpty(),
++            eventInfo = data.eventInfo ?: "",
++            differentialPostYN = (data.delivery?.hasShippingGrade ?: false).toYN(),
++            mobilePrice = data.price?.mobile ?: 0L,
++            cmpnyCateCode = data.mallCategoryId ?: 0L,
++            sellerId = data.sellerId ?: "",
++            productImageUrl = data.imageUrl ?: "",
++            addDescription = data.additionalInfo ?: "",
++            shopGift = data.benefit?.gift ?: "",
++            modifyDate = data.updatedAt.formatDate(),
++            categoryCode1 = category?.categoryId1 ?: 0,
++            categoryCode2 = category?.categoryId2 ?: 0,
++            categoryCode3 = category?.categoryId3 ?: 0,
++            categoryCode4 = category?.categoryId4 ?: 0,
++            brand = data.mallBrandName ?: "",
++            importYN = (data.isImportProduct ?: false).toYN(),
++            totalOrderPrice = 0L,
++            condition = "",
++            promotionInfo = "",
++            dataStat = mapDataStat(data.productStatus),
++            orderDate = "",
++            installationFeeYN = (data.hasInstallationCosts ?: false).toYN(),
++            shippingInfo = data.delivery?.info ?: "",
++            bestGoodsSort = "",
++            promotionPrice = firstPromo?.price ?: 0L,
++            isbn = data.isbn ?: "",
++            model = data.manufactureDefineNumber ?: "",
++            mobileUrl = data.linkUrl?.mobile ?: "",
++            differentialPost = data.delivery?.shippingGradeInfo ?: "",
++            adultYN = (data.isAdultRequired ?: false).toYOrEmpty(),
++            point = data.benefit?.point ?: 0,
++            groupSeq = data.mallProductCompositedId?.toLongOrNull() ?: 0L,
++            pcPrice = data.price?.pc ?: 0L,
++            venderId = data.vendorId ?: "",
++            nointerest = data.benefit?.interestFree ?: "",
++            promotionName = firstPromo?.name ?: "",
++            quickTime = data.delivery?.fastDeliveryTime ?: 0,
++            makeDate = data.createdAt?.let { dateFormatter.format(it) } ?: "",
++            registerDate = data.collectedAt.formatDate(),
++            promotionType = firstPromo?.type ?: 0,
++            memberPrice = data.price?.membershipPrice ?: 0L,
++            productMaker = data.mallManufacturerName ?: "",
++            orderCount = 0,
++            deliveryPrice = data.delivery?.shipping ?: 0,
++            shopCoupon = data.benefit?.coupon ?: "",
++            linkUrl = data.linkUrl?.pc ?: "",
++            barcode = data.barcode ?: "",
++            reviewCount = data.reviewCount ?: 0,
++            shipping = data.delivery?.shipping ?: 0,
++        )
++    }
++
++    fun toUnlinkedDeleteRequest(
++        data: LegacyProductData,
++        mall: Mall?,
++    ): UnlinkedProductDeleteRequest =
++        UnlinkedProductDeleteRequest(
++            shopCode = mall?.mallIdDanawa ?: "",
++            shopProductCode = data.mallProductId,
++        )
++
++    private fun Boolean.toYN(): String = if (this) "Y" else "N"
++
++    private fun Boolean.toYOrEmpty(): String = if (this) "Y" else ""
++
++    private fun Instant.formatDate(): String = dateFormatter.format(this)
++
++    fun toChangedLegacyData(changedData: List<ChangedData<Product>>): List<ChangedData<LegacyProductData>> =
++        changedData.map { changed ->
++            ChangedData(
++                id = changed.id,
++                op = changed.op,
++                beforeData = changed.beforeData?.toLegacyProduct(),
++                afterData = changed.afterData?.toLegacyProduct(),
++                partition = changed.partition,
++                offset = changed.offset,
++            )
++        }
++
++    private fun Product.toLegacyProduct(): LegacyProductData {
++        val danawaChannel = channelDatas?.get("DANAWA")
++        return LegacyProductData(
++            id = `id$1`.toString(),
++            name = name,
++            shopId = mallId,
++            mallProductId = mallProductId,
++            mallProductCompositedId = mallProductCompositedId,
++            categoryId = categoryId,
++            mallCategory = mallCategory,
++            mallCategoryId = mallCategoryId,
++            mallBrandName = mallBrandName,
++            brandId = brandId,
++            mallManufacturerName = mallManufacturerName,
++            manufacturerId = manufacturerId,
++            manufactureDefineNumber = manufactureDefineNumber,
++            imageUrl = imageUrl,
++            hasStock = hasStock ?: false,
++            productStatus = collectedStatus ?: "ACTIVE",
++            isCatalogMatch = catalogMatchings?.any { it.source != "NONE" } ?: false,
++            isUsedProduct = isUsedProduct ?: false,
++            isRefurbished = isRefurbished ?: false,
++            isImportProduct = isImportProduct,
++            hasInstallationCosts = hasInstallationCosts,
++            barcode = barcode,
++            sellerId = sellerId,
++            reviewCount = reviewCount,
++            vendorId = vendorId,
++            additionalInfo = additionalInfo,
++            collectedAt = collectedAt ?: Instant.now(),
++            updatedAt = updatedAt ?: Instant.now(),
++            createdAt = createdAt,
++            linkUrl = danawaChannel?.url?.let {
++                LegacyProductData.LegacyUrl(pc = it.pc, mobile = it.mobile)
++            },
++            price = danawaChannel?.price?.let {
++                LegacyProductData.LegacyPrice(
++                    pc = it.pc,
++                    mobile = it.mobile,
++                    membershipPrice = it.membershipPrice,
++                )
++            },
++            delivery = delivery?.let {
++                LegacyProductData.LegacyDelivery(
++                    shipping = it.shipping,
++                    originalShipping = it.originalShipping,
++                    isConditionalShipping = it.isConditionalShipping,
++                    hasShippingGrade = it.hasShippingGrade,
++                    shippingGradeInfo = it.shippingGradeInfo,
++                    info = it.info,
++                    fastDeliveryTime = it.fastDeliveryTime,
++                )
++            },
++            isbn = isbn,
++            isAdultRequired = isAdultRequired,
++            isBrandCertification = brandAlliance != null,
++            benefit = danawaChannel?.benefit?.let {
++                LegacyProductData.LegacyBenefit(
++                    point = it.point,
++                    coupon = it.coupon,
++                    interestFree = it.interestFree,
++                    gift = it.gift,
++                    hasCouponDownload = it.hasCouponDownload,
++                )
++            },
++            promotions = danawaChannel?.promotions?.map {
++                LegacyProductData.LegacyPromotion(
++                    type = it.type,
++                    name = it.name,
++                    price = it.price,
++                )
++            },
++            eventInfo = danawaChannel?.eventInfo,
++        )
++    }
++
++    private fun mapDataStat(status: String): String =
++        when (status) {
++            "ACTIVE" -> "N"
++            else -> "Y"
++        }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/ProductIndexDocumentMapper.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/ProductIndexDocumentMapper.kt
+index 8e74e89..5d38191 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/ProductIndexDocumentMapper.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/mapper/ProductIndexDocumentMapper.kt
+@@ -5,10 +5,10 @@ import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
+ import com.cowave.search.domain.index.dto.ChangedData
+ import com.cowave.search.domain.index.dto.IndexDocument
+ import com.cowave.search.domain.index.enums.Operation
+-import com.cowave.search.domain.proxy.brand.Brand
+-import com.cowave.search.domain.proxy.category.Category
+-import com.cowave.search.domain.proxy.mall.Mall
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
+ import com.cowave.search.domain.search.document.ChannelPrice
+ import com.cowave.search.domain.search.document.ProductChannelBenefit
+ import com.cowave.search.domain.search.document.ProductChannelData
+@@ -19,10 +19,10 @@ import com.cowave.search.domain.search.document.ProductDocument
+ import com.cowave.search.domain.search.document.enums.ProductStatus
+ 
+ fun ChangedData<Product>.toIndexDocument(
+-    category: Category?,
+-    mall: Mall?,
+-    brand: Brand?,
+-    manufacturer: Manufacturer?,
++    category: CategoryProjection?,
++    mall: MallProjection?,
++    brandProjection: BrandProjection?,
++    manufacturerProjection: ManufacturerProjection?,
+ ): IndexDocument<ProductDocument> =
+     with(this) {
+         IndexDocument(
+@@ -32,11 +32,11 @@ fun ChangedData<Product>.toIndexDocument(
+             createDocument =
+                 if (op ==Operation.CREATE) {
+                     this.afterData!!.toProductDocument(
+-                        category!!, mall!!, brand, manufacturer)
++                        category!!, mall!!, brandProjection, manufacturerProjection)
+                 } else null,
+             updateData =
+                 if (op == Operation.UPDATE) {
+-                    this.afterData!!.toMap(category, mall, brand, manufacturer)
++                    this.afterData!!.toMap(category, mall, brandProjection, manufacturerProjection)
+                 } else null,
+         )
+     }
+@@ -44,10 +44,10 @@ fun ChangedData<Product>.toIndexDocument(
+ private fun Product.getId(): Long = `id$1`
+ 
+ private fun Product.toProductDocument(
+-    category: Category,
+-    mall: Mall,
+-    brand: Brand?,
+-    manufacturer: Manufacturer?,
++    category: CategoryProjection,
++    mall: MallProjection,
++    brandProjection: BrandProjection?,
++    manufacturerProjection: ManufacturerProjection?,
+ ): ProductDocument =
+     with(this) {
+         ProductDocument(
+@@ -61,9 +61,9 @@ private fun Product.toProductDocument(
+             categoryNames = category.categoryNames,
+             isActiveCategory = category.isActiveCategory,
+             brandId = brandId,
+-            brandName = brand?.name ?: mallBrandName,
++            brandName = brandProjection?.name ?: mallBrandName,
+             manufacturerId = manufacturerId,
+-            manufacturerName = manufacturer?.name,
++            manufacturerName = manufacturerProjection?.name,
+             mallId = mallId,
+             mallProductId = mallProductId,
+             mallBrandName = mallBrandName,
+@@ -113,10 +113,10 @@ private fun convertToProductChannelData(
+     } else ProductChannelData.empty(isActiveMall)
+ 
+ fun Product.toMap(
+-    category: Category?,
+-    mall: Mall?,
+-    brand: Brand?,
+-    manufacturer: Manufacturer?,
++    category: CategoryProjection?,
++    mall: MallProjection?,
++    brandProjection: BrandProjection?,
++    manufacturerProjection: ManufacturerProjection?,
+ ): Map<String, Any?> {
+     val productStatus = ProductStatus.of(collectedStatus)
+     val isCatalogMatch = ProductDocument.Policy.determineIsCatalogMatch(catalogMatchings)
+@@ -155,10 +155,10 @@ fun Product.toMap(
+         ),
+         ProductDocument::totalSearchable.name to ProductDocument.Policy.determineTotalSearchable(isCatalogMatch),
+     ).apply {
+-        brand?.let {
++        brandProjection?.let {
+             put(ProductDocument::brandName.name, it.name)
+         }
+-        manufacturer?.let {
++        manufacturerProjection?.let {
+             put(ProductDocument::manufacturerName.name, it.name)
+         }
+         category?.let {
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/property/LocalCacheProperties.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/property/LocalCacheProperties.kt
+new file mode 100644
+index 0000000..6c6878d
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/property/LocalCacheProperties.kt
+@@ -0,0 +1,15 @@
++package com.cowave.search.application.index.property
++
++import org.springframework.boot.context.properties.ConfigurationProperties
++
++@ConfigurationProperties(prefix = "local-cache")
++data class LocalCacheProperties(
++    val mall: LocalCacheProperty = LocalCacheProperty(ttlSeconds = 600L),
++    val category: LocalCacheProperty = LocalCacheProperty(ttlSeconds = 600L),
++    val brand: LocalCacheProperty = LocalCacheProperty(ttlSeconds = 3600L),
++    val manufacturer: LocalCacheProperty = LocalCacheProperty(ttlSeconds = 3600L),
++) {
++    data class LocalCacheProperty(
++        val ttlSeconds: Long = 600L
++    )
++}
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacySyncRepository.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacySyncRepository.kt
+new file mode 100644
+index 0000000..24c2b7b
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/repository/LegacySyncRepository.kt
+@@ -0,0 +1,14 @@
++package com.cowave.search.application.index.repository
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.domain.index.enums.Operation
++
++interface LegacySyncRepository {
++    fun pushLinkedProducts(products: List<LinkedProductRequest>, operation: Operation)
++
++    fun pushUnlinkedProducts(products: List<UnlinkedProductRequest>, operation: Operation)
++
++    fun pushUnlinkedProductDeletes(products: List<UnlinkedProductDeleteRequest>)
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/BrandApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/BrandApplicationService.kt
+new file mode 100644
+index 0000000..e57f541
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/BrandApplicationService.kt
+@@ -0,0 +1,37 @@
++package com.cowave.search.application.index.service
++
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.brand.BrandProxyReader
++import com.cowave.search.domain.proxy.brand.BrandRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class BrandApplicationService(
++    private val brandProxyReader: BrandProxyReader,
++    private val brandRepository: BrandRepository,
++    brandGlobalCache: GlobalCache<Long, BrandProjection>,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Long, BrandProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = 600,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = brandGlobalCache,
++            fetcher = { ids -> brandProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Long>): Map<Long, BrandProjection?> = tieredCache.getAll(ids)
++
++    fun getAllByIds(ids: List<Long>): List<BrandProjection> = brandRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.brand"
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogAssembleService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogAssembleService.kt
+index 7488a83..e3a3942 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogAssembleService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogAssembleService.kt
+@@ -3,6 +3,7 @@ package com.cowave.search.application.index.service
+ import com.commerce.proxy.shopping.catalog.infrastructure.consumer.dto.Catalog
+ import com.cowave.search.application.index.dto.DependencyId
+ import com.cowave.search.application.index.mapper.toIndexDocument
++import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
+ import com.cowave.search.domain.index.dto.ChangedData
+ import com.cowave.search.domain.index.dto.IndexDocument
+ import com.cowave.search.domain.index.enums.Operation
+@@ -11,11 +12,11 @@ import org.springframework.stereotype.Service
+ 
+ @Service
+ class CatalogAssembleService(
+-    private val proxyApplicationService: ProxyApplicationService,
++    private val cachedProxyApplicationService: CachedProxyApplicationService,
+ ) {
+     fun assemble(documents: List<ChangedData<Catalog>>): List<IndexDocument<CatalogDocument>> {
+         val dependencyId = getDependencyId(documents)
+-        val dependency = proxyApplicationService.fetchDependencies(dependencyId)
++        val dependency = cachedProxyApplicationService.fetchDependencies(dependencyId)
+ 
+         return documents.map {
+             // Note. CREATE 시 fetchDependencies()로부터 category, brand, manufacturer를 모두 받아와야 CatalogDocument를 생성할 수 있다.
+@@ -34,8 +35,8 @@ class CatalogAssembleService(
+ 
+             it.toIndexDocument(
+                 category = dependency.categories[it.afterData?.categoryId],
+-                brand = dependency.brands[it.afterData?.brandId],
+-                manufacturer = dependency.manufacturers[it.afterData?.manufacturerId],
++                brandProjection = dependency.brands[it.afterData?.brandId],
++                manufacturerProjection = dependency.manufacturers[it.afterData?.manufacturerId],
+             )
+         }
+     }
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt
+similarity index 100%
+rename from application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogApplicationService.kt
+rename to application/index/src/main/kotlin/com/cowave/search/application/index/service/CatalogIndexApplicationService.kt
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/CategoryApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CategoryApplicationService.kt
+new file mode 100644
+index 0000000..1bca62a
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/CategoryApplicationService.kt
+@@ -0,0 +1,37 @@
++package com.cowave.search.application.index.service
++
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.category.CategoryProxyReader
++import com.cowave.search.domain.proxy.category.CategoryRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class CategoryApplicationService(
++    private val categoryProxyReader: CategoryProxyReader,
++    private val categoryRepository: CategoryRepository,
++    categoryGlobalCache: GlobalCache<Int, CategoryProjection>,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Int, CategoryProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = 600,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = categoryGlobalCache,
++            fetcher = { ids -> categoryProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Int>): Map<Int, CategoryProjection?> = tieredCache.getAll(ids)
++
++    fun getAllByIds(ids: List<Int>): List<CategoryProjection> = categoryRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.category"
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacySyncApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacySyncApplicationService.kt
+new file mode 100644
+index 0000000..1adba6a
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/LegacySyncApplicationService.kt
+@@ -0,0 +1,83 @@
++package com.cowave.search.application.index.service
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.application.index.mapper.LegacySyncMapper
++import com.cowave.search.application.index.repository.LegacySyncRepository
++import com.cowave.search.domain.index.dto.ChangedData
++import com.cowave.search.domain.index.dto.LegacyProductData
++import com.cowave.search.domain.index.enums.Operation
++import com.cowave.search.domain.proxy.category.CategoryService
++import com.cowave.search.domain.proxy.mall.MallService
++import com.cowave.shared.utils.logger
++import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
++import org.springframework.stereotype.Service
++
++@Service
++@ConditionalOnProperty(name = ["legacy-sync.enabled"], havingValue = "true", matchIfMissing = true)
++class LegacySyncApplicationService(
++    private val legacySyncRepository: LegacySyncRepository,
++    private val categoryService: CategoryService,
++    private val mallService: MallService,
++) {
++    private val logger by logger()
++
++    fun syncToLegacy(changedData: List<ChangedData<LegacyProductData>>) {
++        if (changedData.isEmpty()) return
++
++        // beforeData도 포함하여 DELETE 시에도 mall/category 조회 가능하도록 수정
++        val categoryIds =
++            changedData
++                .flatMap { listOfNotNull(it.afterData?.categoryId, it.beforeData?.categoryId) }
++                .distinct()
++        val mallIds =
++            changedData
++                .flatMap { listOfNotNull(it.afterData?.shopId, it.beforeData?.shopId) }
++                .distinct()
++
++        // TODO: 캐시를 먼저 확인하게 수정 필요 !!
++        val categories = if (categoryIds.isNotEmpty()) categoryService.getCategories(categoryIds) else emptyList()
++        val malls = if (mallIds.isNotEmpty()) mallService.getMalls(mallIds).associateBy { it.mallId } else emptyMap()
++
++        val grouped = changedData.groupBy { it.op }
++
++        grouped.forEach { (op, items) ->
++            val linked = mutableListOf<LinkedProductRequest>()
++            val unlinked = mutableListOf<UnlinkedProductRequest>()
++            val unlinkedDeletes = mutableListOf<UnlinkedProductDeleteRequest>()
++
++            items.forEach items@{ item ->
++                val data = if (op == Operation.DELETE) item.beforeData else item.afterData
++                if (data == null) {
++                    logger.warn { "Legacy sync skipped: no data for product id=${item.id}, op=$op" }
++                    return@items
++                }
++
++                val mall = malls[data.shopId]
++
++                when {
++                    // 매칭상품 (PDM) - CREATE/UPDATE/DELETE 모두
++                    data.isCatalogMatch -> {
++                        linked.add(LegacySyncMapper.toLinkedRequest(data, mall))
++                    }
++
++                    // 미매칭 DELETE - 간소화 요청
++                    op == Operation.DELETE -> {
++                        unlinkedDeletes.add(LegacySyncMapper.toUnlinkedDeleteRequest(data, mall))
++                    }
++
++                    // 미매칭 CREATE/UPDATE - 전체 필드
++                    else -> {
++                        val category = categories[data.categoryId]
++                        unlinked.add(LegacySyncMapper.toUnlinkedRequest(data, category, mall))
++                    }
++                }
++            }
++
++            if (linked.isNotEmpty()) legacySyncRepository.pushLinkedProducts(linked, op)
++            if (unlinked.isNotEmpty()) legacySyncRepository.pushUnlinkedProducts(unlinked, op)
++            if (unlinkedDeletes.isNotEmpty()) legacySyncRepository.pushUnlinkedProductDeletes(unlinkedDeletes)
++        }
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ManufacturerApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ManufacturerApplicationService.kt
+new file mode 100644
+index 0000000..8913519
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ManufacturerApplicationService.kt
+@@ -0,0 +1,37 @@
++package com.cowave.search.application.index.service
++
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProxyReader
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class ManufacturerApplicationService(
++    private val manufacturerProxyReader: ManufacturerProxyReader,
++    private val manufacturerRepository: ManufacturerRepository,
++    manufacturerGlobalCache: GlobalCache<Long, ManufacturerProjection>,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Long, ManufacturerProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = 600,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = manufacturerGlobalCache,
++            fetcher = { ids -> manufacturerProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Long>): Map<Long, ManufacturerProjection?> = tieredCache.getAll(ids)
++
++    fun getAllByIds(ids: List<Long>): List<ManufacturerProjection> = manufacturerRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.manufacturer"
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductAssembleService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductAssembleService.kt
+index 68f997d..b2bca7f 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductAssembleService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductAssembleService.kt
+@@ -3,6 +3,7 @@ package com.cowave.search.application.index.service
+ import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
+ import com.cowave.search.application.index.dto.DependencyId
+ import com.cowave.search.application.index.mapper.toIndexDocument
++import com.cowave.search.application.index.service.proxy.CachedProxyApplicationService
+ import com.cowave.search.domain.index.dto.ChangedData
+ import com.cowave.search.domain.index.dto.IndexDocument
+ import com.cowave.search.domain.index.enums.Operation
+@@ -11,11 +12,11 @@ import org.springframework.stereotype.Service
+ 
+ @Service
+ class ProductAssembleService(
+-    private val proxyApplicationService: ProxyApplicationService,
++    private val cachedProxyApplicationService: CachedProxyApplicationService,
+ ) {
+     fun assemble(documents: List<ChangedData<Product>>): List<IndexDocument<ProductDocument>> {
+         val dependencyId = getDependencyId(documents)
+-        val dependency = proxyApplicationService.fetchDependencies(dependencyId)
++        val dependency = cachedProxyApplicationService.fetchDependencies(dependencyId)
+ 
+         return documents.map {
+             // Note. Product는 brand, manufacturer 매핑이 없을 수 있다. Category는 현재 룰기반(레거시) 매핑을 사용한다.
+@@ -31,8 +32,8 @@ class ProductAssembleService(
+             it.toIndexDocument(
+                 category = dependency.categories[it.afterData?.categoryId],
+                 mall = dependency.malls[it.afterData?.mallId],
+-                brand = dependency.brands[it.afterData?.brandId],
+-                manufacturer = dependency.manufacturers[it.afterData?.manufacturerId],
++                brandProjection = dependency.brands[it.afterData?.brandId],
++                manufacturerProjection = dependency.manufacturers[it.afterData?.manufacturerId],
+             )
+         }
+     }
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
+similarity index 62%
+rename from application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductApplicationService.kt
+rename to application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
+index 820f8f6..394c09e 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductApplicationService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProductIndexApplicationService.kt
+@@ -1,6 +1,7 @@
+ package com.cowave.search.application.index.service
+ 
+ import com.commerce.proxy.shopping.product.infrastructure.consumer.dto.Product
++import com.cowave.search.application.index.mapper.LegacySyncMapper
+ import com.cowave.search.application.index.repository.ProductIndexRepository
+ import com.cowave.search.domain.index.dto.ChangedData
+ import com.cowave.search.domain.index.policy.ProductEvaluator
+@@ -13,13 +14,23 @@ import org.springframework.stereotype.Service
+ class ProductIndexApplicationService(
+     private val productIndexRepository: ProductIndexRepository,
+     private val productAssembleService: ProductAssembleService,
++    private val legacySyncApplicationService: LegacySyncApplicationService,
+ ) {
+     private val logger by logger()
+ 
+     fun indexProducts(changedData: List<ChangedData<Product>>): IndexResult {
++        val merged = changedData.let(ProductMergeStrategy::merge)
++
++        // 레거시 역싱크: merge 후, assemble 전에 실행 (실패해도 ES 색인은 진행)
++        runCatching {
++            val legacyData = LegacySyncMapper.toChangedLegacyData(merged)
++            legacySyncApplicationService.syncToLegacy(legacyData)
++        }.onFailure { ex ->
++            logger.error(ex) { "Legacy sync failed, proceeding with ES indexing" }
++        }
++
+         val indexDocuments =
+-            changedData
+-                .let(ProductMergeStrategy::merge)
++            merged
+                 .let { productAssembleService.assemble(it) }
+                 .filter(ProductEvaluator::evaluate)
+ 
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/BrandApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/BrandApplicationService.kt
+new file mode 100644
+index 0000000..4e3395b
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/BrandApplicationService.kt
+@@ -0,0 +1,42 @@
++package com.cowave.search.application.index.service.proxy
++
++import com.cowave.search.application.index.property.LocalCacheProperties
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.brand.BrandProxyReader
++import com.cowave.search.domain.proxy.brand.BrandRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class BrandApplicationService(
++    private val brandProxyReader: BrandProxyReader,
++    private val brandRepository: BrandRepository,
++    brandGlobalCache: GlobalCache<Long, BrandProjection>,
++    localCacheProperties: LocalCacheProperties,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Long, BrandProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = localCacheProperties.brand.ttlSeconds,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = brandGlobalCache,
++            fetcher = { ids -> brandProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Long>): Map<Long, BrandProjection> =
++        tieredCache.getAll(ids)
++            .filterValues { it != null }
++            .mapValues { it.value!! }
++
++    fun getAllByIds(ids: List<Long>): List<BrandProjection> = brandRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.brand"
++    }
++}
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CachedProxyApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CachedProxyApplicationService.kt
+new file mode 100644
+index 0000000..8b8f89a
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CachedProxyApplicationService.kt
+@@ -0,0 +1,59 @@
++package com.cowave.search.application.index.service.proxy
++
++import com.cowave.search.application.index.dto.Dependency
++import com.cowave.search.application.index.dto.DependencyId
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.async
++import kotlinx.coroutines.runBlocking
++import org.springframework.stereotype.Service
++
++@Service
++class CachedProxyApplicationService(
++    private val categoryApplicationService: CategoryApplicationService,
++    private val brandApplicationService: BrandApplicationService,
++    private val manufacturerApplicationService: ManufacturerApplicationService,
++    private val mallApplicationService: MallApplicationService,
++) {
++    fun fetchDependencies(dependencyId: DependencyId): Dependency =
++        runBlocking(Dispatchers.IO) {
++            val categoriesDeferred =
++                async {
++                    if (dependencyId.categoryIds.isEmpty()) {
++                        emptyMap()
++                    } else {
++                        categoryApplicationService.getCachedAllByIds(dependencyId.categoryIds)
++                    }
++                }
++            val brandsDeferred =
++                async {
++                    if (dependencyId.brandIds.isEmpty()) {
++                        emptyMap()
++                    } else {
++                        brandApplicationService.getCachedAllByIds(dependencyId.brandIds)
++                    }
++                }
++            val manufacturersDeferred =
++                async {
++                    if (dependencyId.manufacturerIds.isEmpty()) {
++                        emptyMap()
++                    } else {
++                        manufacturerApplicationService.getCachedAllByIds(dependencyId.manufacturerIds)
++                    }
++                }
++            val mallsDeferred =
++                async {
++                    if (dependencyId.mallIds.isEmpty()) {
++                        emptyMap()
++                    } else {
++                        mallApplicationService.getCachedAllByIds(dependencyId.mallIds)
++                    }
++                }
++
++            Dependency(
++                categories = categoriesDeferred.await(),
++                brands = brandsDeferred.await(),
++                manufacturers = manufacturersDeferred.await(),
++                malls = mallsDeferred.await(),
++            )
++        }
++}
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CategoryApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CategoryApplicationService.kt
+new file mode 100644
+index 0000000..6f70920
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/CategoryApplicationService.kt
+@@ -0,0 +1,42 @@
++package com.cowave.search.application.index.service.proxy
++
++import com.cowave.search.application.index.property.LocalCacheProperties
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.category.CategoryProxyReader
++import com.cowave.search.domain.proxy.category.CategoryRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class CategoryApplicationService(
++    private val categoryProxyReader: CategoryProxyReader,
++    private val categoryRepository: CategoryRepository,
++    categoryGlobalCache: GlobalCache<Int, CategoryProjection>,
++    localCacheProperties: LocalCacheProperties,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Int, CategoryProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = localCacheProperties.brand.ttlSeconds,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = categoryGlobalCache,
++            fetcher = { ids -> categoryProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Int>): Map<Int, CategoryProjection> =
++        tieredCache.getAll(ids)
++            .filterValues { it != null }
++            .mapValues { it.value!! }
++
++    fun getAllByIds(ids: List<Int>): List<CategoryProjection> = categoryRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.category"
++    }
++}
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/MallApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/MallApplicationService.kt
+new file mode 100644
+index 0000000..77462e5
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/MallApplicationService.kt
+@@ -0,0 +1,40 @@
++package com.cowave.search.application.index.service.proxy
++
++import com.cowave.search.application.index.property.LocalCacheProperties
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.search.domain.proxy.mall.MallProxyReader
++import com.cowave.search.domain.proxy.mall.MallRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class MallApplicationService(
++    private val mallProxyReader: MallProxyReader,
++    private val mallRepository: MallRepository,
++    mallGlobalCache: GlobalCache<Int, MallProjection>,
++    localCacheProperties: LocalCacheProperties,
++) {
++    private val localCache = LocalCacheFactory.create<Int, MallProjection>(
++        keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++        ttlSeconds = localCacheProperties.mall.ttlSeconds,
++    )
++
++    private val tieredCache = TieredLoadingCacheFactory.create(
++        localCache = localCache,
++        globalCache = mallGlobalCache,
++        fetcher = { ids -> mallProxyReader.getAllByIds(ids.toList()).associateBy { it.mallId } },
++    )
++
++    fun getCachedAllByIds(ids: List<Int>): Map<Int, MallProjection> =
++        tieredCache.getAll(ids)
++            .filterValues { it != null }
++            .mapValues { it.value!! }
++
++    fun getAllByIds(ids: List<Int>): List<MallProjection> = mallRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.mall"
++    }
++}
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ManufacturerApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ManufacturerApplicationService.kt
+new file mode 100644
+index 0000000..3034dca
+--- /dev/null
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ManufacturerApplicationService.kt
+@@ -0,0 +1,42 @@
++package com.cowave.search.application.index.service.proxy
++
++import com.cowave.search.application.index.property.LocalCacheProperties
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProxyReader
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
++import com.cowave.shared.cache.GlobalCache
++import com.cowave.shared.cache.LocalCacheFactory
++import com.cowave.shared.cache.TieredLoadingCacheFactory
++import org.springframework.stereotype.Service
++
++@Service
++class ManufacturerApplicationService(
++    private val manufacturerProxyReader: ManufacturerProxyReader,
++    private val manufacturerRepository: ManufacturerRepository,
++    manufacturerGlobalCache: GlobalCache<Long, ManufacturerProjection>,
++    localCacheProperties: LocalCacheProperties,
++) {
++    private val localCache =
++        LocalCacheFactory.create<Long, ManufacturerProjection>(
++            keyPrefix = LOCAL_CACHE_KEY_PREFIX,
++            ttlSeconds = localCacheProperties.manufacturer.ttlSeconds,
++        )
++
++    private val tieredCache =
++        TieredLoadingCacheFactory.create(
++            localCache = localCache,
++            globalCache = manufacturerGlobalCache,
++            fetcher = { ids -> manufacturerProxyReader.getAllByIds(ids.toList()).associateBy { it.id } },
++        )
++
++    fun getCachedAllByIds(ids: List<Long>): Map<Long, ManufacturerProjection> =
++        tieredCache.getAll(ids)
++            .filterValues { it != null }
++            .mapValues { it.value!! }
++
++    fun getAllByIds(ids: List<Long>): List<ManufacturerProjection> = manufacturerRepository.getAllByIds(ids)
++
++    companion object {
++        const val LOCAL_CACHE_KEY_PREFIX = "local.search-api.manufacturer"
++    }
++}
+\ No newline at end of file
+diff --git a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProxyApplicationService.kt b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ProxyApplicationService.kt
+similarity index 58%
+rename from application/index/src/main/kotlin/com/cowave/search/application/index/service/ProxyApplicationService.kt
+rename to application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ProxyApplicationService.kt
+index 36f5bee..22af02a 100644
+--- a/application/index/src/main/kotlin/com/cowave/search/application/index/service/ProxyApplicationService.kt
++++ b/application/index/src/main/kotlin/com/cowave/search/application/index/service/proxy/ProxyApplicationService.kt
+@@ -1,15 +1,7 @@
+-package com.cowave.search.application.index.service
++package com.cowave.search.application.index.service.proxy
+ 
+ import com.cowave.search.application.index.dto.Dependency
+ import com.cowave.search.application.index.dto.DependencyId
+-import com.cowave.search.domain.proxy.brand.Brand
+-import com.cowave.search.domain.proxy.brand.BrandService
+-import com.cowave.search.domain.proxy.category.Category
+-import com.cowave.search.domain.proxy.category.CategoryService
+-import com.cowave.search.domain.proxy.mall.Mall
+-import com.cowave.search.domain.proxy.mall.MallService
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
+-import com.cowave.search.domain.proxy.manufacturer.ManufacturerService
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.async
+ import kotlinx.coroutines.runBlocking
+@@ -17,10 +9,10 @@ import org.springframework.stereotype.Service
+ 
+ @Service
+ class ProxyApplicationService(
+-    private val brandService: BrandService,
+-    private val manufacturerService: ManufacturerService,
+-    private val categoryService: CategoryService,
+-    private val mallService: MallService,
++    private val categoryApplicationService: CategoryApplicationService,
++    private val brandApplicationService: BrandApplicationService,
++    private val manufacturerApplicationService: ManufacturerApplicationService,
++    private val mallApplicationService: MallApplicationService,
+ ) {
+     fun fetchDependencies(dependencyId: DependencyId): Dependency =
+         runBlocking(Dispatchers.IO) {
+@@ -29,7 +21,7 @@ class ProxyApplicationService(
+                     if (dependencyId.categoryIds.isEmpty()) {
+                         emptyMap()
+                     } else {
+-                        categoryService.getCategories(dependencyId.categoryIds).associateBy { it.id }
++                        categoryApplicationService.getAllByIds(dependencyId.categoryIds).associateBy { it.id }
+                     }
+                 }
+             val brandsDeferred =
+@@ -37,7 +29,7 @@ class ProxyApplicationService(
+                     if (dependencyId.brandIds.isEmpty()) {
+                         emptyMap()
+                     } else {
+-                        brandService.getBrands(dependencyId.brandIds).associateBy { it.id }
++                        brandApplicationService.getAllByIds(dependencyId.brandIds).associateBy { it.id }
+                     }
+                 }
+             val manufacturersDeferred =
+@@ -45,7 +37,7 @@ class ProxyApplicationService(
+                     if (dependencyId.manufacturerIds.isEmpty()) {
+                         emptyMap()
+                     } else {
+-                        manufacturerService.getManufacturers(dependencyId.manufacturerIds).associateBy { it.id }
++                        manufacturerApplicationService.getAllByIds(dependencyId.manufacturerIds).associateBy { it.id }
+                     }
+                 }
+             val mallsDeferred =
+@@ -53,7 +45,7 @@ class ProxyApplicationService(
+                     if (dependencyId.mallIds.isEmpty()) {
+                         emptyMap()
+                     } else {
+-                        mallService.getMalls(dependencyId.mallIds).associateBy { it.mallId }
++                        mallApplicationService.getAllByIds(dependencyId.mallIds).associateBy { it.mallId }
+                     }
+                 }
+ 
+@@ -64,4 +56,4 @@ class ProxyApplicationService(
+                 malls = mallsDeferred.await(),
+             )
+         }
+-}
++}
+\ No newline at end of file
+diff --git a/bootstrap/dynamic-indexer/src/main/resources/application.yml b/bootstrap/dynamic-indexer/src/main/resources/application.yml
+index 5b18f9e..f125a7c 100644
+--- a/bootstrap/dynamic-indexer/src/main/resources/application.yml
++++ b/bootstrap/dynamic-indexer/src/main/resources/application.yml
+@@ -18,6 +18,16 @@ search:
+   boosting:
+     index-name: categoryboost
+ 
++local-cache:
++  mall:
++    ttl-seconds: 600
++  category:
++    ttl-seconds: 600
++  brand:
++    ttl-seconds: 3600
++  manufacturer:
++    ttl-seconds: 3600
++
+ logging:
+   pattern:
+     console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%X{trace_id:-}] %-5level %logger{36} - %msg%n"
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 5a8cff0..4589825 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -13,6 +13,8 @@ plugins {
+     id("com.google.protobuf") version "0.9.4" apply false
+     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1" apply false
+     id("com.github.imflog.kafka-schema-registry-gradle-plugin") version "2.4.1" apply false
++    // ref. https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.serialization
++    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.10" apply false
+ }
+ 
+ group = "com.cowave"
+@@ -64,6 +66,8 @@ allSubProjects {
+             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutineVersion")
+ 
+             dependency("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.4") // 1.2.x latest
++            dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
++
+             dependency("co.elastic.clients:elasticsearch-java:$esClientVersion")
+             dependency("org.elasticsearch.client:elasticsearch-rest-client:$esClientVersion")
+ 
+@@ -80,6 +84,8 @@ allSubProjects {
+             dependency("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+             dependency("io.confluent:kafka-avro-serializer:8.1.1")
+             dependency("io.confluent:kafka-json-schema-serializer:8.1.1")
++
++            dependency("com.github.ben-manes.caffeine:caffeine:3.2.3")
+         }
+     }
+ 
+@@ -110,6 +116,7 @@ allSubProjects {
+     val safePath = project.path.replace(":", "/").substring(1) // 맨 앞의 '/' 제거
+     layout.buildDirectory.set(
+         rootProject.layout.buildDirectory.dir(safePath)
++//        rootProject.layout.projectDirectory.dir("build/${safePath}")
+     )
+ 
+     kotlin {
+diff --git a/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt b/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt
+new file mode 100644
+index 0000000..b70b5d8
+--- /dev/null
++++ b/domain/index/src/main/kotlin/com/cowave/search/domain/index/dto/LegacyProductData.kt
+@@ -0,0 +1,79 @@
++package com.cowave.search.domain.index.dto
++
++import java.time.Instant
++
++data class LegacyProductData(
++    override val id: String,
++    override val name: String,
++    val shopId: Int,
++    val mallProductId: String,
++    val mallProductCompositedId: String?,
++    val categoryId: Int,
++    val mallCategory: String?,
++    val mallCategoryId: Long?,
++    val mallBrandName: String?,
++    val brandId: Long?,
++    val mallManufacturerName: String?,
++    val manufacturerId: Long?,
++    val manufactureDefineNumber: String?,
++    val imageUrl: String?,
++    val hasStock: Boolean,
++    val productStatus: String,
++    val isCatalogMatch: Boolean,
++    val isUsedProduct: Boolean,
++    val isRefurbished: Boolean,
++    val isImportProduct: Boolean?,
++    val hasInstallationCosts: Boolean?,
++    val barcode: String?,
++    val sellerId: String?,
++    val reviewCount: Int?,
++    val vendorId: String?,
++    val additionalInfo: String?,
++    val collectedAt: Instant,
++    val updatedAt: Instant,
++    val createdAt: Instant?,
++    val linkUrl: LegacyUrl?,
++    val price: LegacyPrice?,
++    val delivery: LegacyDelivery?,
++    val isbn: String?,
++    val isAdultRequired: Boolean?,
++    val isBrandCertification: Boolean,
++    val benefit: LegacyBenefit?,
++    val promotions: List<LegacyPromotion>?,
++    val eventInfo: String?,
++) : ChangedDocument {
++    data class LegacyUrl(
++        val pc: String?,
++        val mobile: String?,
++    )
++
++    data class LegacyPrice(
++        val pc: Long?,
++        val mobile: Long?,
++        val membershipPrice: Long?,
++    )
++
++    data class LegacyDelivery(
++        val shipping: Int?,
++        val originalShipping: Int?,
++        val isConditionalShipping: Boolean?,
++        val hasShippingGrade: Boolean?,
++        val shippingGradeInfo: String?,
++        val info: String?,
++        val fastDeliveryTime: Int?,
++    )
++
++    data class LegacyBenefit(
++        val point: Int?,
++        val coupon: String?,
++        val interestFree: String?,
++        val gift: String?,
++        val hasCouponDownload: Boolean?,
++    )
++
++    data class LegacyPromotion(
++        val type: Int?,
++        val name: String?,
++        val price: Long?,
++    )
++}
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/Brand.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProjection.kt
+similarity index 75%
+rename from domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/Brand.kt
+rename to domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProjection.kt
+index ab72191..9e6ee3e 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/Brand.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProjection.kt
+@@ -1,6 +1,6 @@
+ package com.cowave.search.domain.proxy.brand
+ 
+-data class Brand(
++data class BrandProjection(
+     val id: Long,
+     val name: String,
+ )
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProxyReader.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProxyReader.kt
+new file mode 100644
+index 0000000..4e49951
+--- /dev/null
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandProxyReader.kt
+@@ -0,0 +1,5 @@
++package com.cowave.search.domain.proxy.brand
++
++interface BrandProxyReader {
++    fun getAllByIds(brandIds: List<Long>): List<BrandProjection>
++}
+\ No newline at end of file
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandRepository.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandRepository.kt
+index b84ce22..f04cf52 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandRepository.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandRepository.kt
+@@ -1,5 +1,6 @@
+ package com.cowave.search.domain.proxy.brand
+ 
+ interface BrandRepository {
+-    fun findAllByIds(brandIds: List<Long>): List<Brand>
++    fun getAllByIds(brandIds: List<Long>): List<BrandProjection>
++    fun putAll(brands: List<BrandProjection>)
+ }
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandService.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandService.kt
+deleted file mode 100644
+index da2f1c9..0000000
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/brand/BrandService.kt
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package com.cowave.search.domain.proxy.brand
+-
+-import org.springframework.stereotype.Service
+-
+-@Service
+-class BrandService(
+-    private val brandRepository: BrandRepository,
+-) {
+-    fun getBrands(brandIds: List<Long>): List<Brand> = brandRepository.findAllByIds(brandIds)
+-}
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/Category.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProjection.kt
+similarity index 96%
+rename from domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/Category.kt
+rename to domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProjection.kt
+index 7fee957..354f303 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/Category.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProjection.kt
+@@ -1,6 +1,6 @@
+ package com.cowave.search.domain.proxy.category
+ 
+-data class Category(
++data class CategoryProjection(
+     val id: Int,
+     val name: String,
+     val depth: Int,
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProxyReader.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProxyReader.kt
+new file mode 100644
+index 0000000..bc42054
+--- /dev/null
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryProxyReader.kt
+@@ -0,0 +1,5 @@
++package com.cowave.search.domain.proxy.category
++
++interface CategoryProxyReader {
++    fun getAllByIds(categoryIds: List<Int>): List<CategoryProjection>
++}
+\ No newline at end of file
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryRepository.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryRepository.kt
+index 8d46498..40f777d 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryRepository.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryRepository.kt
+@@ -1,5 +1,6 @@
+ package com.cowave.search.domain.proxy.category
+ 
+ interface CategoryRepository {
+-    fun findAllByIds(categoryIds: List<Int>): List<Category>
++    fun getAllByIds(categoryIds: List<Int>): List<CategoryProjection>
++    fun putAll(categories: List<CategoryProjection>)
+ }
+\ No newline at end of file
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryService.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryService.kt
+deleted file mode 100644
+index 8a18ef3..0000000
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/category/CategoryService.kt
++++ /dev/null
+@@ -1,12 +0,0 @@
+-package com.cowave.search.domain.proxy.category
+-
+-import org.springframework.stereotype.Service
+-
+-@Service
+-class CategoryService(
+-    private val categoryRepository: CategoryRepository
+-) {
+-    fun getCategories(categoryIds: List<Int>): List<Category> {
+-        return categoryRepository.findAllByIds(categoryIds)
+-    }
+-}
+\ No newline at end of file
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/Mall.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProjection.kt
+similarity index 54%
+rename from domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/Mall.kt
+rename to domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProjection.kt
+index 6e3ff3f..24f430c 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/Mall.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProjection.kt
+@@ -1,11 +1,13 @@
+ package com.cowave.search.domain.proxy.mall
+ 
+-data class Mall(
++data class MallProjection(
+     val mallId: Int,
++    val mallCode: String? = null,
++    val mallIdDanawa: String? = null,
++    val mallIdEnuri: String? = null,
+     val mallUseYnDanawa: String?,
+     val mallUseYnEnuri: String?,
+-    val mallIdDanawa: String?, // FIXME 레거시 유지용으로 당분간 사용, 다나와 레거시 ES의 역싱크가 종료되는 시기에 이 프로퍼티를 제거합니다.
+ ) {
+     val isActiveDanawaMall = mallUseYnDanawa == "Y"
+     val isActiveEnuriMall = mallUseYnEnuri == "Y"
+-}
++}
+\ No newline at end of file
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProxyReader.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProxyReader.kt
+new file mode 100644
+index 0000000..55e5fcf
+--- /dev/null
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallProxyReader.kt
+@@ -0,0 +1,5 @@
++package com.cowave.search.domain.proxy.mall
++
++interface MallProxyReader {
++    fun getAllByIds(mallIds: List<Int>): List<MallProjection>
++}
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallRepository.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallRepository.kt
+index 806e918..c89e036 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallRepository.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallRepository.kt
+@@ -1,5 +1,6 @@
+ package com.cowave.search.domain.proxy.mall
+ 
+ interface MallRepository {
+-    fun findAllByIds(mallIds: List<Int>): List<Mall>
++    fun getAllByIds(mallIds: List<Int>): List<MallProjection>
++    fun putAll(malls: List<MallProjection>)
+ }
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallService.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallService.kt
+deleted file mode 100644
+index fc426f7..0000000
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/mall/MallService.kt
++++ /dev/null
+@@ -1,11 +0,0 @@
+-package com.cowave.search.domain.proxy.mall
+-
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
+-import org.springframework.stereotype.Service
+-
+-@Service
+-class MallService(
+-    private val mallRepository: MallRepository,
+-) {
+-    fun getMalls(manufacturerIds: List<Int>): List<Mall> = mallRepository.findAllByIds(manufacturerIds)
+-}
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/Manufacturer.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProjection.kt
+similarity index 73%
+rename from domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/Manufacturer.kt
+rename to domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProjection.kt
+index 468683a..d15298a 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/Manufacturer.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProjection.kt
+@@ -1,6 +1,6 @@
+ package com.cowave.search.domain.proxy.manufacturer
+ 
+-data class Manufacturer(
++data class ManufacturerProjection(
+     val id: Long,
+     val name: String,
+ )
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProxyReader.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProxyReader.kt
+new file mode 100644
+index 0000000..e1d12b5
+--- /dev/null
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerProxyReader.kt
+@@ -0,0 +1,5 @@
++package com.cowave.search.domain.proxy.manufacturer
++
++interface ManufacturerProxyReader {
++    fun getAllByIds(manufacturerIds: List<Long>): List<ManufacturerProjection>
++}
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerRepository.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerRepository.kt
+index 07bb63c..a93f5eb 100644
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerRepository.kt
++++ b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerRepository.kt
+@@ -1,5 +1,6 @@
+ package com.cowave.search.domain.proxy.manufacturer
+ 
+ interface ManufacturerRepository {
+-    fun findAllByIds(manufacturerIds: List<Long>): List<Manufacturer>
++    fun getAllByIds(manufacturerIds: List<Long>): List<ManufacturerProjection>
++    fun putAll(manufacturers: List<ManufacturerProjection>)
+ }
+diff --git a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerService.kt b/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerService.kt
+deleted file mode 100644
+index 16e5c76..0000000
+--- a/domain/proxy/src/main/kotlin/com/cowave/search/domain/proxy/manufacturer/ManufacturerService.kt
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package com.cowave.search.domain.proxy.manufacturer
+-
+-import org.springframework.stereotype.Service
+-
+-@Service
+-class ManufacturerService(
+-    private val manufacturerRepository: ManufacturerRepository,
+-) {
+-    fun getManufacturers(manufacturerIds: List<Long>): List<Manufacturer> = manufacturerRepository.findAllByIds(manufacturerIds)
+-}
+diff --git a/outbound-adapter/legacy/build.gradle.kts b/outbound-adapter/legacy/build.gradle.kts
+new file mode 100644
+index 0000000..1454c27
+--- /dev/null
++++ b/outbound-adapter/legacy/build.gradle.kts
+@@ -0,0 +1,8 @@
++dependencies {
++    implementation(project(":shared"))
++    implementation(project(":domain:index"))
++    implementation(project(":application:index"))
++    implementation(project(":outbound:client:legacy-api"))
++    implementation("org.springframework.boot:spring-boot-starter-webflux")
++    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
++}
+diff --git a/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImpl.kt b/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImpl.kt
+new file mode 100644
+index 0000000..8ac47ba
+--- /dev/null
++++ b/outbound-adapter/legacy/src/main/kotlin/com/cowave/search/outbound_adapter/legacy/LegacySyncRepositoryImpl.kt
+@@ -0,0 +1,53 @@
++package com.cowave.search.outbound_adapter.legacy
++
++import com.cowave.search.application.index.dto.LinkedProductRequest
++import com.cowave.search.application.index.dto.UnlinkedProductDeleteRequest
++import com.cowave.search.application.index.dto.UnlinkedProductRequest
++import com.cowave.search.application.index.repository.LegacySyncRepository
++import com.cowave.search.client.legacy_api.LegacyApiClient
++import com.cowave.search.domain.index.enums.Operation
++import com.cowave.shared.utils.logger
++import com.fasterxml.jackson.databind.ObjectMapper
++import org.springframework.http.HttpMethod
++import org.springframework.stereotype.Component
++
++@Component
++class LegacySyncRepositoryImpl(
++    private val legacyApiClient: LegacyApiClient,
++    private val objectMapper: ObjectMapper,
++) : LegacySyncRepository {
++    private val logger by logger()
++
++    override fun pushLinkedProducts(
++        products: List<LinkedProductRequest>,
++        operation: Operation,
++    ) {
++        val body = objectMapper.writeValueAsString(products)
++        val method = operation.toHttpMethod()
++        logger.info { "레거시 연동상품 동기화 요청 [operation=$operation, count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "PDM", method = method, body = body)
++    }
++
++    override fun pushUnlinkedProducts(
++        products: List<UnlinkedProductRequest>,
++        operation: Operation,
++    ) {
++        val body = objectMapper.writeValueAsString(products)
++        val method = operation.toHttpMethod()
++        logger.info { "레거시 비연동상품 동기화 요청 [operation=$operation, count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "TCMPNY_LINK", method = method, body = body)
++    }
++
++    override fun pushUnlinkedProductDeletes(products: List<UnlinkedProductDeleteRequest>) {
++        val body = objectMapper.writeValueAsString(products)
++        logger.info { "레거시 비연동상품 삭제 동기화 요청 [count=${products.size}]" }
++        legacyApiClient.pushQueue(service = "TCMPNY_LINK", method = HttpMethod.DELETE, body = body)
++    }
++
++    private fun Operation.toHttpMethod(): HttpMethod =
++        when (this) {
++            Operation.CREATE -> HttpMethod.POST
++            Operation.UPDATE -> HttpMethod.PUT
++            Operation.DELETE -> HttpMethod.DELETE
++        }
++}
+diff --git a/outbound-adapter/proxy/build.gradle.kts b/outbound-adapter/proxy/build.gradle.kts
+index ea574fd..62a0b05 100644
+--- a/outbound-adapter/proxy/build.gradle.kts
++++ b/outbound-adapter/proxy/build.gradle.kts
+@@ -1,6 +1,9 @@
+ dependencies {
++    implementation(project(":shared"))
+     implementation(project(":domain:proxy"))
++    implementation(project(":application:index"))
+     implementation(project(":outbound:client:proxy-api"))
++    implementation(project(":outbound:repository:cache"))
+ 
+     testImplementation("org.springframework.boot:spring-boot-starter-test")
+     testImplementation("io.kotest:kotest-runner-junit5-jvm")
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandProxyReaderImpl.kt
+similarity index 64%
+rename from outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpl.kt
+rename to outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandProxyReaderImpl.kt
+index c9c9233..87458a5 100644
+--- a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpl.kt
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandProxyReaderImpl.kt
+@@ -1,15 +1,15 @@
+-package com.cowave.search.outbound_adapter.proxy
++package com.cowave.search.outbound_adapter.proxy.brand
+ 
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+-import com.cowave.search.domain.proxy.brand.Brand
+-import com.cowave.search.domain.proxy.brand.BrandRepository
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.brand.BrandProxyReader
+ import org.springframework.stereotype.Component
+ 
+ @Component
+-class BrandRepositoryImpl(
++class BrandProxyReaderImpl(
+     private val client: ProxyApiClient,
+-) : BrandRepository {
+-    override fun findAllByIds(brandIds: List<Long>): List<Brand> {
++) : BrandProxyReader {
++    override fun getAllByIds(brandIds: List<Long>): List<BrandProjection> {
+         val query =
+             """
+             query GetBrands(${'$'}ids: [Long!]!) {
+@@ -26,7 +26,7 @@ class BrandRepositoryImpl(
+             query = query,
+             variables = mapOf("ids" to brandIds),
+             retrievePath = "brands.items",
+-            Brand::class.java,
++            BrandProjection::class.java,
+         )
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandRepositoryImpl.kt
+new file mode 100644
+index 0000000..777d1ef
+--- /dev/null
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/brand/BrandRepositoryImpl.kt
+@@ -0,0 +1,48 @@
++package com.cowave.search.outbound_adapter.proxy.brand
++
++import com.cowave.search.domain.proxy.brand.BrandProjection
++import com.cowave.search.domain.proxy.brand.BrandRepository
++import com.cowave.search.repository.cache.BrandValkeyRepository
++import com.cowave.search.repository.cache.entity.BrandValkeyEntity
++import com.cowave.shared.cache.GlobalCache
++import org.springframework.stereotype.Component
++
++@Component
++class BrandRepositoryImpl(
++    private val brandValkeyRepository: BrandValkeyRepository,
++) : BrandRepository,
++    GlobalCache<Long, BrandProjection> {
++
++    override fun getAllByIds(brandIds: List<Long>): List<BrandProjection> =
++        brandValkeyRepository
++            .getAll(brandIds)
++            .mapNotNull { it?.toProjection() }
++
++    override fun putAll(brands: List<BrandProjection>) {
++        brandValkeyRepository.putAll(brands.map { it.toEntity() })
++    }
++
++    override fun getAll(ids: Collection<Long>): Map<Long, BrandProjection?> {
++        val values = brandValkeyRepository.getAll(ids.toList())
++
++        return ids.zip(values).associate {
++            it.first to it.second?.toProjection()
++        }
++    }
++
++    override fun putAll(values: Map<Long, BrandProjection>) {
++        brandValkeyRepository.putAll(values.map { (_, v) -> v.toEntity() })
++    }
++
++    private fun BrandValkeyEntity.toProjection(): BrandProjection =
++        BrandProjection(
++            id = id,
++            name = name,
++        )
++
++    private fun BrandProjection.toEntity(): BrandValkeyEntity =
++        BrandValkeyEntity(
++            id = id,
++            name = name,
++        )
++}
+\ No newline at end of file
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryProxyReaderImpl.kt
+similarity index 67%
+rename from outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpl.kt
+rename to outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryProxyReaderImpl.kt
+index 03c39fc..7b12327 100644
+--- a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpl.kt
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryProxyReaderImpl.kt
+@@ -1,15 +1,15 @@
+-package com.cowave.search.outbound_adapter.proxy
++package com.cowave.search.outbound_adapter.proxy.category
+ 
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+-import com.cowave.search.domain.proxy.category.Category
+-import com.cowave.search.domain.proxy.category.CategoryRepository
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.category.CategoryProxyReader
+ import org.springframework.stereotype.Component
+ 
+ @Component
+-class CategoryRepositoryImpl(
++class CategoryProxyReaderImpl(
+     private val client: ProxyApiClient,
+-) : CategoryRepository {
+-    override fun findAllByIds(categoryIds: List<Int>): List<Category> {
++) : CategoryProxyReader {
++    override fun getAllByIds(categoryIds: List<Int>): List<CategoryProjection> {
+         val query =
+             """
+             query GetCategories(${'$'}ids: [Int!]!) {
+@@ -30,7 +30,7 @@ class CategoryRepositoryImpl(
+             query = query,
+             variables = mapOf("ids" to categoryIds),
+             retrievePath = "categories.items",
+-            Category::class.java,
++            CategoryProjection::class.java,
+         )
+     }
+ }
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryRepositoryImpl.kt
+new file mode 100644
+index 0000000..3e9e69f
+--- /dev/null
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/category/CategoryRepositoryImpl.kt
+@@ -0,0 +1,55 @@
++package com.cowave.search.outbound_adapter.proxy.category
++
++import com.cowave.search.domain.proxy.category.CategoryProjection
++import com.cowave.search.domain.proxy.category.CategoryRepository
++import com.cowave.search.repository.cache.CategoryValkeyRepository
++import com.cowave.search.repository.cache.entity.CategoryValkeyEntity
++import com.cowave.shared.cache.GlobalCache
++import org.springframework.stereotype.Component
++
++@Component
++class CategoryRepositoryImpl(
++    private val categoryValkeyRepository: CategoryValkeyRepository,
++) : CategoryRepository,
++    GlobalCache<Int, CategoryProjection> {
++    override fun getAllByIds(categoryIds: List<Int>): List<CategoryProjection> =
++        categoryValkeyRepository
++            .getAll(categoryIds)
++            .mapNotNull { it?.toProjection() }
++
++    override fun putAll(categories: List<CategoryProjection>) {
++        categoryValkeyRepository.putAll(categories.map { it.toEntity() })
++    }
++
++    override fun getAll(ids: Collection<Int>): Map<Int, CategoryProjection?> {
++        val values = categoryValkeyRepository.getAll(ids.toList())
++
++        return ids.zip(values).associate {
++            it.first to it.second?.toProjection()
++        }
++    }
++
++    override fun putAll(values: Map<Int, CategoryProjection>) {
++        categoryValkeyRepository.putAll(values.map { (_, v) -> v.toEntity() })
++    }
++
++    private fun CategoryValkeyEntity.toProjection(): CategoryProjection =
++        CategoryProjection(
++            id = id,
++            name = name,
++            depth = depth,
++            idPath = idPath,
++            namePath = namePath,
++            status = status,
++        )
++
++    private fun CategoryProjection.toEntity(): CategoryValkeyEntity =
++        CategoryValkeyEntity(
++            id = id,
++            name = name,
++            depth = depth,
++            idPath = idPath,
++            namePath = namePath,
++            status = status,
++        )
++}
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallProxyReaderImpl.kt
+similarity index 64%
+rename from outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImpl.kt
+rename to outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallProxyReaderImpl.kt
+index 7ed97e0..bb0d9c1 100644
+--- a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImpl.kt
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallProxyReaderImpl.kt
+@@ -1,22 +1,24 @@
+-package com.cowave.search.outbound_adapter.proxy
++package com.cowave.search.outbound_adapter.proxy.mall
+ 
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+-import com.cowave.search.domain.proxy.mall.Mall
+-import com.cowave.search.domain.proxy.mall.MallRepository
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.search.domain.proxy.mall.MallProxyReader
+ import org.springframework.stereotype.Component
+ 
+ @Component
+-class MallRepositoryImpl(
++class MallProxyReaderImpl(
+     private val client: ProxyApiClient,
+-) : MallRepository {
+-    override fun findAllByIds(mallIds: List<Int>): List<Mall> {
++) : MallProxyReader {
++    override fun getAllByIds(mallIds: List<Int>): List<MallProjection> {
+         val query =
+             """
+             query GetMalls(${'$'}ids: [Int!]) {
+                 malls(input: {  ids: ${'$'}ids }) {
+                     items {
+                         mallId
++                        mallCode
+                         mallIdDanawa
++                        mallIdEnuri
+                         mallUseYnDanawa
+                         mallUseYnEnuri
+                     }
+@@ -28,7 +30,7 @@ class MallRepositoryImpl(
+             query = query,
+             variables = mapOf("ids" to mallIds),
+             retrievePath = "malls.items",
+-            Mall::class.java,
++            MallProjection::class.java,
+         )
+     }
+ }
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallRepositoryImpl.kt
+new file mode 100644
+index 0000000..2b8c86a
+--- /dev/null
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/mall/MallRepositoryImpl.kt
+@@ -0,0 +1,55 @@
++package com.cowave.search.outbound_adapter.proxy.mall
++
++import com.cowave.search.domain.proxy.mall.MallProjection
++import com.cowave.search.domain.proxy.mall.MallRepository
++import com.cowave.search.repository.cache.MallValkeyRepository
++import com.cowave.search.repository.cache.entity.MallValkeyEntity
++import com.cowave.shared.cache.GlobalCache
++import org.springframework.stereotype.Component
++
++@Component
++class MallRepositoryImpl(
++    private val mallValkeyRepository: MallValkeyRepository,
++) : MallRepository,
++    GlobalCache<Int, MallProjection> {
++
++    override fun getAllByIds(mallIds: List<Int>): List<MallProjection> =
++        mallValkeyRepository.getAll(mallIds)
++            .mapNotNull { it?.toProjection() }
++
++    override fun putAll(malls: List<MallProjection>) {
++        mallValkeyRepository.putAll(malls.map { it.toEntity() })
++    }
++
++    override fun getAll(ids: Collection<Int>): Map<Int, MallProjection?> {
++        val values = mallValkeyRepository.getAll(ids.toList())
++
++        return ids.zip(values).associate {
++            it.first to it.second?.toProjection()
++        }
++    }
++
++    override fun putAll(values: Map<Int, MallProjection>) {
++        mallValkeyRepository.putAll(values.map { (_, v) -> v.toEntity() })
++    }
++
++    private fun MallValkeyEntity.toProjection(): MallProjection =
++        MallProjection(
++            mallId = mallId,
++            mallCode = mallCode,
++            mallIdDanawa = mallIdDanawa,
++            mallIdEnuri = mallIdEnuri,
++            mallUseYnDanawa = mallUseYnDanawa,
++            mallUseYnEnuri = mallUseYnEnuri,
++        )
++
++    private fun MallProjection.toEntity(): MallValkeyEntity =
++        MallValkeyEntity(
++            mallId = mallId,
++            mallCode = mallCode,
++            mallIdDanawa = mallIdDanawa,
++            mallIdEnuri = mallIdEnuri,
++            mallUseYnDanawa = mallUseYnDanawa,
++            mallUseYnEnuri = mallUseYnEnuri,
++        )
++}
+\ No newline at end of file
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
+similarity index 55%
+rename from outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpl.kt
+rename to outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
+index 2733c24..f22c674 100644
+--- a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpl.kt
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerProxyReaderImpl.kt
+@@ -1,22 +1,22 @@
+-package com.cowave.search.outbound_adapter.proxy
++package com.cowave.search.outbound_adapter.proxy.manufacturer
+ 
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+-import com.cowave.search.domain.proxy.manufacturer.Manufacturer
+-import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProxyReader
+ import org.springframework.stereotype.Component
+ 
+ @Component
+-class ManufacturerRepositoryImpl(
++class ManufacturerProxyReaderImpl(
+     private val client: ProxyApiClient,
+-) : ManufacturerRepository {
+-    override fun findAllByIds(manufacturerIds: List<Long>): List<Manufacturer> {
++) : ManufacturerProxyReader {
++    override fun getAllByIds(manufacturerIds: List<Long>): List<ManufacturerProjection> {
+         val query =
+             """
+             query GetManufacturers(${'$'}ids: [Long!]) { # 스키마에 Long!으로 되어 있으니 타입을 맞춥니다.
+-                manufacturers(input: { 
+-                    byManufacturer: { 
+-                        ids: ${'$'}ids 
+-                    } 
++                manufacturers(input: {
++                    byManufacturer: {
++                        ids: ${'$'}ids
++                    }
+                 }) {
+                     items {
+                         id
+@@ -30,7 +30,7 @@ class ManufacturerRepositoryImpl(
+             query = query,
+             variables = mapOf("ids" to manufacturerIds),
+             retrievePath = "manufacturers.items",
+-            Manufacturer::class.java,
++            ManufacturerProjection::class.java,
+         )
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerRepositoryImpl.kt b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerRepositoryImpl.kt
+new file mode 100644
+index 0000000..a3d3d5b
+--- /dev/null
++++ b/outbound-adapter/proxy/src/main/kotlin/com/cowave/search/outbound_adapter/proxy/manufacturer/ManufacturerRepositoryImpl.kt
+@@ -0,0 +1,47 @@
++package com.cowave.search.outbound_adapter.proxy.manufacturer
++
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProjection
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
++import com.cowave.search.repository.cache.ManufacturerValkeyRepository
++import com.cowave.search.repository.cache.entity.ManufacturerValkeyEntity
++import com.cowave.shared.cache.GlobalCache
++import org.springframework.stereotype.Component
++
++@Component
++class ManufacturerRepositoryImpl(
++    private val manufacturerValkeyRepository: ManufacturerValkeyRepository,
++) : ManufacturerRepository,
++    GlobalCache<Long, ManufacturerProjection> {
++    override fun getAllByIds(manufacturerIds: List<Long>): List<ManufacturerProjection> =
++        manufacturerValkeyRepository
++            .getAll(manufacturerIds)
++            .mapNotNull { it?.toProjection() }
++
++    override fun putAll(manufacturers: List<ManufacturerProjection>) {
++        manufacturerValkeyRepository.putAll(manufacturers.map { it.toEntity() })
++    }
++
++    override fun getAll(ids: Collection<Long>): Map<Long, ManufacturerProjection?> {
++        val values = manufacturerValkeyRepository.getAll(ids.toList())
++
++        return ids.zip(values).associate {
++            it.first to it.second?.toProjection()
++        }
++    }
++
++    override fun putAll(values: Map<Long, ManufacturerProjection>) {
++        manufacturerValkeyRepository.putAll(values.map { (_, v) -> v.toEntity() })
++    }
++
++    private fun ManufacturerValkeyEntity.toProjection(): ManufacturerProjection =
++        ManufacturerProjection(
++            id = id,
++            name = name,
++        )
++
++    private fun ManufacturerProjection.toEntity(): ManufacturerValkeyEntity =
++        ManufacturerValkeyEntity(
++            id = id,
++            name = name,
++        )
++}
+\ No newline at end of file
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandProxyReaderImplTest.kt
+similarity index 73%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandProxyReaderImplTest.kt
+index 23e43d8..9a0a35a 100644
+--- a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerRepositoryImpTest.kt
++++ b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandProxyReaderImplTest.kt
+@@ -3,7 +3,8 @@ package com.cowave.search.outbound_adapter.proxy
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+ import com.cowave.search.client.proxy_api.ProxyApiClientConfig
+ import com.cowave.search.client.proxy_api.ProxyApiClientProperties
+-import com.cowave.search.domain.proxy.manufacturer.ManufacturerRepository
++import com.cowave.search.domain.proxy.manufacturer.ManufacturerProxyReader
++import com.cowave.search.outbound_adapter.proxy.manufacturer.ManufacturerProxyReaderImpl
+ import io.kotest.core.spec.style.FunSpec
+ import io.kotest.matchers.shouldBe
+ import org.springframework.boot.context.properties.EnableConfigurationProperties
+@@ -13,20 +14,20 @@ import org.springframework.boot.test.context.SpringBootTest
+     classes = [
+         ProxyApiClientConfig::class,
+         ProxyApiClient::class,
+-        ManufacturerRepositoryImpl::class,
++        ManufacturerProxyReaderImpl::class,
+     ]
+ )
+ @EnableConfigurationProperties(
+     ProxyApiClientProperties::class,
+ )
+ class ManufacturerRepositoryImpTest(
+-    private val repository: ManufacturerRepository
++    private val proxyReader: ManufacturerProxyReader
+ ) : FunSpec({
+     /**
+      * expected response: [{id=1, name=삼성}, {id=4, name=위니아전자}]
+      */
+     test("GraphQL get manufacturers query test") {
+-        val list = repository.findAllByIds(listOf(1, 4))
++        val list = proxyReader.getAllByIds(listOf(1, 4))
+ 
+         list.size shouldBe 2
+     }
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryProxyReaderImplTest.kt
+similarity index 75%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryProxyReaderImplTest.kt
+index 85834d5..2d4d415 100644
+--- a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/BrandRepositoryImpTest.kt
++++ b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryProxyReaderImplTest.kt
+@@ -3,7 +3,8 @@ package com.cowave.search.outbound_adapter.proxy
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+ import com.cowave.search.client.proxy_api.ProxyApiClientConfig
+ import com.cowave.search.client.proxy_api.ProxyApiClientProperties
+-import com.cowave.search.domain.proxy.brand.BrandRepository
++import com.cowave.search.domain.proxy.brand.BrandProxyReader
++import com.cowave.search.outbound_adapter.proxy.brand.BrandProxyReaderImpl
+ import io.kotest.core.spec.style.FunSpec
+ import io.kotest.matchers.shouldBe
+ import org.springframework.boot.context.properties.EnableConfigurationProperties
+@@ -13,20 +14,20 @@ import org.springframework.boot.test.context.SpringBootTest
+     classes = [
+         ProxyApiClientConfig::class,
+         ProxyApiClient::class,
+-        BrandRepositoryImpl::class,
++        BrandProxyReaderImpl::class,
+     ]
+ )
+ @EnableConfigurationProperties(
+     ProxyApiClientProperties::class,
+ )
+ class BrandRepositoryImpTest(
+-    private val repository: BrandRepository
++    private val proxyReader: BrandProxyReader
+ ) : FunSpec({
+     /**
+      * expected response: [{id=27, name=마이다스}, {id=29, name=쥬벨}]
+      */
+     test("GraphQL get brands query test") {
+-        val list = repository.findAllByIds(listOf(27, 29))
++        val list = proxyReader.getAllByIds(listOf(27, 29))
+ 
+         list.size shouldBe 2
+     }
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImplTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallProxyReaderImplTest.kt
+similarity index 74%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImplTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallProxyReaderImplTest.kt
+index ca8750f..bf706a9 100644
+--- a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallRepositoryImplTest.kt
++++ b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/MallProxyReaderImplTest.kt
+@@ -3,7 +3,8 @@ package com.cowave.search.outbound_adapter.proxy
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+ import com.cowave.search.client.proxy_api.ProxyApiClientConfig
+ import com.cowave.search.client.proxy_api.ProxyApiClientProperties
+-import com.cowave.search.domain.proxy.mall.MallRepository
++import com.cowave.search.domain.proxy.mall.MallProxyReader
++import com.cowave.search.outbound_adapter.proxy.mall.MallProxyReaderImpl
+ import io.kotest.core.spec.style.FunSpec
+ import io.kotest.matchers.shouldBe
+ import org.springframework.boot.context.properties.EnableConfigurationProperties
+@@ -13,20 +14,20 @@ import org.springframework.boot.test.context.SpringBootTest
+     classes = [
+         ProxyApiClientConfig::class,
+         ProxyApiClient::class,
+-        MallRepositoryImpl::class,
++        MallProxyReaderImpl::class,
+     ],
+ )
+ @EnableConfigurationProperties(
+     ProxyApiClientProperties::class,
+ )
+-class MallRepositoryImplTest(
+-    private val repository: MallRepository,
++class MallProxyReaderImplTest(
++    private val proxyReader: MallProxyReader,
+ ) : FunSpec({
+         /**
+          * expected response: [{mallId=41468, mallUseYnDanawa=null, mallUseYnEnuri=Y}, {mallId=41471, mallUseYnDanawa=Y, mallUseYnEnuri=Y}]
+          */
+         test("GraphQL get manufacturers query test") {
+-            val list = repository.findAllByIds(listOf(41468, 41472))
++            val list = proxyReader.getAllByIds(listOf(41468, 41472))
+ 
+             list.size shouldBe 2
+         }
+diff --git a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpTest.kt b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerProxyReaderImplTest.kt
+similarity index 75%
+rename from outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpTest.kt
+rename to outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerProxyReaderImplTest.kt
+index aff4204..04f2641 100644
+--- a/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/CategoryRepositoryImpTest.kt
++++ b/outbound-adapter/proxy/src/test/kotlin/com/cowave/search/outbound_adapter/proxy/ManufacturerProxyReaderImplTest.kt
+@@ -3,7 +3,8 @@ package com.cowave.search.outbound_adapter.proxy
+ import com.cowave.search.client.proxy_api.ProxyApiClient
+ import com.cowave.search.client.proxy_api.ProxyApiClientConfig
+ import com.cowave.search.client.proxy_api.ProxyApiClientProperties
+-import com.cowave.search.domain.proxy.category.CategoryRepository
++import com.cowave.search.domain.proxy.category.CategoryProxyReader
++import com.cowave.search.outbound_adapter.proxy.category.CategoryProxyReaderImpl
+ import io.kotest.core.spec.style.FunSpec
+ import io.kotest.matchers.shouldBe
+ import org.springframework.boot.context.properties.EnableConfigurationProperties
+@@ -13,20 +14,20 @@ import org.springframework.boot.test.context.SpringBootTest
+     classes = [
+         ProxyApiClientConfig::class,
+         ProxyApiClient::class,
+-        CategoryRepositoryImpl::class,
++        CategoryProxyReaderImpl::class,
+     ]
+ )
+ @EnableConfigurationProperties(
+     ProxyApiClientProperties::class,
+ )
+ class CategoryRepositoryImpTest(
+-    private val repository: CategoryRepository
++    private val proxyReader: CategoryProxyReader
+ ) : FunSpec({
+     /**
+      * expected response: [{id=10718, name=물안경, depth=4}, {id=10722, name=오리발, depth=4}]
+      */
+     test("GraphQL get categories query test") {
+-        val list = repository.findAllByIds(listOf(10718, 10722))
++        val list = proxyReader.getAllByIds(listOf(10718, 10722))
+ 
+         list.size shouldBe 2
+         list[0].depth shouldBe 4
+diff --git a/outbound/client/legacy-api/build.gradle.kts b/outbound/client/legacy-api/build.gradle.kts
+new file mode 100644
+index 0000000..da4041d
+--- /dev/null
++++ b/outbound/client/legacy-api/build.gradle.kts
+@@ -0,0 +1,4 @@
++dependencies {
++    implementation(project(":shared"))
++    implementation("org.springframework.boot:spring-boot-starter-webflux")
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt
+new file mode 100644
+index 0000000..e14404d
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClient.kt
+@@ -0,0 +1,37 @@
++package com.cowave.search.client.legacy_api
++
++import com.cowave.shared.utils.logger
++import org.springframework.beans.factory.annotation.Qualifier
++import org.springframework.http.HttpMethod
++import org.springframework.http.MediaType
++import org.springframework.stereotype.Component
++import org.springframework.web.reactive.function.client.WebClient
++import org.springframework.web.reactive.function.client.bodyToMono
++
++@Component
++class LegacyApiClient(
++    @field:Qualifier("LegacyWebClient")
++    private val client: WebClient,
++) {
++    private val logger by logger()
++
++    fun pushQueue(
++        service: String,
++        method: HttpMethod,
++        body: String,
++    ) {
++        try {
++            client
++                .method(method)
++                .uri("/pushQueue.json?service={service}", service)
++                .contentType(MediaType.APPLICATION_JSON)
++                .bodyValue(body)
++                .retrieve()
++                .bodyToMono<String>()
++                .block()
++        } catch (ex: Exception) {
++            logger.error { "Legacy API pushQueue 호출 실패 [service=$service]: $ex" }
++            throw ex
++        }
++    }
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt
+new file mode 100644
+index 0000000..342a2e7
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientConfig.kt
+@@ -0,0 +1,27 @@
++package com.cowave.search.client.legacy_api
++
++import org.springframework.context.annotation.Bean
++import org.springframework.context.annotation.Configuration
++import org.springframework.http.client.reactive.ReactorClientHttpConnector
++import org.springframework.web.reactive.function.client.WebClient
++import reactor.netty.http.client.HttpClient
++import java.time.Duration
++
++@Configuration
++class LegacyApiClientConfig(
++    private val prop: LegacyApiClientProperties,
++) {
++    @Bean("LegacyWebClient")
++    fun legacyWebClient(): WebClient {
++        val httpClient =
++            HttpClient
++                .create()
++                .responseTimeout(Duration.ofMillis(prop.timeout))
++
++        return WebClient
++            .builder()
++            .baseUrl(prop.baseUrl)
++            .clientConnector(ReactorClientHttpConnector(httpClient))
++            .build()
++    }
++}
+diff --git a/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt
+new file mode 100644
+index 0000000..b542fd4
+--- /dev/null
++++ b/outbound/client/legacy-api/src/main/kotlin/com/cowave/search/client/legacy_api/LegacyApiClientProperties.kt
+@@ -0,0 +1,9 @@
++package com.cowave.search.client.legacy_api
++
++import org.springframework.boot.context.properties.ConfigurationProperties
++
++@ConfigurationProperties(prefix = "client.legacy-api")
++data class LegacyApiClientProperties(
++    val baseUrl: String,
++    val timeout: Long = 3000,
++)
+diff --git a/outbound/repository/cache/build.gradle.kts b/outbound/repository/cache/build.gradle.kts
+index 5d1bb6c..684214c 100644
+--- a/outbound/repository/cache/build.gradle.kts
++++ b/outbound/repository/cache/build.gradle.kts
+@@ -1,4 +1,21 @@
++plugins {
++    kotlin("plugin.serialization")
++}
++
+ dependencies {
+-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+     implementation(project(":shared"))
++    implementation("org.springframework.boot:spring-boot-starter-data-redis")
++    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
++    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
++
++    testImplementation("org.springframework.boot:spring-boot-starter-test")
++    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
++    testImplementation("io.kotest:kotest-runner-junit5-jvm")
++    testImplementation("io.kotest:kotest-assertions-core-jvm")
++    testImplementation("io.kotest.extensions:kotest-extensions-spring")
++    testImplementation("io.mockk:mockk:1.13.13")
++}
++
++tasks.withType<Test> {
++    useJUnitPlatform()
+ }
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/AbstractValkeyRepository.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/AbstractValkeyRepository.kt
+new file mode 100644
+index 0000000..d44ac75
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/AbstractValkeyRepository.kt
+@@ -0,0 +1,67 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.shared.serialization.defaultJson
++import kotlinx.serialization.KSerializer
++import org.springframework.data.redis.core.RedisTemplate
++
++/**
++ * `ValkeyRepository`는 valkey를 DB로써 사용하는 영속성 레이어의 리포지토리입니다.
++ */
++abstract class AbstractValkeyRepository<ID, V : Any> (
++    private val redisTemplate: RedisTemplate<String, String>,
++    private val serializer: KSerializer<V>,
++    private val keyPrefix: String,
++) {
++
++    private fun serialize(value: V): String = defaultJson.encodeToString(serializer, value)
++
++    private fun deserialize(jsonString: String): V = defaultJson.decodeFromString(serializer, jsonString)
++
++    /**
++     * Missed keys에 대한 처리를 애플리케이션에서 주도적으로 할 수 있도록 반환에 null이 포함될 수 있습니다.
++     */
++    protected fun multiGet(ids: List<ID>): List<V?> {
++        return redisTemplate.opsForValue()
++            .multiGet(ids.toKeys())
++            ?.map { it?.let(::deserialize) }
++            ?: emptyList()
++    }
++
++    protected fun hashMultiGet(ids: List<ID>): List<V?> {
++        return redisTemplate.opsForHash<String, String>()
++            .multiGet(getHashKey(), ids.toFields())
++            .map { it?.let(::deserialize) }
++    }
++
++    /**
++     * Valkey는 DB로써 사용되므로 TTL을 가지고 있지 않어 mset이 적합합니다.
++     */
++    protected fun multiSet(keyValuePairs: Map<ID, V>) {
++        redisTemplate.opsForValue()
++            .multiSet(
++                keyValuePairs.map { (k, v) ->
++                    k.toKey() to serialize(v)
++                }.toMap()
++            )
++    }
++
++    protected fun hashMultiSet(keyValuePairs: Map<ID, V>) {
++        return redisTemplate.opsForHash<String, String>()
++            .putAll(
++                getHashKey(),
++                keyValuePairs.map { (k, v) ->
++                    k.toField() to serialize(v)
++                }.toMap()
++            )
++    }
++
++    protected fun getHashKey(): String = keyPrefix
++
++    protected fun ID.toKey(): String = "$keyPrefix:$this"
++
++    protected fun List<ID>.toKeys(): List<String> = this.map { it.toKey() }
++
++    protected fun ID.toField(): String = this.toString()
++
++    protected fun List<ID>.toFields(): List<String> = this.map { it.toField() }
++}
+\ No newline at end of file
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/BrandValkeyRepository.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/BrandValkeyRepository.kt
+new file mode 100644
+index 0000000..c174c78
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/BrandValkeyRepository.kt
+@@ -0,0 +1,27 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.BrandValkeyEntity
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.stereotype.Component
++
++@Component
++class BrandValkeyRepository(
++    redisTemplate: RedisTemplate<String, String>,
++) : AbstractValkeyRepository<Long, BrandValkeyEntity>(
++    redisTemplate = redisTemplate,
++    serializer = BrandValkeyEntity.serializer(),
++    keyPrefix = BRAND_CACHE_KEY_PREFIX,
++) {
++
++    fun getAll(ids: List<Long>): List<BrandValkeyEntity?> {
++        return this.hashMultiGet(ids)
++    }
++
++    fun putAll(entities: List<BrandValkeyEntity>) {
++        this.hashMultiSet(entities.associateBy { it.id })
++    }
++
++    companion object {
++        private const val BRAND_CACHE_KEY_PREFIX = "commerce-search.search-api.cache.brand"
++    }
++}
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepository.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepository.kt
+new file mode 100644
+index 0000000..a34f82c
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepository.kt
+@@ -0,0 +1,27 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.CategoryValkeyEntity
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.stereotype.Component
++
++@Component
++class CategoryValkeyRepository(
++    redisTemplate: RedisTemplate<String, String>,
++) : AbstractValkeyRepository<Int, CategoryValkeyEntity>(
++    redisTemplate = redisTemplate,
++    serializer = CategoryValkeyEntity.serializer(),
++    keyPrefix = CATEGORY_CACHE_KEY_PREFIX,
++) {
++
++    fun getAll(ids: List<Int>): List<CategoryValkeyEntity?> {
++        return this.hashMultiGet(ids)
++    }
++
++    fun putAll(entities: List<CategoryValkeyEntity>) {
++        this.hashMultiSet(entities.associateBy { it.id })
++    }
++
++    companion object {
++        private const val CATEGORY_CACHE_KEY_PREFIX = "commerce-search.search-api.cache.category"
++    }
++}
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/MallValkeyRepository.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/MallValkeyRepository.kt
+new file mode 100644
+index 0000000..c560f8c
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/MallValkeyRepository.kt
+@@ -0,0 +1,27 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.MallValkeyEntity
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.stereotype.Component
++
++@Component
++class MallValkeyRepository(
++    redisTemplate: RedisTemplate<String, String>,
++) : AbstractValkeyRepository<Int, MallValkeyEntity>(
++    redisTemplate = redisTemplate,
++    serializer = MallValkeyEntity.serializer(),
++    keyPrefix = MALL_CACHE_KEY_PREFIX,
++) {
++
++    fun getAll(ids: List<Int>): List<MallValkeyEntity?> {
++        return this.hashMultiGet(ids)
++    }
++
++    fun putAll(entities: List<MallValkeyEntity>) {
++        this.hashMultiSet(entities.associateBy { it.mallId })
++    }
++
++    companion object {
++        private const val MALL_CACHE_KEY_PREFIX = "commerce-search.search-api.cache.mall"
++    }
++}
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepository.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepository.kt
+new file mode 100644
+index 0000000..70805a9
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepository.kt
+@@ -0,0 +1,27 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.ManufacturerValkeyEntity
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.stereotype.Component
++
++@Component
++class ManufacturerValkeyRepository(
++    redisTemplate: RedisTemplate<String, String>,
++) : AbstractValkeyRepository<Long, ManufacturerValkeyEntity>(
++    redisTemplate = redisTemplate,
++    serializer = ManufacturerValkeyEntity.serializer(),
++    keyPrefix = MANUFACTURER_CACHE_KEY_PREFIX,
++) {
++
++    fun getAll(ids: List<Long>): List<ManufacturerValkeyEntity?> {
++        return this.hashMultiGet(ids)
++    }
++
++    fun putAll(entities: List<ManufacturerValkeyEntity>) {
++        this.hashMultiSet(entities.associateBy { it.id })
++    }
++
++    companion object {
++        private const val MANUFACTURER_CACHE_KEY_PREFIX = "commerce-search.search-api.cache.manufacturer"
++    }
++}
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/BrandValkeyEntity.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/BrandValkeyEntity.kt
+new file mode 100644
+index 0000000..244238f
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/BrandValkeyEntity.kt
+@@ -0,0 +1,9 @@
++package com.cowave.search.repository.cache.entity
++
++import kotlinx.serialization.Serializable
++
++@Serializable
++data class BrandValkeyEntity(
++    val id: Long,
++    val name: String,
++)
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/CategoryValkeyEntity.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/CategoryValkeyEntity.kt
+new file mode 100644
+index 0000000..343dc3b
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/CategoryValkeyEntity.kt
+@@ -0,0 +1,13 @@
++package com.cowave.search.repository.cache.entity
++
++import kotlinx.serialization.Serializable
++
++@Serializable
++data class CategoryValkeyEntity(
++    val id: Int,
++    val name: String,
++    val depth: Int,
++    val idPath: String,
++    val namePath: String,
++    val status: String,
++)
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/MallValkeyEntity.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/MallValkeyEntity.kt
+new file mode 100644
+index 0000000..36a3b58
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/MallValkeyEntity.kt
+@@ -0,0 +1,13 @@
++package com.cowave.search.repository.cache.entity
++
++import kotlinx.serialization.Serializable
++
++@Serializable
++data class MallValkeyEntity(
++    val mallId: Int,
++    val mallCode: String? = null,
++    val mallIdDanawa: String? = null,
++    val mallIdEnuri: String? = null,
++    val mallUseYnDanawa: String? = null,
++    val mallUseYnEnuri: String? = null,
++)
+diff --git a/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/ManufacturerValkeyEntity.kt b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/ManufacturerValkeyEntity.kt
+new file mode 100644
+index 0000000..5ca309d
+--- /dev/null
++++ b/outbound/repository/cache/src/main/kotlin/com/cowave/search/repository/cache/entity/ManufacturerValkeyEntity.kt
+@@ -0,0 +1,9 @@
++package com.cowave.search.repository.cache.entity
++
++import kotlinx.serialization.Serializable
++
++@Serializable
++data class ManufacturerValkeyEntity(
++    val id: Long,
++    val name: String,
++)
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..36aa4e4
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/BrandValkeyRepositoryTest.kt
+@@ -0,0 +1,81 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.config.ValkeyConfig
++import com.cowave.search.repository.cache.config.ValkeyProperties
++import com.cowave.search.repository.cache.entity.BrandValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        BrandValkeyRepository::class,
++    ]
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class BrandValkeyRepositoryTest(
++    private val repository: BrandValkeyRepository,
++) : FunSpec({
++
++    fun dummyBrands() = listOf(
++        BrandValkeyEntity(id = 1L, name = "나이키"),
++        BrandValkeyEntity(id = 2L, name = "아디다스"),
++        BrandValkeyEntity(id = 3L, name = "뉴발란스"),
++    )
++
++    test("기본적인 multi get, multi set 테스트") {
++        val brands = dummyBrands()
++        repository.putAll(brands)
++
++        val result = repository.getAll(listOf(1L, 2L, 3L))
++
++        result.size shouldBe 3
++        result[0]?.id shouldBe 1L
++        result[0]?.name shouldBe "나이키"
++        result[1]?.id shouldBe 2L
++        result[1]?.name shouldBe "아디다스"
++        result[2]?.id shouldBe 3L
++        result[2]?.name shouldBe "뉴발란스"
++    }
++
++    test("존재하지 않는 키 조회 시 null 반환") {
++        val result = repository.getAll(listOf(99999L))
++
++        result.size shouldBe 1
++        result[0] shouldBe null
++    }
++
++    test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++        repository.putAll(listOf(BrandValkeyEntity(id = 10L, name = "푸마")))
++
++        val result = repository.getAll(listOf(10L, 88888L))
++
++        result.size shouldBe 2
++        result[0]?.id shouldBe 10L
++        result[0]?.name shouldBe "푸마"
++        result[1] shouldBe null
++    }
++
++    test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++        repository.putAll(listOf(BrandValkeyEntity(id = 20L, name = "오리지널")))
++        repository.putAll(listOf(BrandValkeyEntity(id = 20L, name = "수정됨")))
++
++        val result = repository.getAll(listOf(20L))
++
++        result[0]?.name shouldBe "수정됨"
++    }
++
++    test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++        repository.putAll(emptyList())
++        val result = repository.getAll(emptyList())
++
++        result shouldBe emptyList()
++    }
++})
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..7b5bd28
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/CategoryValkeyRepositoryTest.kt
+@@ -0,0 +1,110 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.config.ValkeyConfig
++import com.cowave.search.repository.cache.config.ValkeyProperties
++import com.cowave.search.repository.cache.entity.CategoryValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        CategoryValkeyRepository::class,
++    ],
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class CategoryValkeyRepositoryTest(
++    private val repository: CategoryValkeyRepository,
++) : FunSpec({
++
++        fun dummyCategories() =
++            listOf(
++                CategoryValkeyEntity(id = 1, name = "패션", depth = 1, idPath = "1", namePath = "패션", status = "ACTIVE"),
++                CategoryValkeyEntity(id = 2, name = "남성의류", depth = 2, idPath = "1>2", namePath = "패션>남성의류", status = "ACTIVE"),
++                CategoryValkeyEntity(id = 3, name = "여성의류", depth = 2, idPath = "1>3", namePath = "패션>여성의류", status = "INACTIVE"),
++            )
++
++        test("기본적인 multi get, multi set 테스트") {
++            val categories = dummyCategories()
++            repository.putAll(categories)
++
++            val result = repository.getAll(listOf(1, 2, 3))
++
++            result.size shouldBe 3
++            result[0]?.id shouldBe 1
++            result[0]?.name shouldBe "패션"
++            result[1]?.id shouldBe 2
++            result[2]?.id shouldBe 3
++        }
++
++        test("존재하지 않는 키 조회 시 null 반환") {
++            val result = repository.getAll(listOf(99999))
++
++            result.size shouldBe 1
++            result[0] shouldBe null
++        }
++
++        test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++            repository.putAll(
++                listOf(
++                    CategoryValkeyEntity(id = 10, name = "전자기기", depth = 1, idPath = "10", namePath = "전자기기", status = "ACTIVE"),
++                ),
++            )
++
++            val result = repository.getAll(listOf(10, 88888))
++
++            result.size shouldBe 2
++            result[0]?.id shouldBe 10
++            result[0]?.name shouldBe "전자기기"
++            result[1] shouldBe null
++        }
++
++        test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++            repository.putAll(listOf(CategoryValkeyEntity(1, name = "옷", 1, "0", "옷", "ACTIVE")))
++            repository.putAll(listOf(CategoryValkeyEntity(1, name = "남성성인의류", 2, "1>2", "옷>남성성인의류", "ACTIVE")))
++
++            val result = repository.getAll(listOf(1))
++
++            result[0]?.name shouldBe "남성성인의류"
++            result[0]?.idPath shouldBe "1>2"
++            result[0]?.namePath shouldBe "옷>남성성인의류"
++        }
++
++        test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++            repository.putAll(emptyList())
++            val result = repository.getAll(emptyList())
++
++            result shouldBe emptyList()
++        }
++
++        test("전체 필드 직렬화/역직렬화 - 6개 필드 모두 정확히 저장/복원되는지 확인") {
++            val category =
++                CategoryValkeyEntity(
++                    id = 100,
++                    name = "스포츠",
++                    depth = 3,
++                    idPath = "1>5>100",
++                    namePath = "패션>스포츠웨어>스포츠",
++                    status = "ACTIVE",
++                )
++            repository.putAll(listOf(category))
++
++            val result = repository.getAll(listOf(100))
++
++            result.size shouldBe 1
++            val restored = result[0]!!
++            restored.id shouldBe 100
++            restored.name shouldBe "스포츠"
++            restored.depth shouldBe 3
++            restored.idPath shouldBe "1>5>100"
++            restored.namePath shouldBe "패션>스포츠웨어>스포츠"
++            restored.status shouldBe "ACTIVE"
++        }
++    })
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..79923f4
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryTest.kt
+@@ -0,0 +1,43 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.config.ValkeyConfig
++import com.cowave.search.repository.cache.config.ValkeyProperties
++import com.cowave.search.repository.cache.entity.MallValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        MallValkeyRepository::class,
++    ]
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class MallValkeyRepositoryTest(
++    private val repository: MallValkeyRepository,
++) : FunSpec({
++
++    fun getDummy(): List<MallValkeyEntity> =
++        listOf(
++            MallValkeyEntity(1),
++            MallValkeyEntity(2, "a")
++        )
++
++    test("기본적인 multi get, multi set 테스트") {
++        repository.putAll(getDummy())
++        val malls = repository.getAll(listOf(1, 2, 3))
++
++        malls.size shouldBe 3
++        malls[0]?.mallId shouldBe 1
++        malls[1]?.mallId shouldBe 2
++        malls[2] shouldBe null
++    }
++
++})
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt
+new file mode 100644
+index 0000000..2135721
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/MallValkeyRepositoryUnitTest.kt
+@@ -0,0 +1,113 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.entity.MallValkeyEntity
++import com.cowave.shared.serialization.defaultJson
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import io.mockk.every
++import io.mockk.mockk
++import io.mockk.slot
++import io.mockk.verify
++import org.springframework.data.redis.core.RedisTemplate
++import org.springframework.data.redis.core.ValueOperations
++
++class MallValkeyRepositoryUnitTest : FunSpec({
++
++    val redisTemplate = mockk<RedisTemplate<String, String>>()
++    val valueOps = mockk<ValueOperations<String, String>>(relaxed = true)
++    val repository = MallValkeyRepository(redisTemplate)
++
++    beforeEach {
++        every { redisTemplate.opsForValue() } returns valueOps
++    }
++
++    test("getAllByIds - Valkey에 존재하는 몰을 조회하면 엔티티 리스트를 반환한다") {
++        val mall1 = MallValkeyEntity(mallId = 1, mallCode = "M001")
++        val mall2 = MallValkeyEntity(mallId = 2, mallCode = "M002", mallIdDanawa = "D002")
++
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall1),
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall2),
++        )
++
++        val result = repository.getAllByIds(listOf(1, 2))
++
++        result.size shouldBe 2
++        result[0]?.mallId shouldBe 1
++        result[0]?.mallCode shouldBe "M001"
++        result[1]?.mallId shouldBe 2
++        result[1]?.mallIdDanawa shouldBe "D002"
++    }
++
++    test("getAllByIds - Valkey에 존재하지 않는 키는 null로 반환한다") {
++        val mall = MallValkeyEntity(mallId = 1, mallCode = "M001")
++
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(
++            defaultJson.encodeToString(MallValkeyEntity.serializer(), mall),
++            null,
++        )
++
++        val result = repository.getAllByIds(listOf(1, 999))
++
++        result.size shouldBe 2
++        result[0]?.mallId shouldBe 1
++        result[1] shouldBe null
++    }
++
++    test("getAllByIds - 빈 리스트를 조회하면 빈 결과를 반환한다") {
++        every { valueOps.multiGet(any<Collection<String>>()) } returns emptyList()
++
++        val result = repository.getAllByIds(emptyList())
++
++        result shouldBe emptyList()
++    }
++
++    test("setAll - 엔티티 리스트를 Valkey에 저장한다") {
++        val mall1 = MallValkeyEntity(mallId = 1, mallCode = "M001")
++        val mall2 = MallValkeyEntity(mallId = 2, mallCode = "M002")
++        val capturedMap = slot<Map<String, String>>()
++
++        every { valueOps.multiSet(capture(capturedMap)) } returns Unit
++
++        repository.setAll(listOf(mall1, mall2))
++
++        verify { valueOps.multiSet(any()) }
++        capturedMap.captured.size shouldBe 2
++        capturedMap.captured.keys.any { it.contains("mall") && it.endsWith(":1") } shouldBe true
++        capturedMap.captured.keys.any { it.contains("mall") && it.endsWith(":2") } shouldBe true
++    }
++
++    test("setAll - nullable 필드가 포함된 JSON이 올바르게 직렬화된다") {
++        val mall = MallValkeyEntity(
++            mallId = 42,
++            mallCode = "M042",
++            mallIdDanawa = null,
++            mallIdEnuri = "E042",
++            mallUseYnDanawa = null,
++            mallUseYnEnuri = "Y",
++        )
++        val capturedMap = slot<Map<String, String>>()
++
++        every { valueOps.multiSet(capture(capturedMap)) } returns Unit
++
++        repository.setAll(listOf(mall))
++
++        val storedJson = capturedMap.captured.values.first()
++        val deserialized = defaultJson.decodeFromString(MallValkeyEntity.serializer(), storedJson)
++        deserialized.mallId shouldBe 42
++        deserialized.mallCode shouldBe "M042"
++        deserialized.mallIdDanawa shouldBe null
++        deserialized.mallIdEnuri shouldBe "E042"
++        deserialized.mallUseYnDanawa shouldBe null
++        deserialized.mallUseYnEnuri shouldBe "Y"
++    }
++
++    test("getKey - 올바른 키 포맷을 생성한다") {
++        every { valueOps.multiGet(any<Collection<String>>()) } returns listOf(null)
++
++        repository.getAllByIds(listOf(123))
++
++        val expectedKeys = listOf("commerce-search.search-api.cache.mall:123")
++        verify { valueOps.multiGet(expectedKeys) }
++    }
++})
+diff --git a/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt
+new file mode 100644
+index 0000000..13a2480
+--- /dev/null
++++ b/outbound/repository/cache/src/test/kotlin/com/cowave/search/repository/cache/ManufacturerValkeyRepositoryTest.kt
+@@ -0,0 +1,81 @@
++package com.cowave.search.repository.cache
++
++import com.cowave.search.repository.cache.config.ValkeyConfig
++import com.cowave.search.repository.cache.config.ValkeyProperties
++import com.cowave.search.repository.cache.entity.ManufacturerValkeyEntity
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import org.springframework.boot.context.properties.EnableConfigurationProperties
++import org.springframework.boot.test.context.SpringBootTest
++
++/**
++ * Note. docker-compose로 valkey cluster를 띄운 후 테스트를 진행하세요.
++ */
++@SpringBootTest(
++    classes = [
++        ValkeyConfig::class,
++        ManufacturerValkeyRepository::class,
++    ]
++)
++@EnableConfigurationProperties(
++    ValkeyProperties::class,
++)
++class ManufacturerValkeyRepositoryTest(
++    private val repository: ManufacturerValkeyRepository,
++) : FunSpec({
++
++    fun dummyManufacturers() = listOf(
++        ManufacturerValkeyEntity(id = 1L, name = "삼성전자"),
++        ManufacturerValkeyEntity(id = 2L, name = "LG전자"),
++        ManufacturerValkeyEntity(id = 3L, name = "애플"),
++    )
++
++    test("기본적인 multi get, multi set 테스트") {
++        val manufacturers = dummyManufacturers()
++        repository.putAll(manufacturers)
++
++        val result = repository.getAll(listOf(1L, 2L, 3L))
++
++        result.size shouldBe 3
++        result[0]?.id shouldBe 1L
++        result[0]?.name shouldBe "삼성전자"
++        result[1]?.id shouldBe 2L
++        result[1]?.name shouldBe "LG전자"
++        result[2]?.id shouldBe 3L
++        result[2]?.name shouldBe "애플"
++    }
++
++    test("존재하지 않는 키 조회 시 null 반환") {
++        val result = repository.getAll(listOf(99999L))
++
++        result.size shouldBe 1
++        result[0] shouldBe null
++    }
++
++    test("혼합 조회 - 존재하는 ID와 없는 ID를 함께 조회") {
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 10L, name = "소니")))
++
++        val result = repository.getAll(listOf(10L, 88888L))
++
++        result.size shouldBe 2
++        result[0]?.id shouldBe 10L
++        result[0]?.name shouldBe "소니"
++        result[1] shouldBe null
++    }
++
++    test("데이터 덮어쓰기 - 같은 ID로 putAll 후 값이 업데이트되는지 확인") {
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 20L, name = "오리지널")))
++        repository.putAll(listOf(ManufacturerValkeyEntity(id = 20L, name = "수정됨")))
++
++        val result = repository.getAll(listOf(20L))
++
++        result[0]?.name shouldBe "수정됨"
++    }
++
++    test("빈 리스트 처리 - 빈 리스트로 getAll/putAll 호출") {
++        repository.putAll(emptyList())
++        val result = repository.getAll(emptyList())
++
++        result shouldBe emptyList()
++    }
++})
+diff --git a/outbound/repository/cache/src/test/resources/application.properties b/outbound/repository/cache/src/test/resources/application.properties
+new file mode 100644
+index 0000000..5410041
+--- /dev/null
++++ b/outbound/repository/cache/src/test/resources/application.properties
+@@ -0,0 +1,2 @@
++valkey.backend.hosts=localhost:6379,localhost:6380,localhost:6381
++valkey.backend.database=0
+\ No newline at end of file
+diff --git a/proto b/proto
+deleted file mode 160000
+index fb00f7d..0000000
+--- a/proto
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit fb00f7d4ab7b328c768362287e78a380ba7841bf
+diff --git a/shared/build.gradle.kts b/shared/build.gradle.kts
+index a303835..dc3126a 100644
+--- a/shared/build.gradle.kts
++++ b/shared/build.gradle.kts
+@@ -2,6 +2,7 @@ import com.google.protobuf.gradle.id
+ 
+ plugins {
+     id("com.google.protobuf")
++    kotlin("plugin.serialization")
+ }
+ 
+ dependencies {
+@@ -18,7 +19,16 @@ dependencies {
+     // REST API 예외 처리를 위한 spring-web
+     implementation("org.springframework:spring-web")
+ 
++    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
++    implementation("com.github.ben-manes.caffeine:caffeine")
++
+     testImplementation("org.springframework.grpc:spring-grpc-test")
++
++    testImplementation("org.springframework.boot:spring-boot-starter-test")
++    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
++    testImplementation("io.kotest:kotest-runner-junit5-jvm")
++    testImplementation("io.kotest:kotest-assertions-core-jvm")
++    testImplementation("io.kotest.extensions:kotest-extensions-spring")
+ }
+ 
+ protobuf {
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt
+new file mode 100644
+index 0000000..089925c
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultLocalCache.kt
+@@ -0,0 +1,34 @@
++package com.cowave.shared.cache
++
++import com.github.benmanes.caffeine.cache.Cache
++
++class DefaultLocalCache<ID : Any, V : Any>(
++    val cache: Cache<String, V>,
++    val keyPrefix: String,
++) : LocalCache<ID, V> {
++
++    override fun get(id: ID): V? =
++        cache.getIfPresent(id.toKey())
++
++    override fun getAll(ids: Collection<ID>): Map<ID, V?> {
++        val values: List<V?> = ids.map { id -> id.toKey() }
++            .map { key -> cache.getIfPresent(key) }
++
++        return ids.zip(values).associate {
++            it.first to it.second
++        }
++    }
++
++    override fun put(id: ID, value: V) {
++        cache.put(id.toKey(), value)
++    }
++
++    override fun putAll(values: Map<ID, V>) {
++        values
++            .map {it.key.toKey() to it.value }
++            .toMap()
++            .let { cache.putAll(it) }
++    }
++
++    private fun ID.toKey(): String = "$keyPrefix:id"
++}
+\ No newline at end of file
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/DefaultTieredLoadingCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultTieredLoadingCache.kt
+new file mode 100644
+index 0000000..335ed9c
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/DefaultTieredLoadingCache.kt
+@@ -0,0 +1,61 @@
++package com.cowave.shared.cache
++
++/**
++ * 각 cache, fetcher 마다 사용하는 key의 형태가 다르기 때문에 공통의 id를 key로써 사용하고 캐시의 실제 키는 각 캐시 내부에서 처리합니다.
++ */
++class DefaultTieredLoadingCache<ID, V>(
++    private val localCache: LocalCache<ID, V>,
++    private val globalCache: GlobalCache<ID, V>,
++    private val fetcher: (Collection<ID>) -> Map<ID, V>,
++) : TieredLoadingCache<ID, V> {
++
++    override fun get(id: ID): V? {
++        // 1. L1
++        localCache.get(id)?.let { return it }
++
++        // 2. L2
++        val globalCached = globalCache.getAll(listOf(id))
++        globalCached[id]?.let {
++            localCache.put(id, it)
++            return it
++        }
++
++        // 3. L3
++        val fetched = fetcher(listOf(id))
++        fetched[id]?.let {
++            localCache.put(id, it)
++            globalCache.putAll(mapOf(id to it))
++            return it
++        }
++
++        // 4. All missed
++        return null
++    }
++
++    override fun getAll(ids: Collection<ID>): Map<ID, V?> {
++        if (ids.isEmpty()) return emptyMap()
++
++        // 1. L1
++        val localCached = localCache.getAll(ids)
++        val localMiss = localCached.filterValues { it == null }
++        if (localMiss.keys.isEmpty()) return localCached
++
++        // 2. L2
++        val globalCached = globalCache.getAll(localMiss.keys)
++        val globalHit = globalCached.filterValues { it != null }.mapValues { it.value!! }
++        val globalMiss = globalCached.filterValues { it == null }
++        if (globalHit.isNotEmpty()) {
++            localCache.putAll(globalHit)
++        }
++        if (globalMiss.isEmpty()) return localCached + globalCached
++
++        // 3. L3
++        val fetched = fetcher(globalMiss.keys)
++        if (fetched.isNotEmpty()) {
++            localCache.putAll(fetched)
++            globalCache.putAll(fetched)
++        }
++
++        return localCached + globalCached + fetched
++    }
++}
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/GlobalCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/GlobalCache.kt
+new file mode 100644
+index 0000000..7be66f5
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/GlobalCache.kt
+@@ -0,0 +1,6 @@
++package com.cowave.shared.cache
++
++interface GlobalCache<ID, V> {
++    fun getAll(ids: Collection<ID>): Map<ID, V?>
++    fun putAll(values: Map<ID, V>)
++}
+\ No newline at end of file
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/LocalCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/LocalCache.kt
+new file mode 100644
+index 0000000..f597741
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/LocalCache.kt
+@@ -0,0 +1,8 @@
++package com.cowave.shared.cache
++
++interface LocalCache<ID, V> {
++    fun get(id: ID): V?
++    fun getAll(ids: Collection<ID>): Map<ID, V?>
++    fun put(id: ID, value: V)
++    fun putAll(values: Map<ID, V>)
++}
+\ No newline at end of file
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/LocalCacheFactory.kt b/shared/src/main/kotlin/com/cowave/shared/cache/LocalCacheFactory.kt
+new file mode 100644
+index 0000000..01e9cd4
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/LocalCacheFactory.kt
+@@ -0,0 +1,19 @@
++package com.cowave.shared.cache
++
++import com.github.benmanes.caffeine.cache.Caffeine
++import java.util.concurrent.TimeUnit
++
++object LocalCacheFactory {
++    fun <ID : Any, V : Any> create(
++        keyPrefix: String,
++        maxSize: Long = 1_000_000,
++        ttlSeconds: Long = 60,
++    ): LocalCache<ID, V> =
++        DefaultLocalCache(
++            cache = Caffeine.newBuilder()
++                .maximumSize(maxSize)
++                .expireAfterWrite(ttlSeconds, TimeUnit.SECONDS)
++                .build<String, V>(),
++            keyPrefix = keyPrefix,
++        )
++}
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCache.kt b/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCache.kt
+new file mode 100644
+index 0000000..ee518ae
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCache.kt
+@@ -0,0 +1,6 @@
++package com.cowave.shared.cache
++
++interface TieredLoadingCache<ID, V> {
++    fun get(id: ID): V?
++    fun getAll(ids: Collection<ID>): Map<ID, V?>
++}
+diff --git a/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCacheFactory.kt b/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCacheFactory.kt
+new file mode 100644
+index 0000000..245c6b6
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/cache/TieredLoadingCacheFactory.kt
+@@ -0,0 +1,14 @@
++package com.cowave.shared.cache
++
++object TieredLoadingCacheFactory {
++    fun <ID, V> create(
++        localCache: LocalCache<ID, V>,
++        globalCache: GlobalCache<ID, V>,
++        fetcher: (Collection<ID>) -> Map<ID, V>,
++    ): TieredLoadingCache<ID, V> =
++        DefaultTieredLoadingCache(
++            localCache = localCache,
++            globalCache = globalCache,
++            fetcher = fetcher,
++        )
++}
+diff --git a/shared/src/main/kotlin/com/cowave/shared/serialization/DefaultJson.kt b/shared/src/main/kotlin/com/cowave/shared/serialization/DefaultJson.kt
+new file mode 100644
+index 0000000..41d1c2f
+--- /dev/null
++++ b/shared/src/main/kotlin/com/cowave/shared/serialization/DefaultJson.kt
+@@ -0,0 +1,11 @@
++package com.cowave.shared.serialization
++
++import kotlinx.serialization.ExperimentalSerializationApi
++import kotlinx.serialization.json.Json
++
++@OptIn(ExperimentalSerializationApi::class)
++val defaultJson = Json {
++    encodeDefaults = true        // default value 출력
++    ignoreUnknownKeys = true     // 알 수 없는 필드 무시
++    explicitNulls = true         // null 명시
++}
+\ No newline at end of file
+diff --git a/shared/src/test/kotlin/com/cowave/shared/serialization/SerializableEntityTest.kt b/shared/src/test/kotlin/com/cowave/shared/serialization/SerializableEntityTest.kt
+new file mode 100644
+index 0000000..ab44b53
+--- /dev/null
++++ b/shared/src/test/kotlin/com/cowave/shared/serialization/SerializableEntityTest.kt
+@@ -0,0 +1,65 @@
++package com.cowave.shared.serialization
++
++import io.kotest.assertions.throwables.shouldNotThrowAny
++import io.kotest.assertions.throwables.shouldThrowAny
++import io.kotest.core.spec.style.FunSpec
++import io.kotest.matchers.shouldBe
++import kotlinx.serialization.Serializable
++
++class SerializableEntityTest : FunSpec ({
++
++    context("Serializable 객체의 직렬화 테스트") {
++        val serializer = TestData.serializer()
++
++        test("기본적인 직렬화/역직렬화 테스트") {
++            val entity = TestData(1, gender = Gender.MALE)
++
++            shouldNotThrowAny {
++                val serialized = defaultJson.encodeToString(serializer, entity)
++                val deserialized = defaultJson.decodeFromString(serializer, serialized)
++
++                deserialized.id shouldBe 1
++                deserialized.name shouldBe null
++                deserialized.gender shouldBe Gender.MALE
++                deserialized.city shouldBe "Seoul"
++            }
++        }
++
++        test("ignoreUnknownKeys 테스트") {
++            val serializedWithUnknownKeys = """{"id":1,"gender":"MALE","city":"Seoul","unknown1":null,"unknown2":2}"""
++
++            shouldNotThrowAny {
++                defaultJson.decodeFromString(serializer, serializedWithUnknownKeys)
++            }
++        }
++
++        test("String to numeric 테스트") {
++            val serialized = """{"id":"1","gender":"FEMALE","city":"Seoul"}"""
++
++            shouldNotThrowAny {
++                val deserialized = defaultJson.decodeFromString(serializer, serialized)
++                deserialized.id shouldBe 1
++            }
++        }
++
++        test("Numeric to String 혹은 없는 enum value는 역직렬화되지 않는다") {
++            val serialized1 = """{"id":1,"gender":"FEMALE","city":100}"""
++            val serialized2 = """{"id":1,"gender":"ANIMAL","city":"Seoul"}"""
++
++            shouldThrowAny {
++                defaultJson.decodeFromString(serializer, serialized1)
++                defaultJson.decodeFromString(serializer, serialized2)
++            }
++        }
++    }
++})
++
++enum class Gender { MALE, FEMALE }
++
++@Serializable
++data class TestData(
++    val id: Int,
++    val name: String? = null,
++    val gender: Gender,
++    val city: String = "Seoul",
++)
+\ No newline at end of file

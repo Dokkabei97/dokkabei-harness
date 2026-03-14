@@ -1,0 +1,101 @@
+package api
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// PaginatedResponse wraps Plane's cursor-based pagination.
+type PaginatedResponse struct {
+	Results    json.RawMessage `json:"results"`
+	NextCursor string          `json:"next_cursor"`
+	PrevCursor string          `json:"prev_cursor"`
+	NextPage   bool            `json:"next_page_results"`
+	PrevPage   bool            `json:"prev_page_results"`
+	TotalPages int             `json:"total_pages"`
+	TotalCount int             `json:"total_count"`
+	Extra      json.RawMessage `json:"extra_stats,omitempty"`
+}
+
+// ListOptions configures pagination for list requests.
+type ListOptions struct {
+	PerPage int
+	Cursor  string
+	All     bool // fetch all pages
+}
+
+// FetchAll retrieves all pages of a paginated endpoint.
+func (c *Client) FetchAll(path *PathBuilder) ([]json.RawMessage, error) {
+	var allResults []json.RawMessage
+	cursor := ""
+
+	for {
+		p := path
+		if cursor != "" {
+			p.Query("cursor", cursor)
+		}
+		p.QueryInt("per_page", 100)
+
+		pathStr, err := p.Build()
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := c.Get(pathStr)
+		if err != nil {
+			return nil, err
+		}
+
+		var page PaginatedResponse
+		if err := json.Unmarshal(resp, &page); err != nil {
+			// Response might not be paginated, return as single result
+			allResults = append(allResults, resp)
+			return allResults, nil
+		}
+
+		if page.Results != nil {
+			allResults = append(allResults, page.Results)
+		} else {
+			allResults = append(allResults, resp)
+			return allResults, nil
+		}
+
+		if !page.NextPage || page.NextCursor == "" {
+			break
+		}
+		cursor = page.NextCursor
+
+		// Reset query to avoid duplicating cursor
+		path = NewPath(path.template)
+		for k, v := range p.params {
+			path.Param(k, v)
+		}
+	}
+
+	return allResults, nil
+}
+
+// MergePages combines multiple pages of JSON array results into one array.
+func MergePages(pages []json.RawMessage) (json.RawMessage, error) {
+	if len(pages) == 0 {
+		return json.RawMessage("[]"), nil
+	}
+	if len(pages) == 1 {
+		return pages[0], nil
+	}
+
+	var merged []json.RawMessage
+	for _, page := range pages {
+		var items []json.RawMessage
+		if err := json.Unmarshal(page, &items); err != nil {
+			return nil, fmt.Errorf("merging pages: %w", err)
+		}
+		merged = append(merged, items...)
+	}
+
+	result, err := json.Marshal(merged)
+	if err != nil {
+		return nil, fmt.Errorf("marshaling merged results: %w", err)
+	}
+	return result, nil
+}

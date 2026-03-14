@@ -1,0 +1,15 @@
+total 40536
+drwxr-xr-x@ 14 admin  staff       448 12월 17 11:14 .
+drwxr-xr-x@ 25 admin  staff       800  1월 15 08:42 ..
+-rw-r--r--@  1 admin  staff    156552 12월 17 11:14 brand.dict
+-rw-r--r--@  1 admin  staff     23834 12월 17 11:14 category.dict
+-rw-r--r--@  1 admin  staff     23208 12월 17 11:14 compound.dict
+-rw-r--r--@  1 admin  staff   1405790 12월 17 11:14 english.dict
+-rw-r--r--@  1 admin  staff    197808 12월 17 11:14 maker.dict
+-rw-r--r--@  1 admin  staff  10308548 12월 17 11:14 product.dict
+-rw-r--r--@  1 admin  staff   1187727 12월 17 11:14 space.dict
+-rw-r--r--@  1 admin  staff        93 12월 17 11:14 stop.dict
+-rw-r--r--@  1 admin  staff   6999654 12월 17 11:14 synonym.dict
+-rw-r--r--@  1 admin  staff      6310 12월 17 11:14 unit_synonym.dict
+-rw-r--r--@  1 admin  staff      1987 12월 17 11:14 unit.dict
+-rw-r--r--@  1 admin  staff    419044 12월 17 11:14 user.dict

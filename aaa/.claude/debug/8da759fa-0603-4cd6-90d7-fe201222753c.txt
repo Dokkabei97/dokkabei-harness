@@ -1,0 +1,65 @@
+2026-02-26T04:43:40.890Z [DEBUG] detectFileEncoding failed for expected reason: ENOENT
+2026-02-26T04:43:40.890Z [DEBUG] MDM settings load completed in 9ms
+2026-02-26T04:43:40.936Z [DEBUG] [init] configureGlobalMTLS starting
+2026-02-26T04:43:40.936Z [DEBUG] [init] configureGlobalMTLS complete
+2026-02-26T04:43:40.936Z [DEBUG] [init] configureGlobalAgents starting
+2026-02-26T04:43:40.936Z [DEBUG] [init] configureGlobalAgents complete
+2026-02-26T04:43:40.939Z [DEBUG] [STARTUP] Loading MCP configs...
+2026-02-26T04:43:40.941Z [DEBUG] [ToolSearch:optimistic] mode=tst-auto, ENABLE_TOOL_SEARCH=undefined, result=true
+2026-02-26T04:43:40.941Z [DEBUG] [STARTUP] Running setup()...
+2026-02-26T04:43:40.942Z [DEBUG] [TeammateModeSnapshot] Captured from config: auto
+2026-02-26T04:43:40.944Z [DEBUG] [Claude in Chrome] Found chrome profiles: Default
+2026-02-26T04:43:40.945Z [ERROR] Marketplace configuration file is corrupted: cowave-plugins.source.source: Invalid input
+2026-02-26T04:43:40.946Z [DEBUG] [Claude in Chrome] Extension fcoeoabgfenejglbffodgkkbkcdhcgfn found in chrome Default
+2026-02-26T04:43:40.948Z [DEBUG] Git remote URL: https://labs.cowave.kr/consumer-commerce-dev/search/script.git
+2026-02-26T04:43:40.949Z [DEBUG] Parsed repository: null from URL: https://labs.cowave.kr/consumer-commerce-dev/search/script.git
+2026-02-26T04:43:41.301Z [DEBUG] Created worktree at: /Users/admin/project/script/.claude/worktrees/legacy-sync on branch: worktree-legacy-sync
+2026-02-26T04:43:41.310Z [DEBUG] Configured worktree to use hooks from main repository: /Users/admin/project/script/.git/hooks
+2026-02-26T04:43:41.312Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.65631.1772081021312
+2026-02-26T04:43:41.312Z [DEBUG] Preserving file permissions: 100644
+2026-02-26T04:43:41.312Z [DEBUG] Temp file written successfully, size: 29042 bytes
+2026-02-26T04:43:41.313Z [DEBUG] Applied original permissions to temp file
+2026-02-26T04:43:41.313Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.65631.1772081021312 to /Users/admin/.claude.json
+2026-02-26T04:43:41.313Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-26T04:43:41.313Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-26T04:43:41.315Z [DEBUG] Error log sink initialized
+2026-02-26T04:43:41.319Z [ERROR] ConfigParseError: ConfigParseError: Marketplace configuration file is corrupted: cowave-plugins.source.source: Invalid input
+    at i7 (/$bunfs/root/claude:1898:6904)
+    at async Xc7 (/$bunfs/root/claude:1938:6225)
+    at async <anonymous> (/$bunfs/root/claude:1938:16699)
+    at async phT (/$bunfs/root/claude:1813:14997)
+    at processTicksAndRejections (native:7:39)
+2026-02-26T04:43:41.319Z [DEBUG] Plugin skills failed to load, continuing without them
+2026-02-26T04:43:41.320Z [DEBUG] [STARTUP] setup() completed in 379ms
+2026-02-26T04:43:41.320Z [DEBUG] [STARTUP] Loading commands and agents...
+2026-02-26T04:43:41.320Z [DEBUG] Loading skills from: managed=/Library/Application Support/ClaudeCode/.claude/skills, user=/Users/admin/.claude/skills, project=[]
+2026-02-26T04:43:41.321Z [ERROR] ConfigParseError: ConfigParseError: Marketplace configuration file is corrupted: cowave-plugins.source.source: Invalid input
+    at i7 (/$bunfs/root/claude:1898:6904)
+    at async Xc7 (/$bunfs/root/claude:1938:6225)
+    at async <anonymous> (/$bunfs/root/claude:1938:16699)
+    at async phT (/$bunfs/root/claude:1813:14997)
+    at processTicksAndRejections (native:7:39)
+2026-02-26T04:43:41.321Z [DEBUG] Plugin skills failed to load, continuing without them
+2026-02-26T04:43:41.326Z [DEBUG] Loaded 22 unique skills (22 unconditional, 0 conditional, managed: 0, user: 13, project: 0, additional: 0, legacy commands: 9)
+2026-02-26T04:43:41.326Z [DEBUG] getSkills returning: 22 skill dir commands, 0 plugin skills, 3 bundled skills
+2026-02-26T04:43:41.327Z [DEBUG] Loaded 22 unique skills (22 unconditional, 0 conditional, managed: 0, user: 13, project: 0, additional: 0, legacy commands: 9)
+2026-02-26T04:43:41.327Z [DEBUG] getSkills returning: 22 skill dir commands, 0 plugin skills, 3 bundled skills
+2026-02-26T04:43:41.328Z [DEBUG] Error loading agent definitions: Marketplace configuration file is corrupted: cowave-plugins.source.source: Invalid input
+2026-02-26T04:43:41.328Z [ERROR] ConfigParseError: ConfigParseError: Marketplace configuration file is corrupted: cowave-plugins.source.source: Invalid input
+    at i7 (/$bunfs/root/claude:1898:6904)
+    at async Xc7 (/$bunfs/root/claude:1938:6225)
+    at async <anonymous> (/$bunfs/root/claude:1938:16699)
+    at async phT (/$bunfs/root/claude:1813:14997)
+    at processTicksAndRejections (native:7:39)
+2026-02-26T04:43:41.335Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.65631.1772081021335
+2026-02-26T04:43:41.335Z [DEBUG] Preserving file permissions: 100644
+2026-02-26T04:43:41.336Z [DEBUG] Temp file written successfully, size: 29042 bytes
+2026-02-26T04:43:41.336Z [DEBUG] Applied original permissions to temp file
+2026-02-26T04:43:41.336Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.65631.1772081021335 to /Users/admin/.claude.json
+2026-02-26T04:43:41.336Z [DEBUG] File /Users/admin/.claude.json written atomically
+2026-02-26T04:43:41.607Z [DEBUG] Writing to temp file: /Users/admin/.claude.json.tmp.65631.1772081021607
+2026-02-26T04:43:41.607Z [DEBUG] Preserving file permissions: 100644
+2026-02-26T04:43:41.608Z [DEBUG] Temp file written successfully, size: 29042 bytes
+2026-02-26T04:43:41.608Z [DEBUG] Applied original permissions to temp file
+2026-02-26T04:43:41.608Z [DEBUG] Renaming /Users/admin/.claude.json.tmp.65631.1772081021607 to /Users/admin/.claude.json
+2026-02-26T04:43:41.609Z [DEBUG] File /Users/admin/.claude.json written atomically

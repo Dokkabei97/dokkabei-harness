@@ -1,0 +1,46 @@
+{
+  "session_id": "9dd47532-c406-4430-bbd5-a5ee5f7aef94",
+  "project_path": "/Users/admin/mkp/aa-mcp",
+  "start_time": "2026-02-16T14:18:12.154Z",
+  "duration_minutes": 5,
+  "user_message_count": 1,
+  "assistant_message_count": 51,
+  "tool_counts": {
+    "Bash": 4,
+    "Glob": 1,
+    "Write": 18,
+    "TeamCreate": 1,
+    "TaskCreate": 6,
+    "TaskUpdate": 8,
+    "Task": 1
+  },
+  "languages": {
+    "JSON": 3,
+    "TypeScript": 14,
+    "YAML": 1
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 61,
+  "output_tokens": 4239,
+  "first_prompt": "Implement the following plan:  # AA-MCP (Auto Agents MCP) 개발 계획  ## Context  여러 AI CLI 에이전트(Claude Code, Codex, Gemini CLI, Copilot CLI)를 headless 모드로 호출하는 MCP 서버를 구축한다. 단순 호출뿐 아니라, 작업 위임, 협업 분석, 멀티모델…",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "Command Failed": 1
+  },
+  "uses_task_agent": true,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 840,
+  "lines_removed": 0,
+  "files_modified": 18,
+  "message_hours": [
+    23
+  ],
+  "user_message_timestamps": [
+    "2026-02-16T14:18:12.104Z"
+  ]
+}

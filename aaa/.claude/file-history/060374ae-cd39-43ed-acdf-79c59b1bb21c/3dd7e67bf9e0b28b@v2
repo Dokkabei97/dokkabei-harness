@@ -1,0 +1,8 @@
+{
+  "name": "cowave-devtools",
+  "description": "Cowave 사내 개발 도구 플러그인. Plane/Outline/Grafana MCP 연동, 이슈 트래커, 문서 자동화, TDD, 아키텍처 리뷰, 성능 리뷰 등 개발 워크플로우 전체를 지원합니다.",
+  "author": {
+    "name": "Cowave",
+    "email": "dev@cowave.kr"
+  }
+}

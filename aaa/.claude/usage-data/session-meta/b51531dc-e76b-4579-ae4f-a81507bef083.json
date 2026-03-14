@@ -1,0 +1,47 @@
+{
+  "session_id": "b51531dc-e76b-4579-ae4f-a81507bef083",
+  "project_path": "/Users/admin/project/admin/search-admin",
+  "start_time": "2026-03-06T05:44:30.158Z",
+  "duration_minutes": 1,
+  "user_message_count": 4,
+  "assistant_message_count": 12,
+  "tool_counts": {
+    "ToolSearch": 3,
+    "Read": 1,
+    "Edit": 1,
+    "Bash": 2
+  },
+  "languages": {
+    "YAML": 2
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 24,
+  "output_tokens": 1133,
+  "first_prompt": "Implement the following plan:  # Plan: application-local.yml 오타 수정  ## Context Helm ConfigMap과 application.yml 파일들의 정합성을 검토한 결과, `application-local.yml`에 환경변수명 오타가 발견되었습니다. 나머지 미사용 환경변수(VALKEY_*, KEYW…",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 1,
+  "tool_error_categories": {
+    "Command Failed": 1
+  },
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 1,
+  "lines_removed": 1,
+  "files_modified": 1,
+  "message_hours": [
+    14,
+    14,
+    14,
+    14
+  ],
+  "user_message_timestamps": [
+    "2026-03-06T05:44:30.126Z",
+    "2026-03-06T05:44:33.201Z",
+    "2026-03-06T05:44:39.242Z",
+    "2026-03-06T05:44:46.613Z"
+  ]
+}

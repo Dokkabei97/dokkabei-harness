@@ -1,0 +1,15 @@
+{
+  "underlying_goal": "Debug a RuntimeException (HTTP 400) occurring during dictionary reload in a Spring Boot search admin service",
+  "goal_categories": {
+    "debugging": 1
+  },
+  "outcome": "partially_achieved",
+  "user_satisfaction_counts": {},
+  "claude_helpfulness": "moderately_helpful",
+  "session_type": "quick_question",
+  "friction_counts": {},
+  "friction_detail": "",
+  "primary_success": "good_debugging",
+  "brief_summary": "User shared an error log for an HTTP 400 during dictionary reload; Claude identified the failing code and began diagnosing causes but session ended before resolution.",
+  "session_id": "4c6d7772-65e8-47c5-b39f-e07933686d44"
+}

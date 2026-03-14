@@ -1,0 +1,27 @@
+[
+  {
+    "content": "Analyze current proto definitions and DSL structure",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Search engine specialist: Analyze Elasticsearch query patterns and DSL design",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Backend developer: Review implementation and propose architectural changes",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Hexagonal architecture review: Ensure compliance with architecture principles",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Create comprehensive report.md with recommendations",
+    "status": "completed",
+    "id": "5"
+  }
+]

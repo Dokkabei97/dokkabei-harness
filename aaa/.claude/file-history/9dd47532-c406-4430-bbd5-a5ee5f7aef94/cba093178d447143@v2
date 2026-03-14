@@ -1,0 +1,110 @@
+import { z } from "zod";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { getAgent, getAvailableAgents } from "../agents/registry.js";
+import { analyzeComplexity } from "../orchestrator/complexity.js";
+import { executeParallel } from "../orchestrator/parallel.js";
+import { formatParallelResult, formatSingleResponse } from "../orchestrator/aggregator.js";
+import { addEntry, getOrCreateActiveSession } from "../session/store.js";
+import type { AgentId } from "../agents/types.js";
+
+const schema = {
+	task: z.string().describe("The task to delegate"),
+	agent: z
+		.enum(["claude", "codex", "gemini", "copilot"])
+		.optional()
+		.describe("Preferred agent (auto-selected if omitted)"),
+	allowParallel: z
+		.boolean()
+		.default(true)
+		.describe("Allow splitting large tasks across multiple agents"),
+	context: z.string().optional().describe("Additional context"),
+	timeout: z.number().optional().describe("Timeout in ms"),
+};
+
+export function registerDelegateTaskTool(server: McpServer): void {
+	server.tool(
+		"delegate_task",
+		"Delegate a task to agent(s). Automatically analyzes complexity and routes to single or parallel execution.",
+		schema,
+		async (params) => {
+			const complexity = analyzeComplexity(params.task);
+			const sessionId = getOrCreateActiveSession();
+
+			// Simple or complex: single agent
+			if (complexity.level !== "large" || !params.allowParallel) {
+				let agent;
+				if (params.agent) {
+					agent = getAgent(params.agent);
+				} else {
+					const available = await getAvailableAgents();
+					agent = available[0];
+				}
+
+				if (!agent) {
+					return {
+						content: [{ type: "text" as const, text: "No agents available for delegation." }],
+					};
+				}
+
+				const extendedTimeout =
+					complexity.level === "complex" ? (params.timeout ?? 120_000) * 2 : params.timeout;
+
+				const response = await agent.execute({
+					prompt: params.task,
+					context: params.context,
+					timeout: extendedTimeout,
+				});
+
+				addEntry(sessionId, {
+					tool: "delegate_task",
+					agent: response.agent,
+					model: response.model,
+					prompt: params.task,
+					response: response.content,
+					durationMs: response.durationMs,
+					exitCode: response.exitCode,
+					error: response.error,
+				});
+
+				const header = `**Complexity**: ${complexity.level} (score: ${complexity.score})\n**Reasons**: ${complexity.reasons.join(", ")}\n\n`;
+				return {
+					content: [
+						{ type: "text" as const, text: header + formatSingleResponse(response) },
+					],
+				};
+			}
+
+			// Large task: parallel delegation
+			const agents = await getAvailableAgents();
+			if (agents.length === 0) {
+				return {
+					content: [{ type: "text" as const, text: "No agents available for delegation." }],
+				};
+			}
+
+			const result = await executeParallel(agents, {
+				prompt: params.task,
+				context: params.context,
+				timeout: params.timeout ? params.timeout * 2 : 240_000,
+			});
+
+			for (const response of result.responses) {
+				addEntry(sessionId, {
+					tool: "delegate_task",
+					agent: response.agent,
+					model: response.model,
+					prompt: params.task,
+					response: response.content,
+					durationMs: response.durationMs,
+					exitCode: response.exitCode,
+					error: response.error,
+				});
+			}
+
+			const header = `**Complexity**: ${complexity.level} (score: ${complexity.score})\n**Reasons**: ${complexity.reasons.join(", ")}\n**Mode**: Parallel delegation to ${agents.length} agents\n\n`;
+			return {
+				content: [{ type: "text" as const, text: header + formatParallelResult(result) }],
+			};
+		},
+	);
+}

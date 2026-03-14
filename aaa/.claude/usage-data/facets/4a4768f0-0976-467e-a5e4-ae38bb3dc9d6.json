@@ -1,0 +1,21 @@
+{
+  "underlying_goal": "Diagnose and fix errors in Helm/K8s configuration for search-admin application",
+  "goal_categories": {
+    "debugging": 1,
+    "code_review": 1,
+    "code_change": 1
+  },
+  "outcome": "partially_achieved",
+  "user_satisfaction_counts": {
+    "likely_satisfied": 2
+  },
+  "claude_helpfulness": "moderately_helpful",
+  "session_type": "iterative_refinement",
+  "friction_counts": {
+    "wrong_approach": 1
+  },
+  "friction_detail": "Claude over-investigated unused env vars and asked unnecessary clarifying questions instead of just fixing the typo.",
+  "primary_success": "good_debugging",
+  "brief_summary": "User wanted help debugging Helm config errors for search-admin; Claude found a typo in application-local.yml and fixed it, but the session involved unnecessary detours.",
+  "session_id": "4a4768f0-0976-467e-a5e4-ae38bb3dc9d6"
+}

@@ -1,0 +1,25 @@
+package models
+
+// Link represents an issue link.
+type Link struct {
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	URL       string `json:"url"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
+	WorkItem  string `json:"work_item"`
+	Project   string `json:"project"`
+	Workspace string `json:"workspace"`
+	Timestamps
+}
+
+// CreateLinkRequest is the request body for creating a link.
+type CreateLinkRequest struct {
+	Title string `json:"title"`
+	URL   string `json:"url"`
+}
+
+// UpdateLinkRequest is the request body for updating a link.
+type UpdateLinkRequest struct {
+	Title *string `json:"title,omitempty"`
+	URL   *string `json:"url,omitempty"`
+}

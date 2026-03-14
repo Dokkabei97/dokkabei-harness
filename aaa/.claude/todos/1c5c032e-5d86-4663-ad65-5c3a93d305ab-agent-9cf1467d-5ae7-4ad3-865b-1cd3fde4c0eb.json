@@ -1,0 +1,47 @@
+[
+  {
+    "content": "Analyze current dictionary implementation to understand all problems",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Create new CSR version of main dictionary page with 'use client' directive",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Implement comprehensive state management for all dictionary types",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Convert dictionary-client.tsx to pure CSR with proper API calls",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Convert dictionary-tabs.tsx to CSR with proper tab switching",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "Implement proper pagination with correct counts for each dictionary type",
+    "status": "completed",
+    "id": "6"
+  },
+  {
+    "content": "Fix search functionality to work across all dictionary types",
+    "status": "completed",
+    "id": "7"
+  },
+  {
+    "content": "Ensure read-only status updates correctly based on dictionary type",
+    "status": "completed",
+    "id": "8"
+  },
+  {
+    "content": "Add proper loading states and error handling throughout",
+    "status": "completed",
+    "id": "9"
+  }
+]

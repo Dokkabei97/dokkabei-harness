@@ -1,0 +1,21 @@
+export default function Sidebar() {
+  return (
+    <nav className="w-[240px] bg-white border-r border-border-light flex flex-col h-full overflow-y-auto shrink-0 pb-10">
+<div className="flex flex-col py-2">
+<div className="flex flex-col">
+<button className="w-full px-5 py-3 text-[14px] text-gray-600 hover:bg-gray-50 flex items-center justify-between group" >
+<div className="flex items-center gap-3">
+<span className="material-symbols-outlined text-[20px]" >menu_book</span>
+    사전
+</div>
+<span className="material-symbols-outlined text-[18px] text-gray-400 group-hover:text-gray-600 transition-colors">expand_more</span>
+</button>
+<a className="px-5 py-3 text-[14px] font-bold text-blue-600 bg-blue-50 border-r-2 border-blue-600 flex items-center gap-3" href="#" >
+<span className="material-symbols-outlined text-[20px]" >analytics</span>
+    형태소 분석
+</a>
+</div>
+</div>
+</nav>
+  );
+}

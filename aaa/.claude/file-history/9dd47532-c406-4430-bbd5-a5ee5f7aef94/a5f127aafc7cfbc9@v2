@@ -1,0 +1,19 @@
+import { z } from "zod";
+
+const agentIdSchema = z.enum(["claude", "codex", "gemini", "copilot"]);
+
+const analysisLevelSchema = z.enum(["low", "medium", "high", "xhigh"]);
+
+const agentConfigSchema = z.object({
+	default: z.string(),
+	models: z.array(z.string()).min(1),
+	defaultAnalysisLevel: analysisLevelSchema.optional(),
+});
+
+export const modelsConfigSchema = z.object({
+	agents: z.record(agentIdSchema, agentConfigSchema),
+});
+
+export type ModelsConfig = z.infer<typeof modelsConfigSchema>;
+export type AgentId = z.infer<typeof agentIdSchema>;
+export type AnalysisLevel = z.infer<typeof analysisLevelSchema>;

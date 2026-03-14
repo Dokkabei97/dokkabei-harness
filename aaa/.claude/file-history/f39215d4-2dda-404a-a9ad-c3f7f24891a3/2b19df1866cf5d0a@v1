@@ -1,0 +1,179 @@
+---
+title: "3-3 Modular RAG"
+aliases:
+  - Modular RAG
+  - 모듈형 RAG
+tags:
+  - llm-rag
+  - phase3
+  - architecture
+  - modularization
+created: ""
+updated: ""
+phase: "3-3"
+status: "todo"
+difficulty: "고급"
+---
+
+> [!summary]
+> Modular RAG은 RAG 파이프라인을 `Routing → Retrieval → Post-processing → Generation → Verification`로 분리한다.  
+> 모듈 단위 교체가 가능해야 운영 단계에서 기능을 점진적으로 추가/교체할 수 있다.  
+> ES 기반 기존 검색 파이프라인에도 RAG 모듈을 레이어링해 리스크를 낮출 수 있다.
+
+## 관련 노트
+[[3-1 Naive RAG]]
+[[3-2 Advanced RAG]]
+[[3-6 ES-Milvus 하이브리드 RAG 아키텍처]]
+[[3-8 RAG 평가 프레임워크]]
+[[Microservice 아키텍처]]
+
+## 개념 설명
+Modular RAG의 핵심은 “한 파일, 한 클래스, 한 역할”이 아니라 “교체 가능한 블록”이다.  
+라우터, 검색기, 후처리기, 생성기, 검증기 각각이 독립 contract를 갖는다.
+
+`Routing`은 어떤 모듈 체인을 사용할지 결정한다.  
+질의 유형(기술질문/개인정보/법률/코드)별로 적절한 retrieval 경로를 할당한다.
+
+`Retrieval`은 실제 검색 작업을 담당한다.  
+`Post-processing`은 후보군 필터링/리랭킹/압축/병합을 수행한다.
+
+`Generation`은 최종 답변 생성을 수행한다.  
+`Verification`은 응답 사실성, 형식, 정책 위반 여부를 검증한다.
+
+### 모듈 분리 장점
+독립 배포가 가능하다.  
+실험 그룹별 기능 탑재가 쉬워진다.  
+장애 전파 범위를 줄일 수 있다.
+
+### 교체 전략
+벡터 검색기만 BGE-M3에서 텍스트 임베딩 기반으로 바꿔도 인터페이스 고정이면 최소 영향.  
+reranker만 cross-encoder에서 LLM-rerank로 바꿀 수 있다.  
+verification에서 추가 정책엔진을 삽입해 규칙 변경을 신속히 반영한다.
+
+### 기존 ES 파이프라인 점진적 추가
+1단계: 기존 ES 검색 뒤에 Generation만 붙이지 않고 답변 근거 뷰어를 먼저 붙인다.  
+2단계: ES 결과를 그대로 RAG context로 변환한다.  
+3단계: 소규모 vector retrieval만 추가해 fallback 검색 수행한다.  
+4단계: 실패율이 높은 질의군만 하이브리드 모듈로 라우팅한다.
+
+### 모듈 간 계약(contract) 예시
+Input은 항상 `QueryPayload` 구조체를 사용한다.  
+Output은 모듈별 표준 `RAGEvent`로 감싸서 traceability 확보한다.  
+각 모듈은 실패 시 `status`, `reason`, `latency_ms`를 반환한다.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart LR
+    Q[QueryPayload]
+    Q --> R[Routing Module]
+    R -->|ES only| ER[ES Retrieval]
+    R -->|ES+Dense| MR[Hybrid Retrieval]
+    ER --> P[Post-processing]
+    MR --> P
+    P --> G[Generation Module]
+    G --> V[Verification Module]
+    V --> O[Final Answer + Evidence]
+    V -->|low confidence| C[Critique Retry]
+    C --> R
+```
+
+## Python 코드 예제 (모듈 인터페이스 설계)
+```python
+from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from typing import List, Dict, Any
+
+@dataclass
+class QueryPayload:
+    query: str
+    tenant: str
+    route_hint: str = "auto"
+    metadata: Dict[str, Any] = None
+
+@dataclass
+class RAGEvent:
+    text: str
+    score: float
+    source: str
+    meta: Dict[str, Any]
+
+class BaseModule(ABC):
+    @abstractmethod
+    def run(self, payload: QueryPayload, ctx: List[RAGEvent]) -> List[RAGEvent]:
+        ...
+
+class Router(BaseModule):
+    def run(self, payload, ctx):
+        if "규정" in payload.query:
+            payload.route_hint = "strict"
+        elif "버그" in payload.query:
+            payload.route_hint = "code"
+        else:
+            payload.route_hint = "general"
+        return ctx
+
+class RetrievalES(BaseModule):
+    def run(self, payload, ctx):
+        return [RAGEvent("ES 결과 1", 0.89, "es", {"tenant": payload.tenant})]
+
+class RetrievalDense(BaseModule):
+    def run(self, payload, ctx):
+        return [RAGEvent("Dense 결과 1", 0.84, "dense", {"tenant": payload.tenant})]
+
+class PostProcessor(BaseModule):
+    def run(self, payload, ctx):
+        merged = sorted(ctx, key=lambda x: x.score, reverse=True)
+        return merged[:5]
+
+class Generator(BaseModule):
+    def run(self, payload, ctx):
+        joined = "\n".join([c.text for c in ctx])
+        return [RAGEvent(f"답변: {joined}", 1.0, "llm", {"query": payload.query})]
+
+class Verifier(BaseModule):
+    def run(self, payload, ctx):
+        # 여긴 정책 검증, 근거 존재 여부, 토큰 제한 등을 수행
+        return ctx
+
+modules = [Router(), RetrievalES(), PostProcessor(), Generator(), Verifier()]
+
+def run_pipeline(payload: QueryPayload):
+    ctx: List[RAGEvent] = []
+    for mod in modules:
+        ctx = mod.run(payload, ctx)
+    return ctx[-1].text
+
+print(run_pipeline(QueryPayload(query="토큰 만료 정책은?", tenant="team-a")))
+```
+
+## 표: 모듈 교체/확장 전략
+|구분|독립 모듈|교체 난이도|확장 난이도|실무 우선순위|
+|---|---|---|---|---|
+|Routing|질의 분기 담당|낮음|중간|높음|
+|Retrieval|검색 핵심|중간|높음|최우선|
+|Post-processing|정밀도/비용 제어|낮음|중간|높음|
+|Generation|답변 품질|낮음|낮음|중간|
+|Verification|안전성/품질|중간|높음|매우 높음|
+
+## 실습 체크리스트
+- [ ] Routing, Retrieval, PostProcessing, Generation, Verification 5개 인터페이스 정의
+- [ ] 모듈 간 입력/출력 스키마를 pydantic 또는 dataclass로 고정
+- [ ] 기존 ES 서비스는 라우팅 분기 없이 기본 경로로 유지
+- [ ] 신규 dense 모듈은 fallback 경로로 먼저 연결
+- [ ] 각 모듈에 개별 p95 latency 로그 추가
+- [ ] 모듈별 실패율 대시보드 생성
+- [ ] 검증 모듈에서 citation 누락을 경고로 반영
+- [ ] one flag으로 A/B를 위한 모듈 스위칭 기능 구현
+- [ ] 모듈 교체 시 토글 파일만 변경되도록 구성
+- [ ] CI에서 모듈 단위 단위테스트 더미 문서로 실행
+- [ ] tenant별 라우팅 정책을 설정 파일로 분리
+- [ ] 실서비스에서 신뢰도 낮은 응답만 재조회하는 루프 추가
+- [ ] 모듈 호출 순서 변경 실험(예: 생성 전 compression 우선/후행)
+- [ ] 장애 격리를 위해 모듈별 circuit breaker 적용
+- [ ] 다음 노트 3-4에서 청킹 전략과 결합 테스트
+
+## 아키텍처 구현 메모
+점진적 마이그레이션이 핵심이다.  
+한 번에 다교체하면 장애 원인 분리가 어려워진다.  
+검증 모듈을 마지막에 두는 대신 중간 점검 지점으로도 활용한다.  
+ES 기반 시스템에서는 retrieval의 상호 운용성이 중요하다.

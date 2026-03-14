@@ -1,0 +1,141 @@
+package com.cowave.search.service
+
+import co.elastic.clients.transport.rest5_client.low_level.Request
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client
+import com.cowave.search.controller.dto.*
+import com.cowave.search.domain.dictionary.Dictionary
+import com.cowave.search.domain.dictionary.Type
+import com.cowave.search.utils.DictionaryBinaryCompile
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+
+@Service
+class DictionaryService(
+    val dictionaryRepository: DictionaryRepository,
+    val dictionaryBinaryCompile: DictionaryBinaryCompile,
+    val restClient: Rest5Client,
+) {
+    private val logger = LoggerFactory.getLogger(DictionaryService::class.java)
+
+    fun getByTypeWithCursor(
+        type: Type,
+        size: Int,
+        cursor: String?,
+        sortType: SortType = SortType.UPDATED,
+    ): CursorPagedResponse<Dictionary> {
+        val searchAfterList = cursor?.split(CURSOR_DELIMITER)
+        val result = dictionaryRepository.findAllWithSearchAfterByType(type, size, searchAfterList, sortType)
+
+        return CursorPagedResponse(
+            items = result.items,
+            total = result.total,
+            cursor = result.searchAfter?.joinToString(CURSOR_DELIMITER),
+            hasNext = result.hasNext,
+        )
+    }
+
+    fun searchByWord(
+        word: String,
+        type: Type,
+        isMatch: Boolean,
+    ): List<Dictionary> = dictionaryRepository.findByWordAndType(word, type, isMatch)
+
+    fun create(
+        keyword: String?,
+        type: Type,
+        value: String?,
+    ) {
+        dictionaryRepository.insert(keyword, type, value)
+    }
+
+    fun update(
+        id: String,
+        keyword: String,
+        type: Type,
+        value: String?,
+    ) {
+        dictionaryRepository.update(id, keyword, type, value)
+    }
+
+    fun delete(id: String) {
+        dictionaryRepository.delete(id)
+    }
+
+    fun countByType(type: Type): Long = dictionaryRepository.countByType(type)
+
+    fun compile(type: Type): CompileResult {
+        val result = compileWithoutReload(type)
+        reloadDictionary()
+        return result
+    }
+
+    fun compileAll(): List<CompileResult> {
+        val results: List<CompileResult> = Type.entries.map { compileWithoutReload(it) }
+        reloadDictionary()
+        return results
+    }
+
+    private fun compileWithoutReload(type: Type): CompileResult {
+        val dictionaries = dictionaryRepository.findAllByType(type)
+        val pairs = dictionaries.map { it.keyword to it.value }
+        val outputFile = dictionaryBinaryCompile.compileToConfiguredPath(pairs, type)
+
+        return CompileResult(
+            type = type,
+            count = dictionaries.size,
+            filePath = outputFile.absolutePath,
+            fileSize = outputFile.length(),
+        )
+    }
+
+    private fun reloadDictionary() {
+        logger.info("Reloading dictionary in Elasticsearch...")
+        val request = Request("POST", "/_analysis-product-name/reload-dict")
+        val response = restClient.performRequest(request)
+        val statusCode = response.statusCode
+        if (statusCode !in 200..299) {
+            throw RuntimeException("Failed to reload dictionary: HTTP $statusCode")
+        }
+        logger.info("Dictionary reload completed successfully")
+    }
+
+    fun getLastModifiedByType(type: Type): TypeLastModifiedResponse {
+        val (lastModified, count) = dictionaryRepository.findLastModifiedByType(type)
+        return TypeLastModifiedResponse(
+            type = type,
+            lastModified = lastModified,
+            count = count,
+        )
+    }
+
+    fun getAllTypesLastModified(): AllTypesLastModifiedResponse {
+        val allTypesData = dictionaryRepository.findLastModifiedForAllTypes()
+        val items =
+            Type.entries.map { type ->
+                val (lastModified, count) = allTypesData[type] ?: Pair(null, 0L)
+                TypeLastModifiedResponse(
+                    type = type,
+                    lastModified = lastModified,
+                    count = count,
+                )
+            }
+        return AllTypesLastModifiedResponse(items)
+    }
+
+    fun getAllTypesCounts(): AllTypesCountResponse {
+        val allTypesCounts = dictionaryRepository.countAllTypes()
+        val items =
+            Type.entries.map { type ->
+                TypeCountResponse(
+                    type = type,
+                    count = allTypesCounts[type] ?: 0L,
+                )
+            }
+        val totalCount = items.sumOf { it.count }
+        return AllTypesCountResponse(items, totalCount)
+    }
+
+    companion object {
+        private const val CURSOR_DELIMITER = "|"
+    }
+}

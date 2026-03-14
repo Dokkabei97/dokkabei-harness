@@ -1,0 +1,88 @@
+package cmdutil
+
+import (
+	"fmt"
+
+	"github.com/plane-cli/plane-cli/internal/api"
+	"github.com/plane-cli/plane-cli/internal/config"
+)
+
+// Factory provides shared dependencies for commands.
+type Factory struct {
+	Config    *config.Config
+	client    *api.Client
+	Format    string
+	Workspace string
+	Project   string
+	Debug     bool
+}
+
+// NewFactory creates a factory from config with CLI flag overrides.
+func NewFactory(cfg *config.Config, workspace, project, format string, debug bool) *Factory {
+	f := &Factory{
+		Config:    cfg,
+		Workspace: cfg.Workspace,
+		Project:   cfg.Project,
+		Format:    cfg.Format,
+		Debug:     debug,
+	}
+
+	// CLI flag overrides
+	if workspace != "" {
+		f.Workspace = workspace
+	}
+	if project != "" {
+		f.Project = project
+	}
+	if format != "" {
+		f.Format = format
+	}
+
+	return f
+}
+
+// Client returns the API client, creating it if needed.
+func (f *Factory) Client() (*api.Client, error) {
+	if f.client != nil {
+		return f.client, nil
+	}
+
+	if f.Config.BaseURL == "" {
+		return nil, fmt.Errorf("base URL not configured.\n  Run `plane config init` to set up your Plane instance URL")
+	}
+	if f.Config.APIKey == "" {
+		return nil, fmt.Errorf("API key not configured.\n  Run `plane config init` to set up your API key")
+	}
+
+	f.client = api.NewClient(f.Config.BaseURL, f.Config.APIKey, api.WithDebug(f.Debug))
+	return f.client, nil
+}
+
+// RequireWorkspace returns the workspace slug or an error.
+func (f *Factory) RequireWorkspace() (string, error) {
+	if f.Workspace == "" {
+		return "", fmt.Errorf("workspace not specified.\n  Use --workspace flag or set it with `plane config set workspace <slug>`")
+	}
+	return f.Workspace, nil
+}
+
+// RequireProject returns the project ID or an error.
+func (f *Factory) RequireProject() (string, error) {
+	if f.Project == "" {
+		return "", fmt.Errorf("project not specified.\n  Use --project flag or set it with `plane config set project <id>`")
+	}
+	return f.Project, nil
+}
+
+// RequireWorkspaceAndProject returns both workspace and project or errors.
+func (f *Factory) RequireWorkspaceAndProject() (string, string, error) {
+	ws, err := f.RequireWorkspace()
+	if err != nil {
+		return "", "", err
+	}
+	proj, err := f.RequireProject()
+	if err != nil {
+		return "", "", err
+	}
+	return ws, proj, nil
+}

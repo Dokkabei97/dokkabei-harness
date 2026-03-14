@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "plane": {
+      "command": "uvx",
+      "args": [
+        "plane-mcp-server",
+        "stdio"
+      ],
+      "env": {
+        "PLANE_API_KEY": "${PLANE_API_KEY}",
+        "PLANE_WORKSPACE_SLUG": "${PLANE_WORKSPACE_SLUG}",
+        "PLANE_BASE_URL": "${PLANE_BASE_URL}"
+      }
+    },
+    "outline": {
+      "command": "uvx",
+      "args": [
+        "mcp-outline"
+      ],
+      "env": {
+        "OUTLINE_API_KEY": "${OUTLINE_API_KEY}",
+        "OUTLINE_API_URL": "${OUTLINE_API_URL}",
+        "OUTLINE_DISABLE_DELETE": "true"
+      }
+    },
+    "grafana": {
+      "command": "mcp-grafana",
+      "args": [
+        "--tls-skip-verify"
+      ],
+      "env": {
+        "GRAFANA_URL": "${GRAFANA_URL}",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN": "${GRAFANA_SERVICE_ACCOUNT_TOKEN}"
+      }
+    }
+  }
+}

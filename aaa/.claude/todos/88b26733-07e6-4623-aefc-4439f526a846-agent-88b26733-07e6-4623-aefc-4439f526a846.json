@@ -1,0 +1,27 @@
+[
+  {
+    "content": "Docker 빌드 오류 분석 및 환경 변수 문제 해결",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "빌드 시점 환경 변수 검증 로직 수정",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Dockerfile에 빌드 인자(ARG) 지원 추가",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Harbor 레지스트리용 빌드 스크립트 생성",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "빌드 테스트 및 검증",
+    "status": "completed",
+    "id": "5"
+  }
+]

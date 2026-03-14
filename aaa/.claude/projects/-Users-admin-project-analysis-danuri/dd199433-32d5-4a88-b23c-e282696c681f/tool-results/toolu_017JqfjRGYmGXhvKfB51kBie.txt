@@ -1,0 +1,51 @@
+Exit code 1
+
+> Configure project :
+BUILDING..
+
+> Task :checkKotlinGradlePluginConfigurationErrors
+> Task :compileKotlin UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :cleanTest
+> Task :compileTestKotlin NO-SOURCE
+> Task :compileTestJava
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses
+
+> Task :test FAILED
+
+HighlighterTest > testPlain FAILED
+    java.lang.NullPointerException at HighlighterTest.java:41
+
+KoreanWordExtractorTest > testUnitDictionaryAdd FAILED
+    java.io.FileNotFoundException at KoreanWordExtractorTest.java:105
+
+KoreanWordExtractorTest > testUserDictionary FAILED
+    java.lang.NullPointerException at KoreanWordExtractorTest.java:64
+
+ProductNameAnalysisFilterTest > testSamplesPerformance FAILED
+    java.lang.NullPointerException at ProductNameAnalysisFilterTest.java:159
+
+15 tests completed, 4 failed
+
+[Incubating] Problems report is available at: file:///Users/admin/project/analysis-danuri/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/admin/project/analysis-danuri/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+7 actionable tasks: 4 executed, 3 up-to-date

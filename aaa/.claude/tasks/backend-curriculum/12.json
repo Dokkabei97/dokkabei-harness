@@ -1,0 +1,11 @@
+{
+  "id": "12",
+  "subject": "spring-expert",
+  "description": "당신은 **Spring 전문가**입니다. Spring JDBC/JdbcTemplate과 Exposed ORM에 관한 커리큘럼을 작성합니다.\n\n## Task #4: Spring JD",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "_internal": true
+  }
+}

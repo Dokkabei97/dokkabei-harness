@@ -1,0 +1,382 @@
+apps/attr-parser/templates/gateway.yaml:3:kind: Gateway
+apps/attr-parser/templates/gateway.yaml:29:kind: VirtualService
+apps/proxy/classifier/templates/gateway.yaml:2:kind: Gateway
+apps/proxy/classifier/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/vendor/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/vendor/templates/gateway.yaml:25:kind: VirtualService
+apps/dbclient/templates/gateway.yaml:2:kind: Gateway
+apps/dbclient/templates/gateway.yaml:26:kind: VirtualService
+apps/proxy/graphdoc/templates/gateway.yaml:2:kind: Gateway
+apps/proxy/graphdoc/templates/gateway.yaml:26:kind: VirtualService
+apps/proxy/image/templates/gateway.yaml:3:kind: Gateway
+apps/proxy/image/templates/gateway.yaml:29:kind: VirtualService
+apps/next-search/search-admin/templates/httproute.yaml:5:kind: HTTPRoute
+infra/streampark/charts/2.1.7/templates/gateway.yaml:3:kind: Gateway
+infra/streampark/charts/2.1.7/templates/gateway.yaml:24:kind: VirtualService
+apps/cdc/billing/templates/gateway.yaml:3:kind: Gateway
+apps/cdc/billing/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/catalog-detailinfo/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/catalog-detailinfo/templates/gateway.yaml:23:kind: VirtualService
+apps/fixity-shopping/keyword/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/keyword/templates/gateway.yaml:29:kind: VirtualService
+apps/proxy/shopping/templates/gateway.yaml:3:kind: Gateway
+apps/proxy/shopping/templates/gateway.yaml:29:kind: VirtualService
+apps/cdc/shopping/templates/gateway.yaml:3:kind: Gateway
+apps/cdc/shopping/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/uicategory/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/uicategory/templates/gateway.yaml:25:kind: VirtualService
+infra/streampark/charts/2.1.6/templates/gateway.yaml:3:kind: Gateway
+infra/streampark/charts/2.1.6/templates/gateway.yaml:24:kind: VirtualService
+apps/fixity-shopping/mall/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/mall/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/catalog/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/catalog/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/attribute/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/attribute/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/catalog-content/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/catalog-content/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/dictionary/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/dictionary/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/product-review/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/product-review/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/catetocate/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/catetocate/templates/gateway.yaml:25:kind: VirtualService
+apps/classifier/k8s/helm/templates/gateway.yaml:2:kind: Gateway
+apps/classifier/k8s/helm/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/groupcatalog/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/groupcatalog/templates/gateway.yaml:25:kind: VirtualService
+apps/fixity-shopping/category/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/category/templates/gateway.yaml:25:kind: VirtualService
+apps/web/admin/templates/gateway.yaml:2:kind: Gateway
+apps/web/admin/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/enuri/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/enuri/templates/gateway.yaml:26:kind: VirtualService
+apps/fixity-shopping/image/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/product/templates/gateway.yaml:3:kind: Gateway
+apps/fixity-shopping/product/templates/gateway.yaml:25:kind: VirtualService
+apps/web/storybook/templates/gateway.yaml:2:kind: Gateway
+apps/web/storybook/templates/gateway.yaml:26:kind: VirtualService
+infra/istio/1.28.1/base/files/crd-all.gen.yaml:6816:    kind: Gateway
+infra/istio/1.28.1/base/files/crd-all.gen.yaml:10500:    kind: VirtualService
+infra/istio/1.28.1/test-nginx/gateway.yaml:2:kind: Gateway
+infra/istio/1.28.1/test-nginx/gateway.yaml:34:kind: VirtualService
+infra/istio/1.28.1/istiod/files/waypoint.yaml:19:    kind: Gateway
+infra/istio/1.28.1/istiod/files/waypoint.yaml:41:    kind: Gateway
+infra/istio/1.28.1/istiod/files/waypoint.yaml:337:    kind: Gateway
+infra/istio/1.28.1/istiod/files/waypoint.yaml:372:      kind: Gateway
+infra/istio/1.28.1/istiod/files/waypoint.yaml:398:      kind: Gateway
+infra/istio/1.28.1/istiod/files/kube-gateway.yaml:19:    kind: Gateway
+infra/istio/1.28.1/istiod/files/kube-gateway.yaml:41:    kind: Gateway
+infra/istio/1.28.1/istiod/files/kube-gateway.yaml:339:    kind: Gateway
+infra/istio/1.28.1/istiod/files/kube-gateway.yaml:374:      kind: Gateway
+infra/istio/1.28.1/istiod/files/kube-gateway.yaml:400:      kind: Gateway
+infra/flink-kubernetes-operator/flink-cdc-job/templates/gateway.yaml:3:kind: Gateway
+infra/flink-kubernetes-operator/flink-cdc-job/templates/gateway.yaml:29:kind: VirtualService
+infra/strimzi-kafka-operator/templates/istio-kafka-gateway.yaml:3:kind: Gateway
+infra/strimzi-kafka-operator/templates/istio-kafka-gateway.yaml:68:kind: VirtualService
+infra/istio/1.27.1/samples/httpbin/gateway-api/httpbin-gateway.yaml:2:kind: Gateway
+infra/istio/1.27.1/samples/httpbin/gateway-api/httpbin-gateway.yaml:16:kind: HTTPRoute
+infra/flink-kubernetes-operator/flink-cdc-portal/templates/gateway.yaml:2:kind: Gateway
+infra/flink-kubernetes-operator/flink-cdc-portal/templates/gateway.yaml:28:kind: VirtualService
+infra/istio/charts/base/files/crd-all.gen.yaml:6630:    kind: Gateway
+infra/istio/charts/base/files/crd-all.gen.yaml:10287:    kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-all-v1.yaml:2:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-all-v1.yaml:15:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-all-v1.yaml:28:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-all-v1.yaml:41:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml:2:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-ratings-mysql.yaml:2:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-ratings-mysql.yaml:15:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-reviews-v3.yaml:2:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/certmanager-gateway.yaml:2:kind: Gateway
+infra/istio/1.27.1/samples/bookinfo/networking/certmanager-gateway.yaml:18:kind: VirtualService
+infra/istio/1.27.1/samples/bookinfo/networking/virtual-service-reviews-90-10.yaml:2:kind: VirtualService
+infra/istio/1.27.1/samples/multicluster/expose-istiod-https.yaml:2:kind: Gateway
+infra/istio/1.27.1/samples/multicluster/expose-istiod-https.yaml:33:kind: VirtualService
+infra/istio/1.27.1/samples/helloworld/gateway-api/helloworld-route.yaml:2:kind: HTTPRoute
+infra/istio/1.27.1/samples/helloworld/gateway-api/helloworld-gateway.yaml:2:kind: Gateway
+infra/istio/1.27.1/samples/helloworld/gateway-api/helloworld-gateway.yaml:16:kind: HTTPRoute
+infra/istio/charts/istio-control/istio-discovery/files/waypoint.yaml:18:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/waypoint.yaml:39:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/waypoint.yaml:330:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/waypoint.yaml:364:      kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/waypoint.yaml:389:      kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/kube-gateway.yaml:18:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/kube-gateway.yaml:39:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/kube-gateway.yaml:335:    kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/kube-gateway.yaml:369:      kind: Gateway
+infra/istio/charts/istio-control/istio-discovery/files/kube-gateway.yaml:394:      kind: Gateway
+infra/flink-kubernetes-operator/flink-service-job/templates/gateway.yaml:3:kind: Gateway
+infra/flink-kubernetes-operator/flink-service-job/templates/gateway.yaml:29:kind: VirtualService
+infra/istio/1.27.1/tests/integration/telemetry/testdata/istio-mtls-vs.yaml:2:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/multicluster_test.go:87:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:82:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:120:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:151:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:204:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:233:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:262:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:291:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:320:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:349:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:382:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:419:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:456:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:493:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:526:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:632:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:671:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:710:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:743:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:779:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:867:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:895:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:923:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:953:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1009:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1086:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1170:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1254:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1467:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1679:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1779:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1817:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1937:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:1980:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:2056:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:2099:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:2151:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:2239:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:2915:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:4148:kind: Gateway
+infra/istio/1.27.1/tests/integration/pilot/common/routing.go:4163:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/dns_auto_allocation_test.go:68:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/README.md:174:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/README.md:182:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/README.md:192:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/analysis/analysis_test.go:68:kind: VirtualService
+infra/istio/1.27.1/tests/integration/pilot/analysis/analysis_test.go:87:kind: Gateway
+infra/istio/1.27.1/tests/integration/ambient/waypoint/main_test.go:146:kind: Gateway
+infra/istio/1.27.1/tests/integration/ambient/waypoint/main_test.go:174:kind: HTTPRoute
+infra/istio/1.27.1/tests/integration/pilot/testdata/tunneling/gateway/tls/istio-mutual/gateway.tmpl.yaml:2:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/policy_attachment_only/testdata/requestauthn/gateway-api.yaml.tmpl:2:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/policy_attachment_only/testdata/requestauthn/gateway-api.yaml.tmpl:14:kind: HTTPRoute
+infra/istio/1.27.1/tests/integration/pilot/testdata/tunneling/sidecar/virtual-service.tmpl.yaml:2:kind: VirtualService
+infra/istio/1.27.1/tests/testdata/config/se-example.yaml:119:kind: VirtualService
+infra/istio/1.27.1/tests/testdata/config/rule-content-route.yaml:4:kind: VirtualService
+infra/istio/1.27.1/tests/testdata/config/rule-ingressgateway.yaml:2:kind: VirtualService
+infra/istio/1.27.1/tests/testdata/config/rule-default-route-cors-policy.yaml:20:kind: VirtualService
+infra/istio/1.27.1/tests/integration/security/sds_ingress/util/util.go:448:kind: VirtualService
+infra/istio/1.27.1/tests/integration/security/sds_ingress/util/util.go:469:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/filebased_tls_origination/egress_gateway_origination_test.go:231:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/filebased_tls_origination/egress_gateway_origination_test.go:265:kind: VirtualService
+infra/istio/1.27.1/tests/integration/security/testdata/authz/not-host.yaml.tmpl:2:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/testdata/authz/not-host.yaml.tmpl:17:kind: VirtualService
+infra/istio/1.27.1/tests/integration/security/egress_gateway_origination_test.go:271:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/egress_gateway_origination_test.go:305:kind: VirtualService
+infra/istio/1.27.1/tests/integration/security/testdata/requestauthn/gateway-api.yaml.tmpl:2:kind: Gateway
+infra/istio/1.27.1/tests/integration/security/testdata/requestauthn/gateway-api.yaml.tmpl:14:kind: HTTPRoute
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:3:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:19:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:37:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:55:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:71:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:89:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:107:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:123:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:139:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:159:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:178:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:200:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:218:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_beta.yaml:236:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:2:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:18:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:36:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:54:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:70:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:88:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:106:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:122:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:140:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:158:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:174:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_host_not_found_gateway_with_ns_prefix_beta.yaml:192:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/xds/testdata/benchmarks/waypoint.yaml:3:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/xds/testdata/benchmarks/virtualservice.yaml:20:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_jwtclaimroute.yaml:4:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_jwtclaimroute.yaml:26:kind: Gateway
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:2:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:26:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:51:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:79:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:106:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:129:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:157:kind: VirtualService
+infra/istio/1.27.1/pkg/config/analysis/analyzers/testdata/virtualservice_dupmatches.yaml:182:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.yaml.golden:21:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.yaml.golden:40:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.yaml.golden:62:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-invalid.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-invalid.yaml.golden:21:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-invalid.yaml.golden:40:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-invalid.yaml.golden:59:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tcp.status.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/weighted.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/weighted.yaml.golden:21:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/weighted.yaml.golden:40:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/weighted.yaml.golden:87:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:47:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:97:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:127:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:177:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:182:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:196:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-cross-namespace.status.yaml.golden:249:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/mcs.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/mcs.status.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest.status.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest.status.yaml.golden:123:      kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest.status.yaml.golden:149:      kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tls.yaml:2:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tls.yaml:9:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tls.yaml:49:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tls.yaml:63:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tls.yaml:70:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:2:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:16:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:89:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:117:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:145:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:173:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:201:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:229:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:257:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:262:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/tls.status.yaml.golden:312:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-empty-listeners.yaml:2:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-empty-listeners.yaml:9:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/listenerset-empty-listeners.yaml:31:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/east-west-ambient.status.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/east-west-ambient.status.yaml.golden:48:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:2:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:16:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:63:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:91:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:96:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/delegated.status.yaml.golden:121:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:21:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:40:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:59:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:78:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:103:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:128:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:153:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:178:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:203:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:228:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/isolation.yaml.golden:253:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/ingress/testdata/simple.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/ingress/testdata/simple.yaml.golden:19:kind: VirtualService
+infra/istio/1.27.1/pkg/test/datasets/validation/dataset/networking-v1beta1-Gateway.yaml:3:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/zero.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/zero.yaml.golden:21:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/zero.yaml.golden:40:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/zero.yaml.golden:75:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/multinetwork.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/multinetwork.yaml:20:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/multinetwork.yaml:37:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/multinetwork.yaml:240:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/gateway-with-infrerencepool-extproc-infra-label.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/gateway-with-infrerencepool-extproc-infra-label.yaml:22:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/gateway-with-infrerencepool-extproc-infra-label.yaml:41:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/gateway-with-infrerencepool-extproc-infra-label.yaml:244:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:20:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:38:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:241:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:268:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/customizations.yaml:292:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/istio-east-west.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/istio-east-west.yaml:19:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/istio-east-west.yaml:35:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/istio-east-west.yaml:236:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/manual-sa.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/manual-sa.yaml:19:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/manual-sa.yaml:35:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/manual-sa.yaml:232:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/custom-class.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/custom-class.yaml:19:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/custom-class.yaml:35:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/deployment/custom-class.yaml:232:    kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/valid-invalid-parent-ref.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/valid-invalid-parent-ref.yaml.golden:21:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/valid-invalid-parent-ref.yaml.golden:43:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:2:kind: GatewayClass
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:9:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:28:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:44:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:60:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:76:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:98:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:119:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:140:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:234:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:246:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:258:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:270:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:285:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:300:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:322:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:343:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:361:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:378:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:395:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:411:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:427:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:445:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/invalid.yaml:462:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tcp.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/reference-policy-tcp.yaml:48:    kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/waypoint.status.yaml.golden:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/waypoint.status.yaml.golden:47:      kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/waypoint.status.yaml.golden:52:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/serviceentry.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/serviceentry.yaml:17:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/serviceentry.yaml:50:kind: HTTPRoute
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest-remote.yaml:2:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest-remote.yaml:30:      kind: Gateway
+infra/istio/1.27.1/pilot/pkg/config/kube/gateway/testdata/eastwest-remote.yaml:45:      kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:31:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:51:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:260:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:315:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:388:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:407:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:607:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:673:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:691:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:712:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:804:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:819:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:866:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:883:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:908:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:930:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1226:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1251:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1309:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1396:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1416:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1505:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1653:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1766:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1785:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1886:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1905:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:1989:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:2042:kind: Gateway
+infra/istio/1.27.1/pilot/pkg/networking/core/gateway_simulation_test.go:2068:kind: VirtualService
+infra/istio/1.27.1/pilot/pkg/networking/core/serviceentry_simulation_test.go:58:kind: VirtualService

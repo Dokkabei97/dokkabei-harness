@@ -1,0 +1,40 @@
+{
+  "session_id": "74cd9661-c78e-4003-96c6-001451f87103",
+  "project_path": "/Users/admin/project/legacy/searchapi-elastic",
+  "start_time": "2026-03-11T06:41:57.701Z",
+  "duration_minutes": 1,
+  "user_message_count": 2,
+  "assistant_message_count": 18,
+  "tool_counts": {
+    "Glob": 3,
+    "Grep": 1,
+    "Read": 12
+  },
+  "languages": {
+    "Go": 12
+  },
+  "git_commits": 0,
+  "git_pushes": 0,
+  "input_tokens": 28,
+  "output_tokens": 1012,
+  "first_prompt": "/analyze market 인덱스를 사용하는 API 엔드포인트와 기능을 설명해줘 --depth deep --with codex",
+  "user_interruptions": 0,
+  "user_response_times": [],
+  "tool_errors": 0,
+  "tool_error_categories": {},
+  "uses_task_agent": false,
+  "uses_mcp": false,
+  "uses_web_search": false,
+  "uses_web_fetch": false,
+  "lines_added": 0,
+  "lines_removed": 0,
+  "files_modified": 0,
+  "message_hours": [
+    15,
+    15
+  ],
+  "user_message_timestamps": [
+    "2026-03-11T06:42:29.378Z",
+    "2026-03-11T06:42:29.378Z"
+  ]
+}

@@ -1,0 +1,59 @@
+import { useQuery } from '@tanstack/react-query'
+import { Menu } from '@/generated/auth-hooks'
+import { danawaMenuConfig } from '@/shared/config/danawaMenu'
+import { permittedMenusServerAction, systemMenusServerAction } from '@/shared/services/graphql/auth/authServerActions'
+import type { ServiceMenu, ServiceMenu as ServiceMenuViewModel } from '@/shared/types/serviceMenu'
+
+// 재귀 매핑 함수 (일반 사용자용)
+const mapMenuToServiceMenu = (menu: Menu): ServiceMenuViewModel => ({
+    id: menu.id?.toString() ?? '',
+    name: menu.name ?? '',
+    url: `${menu.domain ?? ''}${menu.path ?? ''}`,
+    subMenus: (menu.subMenus ?? [])
+        .filter((sub): sub is Menu => sub !== null && sub.isVisible === true)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map(mapMenuToServiceMenu)
+})
+
+// 재귀 매핑 함수 (시스템/어드민용)
+const mapAdminMenuToServiceMenu = (menu: Menu): ServiceMenuViewModel => ({
+    id: menu.id?.toString() ?? '',
+    name: menu.name ?? '',
+    url: `${menu.domain ?? ''}${menu.path ?? ''}`,
+    subMenus: (menu.subMenus ?? [])
+        .filter((sub): sub is Menu => sub !== null)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map(mapAdminMenuToServiceMenu)
+})
+
+export const useMenuByPermission = () => {
+    const { data: permissionMenu } = useQuery({
+        queryKey: ['PermittedMenus'],
+        queryFn: permittedMenusServerAction,
+        staleTime: 0 // 항상 최신 데이터를 가져오기 위해
+    })
+
+    const { data: systemMenus } = useQuery({
+        queryKey: ['SystemMenus'],
+        queryFn: systemMenusServerAction
+    })
+
+    const menuListByPermission: ServiceMenuViewModel[] = permissionMenu
+        ? permissionMenu
+              .filter((m): m is Menu => m !== null && m.isVisible === true)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map(mapMenuToServiceMenu)
+        : []
+
+    const menuListBySystem: ServiceMenuViewModel[] = systemMenus
+        ? systemMenus
+              .filter((m): m is Menu => m !== null)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map(mapAdminMenuToServiceMenu)
+        : []
+
+    return {
+        menuListByPermission: [...menuListByPermission, danawaMenuConfig], // 다나와-UI관리 메뉴 주입
+        menuListBySystem
+    }
+}

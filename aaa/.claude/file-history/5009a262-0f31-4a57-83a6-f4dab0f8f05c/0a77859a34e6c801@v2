@@ -1,0 +1,142 @@
+---
+title: "4-7 스트리밍과 이벤트"
+aliases: ["4-7 스트리밍과 이벤트", "LangGraph Streaming", "astream_events"]
+tags: [llm-rag, phase4, langgraph, streaming, events, sse]
+phase: "phase4"
+status: "todo"
+difficulty: "중급"
+created: ""
+updated: ""
+---
+
+> [!summary]
+> LangGraph의 세 가지 `stream_mode`는 상태 단위(`values`), 변경분(`updates`), 토큰 단위(`messages`)로 각각 다르게 동작한다.
+> 실시간 UI 동기화를 위해서는 `astream_events()`의 이벤트를 단계(검색/요약/완료)로 매핑한다.
+> SSE는 브라우저가 긴 연결로 스트림을 유지해 이벤트를 즉시 렌더링하기에 적합하다.
+> FastAPI `StreamingResponse`에서 `event:`/`data:` 형식으로 전송하면 EventSource로 쉽게 소비 가능하다.
+> 이벤트 필터링(노드명/이벤트 타입)로 잡음과 렌더링 비용을 줄일 수 있다.
+
+## 관련 노트
+- [[4-1 LangGraph 핵심 개념]]
+- [[4-6 서브그래프와 상태 관리]]
+- [[2-9 Callbacks와 Streaming]]
+- [[5-4 실시간 스트리밍 응답]]
+- [[4-3 검색 워크플로우 그래프 설계]]
+
+## 개념 설명
+
+### 1) `stream_mode`의 개념 정리
+- `stream_mode="values"`: 각 노드 실행 후 전체 State를 스트리밍. 상태 추적이 쉽지만 payload가 크다.
+- `stream_mode="updates"`: 변경된 State만 전송. UI의 diff 렌더링, 진행률 바, 로그에 적합.
+- `stream_mode="messages"`: LLM 토큰 단위 스트리밍. 응답 체감 속도 개선에 핵심.
+
+### 2) `astream_events()`와 이벤트 계층
+`astream_events()`는 단순 값 스트림보다 더 세밀하다.
+- `on_chat_model_stream`: 모델 토큰 발생 시점에 바로 스트림 전달.
+- `on_chain_start`: 체인/노드 시작 시점, UX의 "검색 중" 진입점.
+- `on_chain_end`: 단계 종료 시점, 다음 단계 전환 트리거.
+- `on_retriever_start/end`, `on_tool_start/end` 등은 검색/툴 호출 추적에 유용.
+- 이를 UI 상태 머신과 연결하면 "검색 중 → 요약 중 → 완료"를 실시간으로 표현할 수 있다.
+
+### 3) 검색 UI와 실시간 단계 전달 패턴
+- 검색 노드 시작(`on_chain_start`, node=`search_node`) 수신 시 `phase=searching` 표식 전송.
+- 검색 노드 업데이트 이벤트에서 중간 결과 요약 수신 후 즉시 리스트 렌더.
+- 요약 노드로 진입 시 `phase=summarizing`, 토큰 스트림은 `messages` 모드로 동시에 렌더.
+- 최종 `on_chain_end` 또는 `done` 신호에서 `phase=complete`로 전환.
+
+### 4) SSE 기반 스트리밍 API 설계
+- HTTP는 기본적으로 요청-응답이므로, 실시간 연속 전송에는 SSE가 단순.
+- FastAPI `StreamingResponse`를 사용해 `text/event-stream` 반환.
+- 스트림에서 event type은 필터링 가능한 정형 데이터로 유지하면 클라이언트 처리 안정성이 높다.
+- 연결 종료 감지(`request.is_disconnected()`)로 불필요한 연산 방지.
+
+### 5) 이벤트 필터링 전략
+- 노드 필터: `search_node`, `summary_node`처럼 특정 노드만 노출.
+- 이벤트 타입 필터: `on_chain_start`, `on_chat_model_stream`, `on_chain_end`만 구독.
+- 장점: 프런트 렌더 오버헤드 감소, 디버깅 로그 가독성 향상, 민감 데이터 노출 통제.
+
+### 6) 프론트엔드 `EventSource` 수신 패턴
+- 브라우저에서 `/stream?q=...`를 `EventSource`로 구독.
+- `event: on_chat_model_stream`는 토큰 채우기로 텍스트 append.
+- `event: on_chain_start/on_chain_end`는 UI 단계 상태 업데이트.
+- `event: done` 수신 시 로딩 종료 및 마지막 뷰 상태 고정.
+
+## Mermaid 다이어그램
+```mermaid
+flowchart LR
+  U[사용자 요청] --> FE[Frontend + EventSource]
+  FE -->|GET /stream| API[FastAPI StreamingResponse]
+  API -->|graph.astream_events| LG[LangGraph Runtime]
+  LG -->|on_chain_start / updates / messages| API
+  API -->|SSE event:data| FE
+  FE -->|phase=검색중| UI1[검색 상태 뷰]
+  FE -->|phase=요약중| UI2[요약 상태 뷰]
+  FE -->|phase=완료| UI3[결과 렌더]
+```
+
+## Python 코드 예제
+```python
+from __future__ import annotations
+
+import json
+import asyncio
+from datetime import datetime
+from typing import AsyncIterator, Set
+
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+
+# 실제 운영에서는 LangGraph compiled graph 객체로 교체
+class DemoGraph:
+    async def astream_events(self, input, stream_mode="updates", **kwargs):
+        yield {"event": "on_chain_start", "name": "search_node", "data": {"phase": "searching"}}
+        await asyncio.sleep(0.05)
+        for tok in ["검색", "결과", "요약", "중"]:
+            yield {"event": "on_chat_model_stream", "name": "summary_node", "data": {"chunk": tok}}
+            await asyncio.sleep(0.05)
+        yield {"event": "on_chain_end", "name": "summary_node", "data": {"phase": "complete", "summary": "요약 완료"}}
+
+graph = DemoGraph()
+app = FastAPI()
+
+def sse_format(event_type: str, payload: dict) -> str:
+    return f"event: {event_type}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+def is_allowed(event: dict, nodes: Set[str], types: Set[str]) -> bool:
+    if types and event.get("event") not in types: return False
+    if nodes and event.get("name") not in nodes: return False
+    return True
+
+@app.get("/stream")
+async def stream(
+    request: Request,
+    q: str,
+    stream_mode: str = "updates",
+    node_filter: str = "",
+    type_filter: str = "on_chain_start,on_chat_model_stream,on_chain_end",
+):
+    node_set = {n.strip() for n in node_filter.split(",") if n.strip()}
+    type_set = {t.strip() for t in type_filter.split(",") if t.strip()}
+
+    async def event_generator() -> AsyncIterator[str]:
+        state = {"messages": [{"role": "user", "content": q}]}
+        async for event in graph.astream_events(state, stream_mode=stream_mode):
+            if await request.is_disconnected(): break
+            if not is_allowed(event, node_set, type_set): continue
+            yield sse_format(
+                event.get("event", "unknown"),
+                {"node": event.get("name"), "data": event.get("data"), "ts": datetime.now().isoformat(timespec="seconds")},
+            )
+        yield sse_format("done", {"status": "complete"})
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+```
+
+## 실습 체크리스트
+- [ ] `stream_mode="values"`, `"updates"`, `"messages"`를 각각 실행해 payload 차이를 비교했다.
+- [ ] `astream_events()`에서 `on_chain_start`/`on_chain_end` 이벤트를 로그로 확인했다.
+- [ ] 검색 노드, 요약 노드별로 node filter를 분리해 스트리밍을 제한했다.
+- [ ] SSE 응답을 `text/event-stream` + `event:` `data:` 포맷으로 반환했다.
+- [ ] `/stream`에서 `request.is_disconnected()` 처리를 추가해 자원 누수를 방지했다.
+- [ ] EventSource에서 `done` 이벤트 수신 시 로딩 UI를 정리했다.
+- [ ] 이벤트 필터로 불필요한 `on_tool_*` 메시지를 제외하고 UX 렌더링 안정성을 높였다.

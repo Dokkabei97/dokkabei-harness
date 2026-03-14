@@ -1,0 +1,32 @@
+[
+  {
+    "content": "회원 도메인 전체 코드 검토 및 분석",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "Gemini와 코드 품질 및 오류 검수",
+    "status": "in_progress",
+    "priority": "high",
+    "id": "2"
+  },
+  {
+    "content": "빌드 오류 수정 및 안정성 확보",
+    "status": "pending",
+    "priority": "high",
+    "id": "3"
+  },
+  {
+    "content": "단위 테스트 코드 작성",
+    "status": "pending",
+    "priority": "high",
+    "id": "4"
+  },
+  {
+    "content": "통합 테스트 코드 작성",
+    "status": "pending",
+    "priority": "medium",
+    "id": "5"
+  }
+]

@@ -1,0 +1,87 @@
+     1→package com.danawa.search.analysis.product
+     2→
+     3→import org.apache.lucene.analysis.Analyzer
+     4→import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver
+     5→import org.elasticsearch.cluster.node.DiscoveryNodes
+     6→import org.elasticsearch.common.io.stream.NamedWriteableRegistry
+     7→import org.elasticsearch.common.logging.Loggers
+     8→import org.elasticsearch.common.settings.ClusterSettings
+     9→import org.elasticsearch.common.settings.IndexScopedSettings
+    10→import org.elasticsearch.common.settings.Settings
+    11→import org.elasticsearch.common.settings.SettingsFilter
+    12→import org.elasticsearch.features.NodeFeature
+    13→import org.elasticsearch.index.analysis.AnalyzerProvider
+    14→import org.elasticsearch.index.analysis.TokenFilterFactory
+    15→import org.elasticsearch.index.analysis.TokenizerFactory
+    16→import org.elasticsearch.indices.analysis.AnalysisModule.AnalysisProvider
+    17→import org.elasticsearch.plugins.ActionPlugin
+    18→import org.elasticsearch.plugins.AnalysisPlugin
+    19→import org.elasticsearch.plugins.Plugin
+    20→import org.elasticsearch.rest.RestController
+    21→import org.elasticsearch.rest.RestHandler
+    22→import java.util.function.Predicate
+    23→import java.util.function.Supplier
+    24→
+    25→class AnalysisProductNamePlugin : Plugin(), AnalysisPlugin, ActionPlugin {
+    26→
+    27→    companion object {
+    28→        private val logger = Loggers.getLogger(AnalysisProductNamePlugin::class.java, "")
+    29→    }
+    30→
+    31→    init {
+    32→        logger.trace("init")
+    33→    }
+    34→
+    35→    /**
+    36→     * 필터 등록.
+    37→     * ES 에서 product_name 이름으로 상품명 필터를 생성하여 사용할수 있도록 등록.
+    38→     */
+    39→    override fun getTokenFilters(): Map<String, AnalysisProvider<TokenFilterFactory>> {
+    40→        return mapOf("product_name" to AnalysisProvider { indexSettings, env, name, settings ->
+    41→            ProductNameAnalysisFilterFactory(indexSettings, env, name, settings)
+    42→        })
+    43→    }
+    44→
+    45→    /**
+    46→     * 토크나이저 등록.
+    47→     * ES 에서 product_name 이름으로 토크나이저를 생성하여 사용할수 있도록 토크나이저 등록.
+    48→     */
+    49→    override fun getTokenizers(): Map<String, AnalysisProvider<TokenizerFactory>> {
+    50→        return mapOf("product_name" to AnalysisProvider { indexSettings, env, name, settings ->
+    51→            ProductNameTokenizerFactory(indexSettings, env, name, settings)
+    52→        })
+    53→    }
+    54→
+    55→    /**
+    56→     * 분석기 등록.
+    57→     * ES 에서 product_name 이름으로 상품명분석기를 생성하여 사용할수 있도록 분석기를 등록.
+    58→     */
+    59→    override fun getAnalyzers(): Map<String, AnalysisProvider<AnalyzerProvider<out Analyzer>>> {
+    60→        return mapOf("product_name" to AnalysisProvider { indexSettings, env, name, settings ->
+    61→            ProductNameAnalyzerProvider(indexSettings, env, name, settings)
+    62→        })
+    63→    }
+    64→
+    65→    /**
+    66→     * 액션 핸들러 등록
+    67→     * ES 에 상호작용이 가능한 REST 액션 핸들러를 등록한다.
+    68→     */
+    69→    override fun getRestHandlers(
+    70→        settings: Settings,
+    71→        namedWriteableRegistry: NamedWriteableRegistry,
+    72→        controller: RestController,
+    73→        clusterSettings: ClusterSettings,
+    74→        indexScopedSettings: IndexScopedSettings,
+    75→        filter: SettingsFilter,
+    76→        resolver: IndexNameExpressionResolver,
+    77→        nodes: Supplier<DiscoveryNodes>,
+    78→        clusterSupportsFeature: Predicate<NodeFeature>
+    79→    ): List<RestHandler> {
+    80→        return listOf(ProductNameAnalysisAction())
+    81→    }
+    82→}
+    83→
+
+<system-reminder>
+Whenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.
+</system-reminder>

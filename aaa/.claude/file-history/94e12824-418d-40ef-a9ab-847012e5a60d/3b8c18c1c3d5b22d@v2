@@ -1,0 +1,14 @@
+package models
+
+import "encoding/json"
+
+// PaginatedList represents a generic paginated API response.
+type PaginatedList struct {
+	Results    json.RawMessage `json:"results"`
+	NextCursor string          `json:"next_cursor"`
+	PrevCursor string          `json:"prev_cursor"`
+	NextPage   bool            `json:"next_page_results"`
+	PrevPage   bool            `json:"prev_page_results"`
+	TotalPages int             `json:"total_pages"`
+	TotalCount int             `json:"total_count"`
+}

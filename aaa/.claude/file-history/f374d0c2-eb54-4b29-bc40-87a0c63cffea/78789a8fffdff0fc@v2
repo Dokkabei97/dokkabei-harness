@@ -1,0 +1,114 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Elasticsearch 9.1.2용 커스텀 분석 플러그인 (`analysis-danuri`). 상품명 텍스트를 토큰화/분석하여 검색 품질을 높이는 한국어 상품명 분석기이다. Java 21, Gradle 빌드, Lucene 10.1.0 기반.
+
+## Build & Test Commands
+
+```bash
+# 빌드 (JAR + 플러그인 ZIP 생성)
+./gradlew build
+
+# 특정 테스트 실행
+./gradlew --no-daemon test --tests ProductNameAnalysisFilterTest.testFilter \
+  -DLOG_LEVEL=TRACE -DSYSPROP_LAUNCH_FOR_BUILD=false
+
+# 전체 테스트
+./gradlew test -DSYSPROP_LAUNCH_FOR_BUILD=false
+
+# 플러그인 ZIP만 생성
+./gradlew pluginZip
+```
+
+- `-DSYSPROP_LAUNCH_FOR_BUILD=false`: 테스트 실행 시 필수. ES 환경 없이 단독 테스트 가능.
+- `-DSYSPROP_TEST_DICTIONARY_SETTING=INTERNAL`: 내장 사전 사용 (기본값)
+- 빌드 결과물: `build/distributions/analysis-danuri-1.0.0.zip`
+
+## Architecture
+
+### 플러그인 진입점
+`AnalysisProductNamePlugin` — ES `Plugin` 구현체. `AnalysisPlugin` + `ActionPlugin` 인터페이스를 결합하여 분석 컴포넌트(Tokenizer, Filter, Analyzer)와 REST 액션을 등록한다. 모든 컴포넌트는 `product_name`이라는 이름으로 ES에 등록됨.
+
+### 분석 파이프라인 (Tokenizer → Filter → Analyzer)
+- **ProductNameTokenizer**: 입력 텍스트를 문자 유형별(ALPHA, NUMBER, HANGUL, SYMBOL, MODEL_NAME 등)로 초기 토큰화
+- **ProductNameAnalysisFilter** (`TokenFilter`): 사전 기반 후처리 — 동의어 확장, 불용어 제거, 복합어 분해, 단위명 처리, 한국어 형태소 분석(`KoreanWordExtractor`)
+- **ProductNameAnalyzer**: Tokenizer + Filter를 조합한 완성형 Analyzer
+- **AnalyzerOption**: 질의용/색인용 분기, 동의어·불용어·전체문자열·대문자 변환 옵션
+
+### 토큰 파싱 규칙 (`product/rule/`)
+`Rule` 추상 클래스를 상속한 5단계 규칙(RuleOne~RuleFive)이 순차 적용되어 토큰 유형을 결정한다. `ProductNameParsingRule`이 규칙 체인을 관리하며, `Entry`/`RuleEntry`가 각 토큰의 메타데이터를 담는다.
+
+### 사전 시스템 (`analysis/dict/`)
+- **ProductNameDictionary**: 사전 매니저. `product-name-dictionary.yml` 설정에 따라 12개 사전 파일(`dict/*.dict`)을 로드
+- 사전 타입: SYSTEM(형태소), SET, MAP, SYNONYM, SYNONYM_2WAY, SPACE, COMPOUND, CUSTOM, INVERT_MAP
+- `Dictionary` → `SourceDictionary` → 구현체(`SetDictionary`, `SynonymDictionary`, `SpaceDictionary`, `CompoundDictionary`, `MapDictionary` 등) 계층 구조
+- `ReloadableDictionary` 인터페이스로 런타임 사전 리로드 지원
+
+### REST API (`/_analysis-product-name/`)
+- **ProductNameAnalysisAction**: 분석 테스트, 사전 조회/리로드/컴파일, 텍스트 분석, 검색 등 다수 액션 제공
+- **RestReloadDictAction + TransportReloadDictAction**: 클러스터 전체 노드에 사전 리로드를 전파하는 Transport Action 기반 API
+
+### 한국어 처리 (`analysis/korean/`)
+`KoreanWordExtractor` — 형태소 기반 한국어 단어 추출기. `PosTagProbEntry`로 품사 확률을 관리하고, `MorphUtil`이 형태소 유틸리티를 제공.
+
+### 커스텀 토큰 속성 (`org.apache.lucene.analysis.tokenattributes/`)
+Lucene 표준 속성 외 `ExtraTermAttribute`, `SynonymAttribute`, `TokenInfoAttribute` 커스텀 속성 정의.
+
+## Dictionary Files (`dict/`)
+
+사전 설정 파일: `src/main/resources/product-name-dictionary.yml`
+
+| 파일 | 타입 | 용도 |
+|------|------|------|
+| product.dict | SYSTEM | 형태소 기본사전 |
+| user.dict | SET | 사용자 정의어 |
+| synonym.dict | SYNONYM | 동의어 (단방향) |
+| unit_synonym.dict | SYNONYM_2WAY | 단위 동의어 (양방향) |
+| stop.dict | SET | 불용어 |
+| space.dict | SPACE | 띄어쓰기 |
+| compound.dict | COMPOUND | 복합어 |
+| unit.dict | SET | 단위명 |
+| maker/brand/category.dict | CUSTOM | 제조사/브랜드/카테고리 |
+| english.dict | SET | 영문 사전 |
+
+## Deployment
+
+```bash
+# 플러그인 ZIP 빌드
+./gradlew build
+
+# Docker 이미지 빌드 (ES 9.1.2 + 플러그인)
+docker build -t analysis-danuri .
+
+# 개발용 ES + Kibana
+docker-compose up -d
+```
+
+ES 9.x Entitlement 정책: `src/main/plugin-metadata/entitlement-policy.yaml` — 플러그인의 네트워크 및 파일 접근 권한 정의.
+
+## Key Conventions
+
+- 패키지 루트: `com.danawa.search.analysis`
+- `ContextStore`를 통한 플러그인 내 전역 상태 관리 (싱글톤 패턴)
+- 사전 파일 경로는 ES 플러그인 디렉토리 기준 상대 경로 (`dict/`)
+- `ResourceResolver`로 ES 환경 vs 테스트 환경의 리소스 경로를 추상화
+
+## Gemini CLI Integration
+사용자가 "Gemini와 상의하면서 진행해줘" 또는 유사한 표현을 사용할 경우:
+1. 요구사항을 $PROMPT 환경 변수에 저장
+2. `gemini -m gemini-3-pro-preview -p "$PROMPT" --output-format stream-json` 실행
+3. Gemini 응답을 보여주고, Claude의 해설 추가
+4. 코드 및 해결 방안등 결과를 비교하여 최적안 선택
+
+## Copilot CLI Integration
+사용자가 "Copilot하고 상의하면서 진행해줘" 또는 유사한 표현을 사용할 경우:
+1. 요구사항을 $PROMPT 환경 변수에 저장
+2. `copilot --model gpt-5.1-codex -p "$PROMPT"` 실행
+3. `copilot --model claude-opus-4.5 -p "$PROMPT"` 실행
+4. `copilot --model gemini-3-pro-preview -p "$PROMPT"` 실행
+5. 각각 3가지 모델에 대한 copilot 실행 후 결과를 기반으로 Claude의 해설 추가
+6. 코드 및 해결 방안등 결과를 비교하여 최적안 선택
+7. 만약 copilot이 동작하지 않는다면 다시 수행

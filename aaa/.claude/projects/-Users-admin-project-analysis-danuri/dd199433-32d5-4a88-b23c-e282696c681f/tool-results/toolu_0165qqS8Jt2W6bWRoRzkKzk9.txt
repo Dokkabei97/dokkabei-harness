@@ -1,0 +1,6 @@
+total 8
+drwxr-xr-x@ 5 admin  staff   160 12월 17 11:14 .
+drwxr-xr-x@ 5 admin  staff   160  1월 14 18:44 ..
+drwxr-xr-x@ 3 admin  staff    96 12월 10 14:26 com
+drwxr-xr-x@ 8 admin  staff   256  1월 12 17:34 dict_extra
+-rw-r--r--@ 1 admin  staff  1248 12월 10 14:26 product-name-dictionary.yml

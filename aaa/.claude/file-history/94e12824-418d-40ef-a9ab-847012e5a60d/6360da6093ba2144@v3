@@ -1,0 +1,218 @@
+package cmdutil
+
+import (
+	"encoding/json"
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
+	"github.com/plane-cli/plane-cli/internal/api"
+	"github.com/plane-cli/plane-cli/internal/config"
+)
+
+// Factory provides shared dependencies for commands.
+type Factory struct {
+	Config    *config.Config
+	client    *api.Client
+	Format    string
+	Workspace string
+	Project   string
+	Debug     bool
+}
+
+// NewFactory creates a factory from config with CLI flag overrides.
+func NewFactory(cfg *config.Config, workspace, project, format string, debug bool) *Factory {
+	f := &Factory{
+		Config:    cfg,
+		Workspace: cfg.Workspace,
+		Project:   cfg.Project,
+		Format:    cfg.Format,
+		Debug:     debug,
+	}
+
+	// CLI flag overrides
+	if workspace != "" {
+		f.Workspace = workspace
+	}
+	if project != "" {
+		f.Project = project
+	}
+	if format != "" {
+		f.Format = format
+	}
+
+	return f
+}
+
+// Client returns the API client, creating it if needed.
+func (f *Factory) Client() (*api.Client, error) {
+	if f.client != nil {
+		return f.client, nil
+	}
+
+	if f.Config.BaseURL == "" {
+		return nil, fmt.Errorf("base URL not configured.\n  Run `plane config init` to set up your Plane instance URL")
+	}
+	if f.Config.APIKey == "" {
+		return nil, fmt.Errorf("API key not configured.\n  Run `plane config init` to set up your API key")
+	}
+
+	f.client = api.NewClient(f.Config.BaseURL, f.Config.APIKey, api.WithDebug(f.Debug))
+	return f.client, nil
+}
+
+// RequireWorkspace returns the workspace slug or an error.
+func (f *Factory) RequireWorkspace() (string, error) {
+	if f.Workspace == "" {
+		return "", fmt.Errorf("workspace not specified.\n  Use --workspace flag or set it with `plane config set workspace <slug>`")
+	}
+	return f.Workspace, nil
+}
+
+// RequireProject returns the project ID or an error.
+func (f *Factory) RequireProject() (string, error) {
+	if f.Project == "" {
+		return "", fmt.Errorf("project not specified.\n  Use --project flag or set it with `plane config set project <id>`")
+	}
+	return f.Project, nil
+}
+
+// RequireWorkspaceAndProject returns both workspace and project or errors.
+func (f *Factory) RequireWorkspaceAndProject() (string, string, error) {
+	ws, err := f.RequireWorkspace()
+	if err != nil {
+		return "", "", err
+	}
+	proj, err := f.RequireProject()
+	if err != nil {
+		return "", "", err
+	}
+	return ws, proj, nil
+}
+
+// issueSeqPattern matches identifiers like "SRCH-100", "BE-42", "PROJ-1".
+var issueSeqPattern = regexp.MustCompile(`^[A-Za-z]+-(\d+)$`)
+
+// IsIssueIdentifier checks if the string looks like "PROJ-123" rather than a UUID.
+func IsIssueIdentifier(s string) bool {
+	return issueSeqPattern.MatchString(s)
+}
+
+// ResolveIssueID resolves an issue reference to a UUID.
+// Accepts either a UUID (returned as-is) or "PROJ-123" format (looked up via API).
+func (f *Factory) ResolveIssueID(issueRef string) (string, error) {
+	if !IsIssueIdentifier(issueRef) {
+		return issueRef, nil
+	}
+
+	// Parse "SRCH-100" → identifier="SRCH", seqNum=100
+	parts := strings.SplitN(issueRef, "-", 2)
+	if len(parts) != 2 {
+		return "", fmt.Errorf("invalid issue identifier: %s (expected format: PROJ-123)", issueRef)
+	}
+	identifier := strings.ToUpper(parts[0])
+	seqNum, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return "", fmt.Errorf("invalid sequence number in %s: %w", issueRef, err)
+	}
+
+	client, err := f.Client()
+	if err != nil {
+		return "", err
+	}
+	ws, err := f.RequireWorkspace()
+	if err != nil {
+		return "", err
+	}
+
+	// First, find the project by identifier
+	projectID, err := f.resolveProjectByIdentifier(client, ws, identifier)
+	if err != nil {
+		return "", fmt.Errorf("resolving project for %s: %w", issueRef, err)
+	}
+
+	// Then, look up the issue by sequence_id in that project
+	path, err := api.NewPath("workspaces/{workspace_slug}/projects/{project_id}/work-items/").
+		Workspace(ws).Project(projectID).
+		Query("sequence_id", strconv.Itoa(seqNum)).
+		QueryInt("per_page", 1).
+		Build()
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Get(path)
+	if err != nil {
+		return "", fmt.Errorf("looking up %s: %w", issueRef, err)
+	}
+
+	// Try paginated response first
+	var paginated struct {
+		Results []struct {
+			ID string `json:"id"`
+		} `json:"results"`
+	}
+	if err := json.Unmarshal(resp, &paginated); err == nil && len(paginated.Results) > 0 {
+		return paginated.Results[0].ID, nil
+	}
+
+	// Try direct array
+	var issues []struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(resp, &issues); err == nil && len(issues) > 0 {
+		return issues[0].ID, nil
+	}
+
+	return "", fmt.Errorf("issue %s not found", issueRef)
+}
+
+// resolveProjectByIdentifier finds a project UUID by its identifier (e.g., "SRCH").
+func (f *Factory) resolveProjectByIdentifier(client *api.Client, ws, identifier string) (string, error) {
+	// If we already have a project set and it matches, use it
+	if f.Project != "" {
+		return f.Project, nil
+	}
+
+	path, err := api.NewPath("workspaces/{workspace_slug}/projects/").
+		Workspace(ws).Build()
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Get(path)
+	if err != nil {
+		return "", err
+	}
+
+	// Try paginated response
+	var paginated struct {
+		Results []struct {
+			ID         string `json:"id"`
+			Identifier string `json:"identifier"`
+		} `json:"results"`
+	}
+	if err := json.Unmarshal(resp, &paginated); err == nil && len(paginated.Results) > 0 {
+		for _, p := range paginated.Results {
+			if strings.EqualFold(p.Identifier, identifier) {
+				return p.ID, nil
+			}
+		}
+	}
+
+	// Try direct array
+	var projects []struct {
+		ID         string `json:"id"`
+		Identifier string `json:"identifier"`
+	}
+	if err := json.Unmarshal(resp, &projects); err == nil {
+		for _, p := range projects {
+			if strings.EqualFold(p.Identifier, identifier) {
+				return p.ID, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("project with identifier %q not found in workspace %q", identifier, ws)
+}

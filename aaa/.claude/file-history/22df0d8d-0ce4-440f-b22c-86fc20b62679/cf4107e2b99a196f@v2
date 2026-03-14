@@ -1,0 +1,1515 @@
+# Kotlin + Spring 시니어 백엔드 개발자 확장 커리큘럼 (Part 1)
+
+> **원본**: curriculum_final.md (2026-02-15)
+> **확장 작성**: 백엔드 기술 커리큘럼 팀
+> **확장 검토일**: 2026-02-16
+> **범위**: Phase 1 ~ Phase 5 (Kotlin 심화 ~ 아키텍처와 설계)
+
+---
+
+## 전체 개요
+
+### 목적
+Kotlin과 Spring 기반 백엔드 개발 경험이 있는 주니어~미드레벨 개발자를 **설계 역량, 성능 최적화 능력, 아키텍처 판단력, 운영 안정성, 기술 리더십**을 갖춘 시니어 백엔드 개발자로 성장시키는 것을 목표로 한다.
+
+### 확장 커리큘럼 추가 영역
+1. **JVM/GC 튜닝 심화** - JVM 내부 구조와 GC 알고리즘 실전 튜닝
+2. **Kotlin in Action & Effective Kotlin 핵심** - 두 서적의 시니어 필수 지식
+3. **Spring JDBC/JdbcTemplate/Exposed** - JPA 외 데이터 접근 기술
+4. **Java → Kotlin 전환 실수 포인트** - 기존 Java 개발자 대상 함정과 관용적 코드
+5. **성능 최적화 체크리스트** - 9개 카테고리 기반 실전 성능 최적화
+
+### 대상
+- Kotlin 문법과 Spring 개발 경험이 있는 **4~6년차 개발자**
+- 기본적인 CRUD API 개발 및 운영 경험이 있으나, 대규모 시스템 설계/운영 경험이 부족한 개발자
+- **기존 Java 개발자로서 Kotlin으로 전환 중인 개발자**
+- 기술적 깊이를 더하고 아키텍처 관점의 의사결정 역량을 기르고자 하는 개발자
+
+### 기간
+- **총 40주 (약 10개월)** ← 기존 28주에서 확장
+- 주당 학습 권장 시간: 8~12시간 (업무 병행 기준)
+- 총 예상 학습 시간: 340~420시간
+
+### 기대 효과
+1. **기술적 깊이**: Kotlin/JVM/Spring의 내부 동작을 이해하고, "왜 이렇게 동작하는가"를 설명할 수 있다.
+2. **설계 역량**: 프로젝트의 규모와 복잡도에 맞는 아키텍처를 선택하고 근거를 제시할 수 있다.
+3. **문제 해결력**: 프로덕션 장애 상황에서 체계적으로 원인을 분석하고 해결할 수 있다.
+4. **운영 관점**: "개발 완료"가 아닌 "운영 가능한 시스템"을 만드는 사고방식을 갖춘다.
+5. **기술 리더십**: 코드 리뷰, 기술 문서 작성, 주니어 멘토링 역량을 확보한다.
+6. **성능 감각**: 코드 레벨부터 시스템 레벨까지 성능 병목을 식별하고 최적화할 수 있다.
+7. **JVM 마스터리**: GC 튜닝, 메모리 분석, 프로파일링을 통해 JVM 애플리케이션을 최적화할 수 있다.
+
+### 학습 원칙
+1. **이론 30% + 실습 70%**: 모든 주제는 반드시 코드로 확인한다.
+2. **점진적 복잡도**: 간단한 예제에서 시작해 실무 수준으로 확장한다.
+3. **왜(Why) 먼저**: 무엇(What)과 어떻게(How) 이전에 왜 필요한지를 먼저 이해한다.
+4. **트레이드오프 사고**: 모든 기술 결정에는 장단점이 있다. 은탄환은 없다.
+5. **실패 학습**: 안티패턴을 직접 만들어보고, 왜 문제인지 체감한다.
+6. **코드 리뷰 습관**: 학습 과제의 결과물을 멘토/팀원과 공유하고 리뷰한다.
+7. **측정 우선**: 성능 최적화는 반드시 프로파일링과 벤치마크로 검증한다.
+
+### 커리큘럼 로드맵 연결 구조
+
+```
+Phase 1: Kotlin 심화 + Java→Kotlin 전환 가이드
+    └─> Phase 2: 데이터 계층 마스터리 (JPA + JdbcTemplate + Exposed + MongoDB)
+          └─> Phase 3: 메시징과 비동기 시스템
+                └─> Phase 4: 대용량 트래픽과 성능
+                      └─> Phase 5: 아키텍처와 설계
+                            └─> Phase 6: 운영과 안정성 (backend-tech2.md)
+                                  └─> Phase 7: 시니어 역량 종합 (backend-tech2.md)
+                                        └─> Phase 8: JVM/GC 튜닝 심화 (backend-tech2.md)
+                                              └─> Phase 9: 성능 최적화 마스터리 (backend-tech2.md)
+                                                    └─> Phase 10: 종합 프로젝트 (backend-tech2.md)
+```
+
+---
+
+## Phase 1: Kotlin 깊이 다지기 (6주) ← 기존 4주에서 확장
+
+> **연결 맥락**: Kotlin의 깊은 이해는 이후 모든 Phase의 기반이 된다. 특히 코루틴은 Phase 3(메시징/비동기)과 Phase 4(대용량 트래픽)에서 핵심적으로 활용되며, 제네릭과 DSL은 Phase 5(아키텍처)에서 유연한 API 설계에 필수적이다.
+> **확장 내용**: Kotlin in Action / Effective Kotlin 핵심 + Java→Kotlin 전환 가이드 추가
+
+### 1.1 프로퍼티 시스템 심화 (1주)
+
+**학습 목표**
+Kotlin의 프로퍼티가 Java 필드와 어떻게 다른지, 바이트코드 레벨에서의 동작 원리를 이해한다. 이를 통해 Spring의 프록시, 직렬화, JPA 엔티티 매핑에서 발생하는 미묘한 버그를 예방할 수 있다.
+
+**핵심 내용**
+- 프로퍼티 vs 필드의 본질적 차이 (접근자 메서드 자동 생성)
+- 백킹 필드(backing field): `field` 키워드의 동작, 커스텀 getter/setter에서의 활용
+- 백킹 프로퍼티(backing property): `_mutableList` / `mutableList` 패턴, 캡슐화 전략
+- `@JvmField`, `@JvmStatic` 어노테이션과 Java 상호운용
+- JPA 엔티티에서 프로퍼티 설계 시 주의점 (lazy 로딩과 프록시)
+- `lateinit var` vs `by lazy`: 초기화 시점, 스레드 안전성, null 안전성 차이
+
+> **📖 Effective Kotlin 연결**
+> - Item 16: 프로퍼티는 동작이 아니라 상태를 나타내야 한다
+> - Item 1: 가변성을 제한하라 (val vs var 선택 기준)
+
+**실무 사례**
+- **JPA 프록시 문제**: Hibernate가 `final` 프로퍼티를 가진 Kotlin 엔티티에서 프록시 생성 실패 -> `allopen` 플러그인의 필요성과 동작 원리
+- **Jackson 직렬화 오류**: data class의 `val` 프로퍼티에서 `@JsonProperty` 위치에 따른 직렬화 동작 차이 (field vs getter annotation)
+- **Spring Configuration Properties**: `@ConfigurationProperties`에서 Kotlin data class 바인딩 시 발생하는 문제와 `@ConstructorBinding` 활용
+
+**실습 과제**
+1. JPA 엔티티 클래스를 설계하면서 백킹 프로퍼티로 불변 컬렉션 외부 노출 구현
+2. `lateinit`과 `by lazy`를 Spring Bean에서 각각 사용하는 케이스를 구현하고 바이트코드 비교
+3. 커스텀 getter/setter를 활용한 유효성 검증 프로퍼티 설계
+
+**평가 기준**
+- [ ] Kotlin 프로퍼티의 바이트코드 생성 규칙을 설명할 수 있다
+- [ ] JPA 엔티티에서 발생할 수 있는 프로퍼티 관련 버그 3가지 이상을 식별하고 해결할 수 있다
+- [ ] 백킹 프로퍼티 패턴을 적절히 활용하여 불변 인터페이스를 설계할 수 있다
+
+---
+
+### 1.2 위임 프로퍼티와 위임 패턴 (1주 전반)
+
+**학습 목표**
+위임 패턴을 활용하여 보일러플레이트 코드를 제거하고, 프로퍼티의 읽기/쓰기를 가로채는 고급 패턴을 구사할 수 있다. 실무에서 설정값 관리, 캐싱, 감사 로깅 등에 활용한다.
+
+**핵심 내용**
+- `by` 키워드의 동작 원리 (getValue/setValue 연산자)
+- 표준 위임: `lazy`, `observable`, `vetoable`, `notNull`
+- `by lazy`의 세 가지 모드: `SYNCHRONIZED`, `PUBLICATION`, `NONE`
+- `Map` 위임을 활용한 동적 프로퍼티
+- 커스텀 프로퍼티 위임 구현 (ReadOnlyProperty, ReadWriteProperty)
+- 클래스 위임(`by` in class declaration)과 인터페이스 위임
+
+> **📖 Effective Kotlin 연결**
+> - Item 36: 상속보다 컴포지션을 사용하라 (클래스 위임 활용)
+
+**실무 사례**
+- **Feature Flag 시스템**: `by lazy`와 커스텀 위임을 조합하여, 런타임에 Feature Flag를 읽어오되 일정 시간 캐싱하는 프로퍼티 위임 구현
+- **설정 변경 감지**: `observable` 위임으로 Spring Cloud Config 변경 시 자동 리로드 트리거
+- **데코레이터 패턴**: 클래스 위임으로 Repository에 캐싱/로깅 계층을 투명하게 추가 (Phase 2 캐싱 전략과 연결)
+
+**실습 과제**
+1. Spring Environment에서 설정값을 자동으로 읽어오는 커스텀 위임 프로퍼티 구현
+2. `observable` 위임을 활용한 엔티티 변경 감지 시스템 구현
+3. 클래스 위임을 활용한 데코레이터 패턴 구현 (로깅 추가 Repository)
+
+**평가 기준**
+- [ ] 커스텀 프로퍼티 위임을 직접 설계하고 구현할 수 있다
+- [ ] 위임 패턴의 적절한 사용 시점을 판단할 수 있다
+
+---
+
+### 1.3 인라인 클래스(Value Class)와 타입 안전성 (1주 전반)
+
+**학습 목표**
+`value class`를 통해 타입 안전성을 확보하면서도 런타임 오버헤드를 제거하는 기법을 익힌다. Primitive obsession 안티패턴을 해결하고, DDD의 Value Object를 효율적으로 표현할 수 있다.
+
+**핵심 내용**
+- `value class`(구 `inline class`)의 컴파일 최적화 원리
+- 박싱이 발생하는 경우와 발생하지 않는 경우
+- 타입 안전한 ID 래퍼 (`UserId`, `OrderId` 등)
+- `value class`의 제약 사항 (단일 프로퍼티, `===` 비교 불가 등)
+- JPA, Jackson, Spring MVC와의 통합 시 주의점
+- `typealias` vs `value class`: 적절한 사용 기준
+
+> **📖 Effective Kotlin 연결**
+> - Item 47: 인라인 클래스를 사용하여 타입 안전성을 유지하면서 오버헤드를 줄여라
+> - Item 45: 불필요한 객체 생성을 피하라
+
+**실무 사례**
+- **ID 혼동 방지**: 결제 시스템에서 `userId: Long`과 `orderId: Long`을 혼동하여 잘못된 주문을 조회한 실제 장애 -> `UserId`, `OrderId` value class로 컴파일 타임에 방지
+- **금액 처리**: `Money` value class로 통화 단위 혼동 방지 (원화 vs 달러를 더하는 버그 예방)
+
+**실습 과제**
+1. 도메인 ID를 `value class`로 래핑하고, JPA/Jackson과 통합하는 구현
+2. 금액(Money), 이메일(Email) 등 도메인 값 객체를 `value class`로 설계
+3. 바이트코드 분석으로 박싱 발생 여부를 직접 확인
+
+**평가 기준**
+- [ ] `value class`와 `typealias`의 차이를 바이트코드 레벨에서 설명할 수 있다
+- [ ] 프레임워크 통합 시 발생하는 문제를 해결할 수 있다
+
+---
+
+### 1.4 제네릭 심화 (1주)
+
+**학습 목표**
+Kotlin/JVM의 타입 소거(type erasure) 한계를 이해하고, 공변성/반공변성을 활용한 유연한 API 설계 역량을 확보한다. 라이브러리 수준의 제네릭 활용 능력을 갖춘다.
+
+**핵심 내용**
+- 타입 소거와 JVM의 한계
+- 공변성(`out`): `Producer<out T>` - 읽기 전용, `List<out T>`
+- 반공변성(`in`): `Consumer<in T>` - 쓰기 전용, `Comparable<in T>`
+- 무공변성과 Java의 `? extends` / `? super`와의 대응
+- 타입 프로젝션 (use-site variance)
+- `reified` 타입 파라미터와 `inline` 함수의 조합
+- 스타 프로젝션(`*`)의 의미와 활용
+- 제네릭 제약 조건 (`where T : A, T : B`)
+- 실무 활용: 제네릭 Repository, 제네릭 Response 래퍼 설계
+
+> **📖 Kotlin in Action 연결**
+> - 타입 파라미터의 런타임 동작과 reified의 원리
+> - 변성(Variance)의 실용적 이해
+
+**실무 사례**
+- **API 응답 래퍼**: `ApiResponse<T>` 설계 시 공변성을 활용하여 `ApiResponse<User>`를 `ApiResponse<Any>`로 안전하게 업캐스팅
+- **이벤트 핸들러 시스템**: `EventHandler<in T : DomainEvent>` 설계로 이벤트 타입 계층에 따른 핸들러 자동 매칭 (Phase 3 Kafka 이벤트 설계와 연결)
+- **제네릭 CRUD 추상화**: `BaseRepository<T, ID>` + `BaseService<T, ID>` 패턴으로 반복 코드 80% 감소
+
+**실습 과제**
+1. `reified`를 활용한 타입 안전한 Jackson 역직렬화 확장 함수 구현
+2. 공변/반공변을 활용한 이벤트 시스템 설계 (EventProducer, EventConsumer)
+3. 제네릭 CRUD Repository 추상 계층 설계
+
+**평가 기준**
+- [ ] 공변성/반공변성의 적용 기준을 설명하고 실제 API에 적용할 수 있다
+- [ ] `reified`의 활용 시점과 제약을 이해하고 있다
+- [ ] 제네릭을 과도하게 사용하지 않는 판단력을 갖추고 있다
+
+---
+
+### 1.5 코루틴 심화 (1주)
+
+**학습 목표**
+구조적 동시성(Structured Concurrency)의 원리를 깊이 이해하고, 실무에서 안전하고 효율적인 비동기 코드를 작성할 수 있다. 코루틴의 예외 처리와 취소 메커니즘을 완벽히 파악한다.
+
+> **연결**: 이 주제는 Phase 3(Kafka, SSE), Phase 4(WebFlux, 배압)에서 직접적으로 활용된다.
+
+**핵심 내용**
+- 구조적 동시성의 원칙: 부모-자식 관계, 수명 주기 관리
+- `CoroutineScope`: 스코프 설계 원칙, `GlobalScope`을 피해야 하는 이유
+- `Job` vs `SupervisorJob`: 예외 전파 차이
+- 예외 처리 전략: `CoroutineExceptionHandler`, `supervisorScope`, `try-catch`
+- 취소와 협력적 취소: `isActive`, `ensureActive()`, `yield()`
+- `CoroutineContext`의 구성 요소와 조합
+- `Dispatchers`: `Default`, `IO`, `Unconfined`, `Main` 선택 기준
+- `Flow` 심화: `cold` vs `hot` 스트림, `SharedFlow`, `StateFlow`
+- Spring WebFlux + 코루틴 통합: `suspend fun` 컨트롤러, `Flow` 리턴
+- 코루틴 테스트: `runTest`, `TestDispatcher`, `advanceTimeBy`
+
+> **📖 Kotlin in Action 연결**
+> - Continuation Passing Style (CPS) 변환의 원리
+> - 코루틴의 상태 머신 구현
+> - CoroutineContext와 Element 조합 메커니즘
+
+> **📖 Effective Kotlin 연결**
+> - Item 48: 더 이상 사용하지 않는 객체 참조를 제거하라 (코루틴에서의 메모리 누수)
+
+**실무 사례**
+- **주문 처리 시스템**: 주문 생성 시 재고 확인, 결제 처리, 알림 발송을 병렬로 수행하되, 결제 실패 시 나머지 작업을 취소하는 `supervisorScope` 활용 사례
+- **외부 API 통합**: 여러 외부 서비스를 동시에 호출하면서 하나가 실패해도 나머지 결과를 활용하는 패턴
+- **메모리 누수 방지**: `GlobalScope`으로 인한 프로덕션 메모리 누수 장애 사례와 구조적 동시성으로의 리팩터링
+
+**실습 과제**
+1. `supervisorScope`를 활용한 병렬 API 호출 시스템 구현 (부분 실패 허용)
+2. `Flow`를 활용한 실시간 데이터 스트리밍 파이프라인 구현
+3. 코루틴 기반 배치 처리 시스템 (취소 가능, 진행률 보고)
+4. 코루틴 코드에 대한 단위 테스트 작성 (`runTest` 활용)
+
+**평가 기준**
+- [ ] 구조적 동시성을 위반하는 코드를 식별하고 수정할 수 있다
+- [ ] `Job`과 `SupervisorJob`의 차이를 실제 예외 시나리오로 설명할 수 있다
+- [ ] 코루틴 코드의 테스트를 작성할 수 있다
+- [ ] `Flow`의 hot/cold 차이를 이해하고 적절히 선택할 수 있다
+
+---
+
+### 1.6 시퀀스, DSL, Nothing, Contracts, Sealed (1주)
+
+**학습 목표**
+Kotlin의 고급 언어 기능들을 실무에서 적절히 활용하는 판단력을 기른다.
+
+**핵심 내용**
+
+*시퀀스 vs 컬렉션 최적화*
+- 즉시 평가(Eager) vs 지연 평가(Lazy) 전략
+- `Sequence`가 유리한 경우: 체이닝이 많고 중간 컬렉션 생성이 비용인 경우
+- `asSequence()`의 올바른 사용과 벤치마크
+
+> **📖 Effective Kotlin 연결**
+> - Item 49: 하나 이상의 처리 단계를 가진 경우 시퀀스를 사용하라
+> - Item 50: 컬렉션 처리 단계의 수를 제한하라
+
+*DSL 설계 패턴*
+- 수신 객체 지정 람다 (`T.() -> Unit`)
+- `@DslMarker`를 활용한 스코프 제어
+- 실무 활용: 테스트 fixture DSL, 쿼리 빌더 DSL
+
+*Nothing 타입과 Contracts*
+- `Nothing`의 의미: 정상 반환하지 않는 함수
+- `TODO()`, `error()`의 타입 추론 활용
+- `contract` 블록: 스마트 캐스트 개선, `callsInPlace`
+- Contracts의 현재 제약과 실험적 상태
+
+*Sealed class/interface 활용 패턴*
+- `sealed class` vs `sealed interface`: 선택 기준
+- `when` 표현식의 exhaustive 검사
+- sealed 계층을 활용한 상태 머신, Result 타입 설계
+- 에러 핸들링 패턴: `sealed class`로 도메인 에러 모델링
+
+> **📖 Effective Kotlin 연결**
+> - Item 5: 예외를 결과 대신 사용하지 마라 (sealed class Result 패턴)
+> - Item 7: 결과가 부족할 수 있는 경우 null과 Failure를 사용하라
+
+**실무 사례**
+- **테스트 DSL**: `createOrder { item("상품A", 1000) ; coupon("SAVE10") }` 형태의 테스트 데이터 빌더로 테스트 가독성 향상
+- **도메인 에러 모델링**: `sealed interface PaymentError` 계층으로 결제 오류를 타입 안전하게 처리
+- **상태 머신**: 주문 상태를 sealed class로 모델링하여 잘못된 상태 전이를 컴파일 타임에 방지
+
+**실습 과제**
+1. 대용량 CSV 파일 처리에서 `Sequence` 최적화 벤치마크
+2. 테스트 데이터 생성용 DSL 설계 및 구현
+3. `sealed interface`를 활용한 도메인 에러 타입 계층 설계
+4. `Nothing` 타입을 활용한 유틸리티 함수 설계
+
+**평가 기준**
+- [ ] Sequence와 Collection의 성능 차이를 벤치마크로 입증할 수 있다
+- [ ] DSL을 설계하고 `@DslMarker`로 스코프를 제어할 수 있다
+- [ ] sealed 계층을 활용한 에러/상태 모델링을 할 수 있다
+
+---
+
+### 1.7 [신규] Java → Kotlin 전환 가이드 (1주)
+
+**학습 목표**
+기존 Java 개발자가 Kotlin으로 전환할 때 자주 하는 실수를 사전에 인지하고, Kotlin 관용적(idiomatic) 코드를 작성하는 능력을 기른다.
+
+**핵심 내용**
+
+*문법/패턴 전환 실수*
+
+1. **!! 남용 (Non-null Assertion)**
+```kotlin
+// BAD: Java 습관으로 null 체크 후 !! 사용
+fun process(input: String?) {
+    if (input != null) {
+        val result = input!!.uppercase() // 불필요한 !!
+    }
+}
+
+// GOOD: 스마트 캐스트 활용
+fun process(input: String?) {
+    if (input != null) {
+        val result = input.uppercase() // 스마트 캐스트
+    }
+    // 또는
+    input?.let { val result = it.uppercase() }
+}
+```
+
+2. **Java 스타일 getter/setter 작성**
+```kotlin
+// BAD: Java 스타일
+class User {
+    private var _name: String = ""
+    fun getName(): String = _name
+    fun setName(name: String) { _name = name }
+}
+
+// GOOD: Kotlin 프로퍼티
+class User {
+    var name: String = ""
+        private set // 필요 시 setter 가시성 제한
+}
+```
+
+3. **data class 남용/오용**
+```kotlin
+// BAD: JPA 엔티티를 data class로 만듦 (equals/hashCode 문제)
+@Entity
+data class User(
+    @Id @GeneratedValue
+    val id: Long = 0,
+    var name: String
+) // Hibernate 프록시, lazy loading과 충돌
+
+// GOOD: 일반 클래스 + 필요한 메서드만 재정의
+@Entity
+class User(
+    @Id @GeneratedValue
+    val id: Long = 0,
+    var name: String
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is User) return false
+        return id != 0L && id == other.id
+    }
+    override fun hashCode(): Int = javaClass.hashCode()
+}
+```
+
+4. **companion object 오해**
+```kotlin
+// BAD: Java static처럼 사용하면서 성능 고려 안 함
+class Config {
+    companion object {
+        val HEAVY_OBJECT = ExpensiveInit() // 클래스 로딩 시 초기화
+        fun create(): Config = Config()
+    }
+}
+
+// GOOD: const val 사용, 또는 lazy 활용
+class Config {
+    companion object {
+        const val MAX_RETRY = 3 // 컴파일 타임 상수
+        @JvmStatic // Java 상호운용 시 필요
+        fun create(): Config = Config()
+    }
+}
+```
+
+5. **불변/가변 컬렉션 미구분**
+```kotlin
+// BAD: 가변 컬렉션을 외부에 노출
+class Order {
+    val items = mutableListOf<OrderItem>()  // 외부에서 수정 가능
+}
+
+// GOOD: 불변 인터페이스로 노출
+class Order {
+    private val _items = mutableListOf<OrderItem>()
+    val items: List<OrderItem> get() = _items  // 읽기 전용으로 노출
+
+    fun addItem(item: OrderItem) { _items.add(item) }
+}
+```
+
+*Spring/JPA 통합 실수*
+
+6. **allopen 플러그인 미적용**
+```kotlin
+// BAD: Kotlin 클래스는 기본 final -> Spring 프록시 생성 불가
+@Service
+class OrderService { // final 클래스!
+    @Transactional
+    fun createOrder() { } // @Transactional 동작 안 함
+}
+
+// GOOD: build.gradle.kts에 allopen 플러그인 추가
+// kotlin("plugin.spring") // @Component, @Service 등에 open 자동 적용
+```
+
+7. **noarg 플러그인 미적용 (JPA 엔티티)**
+```kotlin
+// BAD: JPA는 기본 생성자 필요
+@Entity
+class Product(
+    @Id val id: Long,
+    val name: String
+) // 기본 생성자 없음 -> Hibernate 오류
+
+// GOOD: kotlin-jpa 플러그인으로 기본 생성자 자동 생성
+// kotlin("plugin.jpa") 추가
+```
+
+8. **스코프 함수 오용**
+```kotlin
+// BAD: 스코프 함수 중첩으로 가독성 저하
+fun processOrder(order: Order) = order.let { o ->
+    o.items.also { items ->
+        items.forEach { it.let { item ->
+            item.apply { /* 3단 중첩 */ }
+        }}
+    }
+}
+
+// GOOD: 명확한 스코프 함수 사용
+fun processOrder(order: Order) {
+    val validItems = order.items.filter { it.isValid() }
+    validItems.forEach { item ->
+        item.price = calculatePrice(item)
+    }
+}
+```
+
+*스코프 함수 선택 가이드*
+
+| 함수 | 수신 객체 | 반환값 | 주 사용 용도 |
+|------|----------|--------|-------------|
+| `let` | `it` | 람다 결과 | null 체크, 변환 |
+| `run` | `this` | 람다 결과 | 객체 설정 + 결과 계산 |
+| `with` | `this` | 람다 결과 | 객체의 여러 메서드 호출 |
+| `apply` | `this` | 객체 자신 | 객체 초기화/설정 |
+| `also` | `it` | 객체 자신 | 부수 효과 (로깅 등) |
+
+*성능 관련 전환 실수*
+
+9. **inline 함수 무분별 사용**
+```kotlin
+// BAD: body가 큰 함수에 inline -> 바이트코드 팽창
+inline fun processLargeData(data: List<Item>): Result {
+    // 100줄 이상의 로직...
+    return result
+}
+
+// GOOD: 람다 파라미터가 있을 때만 inline
+inline fun <T> measureTime(block: () -> T): Pair<T, Long> {
+    val start = System.nanoTime()
+    val result = block()
+    return result to (System.nanoTime() - start)
+}
+```
+
+> **📖 Effective Kotlin 연결**
+> - Item 46: 함수 타입 파라미터를 갖는 함수에 inline을 사용하라
+
+10. **불필요한 boxing 발생**
+```kotlin
+// BAD: nullable Int는 boxing 발생
+fun sum(numbers: List<Int?>): Int {
+    return numbers.filterNotNull().sum()
+}
+
+// GOOD: 기본 타입 활용 + null 미사용
+fun sum(numbers: IntArray): Int = numbers.sum()
+```
+
+> **📖 Effective Kotlin 연결**
+> - Item 51: 성능이 중요한 부분에는 기본 타입 배열을 사용하라
+
+*코루틴 전환 실수*
+
+11. **runBlocking 남용**
+```kotlin
+// BAD: 요청 처리 스레드에서 runBlocking
+@GetMapping("/users")
+fun getUsers(): List<User> {
+    return runBlocking { // 스레드 블로킹!
+        userService.findAll()
+    }
+}
+
+// GOOD: suspend fun 사용
+@GetMapping("/users")
+suspend fun getUsers(): List<User> {
+    return userService.findAll()
+}
+```
+
+12. **GlobalScope 사용**
+```kotlin
+// BAD: 구조적 동시성 위반, 메모리 누수 가능
+fun processAsync(data: Data) {
+    GlobalScope.launch { // 수명 주기 관리 안 됨
+        expensiveProcessing(data)
+    }
+}
+
+// GOOD: 적절한 스코프 사용
+@Service
+class ProcessingService(
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+) {
+    fun processAsync(data: Data) {
+        scope.launch {
+            expensiveProcessing(data)
+        }
+    }
+
+    @PreDestroy
+    fun cleanup() { scope.cancel() }
+}
+```
+
+*Kotlin in Action / Effective Kotlin 핵심 포인트 정리*
+
+13. **확장 함수를 활용하지 않는 실수**
+```kotlin
+// BAD: Java 스타일 유틸리티 클래스
+object StringUtils {
+    fun isValidEmail(str: String): Boolean = str.contains("@")
+}
+StringUtils.isValidEmail(email)
+
+// GOOD: 확장 함수
+fun String.isValidEmail(): Boolean = contains("@") && contains(".")
+email.isValidEmail()
+```
+
+14. **require/check 미사용**
+```kotlin
+// BAD: 수동 조건 검사
+fun createUser(name: String, age: Int): User {
+    if (name.isBlank()) throw IllegalArgumentException("Name required")
+    if (age < 0) throw IllegalArgumentException("Age must be positive")
+    return User(name, age)
+}
+
+// GOOD: require/check 활용
+fun createUser(name: String, age: Int): User {
+    require(name.isNotBlank()) { "Name required" }
+    require(age >= 0) { "Age must be positive" }
+    return User(name, age)
+}
+```
+
+> **📖 Effective Kotlin 연결**
+> - Item 3: 최대한 빨리 null을 제거하라
+
+**실습 과제**
+1. Java로 작성된 Spring Boot 서비스 코드를 Kotlin 관용 코드로 리팩터링 (10개 패턴 적용)
+2. 프로젝트에 allopen, noarg, kotlin-jpa 플러그인을 올바르게 설정하고, 각 플러그인이 해결하는 문제를 바이트코드로 확인
+3. 스코프 함수 활용 가이드를 작성하고, 코드 리뷰에서 부적절한 사용을 식별하는 연습
+4. Kotlin + Spring 프로젝트 초기 설정 체크리스트 작성
+
+**평가 기준**
+- [ ] Java 코드를 Kotlin 관용적 코드로 자연스럽게 변환할 수 있다
+- [ ] 10가지 이상의 Java→Kotlin 전환 실수를 식별하고 설명할 수 있다
+- [ ] Spring 프레임워크와 Kotlin 통합 시 필요한 플러그인과 설정을 모두 알고 있다
+- [ ] 스코프 함수를 적절하게 선택하여 사용할 수 있다
+
+---
+
+### 1.8 [신규] Effective Kotlin 실전 적용 (1주)
+
+**학습 목표**
+Effective Kotlin의 핵심 원칙을 실무 코드에 자연스럽게 적용하고, 코드 리뷰에서 이러한 원칙을 기준으로 피드백을 제공할 수 있다.
+
+**핵심 내용**
+
+*안전성 (Safety)*
+- **가변성 제한**: `val`, 불변 컬렉션, `copy()` 활용 원칙
+- **null 안전성 극대화**: `?.`, `?:`, `let`, `require`, `checkNotNull`
+- **예외 대신 결과 타입**: `Result<T>`, sealed class 기반 에러 처리
+- **방어적 프로그래밍**: `require()`, `check()`, `assert()` 삼총사
+
+```kotlin
+// 안전성 종합 예제
+sealed interface OrderResult {
+    data class Success(val order: Order) : OrderResult
+    data class InsufficientStock(val productId: ProductId) : OrderResult
+    data class PaymentFailed(val reason: String) : OrderResult
+}
+
+fun createOrder(request: OrderRequest): OrderResult {
+    require(request.items.isNotEmpty()) { "주문 항목이 비어있습니다" }
+
+    val stock = checkStock(request.items)
+        ?: return OrderResult.InsufficientStock(request.items.first().productId)
+
+    return when (val payment = processPayment(request.payment)) {
+        is PaymentResult.Success -> OrderResult.Success(Order.from(request, payment))
+        is PaymentResult.Failure -> OrderResult.PaymentFailed(payment.reason)
+    }
+}
+```
+
+*가독성 (Readability)*
+- **명확한 타입 선언**: 타입이 불명확할 때 명시적 선언
+- **프로퍼티 = 상태**: 커스텀 getter에서 부수 효과 금지
+- **함수를 간결하게**: 단일 책임, 적절한 추상화 수준
+- **네이밍 컨벤션**: Kotlin 스타일 이름 짓기
+
+*효율성 (Efficiency)*
+- **불필요한 객체 생성 회피**: 캐싱, 풀링, value class 활용
+- **inline 함수 적절한 사용**: 람다 파라미터가 있는 경우에만
+- **Sequence 활용**: 여러 단계의 컬렉션 처리 시
+- **기본 타입 배열 활용**: `IntArray`, `LongArray` 등
+
+```kotlin
+// 효율성 종합 예제
+// BAD: 불필요한 중간 컬렉션 생성
+val result = users
+    .filter { it.isActive }          // 새 List 생성
+    .map { it.email }                 // 새 List 생성
+    .filter { it.endsWith("@corp") }  // 새 List 생성
+    .toSet()                          // 새 Set 생성
+
+// GOOD: Sequence로 단일 패스
+val result = users.asSequence()
+    .filter { it.isActive }
+    .map { it.email }
+    .filter { it.endsWith("@corp") }
+    .toSet()  // 최종 연산에서만 컬렉션 생성
+```
+
+*설계 (Design)*
+- **상속보다 컴포지션**: 클래스 위임, 인터페이스 분리
+- **최소 인터페이스 원칙**: 필요한 것만 노출
+- **equals 규약 준수**: data class의 함정 (상속 시 equals 깨짐)
+- **추상화 보호**: internal, private 적극 활용
+
+```kotlin
+// data class 상속 함정
+open class Animal(val name: String)
+
+// BAD: data class가 open class를 상속하면 equals가 일관성 없음
+data class Dog(val breed: String, val animalName: String) : Animal(animalName)
+// Dog("Poodle", "Buddy") == Dog("Poodle", "Buddy") 이지만
+// Animal("Buddy") != Dog("Poodle", "Buddy")
+
+// GOOD: data class는 상속 계층에서 주의, 인터페이스 위임 활용
+interface Named { val name: String }
+data class Dog(override val name: String, val breed: String) : Named
+```
+
+**실습 과제**
+1. 기존 프로젝트 코드에서 Effective Kotlin 원칙 위반 10개 이상 찾아 리팩터링
+2. sealed class 기반 Result 패턴으로 서비스 계층의 에러 처리 리팩터링
+3. Sequence vs Collection 성능 비교 JMH 벤치마크 작성
+4. 코드 리뷰 체크리스트 작성 (Effective Kotlin 기반)
+
+**평가 기준**
+- [ ] Effective Kotlin의 핵심 원칙 20개 이상을 설명할 수 있다
+- [ ] 코드 리뷰에서 Effective Kotlin 원칙을 기준으로 피드백을 제공할 수 있다
+- [ ] 안전성, 가독성, 효율성, 설계 관점에서 코드를 평가할 수 있다
+- [ ] 과도한 최적화와 적절한 최적화의 경계를 판단할 수 있다
+
+---
+
+### Phase 1 마일스톤
+
+**체크포인트 과제**: "Kotlin 심화 미니 프로젝트"
+- value class로 도메인 ID를 래핑하고, sealed interface로 에러를 모델링한 간단한 주문 API를 구현
+- 코루틴 기반 병렬 외부 API 호출 포함
+- 테스트 DSL을 만들어 테스트 코드 작성
+- **Java 코드를 Kotlin으로 전환하는 리팩터링 포함** (최소 5개 파일)
+- **Effective Kotlin 원칙 적용 체크리스트 작성 및 자기 검증**
+- **통과 기준**: 코드 리뷰에서 Kotlin 관용적 패턴이 자연스럽게 적용되었는지 확인
+
+---
+
+## Phase 2: 데이터 계층 마스터리 (7주) ← 기존 5주에서 확장
+
+> **연결 맥락**: Phase 1에서 익힌 Kotlin 심화 지식을 데이터 접근 계층에 적용한다. **JPA뿐 아니라 JdbcTemplate, Exposed 등 다양한 데이터 접근 기술**의 장단점을 이해하고 상황에 맞게 선택할 수 있어야 한다.
+> **확장 내용**: Spring JDBC/JdbcTemplate + Exposed 추가
+
+### 2.1 캐싱 전략 (2주)
+
+**학습 목표**
+멀티레벨 캐시 아키텍처를 설계하고 운영할 수 있는 역량을 확보한다.
+
+**핵심 내용**
+
+*L1 캐시 (로컬 캐시 - Caffeine)*
+- Caffeine의 내부 구조: W-TinyLFU 알고리즘
+- 크기 기반, 시간 기반(expireAfterWrite, expireAfterAccess), 참조 기반 만료
+- `CacheLoader`, `AsyncCacheLoader`
+- 통계 모니터링 (`recordStats()`)
+
+*L2 캐시 (분산 캐시 - Redis)*
+- Redis 데이터 구조별 활용 시나리오 (String, Hash, Sorted Set 등)
+- Redis 직렬화 전략 (JSON vs Protobuf vs Kryo)
+- Redis Cluster vs Sentinel 구성
+- TTL 설정 전략, 메모리 정책 (maxmemory-policy)
+
+*Spring Cache Abstraction*
+- `@Cacheable`, `@CacheEvict`, `@CachePut`: 동작 원리와 프록시 제약
+- `CacheManager` 커스터마이징
+- 조건부 캐싱 (`condition`, `unless`)
+- `@Caching`으로 복합 캐시 연산
+
+*캐시 패턴과 전략*
+- Cache-Aside (Lazy Loading): 가장 일반적인 패턴
+- Write-Through: 쓰기 시점에 캐시 동시 갱신
+- Write-Behind (Write-Back): 비동기 쓰기로 성능 최적화
+- Read-Through: 캐시가 데이터 소스 직접 조회
+- Refresh-Ahead: 만료 전 선제적 갱신
+
+*캐시 무효화와 정합성*
+- 캐시 무효화의 어려움
+- 이벤트 기반 캐시 무효화 (Kafka/Redis Pub-Sub) -> Phase 3 연결
+- 캐시 스탬피드(stampede) 방지: 뮤텍스, 확률적 조기 만료, 스태거 TTL
+- 핫키 문제와 해결 (로컬 캐시 레이어 추가)
+- 캐시 웜업 전략
+
+*멀티레벨 캐시 아키텍처*
+- L1(Caffeine) + L2(Redis) 조합 설계
+- 계층 간 정합성 유지 방법
+- Spring의 `CompositeCacheManager` 활용
+
+**실무 사례**
+- **상품 목록 캐싱**: 이커머스에서 변경 빈도에 따른 차별 캐시 전략
+- **캐시 스탬피드 장애**: 인기 상품 캐시 동시 만료 -> DB 폭주
+- **배포 시 캐시 불일치**: 스키마 변경 후 구버전 캐시 역직렬화 오류
+
+**실습 과제**
+1. Caffeine + Redis 멀티레벨 캐시 구현
+2. 캐시 스탬피드 방지 솔루션 구현 (분산 락 기반)
+3. 이벤트 기반 캐시 무효화 시스템 구현
+4. 캐시 히트율 모니터링 대시보드 구성
+
+**평가 기준**
+- [ ] 요구사항에 맞는 캐시 패턴을 선택하고 근거를 제시할 수 있다
+- [ ] 멀티레벨 캐시의 정합성 유지 전략을 설계할 수 있다
+- [ ] 캐시 관련 장애 시나리오를 3가지 이상 나열하고 해결 방법을 제시할 수 있다
+
+---
+
+### 2.2 SQL & 데이터 접근 최적화 - JPA (2주)
+
+**학습 목표**
+JPA/Hibernate의 내부 동작을 이해하고, N+1 문제를 비롯한 흔한 성능 함정을 사전에 방지할 수 있다.
+
+**핵심 내용**
+
+*N+1 문제 완전 정복*
+- N+1 문제의 발생 원인 (지연 로딩 + 컬렉션 순회)
+- Fetch Join: `JOIN FETCH`의 동작과 한계 (MultipleBagFetchException)
+- `@EntityGraph`: 선언적 페치 전략
+- `@BatchSize`: 배치 로딩으로 N+1 완화
+- `@Fetch(FetchMode.SUBSELECT)`: 서브쿼리 기반 해결
+- DTO Projection으로 근본적 해결
+
+*JPA/Hibernate 성능 최적화*
+- 영속성 컨텍스트(1차 캐시)의 동작과 수명 주기
+- 2차 캐시 설정과 활용 -> 2.1 캐싱 전략과 연결
+- 변경 감지(Dirty Checking) 최적화: `@DynamicUpdate`
+- 벌크 연산: `@Modifying` + JPQL, 영속성 컨텍스트 동기화 주의점
+- OSIV(Open Session In View)의 장단점과 비활성화 전략
+- 읽기 전용 트랜잭션 최적화 (`@Transactional(readOnly = true)`)
+
+*쿼리 튜닝*
+- 실행 계획(EXPLAIN ANALYZE) 읽는 법
+- 인덱스 전략: B-Tree, 복합 인덱스, 커버링 인덱스, 부분 인덱스
+- 인덱스 선택 기준: 카디널리티, 선택도(selectivity)
+- 풀 테이블 스캔이 오히려 나은 경우
+- 슬로우 쿼리 분석 프로세스
+
+*QueryDSL 활용*
+- QueryDSL 설정과 Q클래스 생성
+- 동적 쿼리 빌딩: `BooleanBuilder`, `BooleanExpression`
+- DTO 프로젝션: `Projections.constructor()`, `@QueryProjection`
+- 서브쿼리, Join, 페이징 처리
+- QueryDSL vs JPQL vs Native Query 선택 기준
+
+**실무 사례**
+- **N+1 장애**: 관리자 페이지에서 1000건 조회 시 1001개 쿼리 -> `@EntityGraph`와 DTO Projection으로 2개로 감소
+- **인덱스 누락**: 100만 건 넘으면서 검색 API 5초 -> 복합 인덱스 추가로 50ms
+- **OSIV 문제**: View 렌더링 중 Lazy Loading -> 커넥션 풀 고갈
+- **대량 데이터 업데이트**: 100만 건 가격 변경 시 메모리 폭발 -> 벌크 JPQL + clear()
+
+**실습 과제**
+1. N+1 문제 재현 및 4가지 이상의 방법으로 해결
+2. 실행 계획 분석을 통한 슬로우 쿼리 최적화
+3. QueryDSL 기반 복잡한 동적 검색 API 구현
+4. 벌크 연산과 영속성 컨텍스트 동기화 처리 구현
+5. 읽기/쓰기 분리(CQRS-lite) 패턴 적용
+
+**평가 기준**
+- [ ] JPA 쿼리 로그를 보고 N+1 문제를 즉시 식별할 수 있다
+- [ ] EXPLAIN ANALYZE 결과를 읽고 인덱스 전략을 수립할 수 있다
+- [ ] OSIV의 장단점을 설명하고 비활성화 시 필요한 변경을 수행할 수 있다
+- [ ] 상황에 따라 QueryDSL/JPQL/Native Query를 적절히 선택할 수 있다
+
+---
+
+### 2.3 [신규] Spring JDBC와 JdbcTemplate (1주)
+
+**학습 목표**
+JPA의 대안으로서 JdbcTemplate의 활용법을 익히고, JPA vs JdbcTemplate의 명확한 선택 기준을 수립한다. 복잡한 리포트 쿼리, 대량 배치 처리, 레거시 DB 연동 시 JdbcTemplate이 적합한 상황을 판단할 수 있다.
+
+**핵심 내용**
+
+*JdbcTemplate 기초와 활용*
+- JdbcTemplate의 설계 철학: JDBC 보일러플레이트 제거, 리소스 관리 자동화
+- `RowMapper` 구현: 수동 매핑의 장점 (명시적, 성능) vs 단점 (보일러플레이트)
+- `NamedParameterJdbcTemplate`: 이름 기반 파라미터 바인딩 (`MapSqlParameterSource`)
+- `BeanPropertyRowMapper`: 자동 매핑 (편의성 vs 성능 트레이드오프, 리플렉션 비용)
+- `SimpleJdbcInsert`, `SimpleJdbcCall`: INSERT/스토어드 프로시저 간소화
+
+*Kotlin과 JdbcTemplate 활용*
+```kotlin
+// Kotlin data class + RowMapper
+data class ProductSummary(
+    val id: Long,
+    val name: String,
+    val price: BigDecimal,
+    val stockCount: Int
+)
+
+// 확장 함수로 JdbcTemplate 래핑
+inline fun <reified T> NamedParameterJdbcTemplate.queryForObject(
+    sql: String,
+    params: Map<String, Any?>,
+    noinline rowMapper: (ResultSet, Int) -> T
+): T? = try {
+    queryForObject(sql, params, rowMapper)
+} catch (e: EmptyResultDataAccessException) {
+    null
+}
+
+// 활용
+fun findProduct(id: Long): ProductSummary? =
+    jdbcTemplate.queryForObject(
+        "SELECT id, name, price, stock_count FROM products WHERE id = :id",
+        mapOf("id" to id)
+    ) { rs, _ ->
+        ProductSummary(
+            id = rs.getLong("id"),
+            name = rs.getString("name"),
+            price = rs.getBigDecimal("price"),
+            stockCount = rs.getInt("stock_count")
+        )
+    }
+```
+
+*JPA vs JdbcTemplate 비교*
+
+| 관점 | JPA | JdbcTemplate |
+|------|-----|-------------|
+| 영속성 컨텍스트 | O (1차 캐시, 변경 감지) | X |
+| N+1 문제 | 발생 가능 | 발생 안 함 (직접 쿼리) |
+| 쿼리 제어 | JPQL/Criteria (추상화) | SQL 직접 작성 |
+| 성능 오버헤드 | 영속성 컨텍스트 관리 비용 | 거의 없음 |
+| 객체 매핑 | 자동 (@Entity) | 수동 (RowMapper) |
+| 2차 캐시 | 지원 | 직접 구현 |
+| 동적 쿼리 | QueryDSL | StringBuilder/Template |
+| 적합 시나리오 | CRUD 중심, 도메인 복잡 | 리포트, 대량 배치, 레거시 |
+
+*Spring JDBC 고급 기능*
+- `BatchPreparedStatementSetter`: 대량 INSERT/UPDATE 최적화
+- `GeneratedKeyHolder`: 자동 생성 키 조회
+- `CallableStatementCreator`: 스토어드 프로시저 호출
+- JPA + JdbcTemplate 혼합 사용 전략 (CQRS 패턴에서 읽기는 JdbcTemplate)
+
+```kotlin
+// 대량 배치 INSERT 예제
+fun batchInsertProducts(products: List<Product>) {
+    jdbcTemplate.batchUpdate(
+        "INSERT INTO products (name, price, category_id) VALUES (?, ?, ?)",
+        object : BatchPreparedStatementSetter {
+            override fun setValues(ps: PreparedStatement, i: Int) {
+                ps.setString(1, products[i].name)
+                ps.setBigDecimal(2, products[i].price)
+                ps.setLong(3, products[i].categoryId)
+            }
+            override fun getBatchSize() = products.size
+        }
+    )
+}
+```
+
+**실무 사례**
+- **리포트 쿼리 성능 10배 개선**: 복잡한 집계 쿼리를 JPA에서 JdbcTemplate 네이티브 쿼리로 전환하여 응답 시간 10배 감소 (영속성 컨텍스트 오버헤드 제거)
+- **레거시 DB 연동**: ERPLegacy DB의 비표준 스키마에 JPA 매핑이 불가능 -> JdbcTemplate으로 직접 쿼리 작성
+- **CQRS 패턴 적용**: 쓰기는 JPA(도메인 모델), 읽기는 JdbcTemplate(DTO 직접 매핑)으로 분리하여 각각의 장점 활용
+- **Spring Batch + JdbcTemplate**: 대량 데이터 마이그레이션에서 JdbcBatchItemWriter가 JPA보다 3배 빠른 처리
+
+**실습 과제**
+1. JPA와 JdbcTemplate으로 동일한 쿼리를 구현하고 성능 비교 벤치마크 (1만건, 10만건)
+2. Kotlin 확장 함수를 활용한 타입 안전 JdbcTemplate 래퍼 구현
+3. JPA(쓰기) + JdbcTemplate(읽기) CQRS 패턴 API 구현
+4. BatchPreparedStatementSetter를 활용한 대량 데이터 INSERT 최적화
+
+**평가 기준**
+- [ ] JPA와 JdbcTemplate의 적절한 사용 시나리오를 구분할 수 있다
+- [ ] Kotlin과 JdbcTemplate을 조합한 관용적 코드를 작성할 수 있다
+- [ ] 대량 데이터 처리에서 JdbcTemplate의 배치 기능을 활용할 수 있다
+- [ ] JPA + JdbcTemplate 혼합 사용 시 트랜잭션 관리를 올바르게 할 수 있다
+
+---
+
+### 2.4 [신규] Exposed - Kotlin 네이티브 ORM (1주)
+
+**학습 목표**
+JetBrains가 만든 Kotlin 네이티브 SQL 프레임워크인 Exposed를 활용할 수 있다. Exposed의 DSL API와 DAO API를 이해하고, JPA/JdbcTemplate과의 차이점과 적절한 선택 기준을 수립한다.
+
+**핵심 내용**
+
+*Exposed 소개와 철학*
+- JetBrains의 Kotlin 네이티브 SQL 프레임워크
+- DSL API vs DAO API: 두 가지 접근 방식
+- 컴파일 타임 SQL 검증
+- Kotlin의 타입 시스템을 활용한 타입 안전 쿼리
+
+*Exposed DSL API*
+```kotlin
+// 테이블 정의
+object Products : Table("products") {
+    val id = long("id").autoIncrement()
+    val name = varchar("name", 255)
+    val price = decimal("price", 10, 2)
+    val categoryId = long("category_id").references(Categories.id)
+    val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
+
+    override val primaryKey = PrimaryKey(id)
+}
+
+// 타입 안전한 쿼리 작성
+fun findExpensiveProducts(minPrice: BigDecimal): List<ProductDto> {
+    return transaction {
+        Products
+            .innerJoin(Categories)
+            .select(Products.name, Products.price, Categories.name)
+            .where { Products.price greaterEq minPrice }
+            .orderBy(Products.price, SortOrder.DESC)
+            .map { row ->
+                ProductDto(
+                    name = row[Products.name],
+                    price = row[Products.price],
+                    category = row[Categories.name]
+                )
+            }
+    }
+}
+
+// INSERT
+fun createProduct(name: String, price: BigDecimal, categoryId: Long): Long {
+    return transaction {
+        Products.insertAndGetId {
+            it[Products.name] = name
+            it[Products.price] = price
+            it[Products.categoryId] = categoryId
+        }.value
+    }
+}
+```
+
+*Exposed DAO API*
+```kotlin
+// Entity 정의
+class ProductEntity(id: EntityID<Long>) : LongEntity(id) {
+    companion object : LongEntityClass<ProductEntity>(Products)
+
+    var name by Products.name
+    var price by Products.price
+    var category by CategoryEntity referencedOn Products.categoryId
+    val reviews by ReviewEntity referrersOn Reviews.productId
+}
+
+// 활용
+fun findProduct(id: Long): ProductEntity? = transaction {
+    ProductEntity.findById(id)
+}
+
+fun createProduct(name: String, price: BigDecimal): ProductEntity = transaction {
+    ProductEntity.new {
+        this.name = name
+        this.price = price
+    }
+}
+```
+
+*Exposed + Spring Boot 통합*
+```kotlin
+// Spring Boot 설정
+@Configuration
+class DatabaseConfig(private val dataSource: DataSource) {
+    @PostConstruct
+    fun init() {
+        Database.connect(dataSource)
+    }
+}
+
+// Spring 트랜잭션과 통합
+@Service
+class ProductService {
+    @Transactional
+    fun createProduct(request: CreateProductRequest): ProductResponse {
+        val id = Products.insertAndGetId {
+            it[name] = request.name
+            it[price] = request.price
+        }
+        return ProductResponse(id.value, request.name, request.price)
+    }
+}
+```
+
+*JPA vs JdbcTemplate vs Exposed vs QueryDSL 비교*
+
+| 관점 | JPA | JdbcTemplate | Exposed DSL | QueryDSL |
+|------|-----|-------------|------------|----------|
+| 타입 안전성 | 중간 (JPQL 문자열) | 낮음 (SQL 문자열) | 높음 (DSL) | 높음 (Q클래스) |
+| Kotlin 친화성 | 낮음 (Java 기반) | 중간 | 높음 (Kotlin 네이티브) | 중간 |
+| 학습 곡선 | 높음 | 낮음 | 중간 | 중간 |
+| 영속성 컨텍스트 | O | X | X (DAO API에서 부분적) | JPA 의존 |
+| 성능 | 오버헤드 있음 | 최소 | 최소 | JPA 의존 |
+| 커뮤니티/생태계 | 매우 큼 | 큼 | 작음 | 중간 |
+| 동적 쿼리 | Criteria API | 문자열 조합 | DSL 조합 | BooleanBuilder |
+| 적합 시나리오 | 대규모 도메인 모델 | 레거시/리포트 | Kotlin 프로젝트 | JPA 보완 |
+
+**프로젝트 규모별 추천 데이터 접근 기술**
+
+| 프로젝트 규모 | 주력 | 보완 | 이유 |
+|-------------|------|------|------|
+| 소규모 (MVP) | Exposed DSL | - | Kotlin 친화, 빠른 개발 |
+| 중규모 (팀 3~5명) | JPA + QueryDSL | JdbcTemplate (리포트) | 생태계, 팀 경험 |
+| 대규모 (팀 10명+) | JPA + QueryDSL | JdbcTemplate + Exposed | 용도별 최적 도구 |
+| 레거시 통합 | JdbcTemplate | - | 유연한 SQL 제어 |
+| 읽기 집중 | JdbcTemplate/Exposed | JPA (쓰기) | 오버헤드 최소화 |
+
+**실무 사례**
+- **Kotlin 전용 프로젝트에서 Exposed 도입**: JPA 대신 Exposed를 메인 ORM으로 선택, Kotlin DSL의 자연스러운 활용으로 개발 생산성 30% 향상
+- **JPA + Exposed 혼합 사용**: CRUD는 JPA, 복잡한 동적 쿼리/집계는 Exposed DSL로 분리
+- **마이그레이션**: JPA에서 Exposed로 점진적 전환 시 고려사항 (영속성 컨텍스트 의존 코드 식별)
+
+**실습 과제**
+1. Exposed DSL로 상품 CRUD API 구현 (Spring Boot 통합)
+2. 동일한 복잡 쿼리를 JPA, JdbcTemplate, Exposed로 각각 구현하고 비교
+3. Exposed + Flyway 마이그레이션 설정
+4. Exposed DSL로 동적 검색 쿼리 구현 (다중 조건 필터링)
+
+**평가 기준**
+- [ ] Exposed의 DSL API와 DAO API의 차이를 설명할 수 있다
+- [ ] JPA, JdbcTemplate, Exposed, QueryDSL 중 상황에 맞는 기술을 선택할 수 있다
+- [ ] Exposed + Spring Boot 통합을 구성할 수 있다
+- [ ] Exposed DSL로 타입 안전한 동적 쿼리를 작성할 수 있다
+
+---
+
+### 2.5 MongoDB (1주)
+
+**학습 목표**
+NoSQL 데이터 모델링의 사고방식을 익히고, RDBMS와의 적절한 역할 분담을 판단할 수 있다.
+
+**핵심 내용**
+
+*문서 모델링 전략*
+- 임베디드(Embedded) vs 레퍼런스(Reference) 모델링 기준
+- 비정규화 전략: 읽기 최적화 vs 쓰기 복잡성 트레이드오프
+- 스키마 버저닝과 마이그레이션 전략
+- 안티패턴: 무한 성장 배열, 과도한 중첩
+
+*인덱스 설계*
+- 단일 필드, 복합 인덱스, 멀티키 인덱스
+- 텍스트 인덱스와 Atlas Search
+- `explain()`으로 인덱스 활용 분석
+- TTL 인덱스, Unique 인덱스, Sparse 인덱스
+
+*Aggregation Pipeline*
+- `$match`, `$group`, `$project`, `$lookup`, `$unwind`
+- `$facet`을 활용한 다차원 집계
+- Pipeline 최적화: 순서 중요성, 인덱스 활용
+
+*Spring Data MongoDB*
+- `MongoTemplate` vs `MongoRepository`
+- `@Document`, `@DBRef`, `@TextIndexed` 어노테이션
+- Change Streams 활용 (실시간 데이터 변경 감지) -> Phase 3 SSE와 연결
+- 트랜잭션 지원과 한계 (Replica Set 필요)
+
+**실무 사례**
+- **로그/이벤트 저장소**: 구조가 자주 변하는 사용자 행동 로그를 MongoDB에 저장
+- **무한 성장 배열 장애**: 게시물의 "좋아요" 배열이 16MB 제한 도달
+- **Change Streams + SSE**: 데이터 변경 감지 후 SSE로 실시간 알림
+
+**실습 과제**
+1. 게시판/댓글 시스템의 MongoDB 문서 모델링
+2. Aggregation Pipeline 통계 대시보드 API 구현
+3. Change Streams 실시간 알림 시스템 구현
+4. 복합 인덱스 설계 및 `explain()` 분석
+
+**평가 기준**
+- [ ] RDBMS와 MongoDB의 적절한 사용 시나리오를 판단할 수 있다
+- [ ] 임베디드/레퍼런스 선택 기준을 명확히 제시할 수 있다
+- [ ] Aggregation Pipeline을 활용한 복잡한 데이터 집계를 수행할 수 있다
+
+---
+
+### Phase 2 마일스톤
+
+**체크포인트 과제**: "데이터 계층 통합 프로젝트"
+- 상품/주문 도메인에서 RDBMS(주문, 결제)와 MongoDB(상품 카탈로그, 리뷰)를 함께 사용
+- **JPA(도메인 모델) + JdbcTemplate(리포트) + Exposed(동적 검색) 혼합 사용**
+- 멀티레벨 캐시 적용 (상품 목록: L1+L2, 재고: L2)
+- QueryDSL 기반 동적 검색 API
+- **데이터 접근 기술 선택 근거 ADR 작성**
+- **통과 기준**: 슬로우 쿼리 없이 1000건 이상의 데이터를 처리하고, 기술 선택의 근거를 논리적으로 설명할 수 있는지 확인
+
+---
+
+## Phase 3: 메시징과 비동기 시스템 (3주)
+
+> **연결 맥락**: Phase 2에서 구축한 데이터 계층 위에 이벤트 기반 아키텍처를 구축한다.
+
+### 3.1 Kafka 심화 (2주)
+
+**학습 목표**
+Kafka를 활용한 이벤트 드리븐 아키텍처를 설계하고 운영할 수 있다.
+
+**핵심 내용**
+
+*Producer 설계*
+- `acks` 설정 (0, 1, all): 성능 vs 안정성 트레이드오프
+- 멱등성(Idempotent) Producer: `enable.idempotence=true`
+- Key 기반 파티셔닝: 순서 보장 전략
+- 배치 전송 최적화 (`batch.size`, `linger.ms`)
+- 직렬화 전략 (JSON, Avro, Protobuf)
+
+*Consumer 설계*
+- 컨슈머 그룹과 리밸런싱 메커니즘
+- 오프셋 커밋 전략: 자동 vs 수동, 동기 vs 비동기
+- `max.poll.records`, `max.poll.interval.ms` 튜닝
+- Cooperative Rebalancing
+
+*Exactly-Once 시맨틱스*
+- At-Most-Once, At-Least-Once, Exactly-Once 비교
+- 트랜잭셔널 Producer-Consumer 패턴
+- Idempotent Consumer 패턴 (DB unique 제약, 멱등 키)
+- Transactional Outbox 패턴
+
+*이벤트 소싱과 CQRS*
+- 이벤트 소싱의 개념과 Kafka를 이벤트 스토어로 활용
+- CQRS 패턴: 명령과 쿼리의 분리 -> Phase 5 DDD와 연결
+- 이벤트 버전 관리와 스키마 진화
+
+*에러 처리와 운영*
+- Dead Letter Queue(DLT) 설계
+- 재처리 전략: 재시도 토픽, 백오프
+- Spring Kafka의 `ErrorHandler`, `RetryTemplate`
+- Kafka 모니터링: Consumer Lag, Throughput -> Phase 6 모니터링 연결
+
+**실무 사례**
+- **결제-주문 정합성**: Transactional Outbox + Idempotent Consumer
+- **순서 보장 문제**: Key 기반 파티셔닝으로 해결
+- **Consumer Lag 급증**: 수평 확장 + 튜닝
+- **Schema Evolution**: Avro + Schema Registry
+
+**실습 과제**
+1. Spring Kafka 기반 주문-결제-배송 이벤트 파이프라인 구현
+2. Exactly-Once 처리 Consumer 구현
+3. Dead Letter Queue와 재처리 로직 구현
+4. Kafka Streams 실시간 집계 구현
+5. Consumer Lag 모니터링 시스템 구성
+
+**평가 기준**
+- [ ] Kafka의 메시지 전달 보장 수준을 설명하고 구현할 수 있다
+- [ ] Transactional Outbox 패턴의 필요성과 구현 방법을 설명할 수 있다
+- [ ] Consumer Lag의 의미를 이해하고 대응 전략을 수립할 수 있다
+
+---
+
+### 3.2 SSE (Server-Sent Events) (1주)
+
+**학습 목표**
+서버에서 클라이언트로의 단방향 실시간 통신을 구현할 수 있다.
+
+**핵심 내용**
+
+*SSE vs WebSocket 비교*
+- SSE: 단방향, HTTP 기반, 자동 재연결
+- WebSocket: 양방향, 별도 프로토콜
+- 선택 기준: 알림/피드는 SSE, 채팅/게임은 WebSocket
+
+*Spring에서 SSE 구현*
+- `SseEmitter` 방식: MVC 기반
+- `Flux<ServerSentEvent>` 방식: WebFlux/코루틴 기반
+- Last-Event-ID를 활용한 이벤트 유실 복구
+
+*실시간 알림 시스템 설계*
+- 사용자별 SSE 연결 관리
+- 다중 인스턴스 환경에서의 SSE (Redis Pub/Sub 브릿지)
+- SSE + Kafka 조합
+
+**실무 사례**
+- **실시간 배송 추적**: Kafka + SSE 조합
+- **다중 인스턴스 문제**: Redis Pub/Sub 브릿지
+- **메모리 누수**: SseEmitter 정리 미비
+
+**실습 과제**
+1. 실시간 알림 시스템 구현 (SSE + Redis Pub/Sub)
+2. 다중 인스턴스 SSE 브로드캐스트
+3. Last-Event-ID 기반 복구
+4. SSE 연결 관리 및 모니터링
+
+**평가 기준**
+- [ ] SSE와 WebSocket의 적절한 사용 시나리오를 판단할 수 있다
+- [ ] 다중 인스턴스 환경에서의 SSE를 설계할 수 있다
+
+---
+
+### Phase 3 마일스톤
+
+**체크포인트 과제**: "이벤트 기반 실시간 알림 시스템"
+- Kafka 중심 주문 상태 변경 이벤트 발행/소비
+- SSE로 실시간 알림 전달 (다중 인스턴스 지원)
+- Transactional Outbox 패턴
+- DLQ 기반 에러 처리
+- **통과 기준**: 메시지 유실 없이 동작
+
+---
+
+## Phase 4: 대용량 트래픽과 성능 (3주)
+
+> **연결 맥락**: Phase 1~3의 기술을 기반으로 시스템 전체의 성능과 복원력을 확보한다.
+
+### 4.1 대규모 트래픽 처리 (2주)
+
+**학습 목표**
+대규모 트래픽 환경에서의 시스템 설계와 성능 최적화 역량을 갖춘다.
+
+**핵심 내용**
+
+*스케일 아웃 전략*
+- Stateless 설계 원칙
+- 세션 관리: Spring Session + Redis
+- 로드 밸런싱 전략과 헬스체크
+- 데이터베이스 스케일링: 읽기 복제본, 샤딩
+
+*비동기 처리 패턴*
+- Spring WebFlux: Reactor 기반 논블로킹 I/O
+- 코루틴 + Flow: Kotlin 네이티브 비동기
+- `@Async` + `CompletableFuture`: 간단한 비동기 처리
+- 리액티브 스트림 vs 코루틴: 선택 기준
+- R2DBC: 리액티브 데이터베이스 접근
+
+*배압(Backpressure) 처리*
+- Reactor의 배압 전략
+- Flow의 배압
+- 메시지 큐를 활용한 배압 -> Phase 3 Kafka 연결
+
+*벌크 데이터 처리*
+- Spring Batch: Job, Step, Chunk, Tasklet
+- ItemReader, ItemProcessor, ItemWriter
+- 병렬 처리: 멀티스레드 Step, 파티셔닝
+- Spring Batch + Kotlin 코루틴
+
+> **📖 성능 최적화 연결 (Phase 9)**
+> - I/O 병목 식별과 Promise.all/async-await 패턴
+> - @Transactional 범위 최적화
+> - 컬렉션 처리 최적화 (Sequence, inline)
+
+*복원력(Resilience) 패턴*
+- 서킷 브레이커: Resilience4j 설정과 상태 전이
+- 레이트 리미팅: Token Bucket, Sliding Window
+- 벌크헤드(Bulkhead): 격리를 통한 장애 전파 방지
+- 타임아웃 전략
+- Retry 전략: 지수 백오프, 지터
+
+**실무 사례**
+- **블랙프라이데이 대응**: 100 TPS -> 5000 TPS 아키텍처 변경
+- **서킷 브레이커 효과**: 결제 API 장애 격리
+- **배치 vs 실시간**: 일매출 정산 배치 전환
+- **커넥션 풀 고갈**: Bulkhead 외부 API 격리
+
+**실습 과제**
+1. Spring WebFlux + 코루틴 고성능 API 서버 구현
+2. Spring Batch 대용량 데이터 마이그레이션
+3. Resilience4j 서킷 브레이커 + 레이트 리미터
+4. 부하 테스트 (k6 / Gatling) 및 병목 분석
+5. 배압을 고려한 스트리밍 파이프라인
+
+**평가 기준**
+- [ ] Stateless 설계 원칙을 코드에 적용할 수 있다
+- [ ] 서킷 브레이커의 상태 전이를 설명하고 적절한 임계값을 설정할 수 있다
+- [ ] Spring Batch의 Job/Step/Chunk를 이해하고 배치 처리를 구현할 수 있다
+- [ ] 부하 테스트 결과를 분석하고 병목 지점을 식별할 수 있다
+- [ ] 리액티브 스트림과 코루틴의 선택 기준을 제시할 수 있다
+
+---
+
+### 4.2 Spring AOP 심화 (1주)
+
+**학습 목표**
+AOP의 프록시 메커니즘을 깊이 이해하고, 커스텀 AOP를 활용한 횡단 관심사 처리 능력을 갖춘다.
+
+**핵심 내용**
+
+*AOP 핵심 개념*
+- Aspect, Advice, Pointcut, JoinPoint, Weaving
+- JDK Dynamic Proxy vs CGLIB Proxy
+- Spring Boot 기본 전략 (CGLIB)
+
+*커스텀 어노테이션 + AOP*
+- 실행 시간 로깅, 분산 락, 권한 검증, 재시도 어노테이션
+
+*AOP의 한계와 주의점*
+- 자기 호출(self-invocation) 문제
+- `private` 메서드에 AOP 적용 불가
+- final 클래스/메서드 CGLIB 제약 (Kotlin `open` 이슈)
+- AOP 남용의 위험
+
+**실무 사례**
+- **자기 호출 장애**: `@Transactional` 자기 호출 문제
+- **분산 락 AOP**: `@DistributedLock` 커스텀 어노테이션
+- **성능 모니터링 AOP**: `@Timed` 메트릭 기록
+
+**실습 과제**
+1. 커스텀 `@Logging` AOP 시스템
+2. 커스텀 `@DistributedLock` AOP
+3. 자기 호출 문제 재현 및 해결 (3가지)
+4. AOP 프록시 디버그 실습
+
+**평가 기준**
+- [ ] JDK Dynamic Proxy와 CGLIB의 차이를 설명할 수 있다
+- [ ] 자기 호출 문제를 즉시 식별하고 해결할 수 있다
+- [ ] 커스텀 어노테이션 + AOP를 설계하고 구현할 수 있다
+
+---
+
+### Phase 4 마일스톤
+
+**체크포인트 과제**: "트래픽 폭주 시뮬레이션 및 대응"
+- k6/Gatling으로 부하 점진 증가 -> 병목 식별
+- 서킷 브레이커 + 레이트 리미터로 시스템 보호
+- AOP 기반 성능 모니터링
+- **통과 기준**: 목표 TPS 달성 + 외부 서비스 장애 시에도 시스템 정상 동작
+
+---
+
+## Phase 5: 아키텍처와 설계 (3주)
+
+> **연결 맥락**: Phase 1~4에서 익힌 기술 요소들을 아키텍처 관점에서 통합한다.
+
+### 5.1 아키텍처 패턴 (2주)
+
+**학습 목표**
+아키텍처 패턴의 장단점을 이해하고, 프로젝트에 맞는 아키텍처를 선택/설계할 수 있다.
+
+**핵심 내용**
+
+*레이어드 아키텍처의 한계와 개선*
+- 전통적 3-tier: Controller -> Service -> Repository
+- 문제점: 도메인 로직이 서비스에 집중, 양방향 의존성
+- 개선: 도메인 계층 분리, 의존성 역전
+
+*클린 아키텍처*
+- 의존성 규칙: 안쪽 원은 바깥쪽 원을 모른다
+- Entity, Use Case, Interface Adapter, Framework & Driver
+- 클린 아키텍처의 실용적 변형
+
+*헥사고날 아키텍처 (포트 & 어댑터)*
+- 도메인이 중심, 인프라가 플러그인
+- 인바운드/아웃바운드 포트, 어댑터
+- Kotlin/Spring 멀티 모듈 구현
+
+*DDD 전술적 패턴*
+- Entity vs Value Object -> Phase 1 value class 연결
+- Aggregate와 Aggregate Root
+- Domain Event -> Phase 3 Kafka 연결
+- Bounded Context 간 통신: ACL, Shared Kernel
+
+**실무 사례**
+- **아키텍처 전환 판단**: 팀 규모와 도메인 복잡도 기준
+- **헥사고날 도입 효과**: DB 교체 시 어댑터만 변경으로 2일 완료
+- **DDD Aggregate 설계**: 트랜잭션 범위와 동시성 기준
+
+**실습 과제**
+1. 레이어드 -> 헥사고날 리팩터링
+2. DDD 전술적 패턴 주문 도메인 설계
+3. 멀티 모듈 프로젝트 구조 설계
+4. Bounded Context 간 이벤트 통신
+
+**평가 기준**
+- [ ] 상황에 맞는 아키텍처를 선택하고 근거를 제시할 수 있다
+- [ ] 헥사고날 아키텍처의 포트/어댑터를 올바르게 구현할 수 있다
+- [ ] DDD Aggregate 경계를 올바르게 설정할 수 있다
+
+---
+
+### 5.2 API 설계 (1주)
+
+**학습 목표**
+일관성 있고 확장 가능한 API를 설계할 수 있다.
+
+**핵심 내용**
+
+*REST API 설계*
+- Richardson 성숙도 모델
+- 리소스 네이밍, HTTP 메서드 (멱등성, 안전성)
+- 페이징: 커서 기반 vs 오프셋 기반
+
+*API 버저닝과 하위 호환성*
+
+*에러 응답 표준화*
+- RFC 7807 (Problem Details for HTTP APIs)
+- sealed class 기반 에러 코드 체계
+
+*gRPC*
+- gRPC vs REST 선택 기준
+- Protocol Buffers 스키마 설계
+- Spring Boot + gRPC 통합
+
+*API 문서화*
+- OpenAPI 3.0 / Swagger
+- Spring REST Docs (테스트 기반 문서화)
+
+**실무 사례**
+- **API 버전 관리 실패**: 하위 호환 정책 수립
+- **에러 응답 표준화**: RFC 7807 기반 통합
+- **커서 기반 페이징 전환**: 데이터 변경 시 중복/누락 해결
+
+**실습 과제**
+1. RFC 7807 기반 에러 응답 표준화
+2. 커서 기반 페이징 API
+3. gRPC 서비스 + Spring Boot 통합
+4. Spring REST Docs 문서 자동 생성
+
+**평가 기준**
+- [ ] REST API 설계 원칙을 준수한 API를 설계할 수 있다
+- [ ] gRPC와 REST의 적절한 사용 시나리오를 구분할 수 있다
+- [ ] API 하위 호환성 유지 전략을 설명할 수 있다
+
+---
+
+### Phase 5 마일스톤
+
+**체크포인트 과제**: "아키텍처 설계 리뷰"
+- 헥사고날 아키텍처 기반 주문 시스템 ADR 작성
+- DDD Aggregate 경계 설정 근거 문서화
+- API 명세 설계 (REST + gRPC)
+- **통과 기준**: 설계 리뷰에서 아키텍처 결정의 근거를 논리적으로 설명
+
+---
+
+## 커리큘럼 요약 (Part 1: Phase 1~5)
+
+| Phase | 주제 | 기간 | 시간(추정) | 핵심 확장 내용 |
+|-------|------|------|-----------|--------------|
+| Phase 1 | Kotlin 심화 | **6주** | 50~62시간 | Java→Kotlin 전환, Effective Kotlin |
+| Phase 2 | 데이터 계층 마스터리 | **7주** | 56~70시간 | JdbcTemplate, Exposed 추가 |
+| Phase 3 | 메시징과 비동기 시스템 | 3주 | 24~30시간 | (기존 유지) |
+| Phase 4 | 대용량 트래픽과 성능 | 3주 | 24~30시간 | 성능 체크리스트 연결 |
+| Phase 5 | 아키텍처와 설계 | 3주 | 24~30시간 | (기존 유지) |
+| **소계** | | **22주** | **178~222시간** | |
+
+> **Phase 6~10은 backend-tech2.md에서 계속됩니다.**
+
+---
+
+## 추천 레퍼런스 (Part 1 관련)
+
+### 도서
+- *Kotlin in Action* (2nd Edition) - Dmitry Jemerov, Svetlana Isakova
+- *Effective Kotlin* - Marcin Moskala
+- *코틀린 코루틴* - Marcin Moskala
+- *자바 ORM 표준 JPA 프로그래밍* - 김영한
+- *카프카 핵심 가이드* - Neha Narkhede
+- *도메인 주도 설계 핵심* - Vaughn Vernon
+- *클린 아키텍처* - Robert C. Martin
+- *만들면서 배우는 클린 아키텍처* - Tom Hombergs
+
+### 온라인 리소스
+- Kotlin 공식 문서 (kotlinlang.org)
+- Spring 공식 가이드 (spring.io/guides)
+- Exposed 공식 문서 (github.com/JetBrains/Exposed)
+- Baeldung Kotlin / Spring 시리즈
+- 인프런 Spring/JPA/Kafka 강의

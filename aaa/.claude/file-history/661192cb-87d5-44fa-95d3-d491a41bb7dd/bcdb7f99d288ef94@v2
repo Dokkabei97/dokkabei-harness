@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Gradle 빌드 산출물 (멀티 스테이지에서 새로 빌드하므로 불필요)
+build/
+.gradle
+.kotlin
+
+# IDE
+.idea
+.vscode
+*.iws
+*.iml
+*.ipr
+out/
+
+# CI/CD
+.github
+.gitlab
+
+# 도구
+.claude
+.serena
+claudedocs
+
+# Docker
+.dockerignore
+**/Dockerfile
+
+# OS
+.DS_Store
+
+# 로컬 오버라이드 설정
+**/application-override.yml
+**/override.properties
+
+# 기타
+docker-compose.yml
+AGENTS.md
+CLAUDE.md
+README.md
+readme
+tools

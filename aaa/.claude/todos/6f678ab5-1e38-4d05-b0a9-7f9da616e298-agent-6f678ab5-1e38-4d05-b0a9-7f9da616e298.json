@@ -1,0 +1,14 @@
+[
+  {
+    "content": "REPORT2.md에 Collection 분리 설계 반영",
+    "status": "completed",
+    "priority": "high",
+    "id": "1"
+  },
+  {
+    "content": "createCollections.mongodb 수정 - Collection 분리",
+    "status": "completed",
+    "priority": "high",
+    "id": "2"
+  }
+]

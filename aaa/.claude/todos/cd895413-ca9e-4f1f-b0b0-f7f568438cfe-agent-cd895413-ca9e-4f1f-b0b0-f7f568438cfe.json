@@ -1,0 +1,32 @@
+[
+  {
+    "content": "staging 환경의 darae와 ppuri 매니페스트 파일 분석",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "공유 볼륨 설정 방안 설계",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "staging darae-api.yaml에 ppuri 컨테이너 추가",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "두 컨테이너의 볼륨 마운트 설정 구햄 (/resources/dictionary)",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "production 환경 확인 및 수정",
+    "status": "completed",
+    "id": "5"
+  },
+  {
+    "content": "development 환경 경로 통일",
+    "status": "completed",
+    "id": "6"
+  }
+]

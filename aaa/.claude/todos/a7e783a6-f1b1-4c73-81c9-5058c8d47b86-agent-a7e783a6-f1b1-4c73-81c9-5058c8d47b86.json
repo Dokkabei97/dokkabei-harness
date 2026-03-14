@@ -1,0 +1,27 @@
+[
+  {
+    "content": "Clean up .env.local - Remove all NEXT_PUBLIC_* variables and legacy variables",
+    "status": "completed",
+    "id": "1"
+  },
+  {
+    "content": "Update /src/app/api/config/route.ts - Simplify to use only PPURI_API_URL and DARAE_API_URL",
+    "status": "completed",
+    "id": "2"
+  },
+  {
+    "content": "Update /src/lib/runtime-config.ts - Remove legacy environment variable fallbacks",
+    "status": "completed",
+    "id": "3"
+  },
+  {
+    "content": "Create Dockerfile for production build",
+    "status": "completed",
+    "id": "4"
+  },
+  {
+    "content": "Create Kubernetes ConfigMap and Deployment YAML files",
+    "status": "completed",
+    "id": "5"
+  }
+]
