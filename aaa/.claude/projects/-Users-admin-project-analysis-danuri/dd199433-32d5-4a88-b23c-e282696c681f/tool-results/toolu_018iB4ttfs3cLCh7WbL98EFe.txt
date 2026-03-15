@@ -1,2 +1,0 @@
-Exit code 1
-ls: /Users/admin/project/analysis-danuri/src/test/resources/dict/: No such file or directory

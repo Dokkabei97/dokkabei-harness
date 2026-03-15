@@ -1,8 +1,0 @@
-[
-  {
-    "content": "values.yaml의 nameOverride, fullnameOverride, namespaceOverride 기능 설명 및 충돌 해결법 제시",
-    "status": "in_progress",
-    "priority": "high",
-    "id": "1"
-  }
-]

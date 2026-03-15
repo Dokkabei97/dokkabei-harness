@@ -3,6 +3,24 @@ name: {{NAME}}
 description: |
   {{DESCRIPTION_LINE_1}}
   {{DESCRIPTION_LINE_2}}
+# --- Agent Skills Open Standard (optional) ---
+# license: {{LICENSE}}
+# compatibility: [{{COMPATIBLE_TOOLS}}]
+# metadata:
+#   version: {{VERSION}}
+#   category: {{CATEGORY}}
+# --- Claude Code Extensions (optional) ---
+# argument-hint: {{ARGUMENT_HINT}}
+# disable-model-invocation: {{true|false}}
+# user-invocable: {{true|false}}
+# allowed-tools: [{{ALLOWED_TOOLS}}]
+# model: {{MODEL_OVERRIDE}}
+# context: {{fork}}
+# agent: {{AGENT_TYPE}}
+# hooks:
+#   PreToolUse:
+#     - type: {{command|http|prompt|agent}}
+#       command: {{HOOK_COMMAND}}
 ---
 
 # {{TITLE}}

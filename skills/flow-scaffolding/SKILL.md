@@ -51,13 +51,20 @@ Creates a hook entry for `claude/settings.json` with:
 - Hook command (Node.js script)
 - Description
 
+### 5. Plugin Template
+File: [templates/plugin.json](templates/plugin.json)
+
+Creates a plugin manifest in `.claude-plugin/plugin.json` with:
+- Plugin metadata (name, description, version, author)
+- Directory structure for bundled skills, agents, hooks, MCP servers
+
 ## Template Complexity Levels
 
 | Level | Description | Sections | Use Case |
 |-------|-------------|----------|----------|
 | `minimal` | Core structure only | Required sections with minimal content | Quick prototyping |
 | `standard` | Complete structure | All required + common optional sections | Most components |
-| `advanced` | Full-featured | All sections + AI collaboration + references | Complex workflows |
+| `advanced` | Full-featured | All sections + AI collaboration + references + plugin manifest | Complex workflows |
 
 ## Naming Conventions
 
@@ -67,10 +74,14 @@ Creates a hook entry for `claude/settings.json` with:
 | Agent | `agents/{name}.md` | kebab-case role-noun (e.g., `security-scanner`) |
 | Skill | `skills/{name}/SKILL.md` | kebab-case domain-noun (e.g., `redis-best-practices`) |
 | Hook | Entry in `settings.json` | descriptive sentence |
+| Plugin | `.claude-plugin/plugin.json` | kebab-case (e.g., `my-plugin`) |
 
 ## Frontmatter Field Reference
 
-### Command Fields
+### Command Fields (Legacy)
+> As of Claude Code v2.1.3, commands and skills are unified.
+> New components should use skill format. Command format is maintained for backward compatibility.
+
 | Field | Required | Type | Example |
 |-------|----------|------|---------|
 | `name` | Yes | string | `"deploy-check"` |
@@ -80,18 +91,81 @@ Creates a hook entry for `claude/settings.json` with:
 | `mcp-servers` | Yes | array | `[]` or `["grafana"]` |
 | `personas` | Yes | array | `[]` or `["arch-reviewer"]` |
 
+### Skill Fields
+| Field | Required | Type | Example |
+|-------|----------|------|---------|
+| `name` | No* | string | `"redis-best-practices"` |
+| `description` | Recommended | string (multiline) | `"Redis optimization guide..."` |
+| `argument-hint` | No | string | `"[issue-number]"` |
+| `disable-model-invocation` | No | boolean | `true` |
+| `user-invocable` | No | boolean | `false` |
+| `allowed-tools` | No | array | `["Read", "Grep"]` |
+| `model` | No | string | `"sonnet"` / `"opus"` |
+| `context` | No | string | `"fork"` |
+| `agent` | No | string | `"Explore"` / `"Plan"` |
+| `hooks` | No | object | `{PreToolUse: [...]}` |
+
+*Defaults to directory name if omitted.
+
+#### Agent Skills Open Standard Fields (Optional)
+| Field | Type | Example |
+|-------|------|---------|
+| `license` | string | `"MIT"` |
+| `compatibility` | array | `["claude-code", "cursor", "gemini-cli"]` |
+| `metadata` | object | `{version: "1.0", category: "review"}` |
+
 ### Agent Fields
 | Field | Required | Type | Example |
 |-------|----------|------|---------|
 | `name` | Yes | string | `"security-scanner"` |
 | `description` | Yes | string | `"Security analysis specialist..."` |
-| `tools` | Yes | array | `["Read", "Grep", "Glob", "Bash"]` |
+| `tools` | No | array | `["Read", "Grep", "Glob", "Bash"]` |
+| `disallowedTools` | No | array | `["Write", "Edit"]` |
+| `model` | No | string | `"sonnet"` / `"opus"` / `"haiku"` / `"inherit"` |
+| `permissionMode` | No | string | `"acceptEdits"` / `"plan"` |
+| `maxTurns` | No | number | `50` |
+| `skills` | No | array | `["my-skill"]` |
+| `mcpServers` | No | array | `["server-name"]` or inline config |
+| `hooks` | No | object | `{PreToolUse: [...]}` |
+| `memory` | No | string | `"user"` / `"project"` / `"local"` |
+| `background` | No | boolean | `true` |
+| `isolation` | No | string | `"worktree"` |
 
-### Skill Fields
+### Plugin Fields (plugin.json)
 | Field | Required | Type | Example |
 |-------|----------|------|---------|
-| `name` | Yes | string | `"redis-best-practices"` |
-| `description` | Yes | string (multiline) | `"Redis optimization guide..."` |
+| `name` | Yes | string | `"my-plugin"` |
+| `description` | Yes | string | `"Plugin description..."` |
+| `version` | Yes | string | `"1.0.0"` |
+| `author` | No | object | `{"name": "Author Name"}` |
+| `homepage` | No | string | URL |
+| `repository` | No | string | Git URL |
+| `license` | No | string | `"MIT"` |
+
+## String Substitution Variables
+
+Available in skill body content:
+
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | All arguments passed to the skill |
+| `$ARGUMENTS[N]` / `$N` | Specific argument by 0-based index |
+| `${CLAUDE_SESSION_ID}` | Current session ID |
+| `${CLAUDE_SKILL_DIR}` | Directory containing the skill's SKILL.md |
+
+Dynamic context injection via shell:
+```
+!`command`    # Output replaces placeholder before Claude sees content
+```
+
+## Skill Loading Priority
+
+| Priority | Location | Scope |
+|----------|----------|-------|
+| 1 | Enterprise (managed settings) | Organization-wide |
+| 2 | Personal (`~/.claude/skills/`) | All projects |
+| 3 | Project (`.claude/skills/`) | Current project |
+| 4 | Plugin (`<plugin>/skills/`) | Namespaced |
 
 ## Section Content Guidelines
 

@@ -8,14 +8,14 @@
 
 ## AGT-002: Required Frontmatter Fields
 - **Severity**: Critical
-- **Check**: YAML contains: name, description, tools
+- **Check**: YAML contains: name, description (tools is optional, inherits all if omitted)
 - **Auto-fixable**: Yes (add missing tools with default `["Read", "Grep", "Glob"]`)
 
 ## AGT-003: Valid Tool Names
 - **Severity**: High
 - **Check**: Each tool in array is a recognized tool name
 - **Auto-fixable**: Yes (remove invalid entries)
-- **Valid tools**: Read, Grep, Glob, Bash, Write, Edit, WebFetch, WebSearch
+- **Valid tools**: Read, Grep, Glob, Bash, Write, Edit, WebFetch, WebSearch, Agent, Skill, NotebookEdit
 
 ## AGT-004: Role Description
 - **Severity**: High
@@ -70,3 +70,46 @@
 - **Check**: Agent body should be flagged if exceeding 50,000 characters as it may cause context window issues
 - **Auto-fixable**: No (content reduction requires judgment)
 - **Thresholds**: OK < 30,000 chars, Warning < 50,000 chars, Critical > 50,000 chars
+
+## AGT-013: Model Override Validity
+- **Severity**: Medium
+- **Check**: If `model` specified, valid value (sonnet, opus, haiku, inherit, or full model ID)
+- **Auto-fixable**: No
+
+## AGT-014: Permission Mode Validity
+- **Severity**: High
+- **Check**: If `permissionMode` specified, valid value
+- **Auto-fixable**: No
+- **Valid**: default, acceptEdits, dontAsk, bypassPermissions, plan
+
+## AGT-015: MaxTurns Reasonableness
+- **Severity**: Low
+- **Check**: If `maxTurns` specified, value is between 1 and 100
+- **Auto-fixable**: No
+
+## AGT-016: Skills Preload Validity
+- **Severity**: Medium
+- **Check**: If `skills` array specified, each skill name exists in project or personal skills
+- **Auto-fixable**: No
+
+## AGT-017: MCP Server References
+- **Severity**: Medium
+- **Check**: If `mcpServers` specified, references are valid (inline config or name reference)
+- **Auto-fixable**: No
+
+## AGT-018: Memory Scope Validity
+- **Severity**: Medium
+- **Check**: If `memory` specified, valid scope (user, project, local)
+- **Auto-fixable**: No
+
+## AGT-019: Isolation Mode Validity
+- **Severity**: Low
+- **Check**: If `isolation` specified, must be `worktree`
+- **Auto-fixable**: Yes (only valid value)
+
+## AGT-020: Agent Hooks Validity
+- **Severity**: High
+- **Check**: If `hooks` in frontmatter, valid events and handler types
+- **Auto-fixable**: No
+- **Valid events**: PreToolUse, PostToolUse, Stop
+- **Valid handler types**: command, http, prompt, agent

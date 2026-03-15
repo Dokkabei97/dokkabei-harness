@@ -1,8 +1,0 @@
-dependencies {
-    implementation(project(":shared"))
-    implementation(project(":domain:index"))
-    implementation(project(":application:index"))
-    implementation(project(":outbound:client:legacy-api"))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-}

@@ -10,7 +10,10 @@ personas: []
 # /create-flow - Component Scaffolding and Creation
 
 ## Triggers
-- Creating a new agent, command, skill, or hook for the project
+
+> **Note:** As of Claude Code v2.1.3, commands and skills have been merged. The `/create-flow` command can create both legacy command format and the newer skill format. Existing commands continue to work, and this scaffolder supports both formats seamlessly.
+
+- Creating a new agent, command, skill, plugin, or hook for the project
 - Scaffolding new workflow components with proper structure and conventions
 - Bootstrapping multiple related components (e.g., command + supporting skill + agent)
 - Extending existing project capabilities with new flows
@@ -20,7 +23,7 @@ personas: []
 /create-flow [name] [options]
 
 Options:
-  --type agent|command|skill|hook|all     Component type (default: auto-detect)
+  --type agent|command|skill|hook|plugin|all  Component type (default: auto-detect)
   --with copilot|gemini|codex            AI collaboration for design decisions
   --template minimal|standard|advanced    Template complexity (default: standard)
   --interactive true|false                Interactive mode (default: true)
@@ -40,14 +43,17 @@ When `--type` is not specified, detect the intended component type from the name
 | Name contains role noun (reviewer, runner, guide, assistant) | agent | Agents are role-based personas |
 | Name contains domain noun (best-practices, workflow, patterns) | skill | Skills are knowledge-based |
 | Name contains event noun (pre-push, on-save, before-commit) | hook | Hooks are event-driven |
+| Name contains manifest/plugin/bundle terms | plugin | Plugins are distribution bundles |
 | Ambiguous or multi-component | prompt user | Use AskUserQuestion for clarification |
 
 **Existing Structure Scan:**
 ```
-Glob: commands/*.md          -> List existing commands
-Glob: agents/*.md            -> List existing agents
-Glob: skills/*/SKILL.md      -> List existing skills
-Read: claude/settings.json   -> Check existing hooks and plugins
+Glob: commands/*.md               -> List existing commands
+Glob: agents/*.md                 -> List existing agents
+Glob: .claude/agents/*.md         -> List existing agents (new location)
+Glob: skills/*/SKILL.md           -> List existing skills
+Glob: .claude-plugin/plugin.json  -> Check existing plugins
+Read: claude/settings.json        -> Check existing hooks and plugins
 ```
 
 Present discovered context to user:
@@ -78,6 +84,11 @@ Define the scope and relationships of the new component.
 3. **Workflow Steps**: Plan the agent's step-by-step analysis workflow
 4. **Language Support**: Determine supported languages/frameworks
 5. **Output Format**: Define the agent's report structure
+6. **Model Selection**: Choose model override (`sonnet`, `opus`, `haiku`, `inherit`)
+7. **Permission Mode**: Set permission mode for agent execution
+8. **Persistent Memory**: Configure `memory` scope (user, project, local)
+9. **Isolation**: Determine if agent needs `isolation: worktree`
+10. **Skill Preloading**: List skills to preload into agent context
 
 **For Skills:**
 1. **Domain Definition**: Define the knowledge domain and when to apply
@@ -85,6 +96,16 @@ Define the scope and relationships of the new component.
 3. **Template Planning**: Determine if templates/ directory is needed
 4. **Category Structure**: Plan reference file naming with prefixes
 5. **Token Budget**: Ensure SKILL.md stays under 5,000 tokens
+6. **Invocation Control**: Configure `disable-model-invocation` and `user-invocable`
+7. **Subagent Mode**: Determine if skill needs `context: fork` with specific `agent`
+8. **Hooks**: Define skill-scoped lifecycle hooks if needed
+9. **Allowed Tools**: Specify tools allowed without permission when skill is active
+
+**For Plugins:**
+1. **Manifest Definition**: Define plugin name, description, version, author
+2. **Component Bundle**: Determine which skills, agents, hooks, and MCP servers to include
+3. **Namespace Planning**: Plan skill namespacing (`plugin-name:skill-name`)
+4. **Distribution**: Choose distribution method (git, marketplace)
 
 **For Hooks:**
 1. **Event Selection**: Choose hook event (PreToolUse, PostToolUse, etc.)
@@ -161,6 +182,14 @@ Frontmatter:
 name: {name}
 description: "{description}"
 tools: [{tools}]
+# model: {sonnet|opus|haiku|inherit}
+# permissionMode: {default|acceptEdits|plan}
+# maxTurns: {number}
+# skills: [{skills}]
+# mcpServers: [{servers}]
+# memory: {user|project|local}
+# background: false
+# isolation: worktree
 ---
 ```
 
@@ -188,6 +217,13 @@ SKILL.md frontmatter:
 name: {name}
 description: |
   {multi-line description}
+# argument-hint: {hint}
+# disable-model-invocation: false
+# user-invocable: true
+# allowed-tools: []
+# model: {model}
+# context: fork
+# agent: {agent-type}
 ---
 ```
 
@@ -201,21 +237,54 @@ Required sections:
 If references are needed, create `references/` with `{prefix}-{topic}.md` naming.
 If templates are needed, create `templates/` with descriptive filenames.
 
+**Plugin Generation (`.claude-plugin/`):**
+
+Directory structure:
+```
+.claude-plugin/
+  plugin.json       # Manifest (required)
+skills/             # Bundled skills
+agents/             # Bundled agents
+hooks/
+  hooks.json        # Event handlers
+.mcp.json           # MCP server configurations
+```
+
+plugin.json:
+```json
+{
+  "name": "{plugin-name}",
+  "description": "{description}",
+  "version": "{version}",
+  "author": { "name": "{author}" },
+  "homepage": "{url}",
+  "repository": "{repo-url}",
+  "license": "{license}"
+}
+```
+
 **Hook Generation (update `claude/settings.json`):**
 
 Hook structure:
 ```json
 {
-  "matcher": "{matcher expression}",
-  "hooks": [
-    {
-      "type": "command",
-      "command": "{node script}"
-    }
-  ],
-  "description": "{description}"
+  "hooks": {
+    "{event}": [
+      {
+        "matcher": "{matcher}",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{shell command}"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
+Note the 4 handler types: command, http, prompt, agent.
+Note the 22 valid events.
 
 ### Phase 5: Validation
 Verify the generated component meets project standards.

@@ -5,7 +5,7 @@
 - **Check**: Description is specific (not generic like "does things" or "useful tool")
 - **Auto-fixable**: No
 - **Min length**: 10 characters
-- **Max length**: 300 characters
+- **Max length**: 1024 characters
 - **Blocked words**: "stuff", "things", "misc", "various", "etc"
 
 ## QUA-002: No Placeholder Text
@@ -38,3 +38,8 @@
 - **Check**: Will and Will Not lists have reasonable count (3-8 items each)
 - **Auto-fixable**: No
 - **Thresholds**: Min 3 Will items, Min 2 Will Not items, Max 10 each
+
+## QUA-007: Skill Description Agent Standard Compliance
+- **Severity**: Low
+- **Check**: Skill descriptions are under 1024 characters per Agent Skills open standard
+- **Auto-fixable**: No

@@ -1,1 +1,0 @@
-245:    fun array(): CharArray? = array

@@ -1,10 +1,50 @@
 {
-  "matcher": "tool == \"{{TOOL}}\" && tool_input.{{FIELD}} matches \"{{PATTERN}}\"",
-  "hooks": [
-    {
-      "type": "command",
-      "command": "node -e \"{{NODE_SCRIPT}}\""
-    }
-  ],
-  "description": "{{DESCRIPTION}}"
+  "hooks": {
+    "{{EVENT}}": [
+      {
+        "matcher": "{{MATCHER_EXPRESSION}}",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{SHELL_COMMAND}}"
+          }
+        ],
+        "description": "{{DESCRIPTION}}"
+      }
+    ]
+  },
+  "_templates": {
+    "handler_types": {
+      "command": {
+        "type": "command",
+        "command": "{{SHELL_COMMAND}}",
+        "timeout": 10000
+      },
+      "http": {
+        "type": "http",
+        "url": "{{WEBHOOK_URL}}",
+        "headers": {}
+      },
+      "prompt": {
+        "type": "prompt",
+        "prompt": "{{LLM_EVALUATION_PROMPT}}"
+      },
+      "agent": {
+        "type": "agent",
+        "prompt": "{{AGENT_PROMPT}}",
+        "tools": ["{{TOOLS}}"]
+      }
+    },
+    "events": [
+      "SessionStart", "UserPromptSubmit",
+      "PreToolUse", "PermissionRequest", "PostToolUse", "PostToolUseFailure",
+      "Notification", "SubagentStart", "SubagentStop",
+      "Stop", "TeammateIdle", "TaskCompleted",
+      "InstructionsLoaded", "ConfigChange",
+      "WorktreeCreate", "WorktreeRemove",
+      "PreCompact", "PostCompact",
+      "Elicitation", "ElicitationResult",
+      "SessionEnd", "Setup"
+    ]
+  }
 }

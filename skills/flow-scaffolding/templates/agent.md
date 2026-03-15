@@ -2,6 +2,20 @@
 name: {{NAME}}
 description: {{DESCRIPTION}}
 tools: [{{TOOLS}}]
+# --- Optional Fields ---
+# disallowedTools: [{{DISALLOWED_TOOLS}}]
+# model: {{sonnet|opus|haiku|inherit}}
+# permissionMode: {{default|acceptEdits|dontAsk|bypassPermissions|plan}}
+# maxTurns: {{MAX_TURNS}}
+# skills: [{{PRELOADED_SKILLS}}]
+# mcpServers: [{{MCP_SERVERS}}]
+# hooks:
+#   PreToolUse:
+#     - type: {{command|http|prompt|agent}}
+#       command: {{HOOK_COMMAND}}
+# memory: {{user|project|local}}
+# background: {{true|false}}
+# isolation: {{worktree}}
 ---
 
 You are a {{ROLE}} specialist who {{ROLE_DESCRIPTION}}.

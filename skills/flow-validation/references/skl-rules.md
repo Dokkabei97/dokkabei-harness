@@ -62,3 +62,43 @@
 - **Check**: If references/ directory has 5+ files, a `_sections.md` index file is recommended
 - **Auto-fixable**: Yes (generate index from directory listing)
 - **Pattern**: Based on mongodb-best-practices which uses `_sections.md` for navigation
+
+## SKL-012: Agent Skills Standard Compliance
+- **Severity**: Low
+- **Check**: If `license` or `compatibility` fields present, they follow agentskills.io spec
+- **Auto-fixable**: No
+
+## SKL-013: Invocation Control Consistency
+- **Severity**: Medium
+- **Check**: `disable-model-invocation` and `user-invocable` are not both set to restrictive values (would make skill unreachable)
+- **Auto-fixable**: No
+- **Bad**: `disable-model-invocation: true` AND `user-invocable: false` (skill is completely hidden)
+
+## SKL-014: Context Fork Configuration
+- **Severity**: High
+- **Check**: If `context: fork` is set, `agent` field should reference a valid agent (built-in: Explore, Plan, general-purpose, Bash, or custom in `.claude/agents/`)
+- **Auto-fixable**: No
+
+## SKL-015: Allowed Tools Validity
+- **Severity**: Medium
+- **Check**: If `allowed-tools` specified, each tool name is valid
+- **Auto-fixable**: Yes (remove invalid entries)
+- **Valid tools**: Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch, Agent, Skill, NotebookEdit
+
+## SKL-016: Model Override Validity
+- **Severity**: Medium
+- **Check**: If `model` specified, it's a valid model identifier
+- **Auto-fixable**: No
+- **Valid values**: sonnet, opus, haiku, or full model ID
+
+## SKL-017: Skill Hooks Validity
+- **Severity**: High
+- **Check**: If `hooks` defined in frontmatter, each hook has valid event and handler type
+- **Auto-fixable**: No
+- **Valid events in skill scope**: PreToolUse, PostToolUse, Stop
+- **Valid handler types**: command, http, prompt, agent
+
+## SKL-018: String Substitution Variables
+- **Severity**: Low
+- **Check**: If skill body uses `$ARGUMENTS`, verify `argument-hint` is set for documentation
+- **Auto-fixable**: No

@@ -14,7 +14,7 @@
 - **Severity**: High
 - **Check**: Hook matcher tool names reference valid Claude Code tools
 - **Auto-fixable**: No
-- **Valid tools in matchers**: Bash, Write, Edit, Read, Glob, Grep
+- **Valid tools in matchers**: Bash, Write, Edit, Read, Glob, Grep, WebSearch, WebFetch, Agent, Skill, NotebookEdit
 
 ## XRF-004: Skill Cross-Links
 - **Severity**: Low
@@ -28,3 +28,23 @@
 - **Examples**:
   - `commands/deploy-check.md` -> name should be `deploy-check`
   - `skills/redis-best-practices/` -> name should be `redis-best-practices`
+
+## XRF-006: Agent Skill Preload References
+- **Severity**: Medium
+- **Check**: If agent frontmatter `skills` lists skill names, verify skills exist
+- **Auto-fixable**: No
+
+## XRF-007: Agent MCP Server References
+- **Severity**: Medium
+- **Check**: If agent frontmatter `mcpServers` references named servers, verify they exist in MCP config
+- **Auto-fixable**: No
+
+## XRF-008: Skill Agent References
+- **Severity**: Medium
+- **Check**: If skill has `context: fork` and `agent` field referencing a custom agent, verify agent exists in `.claude/agents/`
+- **Auto-fixable**: No
+
+## XRF-009: Plugin Namespace Consistency
+- **Severity**: High
+- **Check**: Plugin skills use `plugin-name:skill-name` namespace correctly, no conflicts with project skills
+- **Auto-fixable**: No

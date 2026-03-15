@@ -1,5 +1,9 @@
 # Command Validation Rules (CMD-*)
 
+> **Note**: As of Claude Code v2.1.3, commands and skills have been merged.
+> New components should use the skill format (`skills/{name}/SKILL.md`).
+> These rules remain valid for existing command files and backward compatibility.
+
 ## CMD-001: Frontmatter Present and Valid YAML
 - **Severity**: Critical
 - **Check**: File starts with `---` and contains valid YAML block
@@ -73,3 +77,8 @@
 - **Check**: `## Related` section exists cross-referencing related commands, agents, and skills
 - **Auto-fixable**: No (requires knowledge of project relationships)
 - **Recommended**: Include links to complementary commands and supporting skills/agents
+
+## CMD-013: Migration Advisory
+- **Severity**: Low
+- **Check**: Command file could be migrated to skill format for future compatibility
+- **Auto-fixable**: No (migration requires structural changes)

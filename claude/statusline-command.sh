@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Session start time tracking file
-SESSION_FILE="/Users/jmk/.claude/statusline-session.txt"
-USAGE_CACHE_FILE="/Users/jmk/.claude/statusline-usage-cache.json"
+SESSION_FILE="/Users/admin/.claude/statusline-session.txt"
+USAGE_CACHE_FILE="/Users/admin/.claude/statusline-usage-cache.json"
 USAGE_CACHE_TTL=120  # seconds
 
 # Read JSON input from stdin
@@ -34,10 +34,11 @@ else
     model_color=$'\033[37m'  # White
 fi
 
-# Extract version from model_id (e.g., claude-sonnet-4-6 -> 4.6, claude-opus-4-5 -> 4.5)
+# Extract version from model_id (e.g., claude-sonnet-4-6 -> 4.6, claude-haiku-4-5-20251001 -> 4.5)
 if [ -n "$model_id" ]; then
-    # Match trailing digits pattern like -4-6 or -3-5 at end of model id
-    raw_version=$(echo "$model_id" | grep -oE '[0-9]+-[0-9]+$')
+    # Strip "claude-{name}-" prefix, then take first two number segments (major-minor)
+    # This correctly handles date suffixes like claude-haiku-4-5-20251001 -> 4.5
+    raw_version=$(echo "$model_id" | sed -E 's/^claude-[a-z]+-//' | grep -oE '^[0-9]+-[0-9]+')
     if [ -n "$raw_version" ]; then
         model_version=$(echo "$raw_version" | sed 's/-/./')
     fi
@@ -48,16 +49,26 @@ model_label="${model_name}"
 [ -n "$model_version" ] && model_label="${model_label} ${model_version}"
 
 # Append effort level only for non-Haiku models
+# Priority: settings.local.json > settings.json > default (Opus=max, others=medium)
 if [ "$model_name" != "Haiku" ]; then
-    effort=$(jq -r '.effortLevel // empty' /Users/jmk/.claude/settings.json 2>/dev/null)
-    # Normalize effort: if empty, "default", or anything other than "high"/"low" -> "medium"
-    if [ "$effort" = "high" ]; then
-        effort_label="high"
-    elif [ "$effort" = "low" ]; then
-        effort_label="low"
-    else
-        effort_label="medium"
+    effort=""
+    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/admin/.claude/settings.local.json 2>/dev/null)
+    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/admin/.claude/settings.json 2>/dev/null)
+    # Default: Opus → max, others → medium
+    if [ -z "$effort" ]; then
+        if [ "$model_name" = "Opus" ]; then
+            effort="max"
+        else
+            effort="medium"
+        fi
     fi
+    # Normalize effort
+    case "$effort" in
+        max)  effort_label="max" ;;
+        high) effort_label="high" ;;
+        low)  effort_label="low" ;;
+        *)    effort_label="medium" ;;
+    esac
     model_label="${model_label} ${effort_label}"
 fi
 

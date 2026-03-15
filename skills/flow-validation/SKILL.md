@@ -22,13 +22,13 @@ Reference these rules when:
 
 | Prefix | Component | Rule Count |
 |--------|-----------|------------|
-| `CMD-` | Commands | 12 rules |
-| `AGT-` | Agents | 12 rules |
-| `SKL-` | Skills | 11 rules |
-| `HK-` | Hooks | 6 rules |
-| `XRF-` | Cross-Reference | 5 rules |
-| `SEC-` | Security | 4 rules |
-| `QUA-` | Quality | 6 rules |
+| `CMD-` | Commands | 13 rules |
+| `AGT-` | Agents | 20 rules |
+| `SKL-` | Skills | 18 rules |
+| `HK-` | Hooks | 12 rules |
+| `XRF-` | Cross-Reference | 9 rules |
+| `SEC-` | Security | 6 rules |
+| `QUA-` | Quality | 7 rules |
 
 ## Severity Scale
 
@@ -67,7 +67,7 @@ frontmatter (6 fields)
 ### Agent Required Sections
 ```
 ---
-frontmatter (3 fields)
+frontmatter (2 required + 11 optional fields)
 ---
 Persona description paragraph
 ## Your Role (5+ responsibilities)
@@ -81,7 +81,7 @@ Persona description paragraph
 skills/{name}/
   SKILL.md (< 5,000 tokens)
     ---
-    frontmatter (2 fields)
+    frontmatter (2 recommended + 8 optional fields)
     ---
     # {Title}
     ## When to Apply (3+ conditions)
@@ -90,6 +90,19 @@ skills/{name}/
   references/ (optional, {prefix}-{topic}.md naming)
   templates/ (optional, referenced in SKILL.md)
 ```
+
+### Plugin Required Structure
+```
+.claude-plugin/
+  plugin.json (name, description, version required)
+skills/              (optional)
+agents/              (optional)
+hooks/hooks.json     (optional)
+.mcp.json            (optional)
+```
+
+> **Note**: As of Claude Code v2.1.3, commands and skills have been unified.
+> Both formats create slash commands. Skill format is recommended for new components.
 
 ## Reference Files
 

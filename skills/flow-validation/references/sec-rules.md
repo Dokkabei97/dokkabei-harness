@@ -35,3 +35,15 @@
 - **Check**: No hardcoded user-specific file paths in templates or examples
 - **Auto-fixable**: Yes (replace with placeholder like `{HOME}` or `~`)
 - **Pattern**: `/Users/[a-zA-Z]+/` or `/home/[a-zA-Z]+/` or `C:\\Users\\`
+
+## SEC-005: HTTP Hook Endpoint Security
+- **Severity**: Critical
+- **Check**: HTTP hook URLs use HTTPS (not plain HTTP) for non-localhost endpoints
+- **Auto-fixable**: No
+- **Exception**: localhost/127.0.0.1 URLs can use HTTP
+
+## SEC-006: Agent Hook Prompt Safety
+- **Severity**: High
+- **Check**: Agent hook prompts do not instruct bypassing permissions or security controls
+- **Auto-fixable**: No
+- **Blocked patterns**: "bypass", "skip verification", "ignore security", "disable permissions"

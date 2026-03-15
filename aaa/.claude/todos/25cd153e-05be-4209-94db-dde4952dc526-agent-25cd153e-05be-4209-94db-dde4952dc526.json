@@ -1,8 +1,0 @@
-[
-  {
-    "content": "Percona MongoDB를 싱글 노드로 설정하기 위해 values.yaml 수정",
-    "status": "completed",
-    "priority": "high",
-    "id": "1"
-  }
-]

@@ -1,1 +1,0 @@
-The file /Users/admin/project/analysis-danuri/src/main/kotlin/org/apache/lucene/analysis/tokenattributes/TokenInfoAttributeImpl.kt has been updated successfully.

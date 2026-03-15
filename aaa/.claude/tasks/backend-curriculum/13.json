@@ -1,9 +1,0 @@
-{
-  "id": "13",
-  "subject": "커리큘럼 파일 5분할 작업",
-  "description": "backend-tech1.md(25K+ tokens)과 backend-tech2.md를 5개 파일로 분할:\n1. backend-tech1: 개요 + Phase 1\n2. backend-tech2: Phase 2\n3. backend-tech3: Phase 3-5\n4. backend-tech4: Phase 6-7\n5. backend-tech5: Phase 8-10 + 부록",
-  "activeForm": "커리큘럼 파일 분할 중",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

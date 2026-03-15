@@ -21,7 +21,7 @@ personas: []
 /verify-flow [target] [options]
 
 Options:
-  --target agent|command|skill|hook|all   Component type to validate (default: all)
+  --target agent|command|skill|hook|plugin|all  Component type to validate (default: all)
   --fix auto|suggest                      Fix mode (default: suggest)
   --severity critical|high|medium|all     Minimum severity to report (default: all)
   --format text|json|report               Output format (default: text)
@@ -36,9 +36,10 @@ Scan the project to find all components that match the `--target` filter.
 **Discovery Patterns:**
 ```
 --target command  -> Glob: commands/*.md
---target agent    -> Glob: agents/*.md
+--target agent    -> Glob: agents/*.md AND .claude/agents/*.md
 --target skill    -> Glob: skills/*/SKILL.md
 --target hook     -> Read: claude/settings.json (extract hooks array)
+--target plugin   -> Glob: .claude-plugin/plugin.json + skills/ + agents/ + hooks/
 --target all      -> All of the above
 ```
 
@@ -72,13 +73,14 @@ Check each component against its type-specific structural requirements.
 | CMD-008 | Examples section with code blocks | High | Grep: `^## Examples` + min 2 code blocks |
 | CMD-009 | Boundaries section with Will/Will Not | High | Grep: `^## Boundaries` + `**Will:**` + `**Will Not:**` |
 | CMD-010 | Section ordering follows convention | Medium | Triggers < Usage < Behavioral Flow < Tool Coordination < Examples < Boundaries |
+| CMD-013 | Migration advisory to skill format | Low | Check if command could be skill |
 
 **Agent Validation Rules:**
 
 | ID | Rule | Severity | Check |
 |----|------|----------|-------|
 | AGT-001 | Frontmatter present and valid YAML | Critical | Parse YAML between `---` delimiters |
-| AGT-002 | Required frontmatter fields | Critical | name, description, tools |
+| AGT-002 | Required frontmatter fields | Critical | name, description (tools now optional) |
 | AGT-003 | Tools array contains valid tool names | High | Each tool in ["Read", "Grep", "Glob", "Bash", "Write", "Edit", "WebSearch", "WebFetch"] |
 | AGT-004 | Role description section present | High | Grep: `^## Your Role` or `^## Role` |
 | AGT-005 | Workflow section with numbered steps | Critical | Grep: `^## .*(Workflow|Analysis)` + `### Step` |
@@ -87,6 +89,14 @@ Check each component against its type-specific structural requirements.
 | AGT-008 | Boundaries section | High | Grep: `^## Boundaries` |
 | AGT-009 | Description trigger quality | Critical | Must contain "Use when" or "Use PROACTIVELY when" + role identification + tech scope |
 | AGT-010 | Tools minimality | Low | All declared tools are referenced in agent body |
+| AGT-013 | Model override validity | Medium | Valid model identifier |
+| AGT-014 | Permission mode validity | High | Valid permission mode |
+| AGT-015 | MaxTurns reasonableness | Low | Between 1 and 100 |
+| AGT-016 | Skills preload validity | Medium | Referenced skills exist |
+| AGT-017 | MCP server references | Medium | Valid MCP references |
+| AGT-018 | Memory scope validity | Medium | Valid scope |
+| AGT-019 | Isolation mode validity | Low | Must be "worktree" |
+| AGT-020 | Agent hooks validity | High | Valid events and types |
 
 **Skill Validation Rules:**
 
@@ -101,6 +111,13 @@ Check each component against its type-specific structural requirements.
 | SKL-007 | Templates directory consistency | Medium | If templates/ exists, all files are referenced in SKILL.md |
 | SKL-008 | No orphaned reference files | Low | All reference files are mentioned in SKILL.md or AGENTS.md |
 | SKL-009 | Progressive disclosure structure | Medium | SKILL.md links to references, not inlining all content |
+| SKL-012 | Agent Skills standard compliance | Low | agentskills.io fields valid |
+| SKL-013 | Invocation control consistency | Medium | Not both restricted |
+| SKL-014 | Context fork configuration | High | Agent reference valid |
+| SKL-015 | Allowed tools validity | Medium | Valid tool names |
+| SKL-016 | Model override validity | Medium | Valid model ID |
+| SKL-017 | Skill hooks validity | High | Valid events/types |
+| SKL-018 | String substitution variables | Low | $ARGUMENTS with argument-hint |
 
 **Hook Validation Rules:**
 
@@ -108,10 +125,16 @@ Check each component against its type-specific structural requirements.
 |----|------|----------|-------|
 | HK-001 | Valid JSON structure | Critical | Parse JSON without errors |
 | HK-002 | Matcher expression present | Critical | Non-empty matcher string |
-| HK-003 | Hook type is "command" | High | `hooks[].type === "command"` |
+| HK-003 | Hook type validity | High | `hooks[].type` is one of: command, http, prompt, agent |
 | HK-004 | Description present | Medium | Non-empty description string |
 | HK-005 | No duplicate matchers | High | Unique matcher expressions across all hooks |
 | HK-006 | Script command is safe | High | No `rm -rf`, `eval`, or dangerous patterns |
+| HK-007 | Event name validity | Critical | One of 22 valid events |
+| HK-008 | Handler type completeness | High | Required fields per type |
+| HK-009 | HTTP handler URL validity | High | Valid URL format |
+| HK-010 | Blocking event consistency | Medium | Non-blocking events check |
+| HK-011 | Handler type availability | Medium | Event supports type |
+| HK-012 | Async hook configuration | Low | Only on command type |
 
 ### Phase 3: Content Quality Validation
 Assess the quality of component content beyond structure.
@@ -144,20 +167,35 @@ Assess the quality of component content beyond structure.
 - [ ] Examples cover basic and advanced usage
 
 **Security Check:**
-- [ ] No hardcoded credentials or API keys
-- [ ] No unsafe Bash commands in examples (rm -rf, eval, etc.)
-- [ ] Hook scripts don't expose sensitive data
-- [ ] No file paths with user-specific information in templates
+See SEC-001 through SEC-006 in Cross-Reference Validation phase.
 
 ### Phase 4: Cross-Reference Validation
 Check relationships between components.
 
 **Checks:**
-- Commands referencing agents: verify agents exist in `agents/` directory
-- Commands referencing skills: verify skills exist in `skills/` directory
-- Hooks referencing tools: verify tool names are valid
-- Skills referencing other skills: verify cross-links are valid
-- Personas in command frontmatter: verify agent files exist
+
+| ID | Rule | Severity | Check |
+|----|------|----------|-------|
+| XRF-001 | Commands referencing agents | High | Verify agents exist in `agents/` directory |
+| XRF-002 | Commands referencing skills | High | Verify skills exist in `skills/` directory |
+| XRF-003 | Hooks referencing tools | Medium | Verify tool names are valid |
+| XRF-004 | Skills referencing other skills | Medium | Verify cross-links are valid |
+| XRF-005 | Personas in command frontmatter | Medium | Verify agent files exist |
+| XRF-006 | Agent skill preload references | High | Verify preloaded skills exist |
+| XRF-007 | Plugin component references | Critical | Verify bundled skills/agents/hooks exist |
+| XRF-008 | MCP server references | Medium | Verify referenced MCP servers are configured |
+| XRF-009 | Context fork agent references | High | Verify agent referenced in skill fork exists |
+
+**Security Checks:**
+
+| ID | Rule | Severity | Check |
+|----|------|----------|-------|
+| SEC-001 | No hardcoded credentials or API keys | Critical | Pattern match for secrets |
+| SEC-002 | No unsafe Bash commands in examples | High | No `rm -rf`, `eval`, etc. |
+| SEC-003 | Hook scripts don't expose sensitive data | High | No env var leaking |
+| SEC-004 | No file paths with user-specific information | Medium | No absolute user paths in templates |
+| SEC-005 | HTTP hook URL security | High | HTTPS required for remote URLs |
+| SEC-006 | Plugin manifest integrity | Critical | No script injection in plugin.json fields |
 
 ### Phase 5: Report Generation
 Generate a severity-rated report of all findings.
@@ -180,6 +218,14 @@ Deductions:
   Each High finding:     -10 points
   Each Medium finding:    -3 points
   Each Low finding:       -1 point
+
+Rules per type (approximate):
+  Commands: 11 rules (CMD-001..CMD-013)
+  Agents:   18 rules (AGT-001..AGT-020)
+  Skills:   16 rules (SKL-001..SKL-018)
+  Hooks:    12 rules (HK-001..HK-012)
+  Cross-ref: 9 rules (XRF-001..XRF-009)
+  Security:  6 rules (SEC-001..SEC-006)
 
 Rating:
   90-100: Excellent - Ready for production use

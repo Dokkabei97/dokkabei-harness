@@ -7,6 +7,11 @@ mcp-servers: [{{MCP_SERVERS}}]
 personas: [{{PERSONAS}}]
 ---
 
+> **Note**: As of Claude Code v2.1.3, commands and skills have been unified.
+> This command template is maintained for backward compatibility.
+> For new components, consider using the skill template (`skills/{name}/SKILL.md`) instead.
+> Both `commands/{name}.md` and `skills/{name}/SKILL.md` create the same `/name` slash command.
+
 # /{{NAME}} - {{TITLE}}
 
 ## Triggers

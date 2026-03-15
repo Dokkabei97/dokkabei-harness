@@ -1,1 +1,0 @@
-export { SearchDictionaryPage } from '@/views/search-dictionary/ui/Page'
