@@ -57,6 +57,22 @@
       "version": "1.0.0",
       "category": "harness",
       "keywords": ["harness", "plugins"]
+    },
+    {
+      "name": "develop",
+      "source": "./plugins/develop",
+      "description": "개발용 플러그인",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["develop", "kotlin", "spring", "python", "fastapi", "go", "typescript", "next.js"]
+    },
+    {
+      "name": "startup",
+      "source": "./plugins/startup",
+      "description": "스타트업용 플러그인",
+      "version": "1.0.0",
+      "category": "startup",
+      "keywords": ["pm", "marketing"]
     }
   ]
 }
