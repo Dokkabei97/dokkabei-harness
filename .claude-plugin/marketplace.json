@@ -1,207 +1,58 @@
 {
-  "name": "cc-claude",
+  "name": "dokkabei-harness",
   "owner": {
-    "name": "Consumer Commerce Dev",
-    "email": "wkdrn970@cowave.kr"
+    "name": "장민규",
+    "email": "wkdrn970@gmail.com"
   },
   "metadata": {
-    "description": "사내 Claude Code 플러그인 마켓플레이스",
-    "version": "2.0.0"
+    "description": "장민규 하네스 플러그인 마켓플레이스",
+    "version": "1.0.0"
   },
   "plugins": [
     {
-      "name": "enterprise-base",
-      "source": "./plugins/enterprise-base",
-      "description": "엔터프라이즈 보안 훅, 코드 품질 자동화, 워크플로우 통합, 스킬 라우터 (전 개발자 필수)",
-      "version": "1.1.0",
+      "name": "base",
+      "source": "./plugins/base",
+      "description": "보안 훅, lsp, mcp",
+      "version": "1.0.0",
       "category": "development",
-      "keywords": ["security", "hooks", "skills", "commands", "audit", "incident", "compliance"],
+      "keywords": ["hooks", "lsp", "mcp"],
       "requires": []
     },
     {
-      "name": "prompt-search",
-      "source": "./plugins/utils/prompt-search",
-      "description": "프롬프트 예시 검색, 탐색 및 등록 스킬",
+      "name": "etc",
+      "source": "./plugins/etc",
+      "description": "기타",
       "version": "1.0.0",
       "category": "productivity",
-      "keywords": ["prompt", "search", "register", "claude-md", "templates", "library"]
-    },
-    {
-      "name": "beginner",
-      "source": "./plugins/utils/beginner",
-      "description": "Claude Code 온보딩, 프롬프트 가이드, 컨텍스트 관리, 워크플로우 패턴 교육 (경험 있는 개발자 대상)",
-      "version": "1.0.0",
-      "category": "education",
-      "keywords": ["beginner", "onboarding", "prompting", "workflow", "education", "coaching"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "frontend",
-      "source": "./plugins/frontend",
-      "description": "프론트엔드 팀 전용 — React/Next.js/Vite 컴포넌트 빌더, 접근성 감사, 웹 성능 분석, 디자인 시스템 감사, i18n 검증, TypeScript LSP, 자동포맷/린트 훅",
-      "version": "2.0.0",
-      "category": "team",
-      "keywords": ["frontend", "react", "nextjs", "vite", "typescript", "a11y", "accessibility", "web-performance", "design-system", "i18n", "seo", "monorepo", "turborepo", "tailwind", "component", "testing", "lsp"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "backend",
-      "source": "./plugins/backend",
-      "description": "백엔드 팀 전용 — Kotlin/Spring Boot, Python/FastAPI, REST/GraphQL API 설계, DB 마이그레이션, 인증/인가, 관측성(OTel), 캐싱, 이벤트/비동기, 회복 탄력성, 헥사고날 아키텍처, 인프라 연동(PG/Valkey/Kafka)",
-      "version": "3.1.0",
-      "category": "team",
-      "keywords": ["backend", "kotlin", "python", "spring-boot", "fastapi", "graphql", "rest-api", "migration", "kafka", "redis", "valkey", "security", "observability", "opentelemetry", "caching", "resilience", "hexagonal", "gradle", "lsp"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "legacy",
-      "source": "./plugins/legacy",
-      "description": "레거시 시스템 대응 — Java/PHP LSP, 컴파일체크, 문법체크, 디버그 출력 감지",
-      "version": "1.0.0",
-      "category": "team",
-      "keywords": ["legacy", "java", "php", "gradle", "maven", "lsp"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "scrap",
-      "source": "./plugins/scrap",
-      "description": "스크래핑 팀 전용 — Rust LSP, cargo check, 디버그 매크로 감지",
-      "version": "1.0.0",
-      "category": "team",
-      "keywords": ["scrap", "rust", "cargo", "lsp"],
-      "requires": ["enterprise-base", "backend"]
-    },
-    {
-      "name": "dba",
-      "source": "./plugins/dba",
-      "description": "DBA 팀 전용 — GitLab 이슈 기반 DBA 리뷰, PostgreSQL/Citus/CNPG 전문 분석",
-      "version": "1.0.0",
-      "category": "team",
-      "keywords": ["dba", "postgresql", "citus", "cnpg", "query-optimization", "schema-review", "gitlab-issue"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "de",
-      "source": "./plugins/de",
-      "description": "Data Engineering 팀 전용 — 데이터 파이프라인, ETL, Spark/Airflow 워크플로우 도구",
-      "version": "1.0.0",
-      "category": "team",
-      "keywords": ["data-engineering", "pipeline", "etl", "spark", "airflow"],
-      "requires": ["enterprise-base", "backend"]
-    },
-    {
-      "name": "search",
-      "source": "./plugins/search",
-      "description": "Search Engineering 팀 전용 — ES 쿼리 최적화, 검색 관련성 튜닝, 벡터/하이브리드 검색, 데이터 파이프라인 연동, 인덱스 관리, 한국어 분석, Go LSP",
-      "version": "3.0.0",
-      "category": "team",
-      "keywords": ["search", "elasticsearch", "kotlin", "relevance", "query-optimization", "nori", "indexing", "go", "lsp", "vector-search", "knn", "rrf", "hybrid-search", "embedding", "kafka", "spark", "iceberg", "trino", "pipeline", "reranking", "ltr", "observability"],
-      "requires": ["enterprise-base", "backend"]
-    },
-    {
-      "name": "devops",
-      "source": "./plugins/devops",
-      "description": "DevOps/SRE 팀 전용 — IaC 리뷰, CI/CD 디버깅, 인시던트 대응, 배포 자동화 도구",
-      "version": "2.0.0",
-      "category": "team",
-      "keywords": ["devops", "sre", "cicd", "infrastructure", "monitoring", "terraform", "kubernetes", "helm", "gitlab-ci", "incident", "postmortem", "slo"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "ai",
-      "source": "./plugins/ai",
-      "description": "AI/ML Engineering 팀 전용 — ML 코드 리뷰, 모델 서빙 최적화, 실험 관리, LLM/GenAI 아키텍처, 학습/서빙 안전 훅",
-      "version": "2.0.0",
-      "category": "team",
-      "keywords": ["ai", "ml", "deep-learning", "model-serving", "experiment", "llm", "genai", "rag", "pytorch", "tensorflow", "jax", "huggingface", "prompt-engineering"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "app",
-      "source": "./plugins/app",
-      "description": "Mobile App 팀 전용 — Flutter/Kotlin/Swift 아키텍처 리뷰, 모바일 성능 분석, 위젯 테스트, 릴리즈 자동화, LSP, 자동포맷, 컴파일체크",
-      "version": "2.0.0",
-      "category": "team",
-      "keywords": ["mobile", "ios", "android", "flutter", "dart", "swift", "kotlin", "app", "architecture", "performance", "widget-test", "release"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "cc-utils",
-      "source": "./plugins/utils/cc-utils",
-      "description": "근로시간 계산 스킬 + Outline 위키 연동 MCP 서버 (API 키 설정: /outline-setup)",
-      "version": "1.1.0",
-      "category": "productivity",
-      "keywords": ["work-hours", "working-hours", "근로시간", "공휴일", "outline", "wiki", "mcp"]
-    },
-    {
-      "name": "specific",
-      "source": "./plugins/specific",
-      "description": "인프라 담당자 전용 — Valkey 키 등록 검토, Kafka 서비스 데스크 리뷰, MongoDB 업무 요청 리뷰, GitLab 이슈 기반 리포트 자동화",
-      "version": "1.0.0",
-      "category": "team",
-      "keywords": ["valkey", "redis", "cache", "kafka", "topic", "acl", "mongodb", "collection", "sharding", "index", "key-naming", "hash-slot", "ttl", "gitlab-issue", "review"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "nworks",
-      "source": "./plugins/utils/nworks",
-      "description": "NAVER WORKS 그룹웨어 연동 — 메일, 캘린더, 회의실 예약, 메시지, 할일 워크플로우 (npm 패키지 단일 번들 MCP 서버)",
-      "version": "1.2.7",
-      "category": "productivity",
-      "keywords": ["naver-works", "groupware", "mail", "calendar", "meeting-room", "message", "task", "mcp"]
+      "keywords": ["etc"]
     },
     {
       "name": "analyze",
-      "source": "./plugins/utils/analyze",
+      "source": "./plugins/analyze",
       "description": "코드 품질/보안/성능/아키텍처/SQL 종합 분석 — 코드 리뷰, 성능 안티패턴 탐지, 아키텍처 건강도 점수화, SQL 쿼리 최적화, 코드 단순화 가이드",
-      "version": "1.2.0",
+      "version": "1.0.0",
       "category": "productivity",
       "keywords": ["analyze", "code-review", "performance", "architecture", "security", "anti-pattern", "sql", "query-optimization", "index", "simplification", "refactoring"]
     },
     {
       "name": "test",
-      "source": "./plugins/utils/test",
+      "source": "./plugins/test",
       "description": "테스트 자동화 — TDD 워크플로우, E2E 테스트 생성/실행, Chrome 기반 시각적 검증",
-      "version": "1.1.0",
+      "version": "1.0.0",
       "category": "productivity",
       "keywords": ["test", "tdd", "e2e", "playwright", "chrome", "coverage"]
     },
     {
       "name": "workflow",
-      "source": "./plugins/utils/workflow",
-      "description": "개발 워크플로우 자동화 — MR 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리, 스펙 관리, 계획 수립, 배포 가이드, 폐기 관리",
-      "version": "1.2.0",
+      "source": "./plugins/workflow",
+      "description": "개발 워크플로우 자동화 — PE 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리, 스펙 관리, 계획 수립, 배포 가이드, 폐기 관리",
+      "version": "1.0.0",
       "category": "productivity",
       "keywords": ["workflow", "review", "handoff", "documentation", "issue-tracker", "merge", "sync"]
     },
     {
-      "name": "pm",
-      "source": "./plugins/pm",
-      "description": "PM/기획자 전용 — Windows 온보딩, Notion·Plane 양방향 동기화, PM 코칭 에이전트",
-      "version": "2.0.0",
-      "category": "team",
-      "keywords": ["pm", "product-manager", "notion", "plane", "mcp", "기획", "온보딩", "sync"],
-      "requires": ["enterprise-base"]
-    },
-    {
-      "name": "plane-mcp",
-      "source": "./plugins/utils/plane-mcp",
-      "description": "Plane 프로젝트 관리 MCP 서버 연동 - API 토큰 설정, MCP 등록, 이슈 관리 자동화, 데일리 브리핑",
-      "version": "1.1.0",
-      "category": "integration",
-      "keywords": ["plane", "mcp", "issue-tracker", "project-management", "setup"]
-    },
-    {
-      "name": "context-architect",
-      "source": "./plugins/utils/context-architect",
-      "description": "CLAUDE.md, .claude/rules, Memory 계층 구조 분석 및 최적화 — 컨텍스트 예산 관리, 크로스 도메인 배치 전략, 10-메트릭 검증",
-      "version": "1.0.0",
-      "category": "productivity",
-      "keywords": ["context", "claude-md", "rules", "memory", "optimization", "budget", "hierarchy", "architecture"]
-    },
-    {
       "name": "harness",
-      "source": "./plugins/utils/harness",
+      "source": "./plugins/harness",
       "description": "하네스 구축용 플러그인",
       "version": "1.0.0",
       "category": "harness",

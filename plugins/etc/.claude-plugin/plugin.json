@@ -1,6 +1,6 @@
 {
-  "name": "harness",
-  "description": "하네스 구축용 플러그인",
+  "name": "etc",
+  "description": "기타 플러그인",
   "version": "1.0.0",
   "author": {
     "name": "장민규",
