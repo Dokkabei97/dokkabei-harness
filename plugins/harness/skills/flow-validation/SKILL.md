@@ -1,0 +1,163 @@
+---
+name: flow-validation
+description: |
+  Validation rules and checklists for Claude Code plugin components.
+  Contains structural, content, and security validation rules for
+  agents, commands, skills, and hooks. Used by the /verify-flow command.
+---
+
+# Flow Validation Rules
+
+Comprehensive validation ruleset for Claude Code plugin components. Rules are organized by component type and severity to enable systematic quality checks.
+
+## When to Apply
+
+Reference these rules when:
+- Running `/verify-flow` to validate components
+- Creating new components and need to verify compliance
+- Reviewing pull requests that modify plugin components
+- Setting up CI validation for plugin repositories
+
+## Rule Categories
+
+| Prefix | Component | Rule Count |
+|--------|-----------|------------|
+| `CMD-` | Commands | 13 rules |
+| `AGT-` | Agents | 30 rules |
+| `SKL-` | Skills | 21 rules |
+| `HK-` | Hooks | 13 rules |
+| `TEAM-` | Teams | 8 rules |
+| `ORC-` | Orchestrators | 8 rules |
+| `XRF-` | Cross-Reference | 15 rules |
+| `SEC-` | Security | 7 rules |
+| `QUA-` | Quality | 7 rules |
+
+## Severity Scale
+
+| Level | Impact | Auto-Fixable | Action |
+|-------|--------|-------------|--------|
+| Critical | Component broken | Some | Must fix immediately |
+| High | Convention violation | Some | Fix before merge |
+| Medium | Style deviation | Most | Fix when convenient |
+| Low | Optimization hint | All | Optional |
+
+## Validation Order
+
+Execute validation in this order for optimal dependency resolution:
+
+1. **Structural** (CMD/AGT/SKL/HK rules) - File exists, frontmatter valid, sections present
+2. **Content Quality** (QUA rules) - Descriptions specific, examples present, triggers concrete
+3. **Team Structural** (TEAM rules) - Team definition, members, orchestrator
+4. **Orchestrator** (ORC rules) - Phase sequence, data flow, error handling
+5. **Security** (SEC rules) - No credentials, safe scripts, no dangerous commands
+6. **Cross-Reference** (XRF rules) - Component references valid, no orphans
+
+## Quick Reference: Required Sections
+
+### Command Required Sections
+```
+---
+frontmatter (6 fields)
+---
+# /{name} - {Title}
+## Triggers (3+ items)
+## Usage (code block with options)
+## Behavioral Flow (phased, numbered)
+## Tool Coordination (tool list)
+## Examples (2+ with code blocks)
+## Boundaries (Will + Will Not)
+```
+
+### Agent Required Sections
+```
+---
+frontmatter (2 required + 11 optional fields)
+---
+Persona description paragraph
+## Your Role (5+ responsibilities)
+## Analysis Workflow (numbered steps)
+## Output Format (report template)
+## Boundaries (Will + Will Not)
+```
+
+### Skill Required Structure
+```
+skills/{name}/
+  SKILL.md (< 5,000 tokens)
+    ---
+    frontmatter (2 recommended + 8 optional fields)
+    ---
+    # {Title}
+    ## When to Apply (3+ conditions)
+    ## {Domain Content}
+    ## How to Use
+  references/ (optional, {prefix}-{topic}.md naming)
+  templates/ (optional, referenced in SKILL.md)
+```
+
+### Team Required Structure
+```
+agents/{member-1}.md          (team frontmatter + Team Communication Protocol)
+agents/{member-2}.md          
+skills/{team-name}-orchestrator/
+  SKILL.md                    (member registry + workflow phases)
+claude/CLAUDE.md              (team registration entry)
+```
+
+### Plugin Required Structure
+```
+.claude-plugin/
+  plugin.json (name, description, version required)
+skills/              (optional)
+agents/              (optional)
+hooks/hooks.json     (optional)
+.mcp.json            (optional)
+```
+
+> **Note**: As of Claude Code v2.1.3, commands and skills have been unified.
+> Both formats create slash commands. Skill format is recommended for new components.
+
+## Reference Files
+
+Detailed rule definitions with examples:
+- [references/cmd-rules.md](references/cmd-rules.md) - Command validation rules
+- [references/agt-rules.md](references/agt-rules.md) - Agent validation rules
+- [references/skl-rules.md](references/skl-rules.md) - Skill validation rules
+- [references/hk-rules.md](references/hk-rules.md) - Hook validation rules
+- [references/team-rules.md](references/team-rules.md) - Team validation rules
+- [references/orc-rules.md](references/orc-rules.md) - Orchestrator validation rules
+- [references/xrf-rules.md](references/xrf-rules.md) - Cross-reference rules
+- [references/sec-rules.md](references/sec-rules.md) - Security rules
+- [references/qua-rules.md](references/qua-rules.md) - Quality rules
+
+## Token Budget Estimation
+
+For skill SKILL.md files, estimate token count:
+```
+tokens ≈ word_count × 1.3
+```
+
+| Budget | Words | Status |
+|--------|-------|--------|
+| < 3,500 | < 2,700 | Optimal |
+| 3,500-5,000 | 2,700-3,850 | Acceptable |
+| > 5,000 | > 3,850 | Over budget - split into references |
+
+## Health Score Calculation
+
+```
+Base Score: 100
+
+Deductions per finding:
+  Critical: -20
+  High:     -10
+  Medium:    -3
+  Low:       -1
+
+Rating Scale:
+  90-100: Excellent - Ready for production use
+  75-89:  Good - Minor improvements recommended
+  60-74:  Fair - Notable gaps need attention
+  40-59:  Poor - Significant issues found
+   0-39:  Critical - Not ready for use
+```

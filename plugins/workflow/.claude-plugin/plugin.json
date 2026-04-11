@@ -1,0 +1,8 @@
+{
+  "name": "workflow",
+  "description": "개발 워크플로우 자동화 — MR 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리",
+  "version": "1.2.0",
+  "author": {
+    "name": "Consumer Commerce Dev"
+  }
+}
