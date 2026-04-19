@@ -1,0 +1,9 @@
+{
+  "name": "nextjs",
+  "description": "Next.js App Router 프론트엔드 특화 — 코드 생성(nextjs-developer), 컴포넌트·페이지·레이아웃 스캐폴딩(nextjs-gen), 페이지/기능 UI 설계(nextjs-page-design), 개발 종합 가이드(nextjs-guide). Server/Client Component 경계, 라우팅, 데이터 페칭, 테스트 전략 포함.",
+  "version": "1.0.0",
+  "author": {
+    "name": "장민규",
+    "email": "wkdrn970@gmail.com"
+  }
+}

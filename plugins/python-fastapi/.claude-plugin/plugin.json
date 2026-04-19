@@ -1,0 +1,9 @@
+{
+  "name": "python-fastapi",
+  "description": "Python + FastAPI 특화 — 코드 생성(fastapi-developer), 프레임워크 가이드(fastapi-guide), CRUD/API 설계 스캐폴딩(fastapi-gen, fastapi-api-design), 관용 패턴 레퍼런스(fastapi-patterns), 원칙/의사결정(python-fastapi-guide). 백엔드 공통 패턴은 backend-shared 플러그인과 함께 사용.",
+  "version": "1.0.0",
+  "author": {
+    "name": "장민규",
+    "email": "wkdrn970@gmail.com"
+  }
+}

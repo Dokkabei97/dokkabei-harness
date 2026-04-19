@@ -1,0 +1,498 @@
+---
+name: es-deep-patterns
+description: Use this skill when designing Elasticsearch queries, mappings, indexing strategies, or operational configurations. Provides deep patterns and anti-patterns for production ES clusters with Korean analysis support.
+---
+
+# Elasticsearch Deep Patterns
+
+이 스킬은 Elasticsearch 설계 및 운영에 필요한 심층 패턴을 제공합니다. 쿼리, 매핑, 인덱싱, 운영, 모니터링, 한국어 분석 전반을 다룹니다.
+
+## When to Activate
+
+- Elasticsearch 쿼리 성능 최적화 또는 새 쿼리 설계 시
+- 인덱스 매핑 설계 또는 변경 시
+- Bulk indexing 파이프라인 구축 또는 튜닝 시
+- 클러스터 운영 (shard sizing, hot/warm/cold, snapshot) 관련 작업 시
+- 느린 쿼리 디버깅 또는 relevance 문제 조사 시
+- 한국어 형태소 분석기 설정 또는 커스터마이징 시
+- Cross-cluster search 또는 percolator 활용 시
+
+## 1. Query Design Patterns
+
+### Filter vs Query Context
+
+| Context | 용도 | 스코어링 | 캐싱 |
+|---------|------|---------|------|
+| **query** | relevance가 중요한 full-text 검색 | O (BM25 계산) | X |
+| **filter** | exact match, range, 존재 여부 확인 | X (`_score = 0`) | O (bitset 캐시) |
+
+**원칙**: 스코어링이 불필요한 조건은 반드시 `filter` context에 배치. 성능 차이가 크다.
+
+```json
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title": "검색어" } }
+      ],
+      "filter": [
+        { "term": { "status": "active" } },
+        { "range": { "price": { "gte": 1000, "lte": 50000 } } }
+      ]
+    }
+  }
+}
+```
+
+### Bool Query Composition 패턴
+
+| Clause | 역할 | 스코어 기여 | 사용 예 |
+|--------|------|-----------|--------|
+| `must` | AND + 스코어 반영 | O | full-text 검색 조건 |
+| `filter` | AND + 스코어 무시 | X | 카테고리, 상태, 날짜 필터 |
+| `should` | OR + 스코어 부스트 | O | 선호 조건, 동의어 매칭 |
+| `must_not` | NOT + 스코어 무시 | X | 제외 조건 |
+
+**`minimum_should_match` 활용**: `must` 없이 `should`만 사용할 때 `minimum_should_match: 1`로 최소 하나 매칭 보장.
+
+### Nested vs Parent-Child
+
+| 기준 | Nested | Parent-Child (join) |
+|------|--------|-------------------|
+| 성능 | 빠름 (같은 Lucene doc) | 느림 (별도 문서, join 연산) |
+| 업데이트 | 전체 문서 재인덱싱 필요 | 자식만 독립 업데이트 가능 |
+| 쿼리 복잡도 | `nested` query 필수 | `has_child`/`has_parent` query |
+| 적합 케이스 | 변경 빈도 낮은 내장 객체 (상품 옵션) | 1:N 비율 높고 자주 변경 (주문-리뷰) |
+
+**원칙**: 가능하면 nested 우선. Parent-child는 자식 문서가 독립적으로 자주 업데이트될 때만 사용.
+
+### Percolator 패턴
+
+저장된 쿼리에 문서를 매칭하는 역방향 검색. 알림, 모니터링에 활용.
+
+```json
+// 1. percolator 매핑
+{ "mappings": { "properties": {
+  "query": { "type": "percolator" },
+  "category": { "type": "keyword" }
+}}}
+
+// 2. 쿼리 등록 (알림 조건)
+{ "query": { "match": { "title": "신상품" } }, "category": "alert" }
+
+// 3. 새 문서가 들어오면 매칭되는 쿼리 검색
+{ "query": { "percolate": { "field": "query", "document": { "title": "신상품 입고" } } } }
+```
+
+### Cross-Cluster Search (CCS)
+
+```json
+// elasticsearch.yml
+cluster.remote.cluster_b.seeds: ["es-cluster-b:9300"]
+
+// 쿼리 시 클러스터 접두사 사용
+GET /cluster_b:products/_search
+{ "query": { "match": { "name": "상품명" } } }
+```
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| filter 조건을 `must`에 배치 | `filter` context로 이동 | **High** |
+| 깊은 nested query 중첩 (3단계+) | 데이터 모델 비정규화 | **High** |
+| parent-child를 nested로 대체 가능한데 join 사용 | nested로 전환 | **Medium** |
+| `from/size`로 10,000건 이상 페이징 | `search_after` 사용 | **Critical** |
+| percolator 인덱스에 수만 개 쿼리 무분별 등록 | 카테고리 필터로 대상 축소 | **Medium** |
+
+## 2. Mapping Design Patterns
+
+### Field Type Decision Tree
+
+```
+문자열 데이터?
+├── 전문 검색 필요 → text (+ analyzer 지정)
+│   └── 정렬/집계도 필요 → multi-field (.raw: keyword)
+├── 정확히 일치 검색만 → keyword
+│   └── 대소문자 무시 → normalizer 적용
+└── 둘 다 필요 → multi-field 전략
+```
+
+### Multi-Field Strategy
+
+```json
+{
+  "product_name": {
+    "type": "text",
+    "analyzer": "nori_standard",
+    "fields": {
+      "raw": { "type": "keyword" },
+      "search": { "type": "text", "analyzer": "nori_search" },
+      "autocomplete": { "type": "text", "analyzer": "edge_ngram_analyzer", "search_analyzer": "standard" }
+    }
+  }
+}
+```
+
+| Sub-field | 용도 | Analyzer |
+|-----------|------|----------|
+| (default) | 기본 검색 | nori_standard |
+| `.raw` | 정렬, 집계, exact match | keyword (no analyzer) |
+| `.search` | 검색 최적화 (동의어 등) | nori_search (search-time synonym) |
+| `.autocomplete` | 자동완성 | edge_ngram (index) / standard (search) |
+
+### Dynamic Templates
+
+알려지지 않은 필드가 들어올 때 매핑 자동 적용.
+
+```json
+{
+  "dynamic_templates": [
+    { "strings_as_keywords": {
+        "match_mapping_type": "string",
+        "mapping": { "type": "keyword", "ignore_above": 256 }
+    }},
+    { "longs_as_integers": {
+        "match_mapping_type": "long",
+        "mapping": { "type": "integer" }
+    }}
+  ]
+}
+```
+
+### Flattened vs Object vs Nested
+
+| Type | 쿼리 방식 | 내부 필드 독립 검색 | 필드 매핑 폭발 방지 |
+|------|----------|------------------|-------------------|
+| `object` | dot notation | X (cross-object match) | X |
+| `nested` | `nested` query | O (정확한 내부 매칭) | X |
+| `flattened` | dot notation | 제한적 (keyword만) | O |
+
+**`flattened` 사용 시점**: 필드 이름이 동적이고 매핑 폭발(mapping explosion)이 우려될 때. 예: 사용자 정의 속성, 로그 메타데이터.
+
+### Runtime Fields vs Indexed
+
+| 기준 | Runtime Fields | Indexed Fields |
+|------|---------------|---------------|
+| 인덱스 크기 | 증가 없음 | 증가 |
+| 쿼리 성능 | 느림 (매 쿼리 계산) | 빠름 (사전 계산) |
+| 유연성 | 높음 (스키마 변경 불필요) | 낮음 (reindex 필요) |
+| 적합 케이스 | 탐색적 분석, 드문 쿼리 | 빈번한 검색/집계 대상 |
+
+```json
+{
+  "runtime": {
+    "price_with_tax": {
+      "type": "double",
+      "script": { "source": "emit(doc['price'].value * 1.1)" }
+    }
+  }
+}
+```
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| 모든 문자열을 `text`로 설정 | 용도에 따라 `keyword` 또는 multi-field | **High** |
+| `dynamic: true`로 매핑 폭발 방치 | `dynamic: strict` 또는 `dynamic_templates` | **Critical** |
+| nested 불필요한 곳에 nested 사용 | object 또는 flattened 검토 | **Medium** |
+| runtime field를 고빈도 쿼리에 사용 | indexed field로 전환 | **High** |
+| `ignore_above` 미설정으로 긴 keyword 인덱싱 | `ignore_above: 256` (또는 적정 값) 설정 | **Medium** |
+
+## 3. Indexing Patterns
+
+### Bulk API Optimization
+
+| Parameter | 권장값 | 설명 |
+|-----------|-------|------|
+| Batch size | 5-15 MB per request | 문서 수보다 총 바이트 기준 |
+| 동시 요청 수 | `number_of_data_nodes` 기준 | 너무 많으면 reject |
+| `refresh_interval` | 인덱싱 중 `"-1"` (비활성) | 완료 후 `"1s"`로 복원 |
+| `number_of_replicas` | 인덱싱 중 `0` | 완료 후 복원 |
+| `index.translog.durability` | `async` (대량 적재 시) | 완료 후 `request`로 복원 |
+
+### Ingest Pipeline Design
+
+```json
+PUT _ingest/pipeline/product-pipeline
+{
+  "processors": [
+    { "set": { "field": "indexed_at", "value": "{{_ingest.timestamp}}" } },
+    { "lowercase": { "field": "category" } },
+    { "trim": { "field": "title" } },
+    { "remove": { "field": "internal_memo", "ignore_missing": true } },
+    { "script": {
+        "source": "ctx.title_length = ctx.title.length()"
+    }}
+  ]
+}
+```
+
+### Update-by-Query vs Reindex
+
+| 기준 | Update-by-Query | Reindex |
+|------|----------------|---------|
+| 매핑 변경 | X | O |
+| 스크립트 적용 | O | O |
+| 대상 인덱스 | 동일 인덱스 | 새 인덱스 |
+| 롤백 | 어려움 | alias 전환으로 즉시 롤백 |
+| 권장 사례 | 필드 값 일괄 변경 | 매핑 변경, analyzer 변경 |
+
+**Alias를 활용한 무중단 reindex**:
+1. 새 인덱스 생성 (new mapping)
+2. `_reindex` 실행
+3. alias를 새 인덱스로 전환
+4. 구 인덱스 삭제
+
+### Optimistic Concurrency Control
+
+```json
+// 문서 조회 시 seq_no, primary_term 확인
+GET /products/_doc/1
+// → "_seq_no": 5, "_primary_term": 1
+
+// 업데이트 시 조건부 적용
+PUT /products/_doc/1?if_seq_no=5&if_primary_term=1
+{ "title": "수정된 상품명" }
+// 충돌 시 409 Conflict → 재시도 로직 필요
+```
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| 단건 인덱싱 반복 (loop) | Bulk API 사용 | **Critical** |
+| 대량 적재 시 `refresh_interval: "1s"` 유지 | `"-1"`로 변경 후 복원 | **High** |
+| reindex 없이 매핑 변경 시도 | alias + reindex 패턴 | **High** |
+| optimistic concurrency 미적용으로 데이터 유실 | `seq_no/primary_term` 사용 | **Medium** |
+| ingest pipeline에서 heavy script 실행 | 인덱싱 전 애플리케이션에서 처리 | **Medium** |
+
+## 4. Operational Patterns
+
+### Shard Sizing 가이드
+
+| 항목 | 권장 |
+|------|------|
+| 단일 shard 크기 | 10-50 GB |
+| shard 수 / 노드 | 노드 힙 GB당 20개 이하 |
+| 인덱스당 primary shard | 데이터 총량 / 30GB 기준 |
+| 일별 인덱스 | 일 데이터량이 50GB 이상일 때 |
+
+**Overshard 방지**: shard가 너무 작으면 (< 1GB) 클러스터 상태 관리 오버헤드 증가. 작은 인덱스는 1 primary shard로 충분.
+
+### Segment Merge
+
+```json
+// force merge (읽기 전용 인덱스에서만)
+POST /logs-2024.01/_forcemerge?max_num_segments=1
+
+// merge policy 튜닝
+PUT /products/_settings
+{ "index.merge.policy.max_merged_segment": "5gb" }
+```
+
+**주의**: 쓰기 중인 인덱스에 force merge 금지. I/O 폭증으로 클러스터 불안정.
+
+### Hot/Warm/Cold Architecture
+
+```
+Hot  (NVMe SSD)  → 최근 데이터, 활발한 읽기/쓰기
+Warm (SSD/HDD)   → 조회 빈도 낮은 데이터, 읽기 전용
+Cold (HDD/S3)    → 아카이브, 드문 조회
+Frozen (S3)      → searchable snapshot, 거의 조회 안 함
+```
+
+ILM (Index Lifecycle Management) 정책:
+```json
+{
+  "policy": {
+    "phases": {
+      "hot":    { "actions": { "rollover": { "max_size": "50gb", "max_age": "7d" } } },
+      "warm":   { "min_age": "30d", "actions": { "shrink": { "number_of_shards": 1 }, "forcemerge": { "max_num_segments": 1 } } },
+      "cold":   { "min_age": "90d", "actions": { "allocate": { "require": { "data": "cold" } } } },
+      "delete": { "min_age": "365d", "actions": { "delete": {} } }
+    }
+  }
+}
+```
+
+### Snapshot & Restore
+
+```json
+// 리포지토리 등록 (S3)
+PUT /_snapshot/s3_backup
+{ "type": "s3", "settings": { "bucket": "es-snapshots", "region": "ap-northeast-2" } }
+
+// SLM (Snapshot Lifecycle Management) 정책
+PUT /_slm/policy/daily-snapshot
+{
+  "schedule": "0 0 2 * * ?",
+  "name": "<daily-{now/d}>",
+  "repository": "s3_backup",
+  "config": { "indices": ["products*", "orders*"], "ignore_unavailable": true }
+}
+```
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| 모든 인덱스가 hot 노드에 상주 | ILM으로 hot/warm/cold 분리 | **High** |
+| shard 1개가 100GB 이상 | shard 분할 또는 rollover 설정 | **Critical** |
+| snapshot 미설정 | SLM 정책 설정 및 복원 테스트 | **Critical** |
+| 쓰기 중 인덱스에 force merge | 읽기 전용 전환 후 merge | **High** |
+| 노드당 shard 수천 개 | 인덱스 통합 또는 rollup | **High** |
+
+## 5. Monitoring & Debugging
+
+### Key Metrics
+
+| Metric | 위험 임계값 | 확인 API |
+|--------|-----------|---------|
+| Heap usage | > 75% | `_nodes/stats/jvm` |
+| CPU usage | > 80% sustained | `_nodes/stats/os` |
+| Search latency (p99) | > 500ms | `_nodes/stats/indices/search` |
+| Indexing latency | > 100ms/doc | `_nodes/stats/indices/indexing` |
+| Pending tasks | > 0 sustained | `_cluster/pending_tasks` |
+| Circuit breaker trips | > 0 | `_nodes/stats/breaker` |
+| Disk watermark | > 85% (high) | `_cluster/health` |
+| Rejected threads | > 0 | `_nodes/stats/thread_pool` |
+
+### Slow Log 설정
+
+```json
+PUT /products/_settings
+{
+  "index.search.slowlog.threshold.query.warn": "5s",
+  "index.search.slowlog.threshold.query.info": "2s",
+  "index.search.slowlog.threshold.fetch.warn": "1s",
+  "index.indexing.slowlog.threshold.index.warn": "10s"
+}
+```
+
+### Debugging APIs
+
+```bash
+# 쿼리 스코어 설명
+GET /products/_explain/1
+{ "query": { "match": { "title": "무선 이어폰" } } }
+
+# 쿼리 실행 프로파일링
+GET /products/_search
+{ "profile": true, "query": { "match": { "title": "무선 이어폰" } } }
+
+# 핫 스레드 확인 (CPU 사용 원인)
+GET /_nodes/hot_threads
+
+# 클러스터 allocation 설명
+GET /_cluster/allocation/explain
+```
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| slow log 미설정 | 모든 주요 인덱스에 설정 | **High** |
+| 성능 문제 시 쿼리만 의심 | `_profile`, `hot_threads`로 근본 원인 파악 | **Medium** |
+| heap 75% 이상 방치 | GC 튜닝 또는 노드 증설 | **Critical** |
+| circuit breaker trip 무시 | 쿼리 최적화 또는 메모리 증설 | **Critical** |
+
+## 6. Korean Analysis Patterns
+
+### Nori Tokenizer 설정
+
+```json
+{
+  "settings": {
+    "analysis": {
+      "tokenizer": {
+        "nori_mixed": {
+          "type": "nori_tokenizer",
+          "decompound_mode": "mixed",
+          "user_dictionary_rules": [
+            "삼성전자", "무선이어폰", "에어팟프로"
+          ]
+        }
+      },
+      "analyzer": {
+        "nori_standard": {
+          "type": "custom",
+          "tokenizer": "nori_mixed",
+          "filter": ["nori_readingform", "lowercase", "nori_part_of_speech"]
+        }
+      }
+    }
+  }
+}
+```
+
+### Decompound Mode 비교
+
+| Mode | 입력: "삼성전자" | 검색 특성 |
+|------|----------------|----------|
+| `none` | `["삼성전자"]` | exact match만 가능, 재현율 낮음 |
+| `discard` | `["삼성", "전자"]` | 개별 토큰만 남아 정밀도 낮아질 수 있음 |
+| `mixed` | `["삼성전자", "삼성", "전자"]` | 원형 + 분해 모두 유지, 균형 잡힌 선택 |
+
+**권장**: 대부분의 상품 검색에서 `mixed` 모드 사용. 원형 매칭과 부분 매칭 모두 지원.
+
+### User Dictionary 관리
+
+```json
+// 방법 1: inline rules (소규모)
+"user_dictionary_rules": ["삼성전자", "쿠팡로켓"]
+
+// 방법 2: 파일 기반 (대규모)
+"user_dictionary": "userdict_ko.txt"
+// userdict_ko.txt: config 디렉토리에 배치
+// 한 줄에 하나의 단어, 또는 "단어 품사1+품사2" 형식
+```
+
+**운영 팁**: 사전 파일 변경 시 인덱스 close/open 또는 reindex 필요. 동적 반영 안 됨.
+
+### Custom Morphological Analyzer Plugin
+
+Nori 외 커스텀 형태소 분석기 (예: 사내 분석기 플러그인) 통합 시:
+
+```json
+{
+  "analysis": {
+    "analyzer": {
+      "custom_korean": {
+        "type": "custom",
+        "tokenizer": "custom_morphological",
+        "filter": ["lowercase", "synonym_filter", "stop_filter"]
+      }
+    }
+  }
+}
+```
+
+- 플러그인 설치: 모든 노드에 동일 버전 설치 필수
+- 롤링 리스타트 시 shard allocation 일시 중지 권장
+- 버전 호환성: ES 메이저 버전 업그레이드 시 플러그인 재빌드 필요
+
+### Korean Synonym 처리
+
+```json
+{
+  "filter": {
+    "korean_synonyms": {
+      "type": "synonym_graph",
+      "synonyms": [
+        "노트북, 랩탑, laptop",
+        "핸드폰, 휴대폰, 스마트폰, mobile phone",
+        "TV, 텔레비전, 티비"
+      ]
+    }
+  }
+}
+```
+
+**주의사항**:
+- `synonym_graph`는 search-time에만 사용 권장 (index-time은 reindex 필요)
+- 한국어 동의어는 형태소 분석 후 적용되도록 filter chain 순서 주의
+- Nori 분석 후 synonym 적용: `tokenizer → nori_part_of_speech → synonym_graph`
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|----------|
+| `decompound_mode: none`으로 복합어 검색 불가 | `mixed` 모드로 전환 | **High** |
+| 브랜드명/신조어 미등록 | user dictionary에 등록 | **Medium** |
+| index-time synonym으로 사전 업데이트마다 reindex | search-time synonym으로 전환 | **High** |
+| 형태소 분석 전에 synonym 적용 | filter chain 순서 재배치 | **Medium** |
+| 사전 파일 노드 간 불일치 | 배포 파이프라인에 사전 동기화 포함 | **Critical** |
+
+---
+
+**Remember**: Elasticsearch 설계는 쿼리 패턴에서 시작합니다. 어떤 쿼리를 실행할지 먼저 정의하고, 그에 맞는 매핑과 인덱싱 전략을 수립하세요. 운영 중인 클러스터 변경은 반드시 staging에서 먼저 검증하세요.

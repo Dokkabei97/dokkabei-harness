@@ -992,6 +992,85 @@ Grep: pattern="^import " glob="**/*.ts" output_mode="count"
 
 ---
 
+#### V-M4: Excessive Nullable Properties in Domain Data Classes (Kotlin)
+
+Domain entities with most properties marked nullable indicate unclear domain modeling. The domain should encode invariants — required fields should be non-null; optional fields should be explicitly justified.
+
+**Detection Heuristic:**
+- `data class` in `domain/**` or `application/**` has more than 70% nullable properties
+- `List<*>?`, `Map<*, *>?`, `Set<*>?` instead of non-null + default empty collection
+- Response DTOs that mark fields nullable when the underlying domain field is non-null
+
+##### Kotlin
+
+```kotlin
+// BAD: All fields nullable — domain invariants unclear
+package com.example.domain.search
+
+data class ProductDocument(
+    val id: Long?,           // ID is required; why nullable?
+    val name: String?,       // Required in business logic
+    val category: String?,
+    val price: Int?,
+    val expiredAt: Instant?, // True optional — OK
+    val tags: List<String>?, // null vs empty not distinguished
+    val metadata: Map<String, String>?,
+)
+
+// GOOD: Encode what the domain actually requires
+data class ProductDocument(
+    val id: ProductId,                                 // Required
+    val name: String,                                  // Required
+    val category: Category,                            // Required
+    val price: Money,                                  // Required (VO)
+    val expiredAt: Instant? = null,                    // Truly optional
+    val tags: List<String> = emptyList(),              // Not null — default empty
+    val metadata: Map<String, String> = emptyMap(),
+)
+```
+
+##### Response DTO Alignment
+
+```kotlin
+// BAD: Response marks field nullable even though domain guarantees non-null
+data class AdminSearchResponse(
+    val id: Long?,            // Domain is non-null — why nullable here?
+    val isFeatured: Boolean?, // Domain default is false
+    val tags: List<String>?,
+)
+
+// GOOD: Reflect domain invariants in response
+data class AdminSearchResponse(
+    val id: Long,
+    val isFeatured: Boolean = false,
+    val tags: List<String> = emptyList(),
+)
+```
+
+**Detection Pattern:**
+```
+# Kotlin: data class with high nullable ratio
+# For each data class in domain/application paths, count nullable fields
+Grep: pattern="data class \w+" glob="**/domain/**/*.kt" output_mode="files_with_matches"
+Grep: pattern="data class \w+" glob="**/application/**/*.kt" output_mode="files_with_matches"
+
+# Nullable collection types
+Grep: pattern=":\s*List<[^>]+>\?" glob="**/domain/**/*.kt"
+Grep: pattern=":\s*Map<[^>]+,\s*[^>]+>\?" glob="**/domain/**/*.kt"
+Grep: pattern=":\s*Set<[^>]+>\?" glob="**/domain/**/*.kt"
+```
+
+**Review Heuristic:**
+1. Count `val\s+\w+:\s+[^=,\n]+\?` occurrences in each `data class`.
+2. If ratio > 70% of total properties, flag as **Medium** (design review needed).
+3. If the class represents a domain entity and ratio > 50%, escalate to **High**.
+4. Always verify the business requirement — some aggregates legitimately have many optional fields (search filters, etc.).
+
+**Real-world anti-pattern (observed in field reviews):**
+Single MR can contain 8+ comments on the same class saying "not null 데이터에요. 도메인 엔티티에서 default를 false로 처리하면 됩니다." — indicating the entire class was designed nullable-by-default without domain analysis. When you see clustered nullable violations in one file, flag the class-level design, not individual fields.
+
+---
+
 ### Low Violations
 
 Improvement opportunities that enhance code quality but are not blocking.

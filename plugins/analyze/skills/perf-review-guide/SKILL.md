@@ -209,3 +209,86 @@ if item in large_set: ...
 ---
 
 **Remember**: Performance matters most in hot paths. Always profile before optimizing, and keep code readable unless the benchmark proves otherwise.
+
+---
+
+## 7. Configuration & External Constants
+
+| Anti-Pattern | Fix | Languages |
+|-------------|-----|-----------|
+| ES index name hardcoded in `domain/**/*Query.kt` | Inject via `@Value`/`@ConfigurationProperties` | Kotlin |
+| Magic numbers in query filter (e.g., `limit = 100`) | Named constant or config property | All |
+| `const val X_INDEX = "..."` in domain layer | Move to infrastructure config | Kotlin |
+| Hardcoded API endpoint URLs | `application.yml` + `BaseSettings` | All |
+| Default value silently duplicated in code and config | Single source of truth | All |
+
+**Why it's a perf concern**: hardcoded values lead to **schema drift** between code and config. When the ES index rolls over and code still points to the old name, every query slows down (or fails) — an operational incident disguised as a performance regression.
+
+**Rule**: Domain layer should not contain environment-specific string literals. Adapters consume configuration.
+
+---
+
+## 8. External API Timeouts & IO Parallelization
+
+| Anti-Pattern | Fix | Impact |
+|-------------|-----|--------|
+| No timeout on `WebClient`/`RestTemplate`/`httpx` | Set connect + response timeout | Thread/loop blocks indefinitely |
+| Sync HTTP call inside `@KafkaListener` | Coroutine `async` + `withTimeoutOrNull` | Consumer TPS collapses |
+| Sequential `for`/`map` of IO calls | `coroutineScope { ids.map { async { ... } }.awaitAll() }` | N × latency → single latency |
+| Legacy API called in indexing path without bound | Timeout ≤ 500ms | Backpressure accumulates |
+| Nested `for` × `filter` over large collections | Pre-build index/hash map | `O(N × M)` → `O(N + M)` |
+
+### Recommended timeouts
+
+| Call site | Upper bound | Rationale |
+|---|---|---|
+| Legacy/third-party API in indexing path | **≤ 500ms** | Protect indexer TPS |
+| Internal REST/gRPC | ≤ 1s | 3–5× p95 latency |
+| Cache (Redis/Valkey) | ≤ 100ms | Fast fallback to origin |
+| DB OLTP query | ≤ 500ms | Slow queries should escalate |
+
+### Review Detection
+
+```
+# Kotlin: WebClient without timeout
+Grep: pattern="WebClient\.builder\(\)" glob="**/*.kt" -A 5
+# Check if .responseTimeout / CONNECT_TIMEOUT_MILLIS appears
+
+# Kotlin: KafkaListener doing sync HTTP
+Grep: pattern="@KafkaListener" glob="**/*.kt" -A 20
+# Look for blocking httpClient / restTemplate inside the handler
+
+# Python: requests without timeout
+Grep: pattern="requests\.(get|post|put|delete)\s*\(" glob="**/*.py"
+# Check each call for timeout= parameter
+```
+
+---
+
+## 9. Error Logging & Throwing Discipline
+
+| Anti-Pattern | Fix | Severity |
+|-------------|-----|---------|
+| `catch (e) { logger.error(...); throw ...Exception(...) }` (double reporting) | Log once — either the layer that has context or the global handler | Medium |
+| `catch (e) { logger.error("ignored", e) }` (swallow) | Retry or rethrow; never silently absorb | **High** |
+| Bulk operation logs only success count | Log failure count + first N failure reasons | Medium |
+| Generic log message ("sync failed") | Include domain context (entity id, op type, direction) | Low |
+| Error inside `@Transactional` that logs but doesn't throw | Throw to trigger rollback | **High** |
+
+### Review Detection
+
+```
+# Kotlin: try/catch that logs and throws (double reporting)
+Grep: pattern="catch\s*\([^)]+\)\s*\{[^}]*logger\.(error|warn)[^}]*throw" glob="**/*.kt" multiline=true
+
+# Kotlin: swallowed exceptions
+Grep: pattern="catch\s*\([^)]+\)\s*\{\s*\}" glob="**/*.kt" multiline=true
+Grep: pattern="catch\s*\([^)]+\)\s*\{\s*logger\.(error|warn)[^}]*\}\s*$" glob="**/*.kt" multiline=true
+
+# Bulk logging missing failure detail
+Grep: pattern="logger\.info.*bulk.*success" glob="**/*.kt"
+```
+
+### Reviewer note
+
+Field reviews show this pattern: a developer adds `logger.error(...)` inside a service method **and** throws a custom exception. A `@ControllerAdvice` then logs the same exception again, inflating log volume 2–3×. Choose one layer for logging; the common convention is **global handler only**, with the domain layer carrying context in the exception message.

@@ -30,7 +30,7 @@
       "name": "analyze",
       "source": "./plugins/analyze",
       "description": "코드 품질/보안/성능/아키텍처/SQL 종합 분석 — 코드 리뷰, 성능 안티패턴 탐지, 아키텍처 건강도 점수화, SQL 쿼리 최적화, 코드 단순화 가이드",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "productivity",
       "keywords": ["analyze", "code-review", "performance", "architecture", "security", "anti-pattern", "sql", "query-optimization", "index", "simplification", "refactoring"]
     },
@@ -59,12 +59,52 @@
       "keywords": ["harness", "plugins"]
     },
     {
-      "name": "develop",
-      "source": "./plugins/develop",
-      "description": "개발용 플러그인",
+      "name": "backend-shared",
+      "source": "./plugins/backend-shared",
+      "description": "백엔드 언어 공통 — API 설계(REST/GraphQL), DB 마이그레이션, 헥사고날 아키텍처, 관측성/캐싱/이벤트/회복탄력성/보안/DTO 패턴, 백엔드 테스트. kotlin-spring, python-fastapi, go-mux와 함께 사용.",
       "version": "1.0.0",
       "category": "develop",
-      "keywords": ["develop", "kotlin", "spring", "python", "fastapi", "go", "typescript", "next.js"]
+      "keywords": ["backend", "api-design", "rest", "graphql", "migration", "hexagonal", "observability", "caching", "kafka", "resilience", "security", "dto", "testing"]
+    },
+    {
+      "name": "kotlin-spring",
+      "source": "./plugins/kotlin-spring",
+      "description": "Kotlin + Spring Boot 특화 — 코드 생성, 프레임워크 가이드, CRUD 스캐폴딩, 관용 패턴 레퍼런스, 원칙/의사결정, Kotlin 네이밍. backend-shared와 조합.",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["kotlin", "spring", "spring-boot", "jpa", "coroutines", "webclient", "transaction"]
+    },
+    {
+      "name": "python-fastapi",
+      "source": "./plugins/python-fastapi",
+      "description": "Python + FastAPI 특화 — 코드 생성, 프레임워크 가이드, CRUD/API 설계 스캐폴딩, 관용 패턴 레퍼런스, 원칙/의사결정. backend-shared와 조합.",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["python", "fastapi", "pydantic", "sqlalchemy", "alembic", "async", "strawberry"]
+    },
+    {
+      "name": "go-mux",
+      "source": "./plugins/go-mux",
+      "description": "Go + stdlib net/http mux 특화 — 코드 생성, CRUD/API 설계 스캐폴딩, 개발 종합 가이드. backend-shared와 조합.",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["go", "golang", "mux", "net-http", "database-sql"]
+    },
+    {
+      "name": "nextjs",
+      "source": "./plugins/nextjs",
+      "description": "Next.js App Router 프론트엔드 특화 — 코드 생성, 컴포넌트·페이지·레이아웃 스캐폴딩, 페이지/기능 UI 설계, 개발 종합 가이드. Server/Client Component 경계, 라우팅, 데이터 페칭.",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["nextjs", "next.js", "react", "app-router", "server-components", "frontend", "typescript"]
+    },
+    {
+      "name": "search",
+      "source": "./plugins/search",
+      "description": "Elasticsearch 검색 엔지니어링 — ES 쿼리 최적화, 검색 관련성 튜닝, 벡터/하이브리드 검색(kNN/RRF), 데이터 파이프라인 연동(Kafka/Spark), 인덱스 수명주기, 한국어 분석. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션.",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["elasticsearch", "search", "lucene", "vector-search", "knn", "rrf", "relevance", "korean-analyzer", "kafka", "indexing"]
     },
     {
       "name": "startup",

@@ -1,0 +1,9 @@
+{
+  "name": "kotlin-spring",
+  "description": "Kotlin + Spring Boot 특화 — 코드 생성(spring-developer), 프레임워크 가이드(spring-boot-guide), CRUD 스캐폴딩(spring-gen), 관용 패턴 레퍼런스(spring-boot-patterns), 원칙/의사결정(kotlin-spring-guide), Kotlin 네이밍 관용구. 백엔드 공통 패턴은 backend-shared 플러그인과 함께 사용.",
+  "version": "1.0.0",
+  "author": {
+    "name": "장민규",
+    "email": "wkdrn970@gmail.com"
+  }
+}

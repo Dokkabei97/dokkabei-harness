@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Session start time tracking file
-SESSION_FILE="/Users/admin/.claude/statusline-session.txt"
-USAGE_CACHE_FILE="/Users/admin/.claude/statusline-usage-cache.json"
+SESSION_FILE="/Users/jmk/.claude/statusline-session.txt"
+USAGE_CACHE_FILE="/Users/jmk/.claude/statusline-usage-cache.json"
 USAGE_CACHE_TTL=120  # seconds
 
 # Read JSON input from stdin
@@ -49,25 +49,16 @@ model_label="${model_name}"
 [ -n "$model_version" ] && model_label="${model_label} ${model_version}"
 
 # Append effort level only for non-Haiku models
-# Priority: settings.local.json > settings.json > default (Opus=max, others=medium)
+# Source: settings.local.json → settings.json (persisted enum: low|medium|high|xhigh)
+# Note: `/effort max` is session-only and Claude Code doesn't expose it to statusline.
 if [ "$model_name" != "Haiku" ]; then
-    effort=""
-    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/admin/.claude/settings.local.json 2>/dev/null)
-    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/admin/.claude/settings.json 2>/dev/null)
-    # Default: Opus → max, others → medium
-    if [ -z "$effort" ]; then
-        if [ "$model_name" = "Opus" ]; then
-            effort="max"
-        else
-            effort="medium"
-        fi
-    fi
-    # Normalize effort
+    effort=$(jq -r '.effortLevel // empty' /Users/jmk/.claude/settings.local.json 2>/dev/null)
+    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/jmk/.claude/settings.json 2>/dev/null)
+    [ -z "$effort" ] && effort=$([ "$model_name" = "Opus" ] && echo "xhigh" || echo "medium")
+
     case "$effort" in
-        max)  effort_label="max" ;;
-        high) effort_label="high" ;;
-        low)  effort_label="low" ;;
-        *)    effort_label="medium" ;;
+        low|medium|high|xhigh) effort_label="$effort" ;;
+        *)                     effort_label="medium" ;;
     esac
     model_label="${model_label} ${effort_label}"
 fi
@@ -343,6 +334,12 @@ if [ -n "$git_branch" ]; then
         [ "$deleted" -gt 0 ] && git_changes="${git_changes} ${bright_red}-${deleted}${reset}"
         [ -n "$git_changes" ] && line2=$(printf "%s |%s" "$line2" "$git_changes")
     fi
+fi
+
+# Append session id at the end of line 2
+if [ -n "$session_id" ]; then
+    sid_short="${session_id:0:8}"
+    line2=$(printf "%s | ${bright_white}Session: %s${reset}" "$line2" "$sid_short")
 fi
 
 # Append usage bars to line 1

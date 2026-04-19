@@ -69,6 +69,7 @@ Read surrounding code before flagging. A pattern that looks bad in isolation may
 | V-M1 | Inconsistent naming convention | Follow language conventions (PEP8, Kotlin style) | `class [a-z]`, `def camelCase` |
 | V-M2 | Package structure inconsistency | Choose one: package-by-layer OR package-by-feature | Mixed `controllers/` + `order/` directories |
 | V-M3 | God class / God module | Extract responsibilities, apply SRP | Files > 500 lines, > 15 imports |
+| V-M4 | Excessive nullable in domain data class (Kotlin) | Encode domain invariants — required = non-null, List/Map/Set = default empty | data class nullable ratio > 70%, `List<*>?`/`Map<*,*>?`/`Set<*>?` in domain |
 
 ### Low Violations
 | ID | Violation | Fix | Detection |
@@ -162,6 +163,38 @@ fun createOrder(@RequestBody req: CreateOrderRequest): ResponseEntity<OrderDto> 
 | 1 | DTO exists but mixed with Entity | Fair |
 | 2 | DTO per layer (Request/Response/Domain) | Good |
 | 3 | CQRS (Command/Query separation) | Excellent |
+
+## Naming Clarity Checklist (Kotlin)
+
+Architectural health includes **naming alignment with domain intent**. Common reviewable patterns:
+
+| Pattern | Bad | Good | Why |
+|---|---|---|---|
+| Boolean purpose | `expiredAt: Instant?` in response | `isExpired: Boolean` | External API should express purpose, not storage |
+| Enum value | `RECENT_SCORE`, `POPULARITY_SCORE` | `RECENT`, `POPULARITY` | Implementation (score/rank) may change — name the property |
+| Transformation fn | `fun toLegacySync()` (50-line mapping) | `fun convertToLegacySync()` | `to~` = simple cast, `convertTo~` = real mapping |
+| const naming | `const val maxResults = 100` | `const val MAX_RESULTS = 100` | Kotlin convention: UPPER_SNAKE for compile-time constants |
+| Parameter semantics | `defaultTime(collectedAt: Instant)` | `defaultTime(defaultInstant: Instant)` | Name by function's internal role, not caller context |
+| Generic suffixes | `TokenInfo`, `KeywordData`, `SingleToken` | `TokenGroup`, `Keyword`, `Token` | `~Info/~Data/~Wrapper` add no meaning; "Single" needs a contrast pair |
+| Map params | `fun handle(payload: Map<String, Any>)` | `fun handle(payload: AdminPayload)` | Structure known at compile time = data class |
+| Primitive extensions | `fun String.toKeyword()` | `Keyword.from(raw)` factory | Primitive extensions lose context |
+
+Flag when a code change introduces any row above. Most are **Low** severity individually but **frequent** — run in aggregate.
+
+## DTO Design Quality Checklist
+
+| Pattern | Flag at | Severity |
+|---|---|---|
+| `Map<String, Any>` parameter/return in `domain/` or `application/` | always | Medium |
+| `Map<String, Any>` in adapter where keys are known at compile time | always | Medium |
+| Request DTO: business-required field marked nullable | always | High |
+| Response DTO: field nullable when domain is non-null | always | Medium |
+| Response DTO: `List<*>?` instead of `List<*> = emptyList()` | always | Medium |
+| "Future extensibility" excuse — all fields nullable | when no sealed hierarchy exists | Medium |
+| Third-party API response used as `Map`/dynamic type | untrusted boundary | High |
+| `ResponseEntity<*Entity>` in controller | always | High (V-H2) |
+| Jackson `@JsonProperty` without external contract reason | clutter | Low |
+| DTO has more than ~15 properties | often | Medium (split) |
 
 ## MSA Maturity Levels
 

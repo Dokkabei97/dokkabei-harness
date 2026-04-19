@@ -1,7 +1,7 @@
 {
   "name": "analyze",
   "description": "코드 품질/보안/성능/아키텍처/SQL 종합 분석 — 코드 리뷰, 성능 안티패턴 탐지, 아키텍처 건강도 점수화, SQL 쿼리 최적화",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "장민규",
     "email": "wkdrn970@gmail.com"
