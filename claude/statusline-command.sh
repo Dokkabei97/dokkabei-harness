@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Session start time tracking file
-SESSION_FILE="/Users/jmk/.claude/statusline-session.txt"
-USAGE_CACHE_FILE="/Users/jmk/.claude/statusline-usage-cache.json"
+SESSION_FILE="${HOME}/.claude/statusline-session.txt"
+USAGE_CACHE_FILE="${HOME}/.claude/statusline-usage-cache.json"
 USAGE_CACHE_TTL=120  # seconds
 
 # Read JSON input from stdin
@@ -52,8 +52,8 @@ model_label="${model_name}"
 # Source: settings.local.json → settings.json (persisted enum: low|medium|high|xhigh)
 # Note: `/effort max` is session-only and Claude Code doesn't expose it to statusline.
 if [ "$model_name" != "Haiku" ]; then
-    effort=$(jq -r '.effortLevel // empty' /Users/jmk/.claude/settings.local.json 2>/dev/null)
-    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' /Users/jmk/.claude/settings.json 2>/dev/null)
+    effort=$(jq -r '.effortLevel // empty' ${HOME}/.claude/settings.local.json 2>/dev/null)
+    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' ${HOME}/.claude/settings.json 2>/dev/null)
     [ -z "$effort" ] && effort=$([ "$model_name" = "Opus" ] && echo "xhigh" || echo "medium")
 
     case "$effort" in

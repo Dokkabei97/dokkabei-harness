@@ -857,6 +857,57 @@ Physical RAM (예: 64GB)
   - page cache miss → 디스크 I/O → 쿼리 지연 시간 급증
 ```
 
+### 왜 31GB가 상한인가? (Compressed Oops 동작 원리)
+
+64비트 JVM은 객체 참조(`oop`, ordinary object pointer)를 기본 8바이트가 아닌 **4바이트로 압축**해서 표현합니다 (`-XX:+UseCompressedOops`, JDK 7+ 기본 활성화). 이 압축이 가능한 이유와 32GB에서 깨지는 메커니즘은 다음과 같습니다.
+
+**32GB 경계의 수학적 근거**:
+
+```
+일반 64비트 포인터:   8 bytes (64 bit)  →  주소 공간: 2^64 = 16 EB
+Compressed Oops:    4 bytes (32 bit)  →  주소 공간: 2^32 = 4 GB
+
+하지만 JVM 객체는 8-byte alignment 보장 (객체 시작 주소가 항상 8의 배수)
+→ 포인터 하위 3비트는 항상 0 → 저장하지 않고 shift로 복원
+
+   실제 주소 = (compressed_oop << 3)
+   실효 주소 공간 = 2^32 × 2^3 = 2^35 = 32 GB ★
+```
+
+힙이 32GB를 **단 1바이트라도 초과**하면 JVM이 4바이트 포인터로 모든 객체를 가리킬 수 없게 되어 Compressed Oops를 자동 비활성화합니다.
+
+**32GB를 넘기는 순간 발생하는 변화**:
+
+| 항목 | Compressed (≤31GB) | Uncompressed (>32GB) | 영향 |
+|------|-------------------|---------------------|------|
+| 객체 참조 크기 | 4 bytes | 8 bytes | 모든 필드 참조가 2배 |
+| 객체 헤더 (klass pointer 포함) | 12 bytes | 16 bytes | 작은 객체일수록 비율 ↑ |
+| 동일 객체 heap 사용량 | 기준 | **+30 ~ 50%** | 실효 용량 감소 |
+| **실효 heap 용량** | 31GB | **약 25 ~ 28GB** | ★ **역전 현상** |
+| CPU L1/L2 캐시 효율 | 높음 | 낮음 (cache line당 객체 수 ↓) | 모든 메모리 접근 지연 |
+| GC pause 시간 | 기준 | 길어짐 (스캔할 포인터 크기 ↑) | tail latency 악화 |
+| 메모리 대역폭 | 기준 | 압박 증가 | scan-heavy 워크로드 직격 |
+
+**역전 현상이 핵심**: 32GB → 33GB로 올리면 가용 객체 수가 오히려 **줄어듭니다**. 31GB가 필요하면 31GB로 두고, 정말 더 필요하면 **48GB 이상** (가급적 64GB+)까지 점프해야 압축 비활성화 손실을 상쇄할 수 있습니다. **32~47GB 구간은 전 구간이 안티패턴**입니다.
+
+**ES 권장 설정 및 검증**:
+
+```bash
+# jvm.options
+-Xms30g
+-Xmx30g          # 31GB가 아닌 30GB로 1GB 안전 마진 (메타스페이스, 정렬 오버헤드 고려)
+
+# 압축 oops 활성화 여부 확인
+jcmd <ES_PID> VM.flags | grep -i CompressedOops
+# → -XX:+UseCompressedOops 가 보이면 OK
+
+# ES 시작 로그에서 확인
+grep "compressed ordinary object pointers" /var/log/elasticsearch/*.log
+# → "heap size [29.8gb], compressed ordinary object pointers [true]" 형태
+```
+
+JDK 15+에서는 `-XX:+UseCompressedClassPointers`까지 비활성화되면 추가 손실이 발생하므로, 위 검증 한 줄은 노드 부팅 시 반드시 확인해야 합니다.
+
 ### Heap vs Off-Heap 구성 요소
 
 | 구성 요소 | 위치 | 크기 결정 요인 | 관리 방법 |

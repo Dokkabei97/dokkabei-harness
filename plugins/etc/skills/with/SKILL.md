@@ -96,7 +96,7 @@ PROMPT='<task, shell-escaped>'
 TMPDIR=$(mktemp -d)
 
 # 설치된 에이전트만 실행
-(codex --model gpt-5.4 xhigh exec "$PROMPT" > "$TMPDIR/codex.txt" 2>/dev/null; echo $? > "$TMPDIR/codex.exit") &
+(codex --model gpt-5.5 medium exec "$PROMPT" > "$TMPDIR/codex.txt" 2>/dev/null; echo $? > "$TMPDIR/codex.exit") &
 (gemini -m gemini-3.1-pro-preview -p "$PROMPT" > "$TMPDIR/gemini.txt" 2>/dev/null; echo $? > "$TMPDIR/gemini.exit") &
 (copilot --model gpt-5.4 -p "$PROMPT" > "$TMPDIR/copilot.txt" 2>/dev/null; echo $? > "$TMPDIR/copilot.exit") &
 

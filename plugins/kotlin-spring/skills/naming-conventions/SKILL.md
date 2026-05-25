@@ -304,7 +304,7 @@ data class ProductId(val value: Long) {
 
 ---
 
-## 빠른 참조 — smpark 리뷰 규칙 요약
+## 빠른 참조 — 검색 테크리더 리뷰 규칙 요약
 
 | 상황 | 규칙 |
 |---|---|
