@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# =============================================================================
+# prd-guard.sh — maker/checker 분리 강제 (PostToolUse: Edit|Write on prd.json 훅)
+# prd.json 에서 passes==true 인 스토리마다 mvp-verifier 승인 마커
+# .planning/verified/{id} 존재를 검사한다. 마커 없는 마킹은 jq 로 false 원복
+# (임시파일 → mv 원자적 재작성) 후 exit 2 로 차단한다.
+# Evaluator 판정을 파일 마커로 물화해 결정론 검사로 변환하는 본 설계의 핵심 집행점.
+# =============================================================================
+set -euo pipefail
+
+PROJ="${CLAUDE_PROJECT_DIR:-.}"
+PLAN="$PROJ/.planning"
+PRD="$PLAN/prd.json"
+
+# stdin(JSON) 소비 — 파이프 막힘 방지. 검사 대상은 항상 정본 경로의 prd.json.
+input="$(cat || true)"
+: "${input}"
+
+[ -f "$PRD" ] || exit 0
+
+# jq 부재 시 검사 불가 — 차단하지 않고 사유 명시 후 통과
+if ! command -v jq >/dev/null 2>&1; then
+  echo "[mvp] jq 미설치 — prd-guard 검사 생략(차단 없음)" >&2
+  exit 0
+fi
+
+# passes==true 인 스토리 중 verified 마커 부재 id 수집 — while read 줄 단위 소비
+# (비인용 단어 분리 금지 — 공백 포함 id 도 안전. 파싱 불가 시 빈 결과 → 무동작, 스키마는 gate-prd 담당)
+nl=$'\n'
+violations=""
+while IFS= read -r id; do
+  [ -n "$id" ] || continue
+  if [ ! -f "$PLAN/verified/$id" ]; then
+    violations="${violations:+$violations$nl}$id"
+  fi
+done < <(jq -r '.stories[]? | select(.passes == true) | .id' "$PRD" 2>/dev/null || true)
+[ -n "$violations" ] || exit 0
+
+# 위반 스토리 passes 를 false 로 원복 — 임시파일 → mv (동일 디렉토리, 원자적 rename)
+ids_json="$(printf '%s\n' "$violations" | jq -R . | jq -s . 2>/dev/null || echo '[]')"
+tmp="$PLAN/.prd-guard.tmp"
+if jq --argjson ids "$ids_json" \
+     '.stories |= map(if (.id as $i | $ids | index($i)) then .passes = false else . end)' \
+     "$PRD" > "$tmp" 2>/dev/null; then
+  mv "$tmp" "$PRD"
+  echo "[mvp] verified 마커 없는 passes:true 를 false 로 원복했다." >&2
+else
+  echo "[mvp] 경고: prd.json 원복 실패(jq 오류) — 수동으로 passes 를 false 로 되돌려라." >&2
+fi
+
+while IFS= read -r id; do
+  echo "스토리 ${id}는 mvp-verifier 승인 마커(.planning/verified/${id})가 없다. verifier 반증을 통과시킨 뒤 마킹하라." >&2
+done <<< "$violations"
+exit 2

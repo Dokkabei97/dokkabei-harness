@@ -85,6 +85,14 @@ Creates a team configuration reference with:
 - Shared resources (skills, MCP servers)
 - CLAUDE.md registration template
 
+### 9. Loop Stop-Hook Template (루프 엔진)
+Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/loop-hooks.json](templates/loop-hooks.json)
+
+루프 하네스의 **세션 내 자율 루프 엔진**. Stop 훅이 종료를 가로채(exit 2) 정지 조건 충족까지 작업을 재주입한다.
+- 정지 조건 3결합: 결정론적 게이트(`LOOP_TEST_CMD`) + completion promise(`LOOP_PROMISE`) + max iterations(`LOOP_MAX_ITER`)
+- 가드레일: max iter · no-progress 감지(동일 실패 시그니처) · 상태는 `.planning/loop-state.json`
+- 환경변수 4개만 설정하면 동작. 설계 가이드: team-harness `references/loop-harness-guide.md`
+
 ## Template Complexity Levels
 
 | Level | Description | Sections | Use Case |

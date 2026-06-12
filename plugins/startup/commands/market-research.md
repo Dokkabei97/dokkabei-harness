@@ -20,7 +20,7 @@ Options:
   --scope full|sizing|competition|customer  조사 범위 (기본: full)
   --region kr|us|global                      지역 범위 (기본: kr)
   --depth quick|standard|deep               조사 깊이 (기본: standard)
-  --output [파일경로]                         리포트 저장 경로
+  --output [파일경로]                         리포트 저장 경로 (기본: .planning/business/market-research.md)
 ```
 
 ## Behavioral Flow
@@ -63,9 +63,9 @@ Options:
 ## Tool Coordination
 - **WebSearch**: 시장 데이터, 경쟁사 정보, 산업 리포트 검색
 - **WebFetch**: 구체적 웹페이지 데이터 수집
-- **Write**: 리포트 마크다운 파일 생성
+- **Write**: 리포트를 `.planning/business/market-research.md`에 저장 (표준 경로, `--output`으로 override — mvp 하네스 인테이크에서 시장 컨텍스트로 참조)
 - **Bash**: 데이터 정리/계산 스크립트 실행
-- **Read**: 기존 조사 결과 참조
+- **Read**: 기존 조사 결과 참조 (`.planning/business/` 하위)
 
 ## Examples
 

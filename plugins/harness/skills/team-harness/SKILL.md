@@ -55,6 +55,42 @@ metadata:
 
 상세: [references/agent-design-patterns.md](references/agent-design-patterns.md)
 
+### 검증·루프 보강 패턴 (2026 트렌드 반영)
+
+위 6패턴 위에 아래 보강 패턴을 선택적으로 결합한다. "검증은 모델 밖에 둔다" / "루프 엔지니어링" 트렌드 대응 — 에이전트의 자기평가는 신뢰하지 않는 것이 핵심.
+
+| 보강 패턴 | 핵심 | 결합 대상 | 주의 |
+|----------|------|----------|------|
+| **Adversarial Verify** | 독립 비평가가 발견을 *반증* 시도(자기 발견 제외), 반증 실패 시 통과 | Fan-out/Fan-in, Expert Pool | 절대 점수보다 반증·비교가 신뢰성 ↑. 기본값 통과로 과잉 강등 방지 |
+| **Loop-until-dry** | 새 발견이 없을 때까지 반복(고정 횟수 ❌) | 발견 범위 미상의 대형 작업 | 도메인이 고정·소수면 미적용(과잉) |
+| **Verification Gate** | 테스트·린터·타입체커 등 *결정론적* 게이트가 종료 조건 | Pipeline | 검증을 LLM 자기평가에 맡기지 말 것 |
+| **Guardrails** | circuit breaker·no-progress·토큰 예산 | 모든 장기 실행 | 비용 폭주·무한 루프 차단 |
+
+> 적용 예: search 오케스트레이터(Expert Pool + Adversarial Verify + Loop-until-dry), legacy 오케스트레이터(Pipeline + Verification Gate + Guardrails).
+
+## Loop Harness Design (루프 하네스 설계)
+
+대부분의 팀은 **단일 패스**(fan-out/pipeline 1회)다. 그러나 "조건이 충족될 때까지 반복"이 필요하면 **루프 하네스**로 설계한다 — 이것이 루프 엔지니어링의 본체다.
+
+**판단:** Phase 2에서 아래 중 하나라도 참이면 루프 하네스를 고려한다.
+- 완료가 1회 실행으로 보장되지 않음 (예: "테스트 전부 통과까지", "이슈 0건까지")
+- 작업량이 미상이거나 점진적 (백로그 소진, 발견 수렴)
+- 스케줄로 스스로 깨어나야 함 (야간 점검, CI 실패 대응)
+
+루프 하네스는 4요소를 **반드시** 명시한다. 하나라도 빠지면 무한 루프·비용 폭주 위험이 있다.
+
+| 요소 | 선택지 | 기본 권장 |
+|------|--------|----------|
+| **① 루프 엔진** | Stop훅 재주입 / headless `claude -p` 셸 루프 / Workflow 도구 / 스케줄(`/loop`·Routines·Cron) | 세션 내 자기반복=Stop훅, 무인 배치=headless, 결정론적 다단계=Workflow |
+| **② 정지 조건** | 결정론적 게이트(테스트·린터·타입체크) + 회의적 Evaluator(자기평가 ❌) + completion promise(`<promise>DONE</promise>`) | 셋 결합. **완료 판정은 모델이 아니라 하네스가 한다** |
+| **③ 메모리** | `.planning/{harness}-{id}.md`(계획·진행) + git history(상태) | `.planning/` 단일 표준 + 재개 프로토콜 |
+| **④ 가드레일** | max iterations · no-progress 감지 · 비용/시간 상한 | 셋 다 필수. 기본 max 10 / no-progress 2회 / 비용 상한 명시 |
+
+> 5대 프리미티브 매핑: ①=Automations, 병렬 변경 시 worktree 격리, 지식=Skills, 외부도구=MCP(Connectors), ②의 Evaluator=maker/checker sub-agent 분리, ③=Memory.
+
+상세 엔진별 레시피(Ralph / 2-Phase / PRD-driven)와 Stop훅 구현·재개 프로토콜: [references/loop-harness-guide.md](references/loop-harness-guide.md)
+재사용 템플릿: flow-scaffolding `templates/loop-stop-hook.sh`, `templates/loop-hooks.json`
+
 ## Workflow (7 Phases)
 
 ### Phase 0: Audit (기존 인프라 감사)
@@ -67,6 +103,20 @@ Read: claude/CLAUDE.md               → 기존 하네스 등록 확인
 - 신규: Phase 1 진행
 - `_workspace/` 존재 시: 재실행 감지
 
+**Drift Detection (3자 대조):** 아래 셋의 일치 여부를 확인하고 불일치를 플래그한다.
+
+| 대조축 | 확인 대상 |
+|--------|----------|
+| 파일 실재 | `agents/`·`skills/` 실제 파일 |
+| 등록 기록 | CLAUDE.md 하네스 트리거 + 변경 이력 |
+| 오케스트레이터 | 오케스트레이터 SKILL의 Agent Roster·참조 목록 |
+
+- 파일은 있는데 CLAUDE.md/오케스트레이터에 없음 → **미등록** 플래그
+- 기록엔 있는데 파일 없음 → **유령 참조** 플래그
+- 버전·설명 불일치(plugin.json ↔ README ↔ CLAUDE.md) → **버전 드리프트** 플래그
+
+드리프트 발견 시, 신규 작업에 앞서 정합화를 우선 제안한다.
+
 ### Phase 1: Domain Analysis (도메인 분석)
 - 작업 유형과 역할 분해
 - 기존 에이전트/스킬과의 충돌 탐지
@@ -74,6 +124,7 @@ Read: claude/CLAUDE.md               → 기존 하네스 등록 확인
 - 코드베이스 탐색 (기술 스택, 데이터 모델, 모듈 구조)
 
 ### Phase 2: Team Architecture Design (팀 설계)
+0. **단일 패스 vs 루프 판정**: 반복이 필요하면 [Loop Harness Design](#loop-harness-design-루프-하네스-설계)의 4요소를 함께 설계
 1. 실행 모드 선택 (Team → Sub → Hybrid 우선순위)
 2. 패턴 선택 (6종 중 택일 또는 복합)
 3. 4축 분리 기준 적용:
@@ -83,6 +134,17 @@ Read: claude/CLAUDE.md               → 기존 하네스 등록 확인
    - **재사용성**: 다른 팀/세션에서 재사용 가능한가?
 
 ### Phase 3: Component Generation (생성 — create-flow 위임)
+
+**재사용 우선 게이트 (생성 전 필수):** 새 컴포넌트를 만들기 전에 Phase 0 감사 목록과 대조해 판정한다.
+
+| 판정 | 조건 | 동작 |
+|------|------|------|
+| **재사용** | 기존 에이전트/스킬이 역할을 이미 커버 | 신규 생성 금지, 기존 참조 |
+| **확장** | 기존과 대부분 겹치나 일부 부족 | 기존 정의 수정·보강 (신규 ❌) |
+| **신규** | distinct domain — 기존으로 커버 불가 | 신규 생성 진행 |
+
+> 원칙: **"distinct domain일 때만 신규 생성."** 중복 에이전트/스킬은 트리거 충돌과 유지보수 부채를 만든다. 판정 근거를 한 줄로 남긴다.
+
 ```
 /create-flow --team --team-name {team-name}
 ```

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/mvp-session-init.sh\"", "timeout": 10 }],
+        "description": "진행 중 MVP 감지 — .planning/mvp-*.md status: in_progress 시에만 재개 안내 컨텍스트 주입, 그 외 무동작" }
+    ],
+    "Stop": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/mvp-loop-stop-hook.sh\"", "timeout": 600 }],
+        "description": "MVP 루프 엔진 — loop-active 존재 시에만 정지조건 3결합 검증, 미충족 시 exit 2 재주입" }
+    ],
+    "PreToolUse": [
+      { "matcher": "tool == \"Bash\" && tool_input.command matches \"rm .*(test|spec)\"",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/test-guard.sh\"", "timeout": 10 }],
+        "description": "루프 활성 중 테스트 파일 삭제 차단 — 테스트 삭제 금지 규칙의 결정론 집행" }
+    ],
+    "PostToolUse": [
+      { "matcher": "(tool == \"Edit\" || tool == \"Write\") && tool_input.file_path matches \"\\\\.planning/prd\\\\.json$\"",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/prd-guard.sh\"", "timeout": 30 }],
+        "description": "maker/checker 분리 강제 — verified 마커 없는 passes:true를 exit 2 차단 + false 되돌림" }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_comment": "Loop harness hooks — Stop훅 검증 게이트 루프 엔진 등록 템플릿. loop-stop-hook.sh와 함께 사용. 환경변수(LOOP_TEST_CMD/LOOP_PROMISE/LOOP_MAX_ITER/LOOP_PROGRESS_FILE)로 정지조건·가드레일 커스터마이즈.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ${CLAUDE_PROJECT_DIR}/.planning && [ -f ${CLAUDE_PROJECT_DIR}/.planning/loop-state.json ] || echo '{\"iteration\":0,\"last_fail_sig\":\"\"}' > ${CLAUDE_PROJECT_DIR}/.planning/loop-state.json",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/loop-stop-hook.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
+}

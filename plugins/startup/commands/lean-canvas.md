@@ -60,7 +60,7 @@ Options:
 ## Tool Coordination
 - **WebSearch**: 경쟁사, 시장 규모, 벤치마크 데이터 수집
 - **WebFetch**: 경쟁사 웹사이트, 앱스토어 정보 확인
-- **Write**: 린 캔버스 결과를 마크다운 파일로 저장
+- **Write**: 린 캔버스 결과를 `.planning/business/lean-canvas.md`에 저장 (표준 경로 — mvp 하네스의 `/mvp-from-startup`이 이 위치를 자동 탐지해 PRD 인테이크로 승계한다. `--output`으로 경로 override 가능)
 - **Read**: 기존 캔버스 파일 읽기 (--compare 시)
 
 ## Examples

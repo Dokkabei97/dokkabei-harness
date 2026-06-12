@@ -113,6 +113,23 @@
       "version": "1.0.0",
       "category": "startup",
       "keywords": ["pm", "marketing"]
+    },
+    {
+      "name": "mvp",
+      "source": "./plugins/mvp",
+      "description": "신규 사업/서비스 MVP 루프 엔지니어링 하네스 — 아이디어→PRD→디자인→스택 선택·스캐폴딩→PRD-driven 개발 루프를 게이트 상태기계로 완주. Stop훅 루프 엔진+maker/checker 반증 검증+가드레일. startup 플러그인과 /mvp-from-startup으로 연계(비즈니스 가설→코드).",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["mvp", "prd", "scaffolding", "greenfield", "loop", "gate", "startup", "product"],
+      "requires": ["base"]
+    },
+    {
+      "name": "legal",
+      "source": "./plugins/legal",
+      "description": "한국법 법무 하네스 — 계약 검토/작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄) 자문. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구.",
+      "version": "1.0.0",
+      "category": "legal",
+      "keywords": ["legal", "law", "korean-law", "contract", "compliance", "privacy", "labor", "ip", "corporate", "investment", "defamation", "criminal-risk", "risk-assessment"]
     }
   ]
 }

@@ -79,8 +79,8 @@ Options:
 ## Tool Coordination
 - **WebSearch**: 유사 서비스, 시장 데이터, 실패 사례 조사
 - **WebFetch**: 경쟁사/유사 서비스 상세 분석
-- **Write**: 검증 계획서 마크다운 파일 생성
-- **Read**: 기존 린 캔버스/시장조사 결과 참조
+- **Write**: 검증 계획서를 `.planning/business/hypotheses.md`에 저장 (표준 경로 — mvp 하네스의 `/mvp-from-startup`이 리스크 가설을 스코프 컷 우선순위 입력으로 승계한다)
+- **Read**: 기존 린 캔버스/시장조사 결과 참조 (`.planning/business/lean-canvas.md` 등)
 
 ## Examples
 
