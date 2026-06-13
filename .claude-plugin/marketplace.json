@@ -124,6 +124,15 @@
       "requires": ["base"]
     },
     {
+      "name": "feature-loop",
+      "source": "./plugins/feature-loop",
+      "description": "기존(브라운필드) 코드베이스용 루프 엔지니어링 하네스 — 자연어 요청을 작업 분해(tasks.json)→baseline 캡처→회귀 안전 개발 루프로 완주. MVP 하네스의 Stop훅 루프 엔진·maker/checker 반증·가드레일을 재사용하되 입력은 작업 분해, 게이트는 baseline 회귀 방지. 루프 안에서 스택 플러그인·analyze·test·workflow를 호출. 이미 개발 중/완료된 프로젝트의 기능 추가·수정용(mvp는 그린필드 전용).",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": ["feature-loop", "brownfield", "loop", "gate", "regression", "baseline", "tasks", "existing-codebase", "incremental"],
+      "requires": ["base"]
+    },
+    {
       "name": "legal",
       "source": "./plugins/legal",
       "description": "한국법 법무 하네스 — 계약 검토/작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄) 자문. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구.",
