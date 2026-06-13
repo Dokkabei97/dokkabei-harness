@@ -146,9 +146,10 @@ Agent({
 |---|------|---------|
 | ① | 결정론 게이트 | `.planning/gate-cmd` 동적 로드(`LOOP_TEST_CMD` env 우선) → **exit code 우선 판정** AND `jq -e '[.stories[].passes] | all'` |
 | ② | 회의적 Evaluator | `passes:true` 전환은 MV의 `.planning/verified/{story-id}` 마커 선행 필수 — `prd-guard.sh` 훅이 마커 없는 마킹을 exit 2 차단 + false 되돌림. **Evaluator 판정을 파일 마커로 물화해 결정론 검사로 변환** |
+| ②ᴱ | E2E 수용 게이트(선택) | `.planning/e2e-gate-cmd`(또는 `LOOP_E2E_CMD` env) 존재 시 **all-passes 도달 시점에만 1회** 실행 → exit 0 그린 필수. 파일 없으면 미적용(통과 간주, 회귀 0). 전체 유저플로우의 최종 동작을 보증해 단위 게이트가 못 잡는 통합 실패를 차단 |
 | ③ | Completion promise | `progress.md`에 `<promise>MVP_COMPLETE</promise>` 정확 문자열(grep -qF) |
 
-종료 허용 = ① ∧ ③ (②는 Stop훅이 verified 마커 재검사로 직접 확인 — prd-guard 1차 차단의 최종 방어선).
+종료 허용 = ① ∧ ②ᴱ ∧ ③ (②는 Stop훅이 verified 마커 재검사로 ①에 인입 — prd-guard 1차 차단의 최종 방어선. ②ᴱ는 e2e-gate-cmd 없으면 자동 통과).
 
 **가드레일 5종 요약:**
 
@@ -171,6 +172,7 @@ Agent({
 - [ ] `prd.json` 전 스토리 `passes:true` (`jq` all-passes 그린)
 - [ ] 모든 `passes:true` 스토리에 `.planning/verified/{story-id}` 마커 존재
 - [ ] `gate-cmd` 최종 1회 독립 재실행 exit 0 (그린)
+- [ ] (E2E 적용 시) `e2e-gate-cmd` 최종 1회 독립 재실행 exit 0 — 전체 유저플로우 그린
 - [ ] `progress.md`에 `<promise>MVP_COMPLETE</promise>` 정확 문자열 존재
 - [ ] 스토리별 `feat(mvp): S-xx` 커밋이 git log에 존재
 - [ ] 마스터 `mvp-{id}.md`가 `status: done` + ## Gates에 G1·G2 승인 스탬프

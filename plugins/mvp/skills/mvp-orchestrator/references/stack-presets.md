@@ -8,6 +8,7 @@ Stage 3에서 TA(tech-architect)가 사용하는 프리셋. 각 프리셋은 **�
 2. **smoke 테스트는 "실제로 뜨는가"를 검증**한다(앱 기동/렌더 + 최소 응답). MB가 만든 테스트를 MB 코드가 통과하는 자기참조성을 외부 검증으로 보강하는 장치다.
 3. **빈 골격에서 게이트 그린 확인 후 초기 커밋**(`chore(mvp): scaffold {스택} 골격 + smoke 테스트`). gate-scaffold.sh가 이 커밋과 그린 상태를 검사한다.
 4. 골격은 **걷는 골격(walking skeleton)** 까지만 — 도메인 코드는 Stage 4 루프의 몫이다.
+5. **E2E 수용 게이트는 선택**이다. UI/유저플로우가 핵심인 스택(특히 Next.js)은 `.planning/e2e-gate-cmd`에 E2E 명령 1줄을 기록해 루프 정지조건(②ᴱ)에 합류시킨다. gate-cmd와 동일 규약(비대화형·exit code·1줄)이며, all-passes 도달 시에만 1회 실행되어 단위 루프 속도에 영향이 없다. 파일을 만들지 않으면 미적용(기존 동작과 100% 동일).
 
 ## 선택 기준 결정 트리
 
@@ -176,7 +177,9 @@ test("홈 페이지가 크래시 없이 렌더되고 제목이 보인다", () =>
 pnpm test
 ```
 
-**비고**: `package.json`의 `test` 스크립트는 반드시 `vitest run`(1회 실행)으로 고정한다 — `vitest`(watch)면 게이트가 영원히 끝나지 않는다. App Router 심화 패턴(라우팅·페칭·테스트)은 nextjs 플러그인의 가이드를 따른다. E2E(Playwright)는 핵심 유저플로우 스토리의 루프 반복에서 추가한다.
+**비고**: `package.json`의 `test` 스크립트는 반드시 `vitest run`(1회 실행)으로 고정한다 — `vitest`(watch)면 게이트가 영원히 끝나지 않는다. App Router 심화 패턴(라우팅·페칭·테스트)은 nextjs 플러그인의 가이드를 따른다.
+
+**E2E 수용 게이트(권장)**: 웹 UI가 곧 제품인 스택이므로 E2E를 루프 정지조건에 합류시킨다. Playwright를 설치하고 `playwright.config.ts`의 `webServer`로 dev 서버를 자동 기동/종료하도록 설정한 뒤, **`.planning/e2e-gate-cmd`에 `npx playwright test` 한 줄을 기록**한다. Stop훅이 all-passes 도달 시점에만 이 명령을 1회 실행해 전체 유저플로우 그린을 종료 조건으로 강제한다(②ᴱ). 골격 단계에선 최소 1개 스모크 플로우(홈 진입→핵심 화면 1개)만 두고, 화면별 플로우는 해당 스토리 루프에서 확장한다. E2E가 불필요하면 파일을 만들지 않으면 미적용(회귀 0).
 
 ---
 

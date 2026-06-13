@@ -4,7 +4,7 @@ description: Generate and run end-to-end tests with Playwright. Creates test jou
 
 # E2E Command
 
-This command invokes the **e2e-runner** agent to generate, maintain, and execute end-to-end tests using Playwright.
+This command generates, maintains, and executes end-to-end tests using Playwright. The main session drives Playwright directly — via the `playwright` MCP server (browser automation tools) when available, or the `npx playwright` CLI otherwise. (Chrome-extension visual testing in `claude --chrome` mode is a separate path — use `/e2e-chrome`, which dispatches the `chrome-e2e-runner` agent.)
 
 ## What This Command Does
 
@@ -25,7 +25,7 @@ Use `/e2e` when:
 
 ## How It Works
 
-The e2e-runner agent will:
+The command will:
 
 1. **Analyze user flow** and identify test scenarios
 2. **Generate Playwright test** using Page Object Model pattern
@@ -39,7 +39,7 @@ The e2e-runner agent will:
 ```
 User: /e2e Test the market search and view flow
 
-Agent (e2e-runner):
+Output:
 # E2E Test Generation: Market Search and View Flow
 
 ## Test Scenario Identified
@@ -335,10 +335,20 @@ For PMX, prioritize these E2E tests:
 - Use `/e2e` for integration and user journey tests
 - Use `/code-review` to verify test quality
 
-## Related Agents
+## Integration with the MVP Loop (mvp plugin)
 
-This command invokes the `e2e-runner` agent located at:
-`~/.claude/agents/e2e-runner.md`
+`/e2e` doubles as the **E2E acceptance gate (②ᴱ)** of the `mvp` plugin's Stage 4 loop. To wire it in:
+
+1. Set up Playwright with a `webServer` block in `playwright.config.ts` so the app boots/stops automatically (non-interactive, exits with a status code).
+2. Record the run command as a single line in **`.planning/e2e-gate-cmd`**, e.g. `npx playwright test`.
+3. The loop's Stop hook (`mvp-loop-stop-hook.sh`) runs it **only once all stories reach `passes:true`**, and refuses the `MVP_COMPLETE` promise until the full user journey is green. If the file is absent, E2E is simply not applied (zero regression for pure-backend MVPs).
+
+This keeps the fast unit gate (`pnpm test`/`pytest`) on every iteration while the slower E2E suite runs just at the finish line. See the `mvp` plugin's `gate-policy.md` (②ᴱ) and `stack-presets.md` (Next.js → E2E 수용 게이트).
+
+## Related
+
+- `/e2e-chrome` — Chrome-extension visual E2E via the `chrome-e2e-runner` agent (`plugins/test/agents/chrome-e2e-runner.md`), for `claude --chrome` mode.
+- `mvp` plugin — uses this command's command line as its Stage 4 E2E acceptance gate.
 
 ## Quick Commands
 

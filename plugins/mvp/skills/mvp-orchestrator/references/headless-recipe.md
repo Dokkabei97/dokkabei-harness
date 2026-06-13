@@ -4,7 +4,7 @@ Stage 4 개발 루프의 **보조 엔진**. 기본 엔진(Stop훅 재주입)은 
 
 ## 핵심 원칙
 
-1. **동일 `.planning` · 동일 게이트 공유** — 정지 판정은 Stop훅과 똑같이 `gate-cmd` exit code + `prd.json` all-passes + `<promise>MVP_COMPLETE</promise>`로 한다. 엔진을 바꿔도 정지조건은 불변이다.
+1. **동일 `.planning` · 동일 게이트 공유** — 정지 판정은 Stop훅과 똑같이 `gate-cmd` exit code + `prd.json` all-passes + (있으면) `e2e-gate-cmd` exit code + `<promise>MVP_COMPLETE</promise>`로 한다. 엔진을 바꿔도 정지조건은 불변이다.
 2. **매 반복 컨텍스트 리셋** — 각 `claude -p` 세션은 이전 반복을 모른다. 재개 프로토콜(마스터 파일 → `git log` → 미완 스토리 1개)로 아티팩트에서 이해를 재생성한다. 파일시스템과 git history만이 상태다.
 3. **이중 가동 금지** — Stop훅 엔진과 동시에 돌리지 않는다. headless 모드에서는 `.planning/loop-active`를 **생성하지 않는다**: Stop훅의 안전핀(`loop-active` 부재 시 무동작)이 내부 세션의 정상 종료를 보장하고, 반복은 외부 `while`이 전담한다. `loop-active`가 이미 있으면 스크립트가 시작을 거부한다.
 4. **세션당 스토리 1개** — 프롬프트가 "이번 세션에서는 스토리 1개만 처리하고 종료"를 강제한다. 작은 단위 + 잦은 커밋이 중단·재개를 안전하게 만든다.
@@ -24,6 +24,8 @@ MAX_ITER="${LOOP_MAX_ITER:-24}"          # 반복 상한 (권장: 스토리 수�
 MAX_MINUTES="${LOOP_MAX_MINUTES:-120}"   # 시간 상한(분)
 PROMISE="${LOOP_PROMISE:-<promise>MVP_COMPLETE</promise>}"  # promise 전체 문자열(Stop훅과 동일 규약)
 GATE_CMD="${LOOP_TEST_CMD:-$(cat "$PLAN/gate-cmd")}"  # 결정론 게이트 (env 우선)
+# E2E 수용 게이트(선택) — env 우선, 없으면 e2e-gate-cmd 파일, 그것도 없으면 빈 값(미적용)
+E2E_CMD="${LOOP_E2E_CMD:-$( [ -s "$PLAN/e2e-gate-cmd" ] && head -n1 "$PLAN/e2e-gate-cmd" || true )}"
 
 # 이중 가동 금지: Stop훅 엔진이 살아 있으면 시작 거부
 if [ -f "$PLAN/loop-active" ]; then
@@ -37,9 +39,11 @@ hash_text() {  # no-progress 시그니처 (macOS/Linux 이식성 폴백)
   else shasum | cut -d' ' -f1; fi
 }
 
-stopped_ok() {  # 정지조건 3결합: ① 게이트 그린 ∧ all-passes ③ promise
+stopped_ok() {  # 정지조건: ① 게이트 그린 ∧ all-passes ②ᴱ E2E 그린(있을 때) ③ promise
   bash -c "$GATE_CMD" >/dev/null 2>&1 || return 1
   jq -e '[.stories[].passes] | all' "$PLAN/prd.json" >/dev/null 2>&1 || return 1
+  # ②ᴱ E2E 수용 게이트 — all-passes 통과 후에만, 명령이 있을 때만 실행
+  [ -n "$E2E_CMD" ] && { bash -c "$E2E_CMD" >/dev/null 2>&1 || return 1; }
   grep -qF "$PROMISE" "$PLAN/progress.md" 2>/dev/null || return 1
   return 0
 }
@@ -75,8 +79,9 @@ MVP Stage 4 개발 루프의 1회 반복을 수행하라. mvp-loop-protocol 스�
 4) mvp-verifier 에이전트를 디스패치해 해당 스토리 AC를 반증시킨다. 반증 실패 시에만
    .planning/verified/{story-id} 마커가 생성되며, 마커가 생긴 뒤에만 passes:true 로 마킹한다.
 5) feat(mvp): S-xx 형식으로 커밋하고 .planning/progress.md 에 1줄을 추가한다.
-6) 모든 스토리가 passes:true 이고 게이트가 그린이면 progress.md 에
-   <promise>MVP_COMPLETE</promise> 를 정확히 기록한다.
+6) 모든 스토리가 passes:true 이고 단위 게이트가 그린이면, .planning/e2e-gate-cmd 가 있을 경우
+   그 명령을 실행해 E2E 그린까지 확인한 뒤에만 progress.md 에 <promise>MVP_COMPLETE</promise> 를
+   정확히 기록한다. E2E 레드면 promise 를 적지 말고 깨진 플로우를 보완한다.
 규칙: 이번 세션에서는 스토리 1개만 처리하고 종료한다. 테스트 삭제·약화 금지.
 진행 불가 시 .planning/BLOCKED.md 에 시도·원인·권장 다음 행동을 기록하고 종료한다.
 PROMPT

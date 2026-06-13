@@ -108,6 +108,13 @@ flow-scaffolding `templates/loop-stop-hook.sh`의 확장. 판정 주체는 모�
 - 집행자는 Stop훅이 아니라 PostToolUse 훅 `prd-guard.sh`: `prd.json` Edit/Write 직후 passes:true인 모든 story id에 대해 마커 존재를 검사하고, 위반 시 jq로 해당 passes를 false로 되돌린 뒤 exit 2로 차단 사유를 재주입한다.
 - 설계 핵심: **Evaluator의 확률적 판정을 파일 마커로 물화해 결정론 검사로 변환**. 단 prd-guard는 Edit/Write만 포착하고 Bash 리다이렉션 우회가 가능하므로, **Stop훅이 종료 판정 시 마커를 재검사한다(최종 방어선)** — ①의 verified 마커 재검사 항목 참조.
 
+### ②ᴱ E2E 수용 게이트 (선택 — 전체 유저플로우 최종 보증)
+
+- 명령 로드: `LOOP_E2E_CMD` env가 있으면 우선, 없으면 `.planning/e2e-gate-cmd` 파일에서 동적 로드(`gate-cmd`와 동일 규약 — 비대화형·exit code 성패·1줄). **파일이 없으면 미적용** = `e2e_pass`를 통과로 두어 기존 동작과 100% 호환(회귀 0).
+- **실행 시점**: `all-passes`가 true가 된 반복에서만 1회 실행한다. 전 스토리 완료 전에는 스킵 — 느리고 flaky한 E2E가 빠른 단위 루프의 반복 속도를 갉아먹지 않게 하는 핵심 설계. 단위 게이트(①)는 매 반복, E2E 게이트(②ᴱ)는 끝물에만.
+- 판정: 단위 게이트와 동일 — exit 0 그린, 출력의 명백한 실패 표지(`^FAIL`·`N failed`)는 보조 레드 처리. E2E 레드 시 그 출력도 no-progress 시그니처에 합류한다(단위는 그린인데 E2E만 레드여도 동일 실패 2회면 no-progress 발동).
+- 적용 대상: 웹 UI/유저플로우가 핵심인 MVP(Next.js·풀스택). 순수 백엔드 API는 파일을 만들지 않으면 미적용. E2E 게이트 명령은 Stage 3 스캐폴딩(TA) 또는 핵심 유저플로우 스토리 루프에서 `.planning/e2e-gate-cmd`에 기록한다.
+
 ### ③ Completion promise
 
 - `.planning/progress.md`에 `<promise>MVP_COMPLETE</promise>` **정확 문자열**이 존재할 것. 검사는 `grep -qF`(고정 문자열) — 정규식 금지(부분 일치·변형 토큰 오탐 방지).
@@ -116,10 +123,10 @@ flow-scaffolding `templates/loop-stop-hook.sh`의 확장. 판정 주체는 모�
 ### 종료 판정식
 
 ```
-종료 허용(exit 0) = ① (gate-cmd exit 0 ∧ jq all-passes ∧ verified 마커 전건) ∧ ③ promise 존재
+종료 허용(exit 0) = ① (gate-cmd exit 0 ∧ jq all-passes ∧ verified 마커 전건) ∧ ②ᴱ (E2E 그린 — e2e-gate-cmd 있을 때만, 없으면 통과 간주) ∧ ③ promise 존재
 ```
 
-②는 prd-guard의 1차 차단에만 의존하지 않고 **Stop훅이 마커를 재검사한다(최종 방어선)**. 미충족이면 exit 2 + stderr로 미완 사유(실패 테스트 tail, 미완 스토리, 마커 없는 passes:true id, promise 누락)를 재주입한다.
+②는 prd-guard의 1차 차단에만 의존하지 않고 **Stop훅이 마커를 재검사한다(최종 방어선)**. 미충족이면 exit 2 + stderr로 미완 사유(실패 테스트 tail, 미완 스토리, 마커 없는 passes:true id, E2E 실패 출력, promise 누락)를 재주입한다.
 
 ### 종료 경로 공통 의무
 
@@ -131,7 +138,8 @@ flow-scaffolding `templates/loop-stop-hook.sh`의 확장. 판정 주체는 모�
 
 | 변수 | 기본값 | 적용 엔진 | 의미 |
 |------|--------|----------|------|
-| `LOOP_TEST_CMD` | (미설정 — `.planning/gate-cmd` 사용) | Stop훅 · headless | 결정론 게이트 명령 override. 비대화형 + exit code 성패 표현 필수 |
+| `LOOP_TEST_CMD` | (미설정 — `.planning/gate-cmd` 사용) | Stop훅 · headless | 결정론 게이트(단위/통합) 명령 override. 비대화형 + exit code 성패 표현 필수 |
+| `LOOP_E2E_CMD` | (미설정 — `.planning/e2e-gate-cmd` 사용, 없으면 E2E 미적용) | Stop훅 · headless | E2E 수용 게이트 명령 override. all-passes 도달 시에만 1회 실행. 비대화형 + exit code 필수(예: `playwright test` — webServer 설정으로 앱 자동 기동/종료) |
 | `LOOP_PROMISE` | `<promise>MVP_COMPLETE</promise>` | Stop훅 · headless | promise **전체 문자열**(태그 포함). 두 엔진 모두 값 그대로 grep -qF |
 | `LOOP_MAX_ITER` | `24` | Stop훅 · headless | 반복 상한. 권장 = 스토리 수 × 3. 로드 순서: **env > `loop-state.json`의 `max_iter` 필드 > 기본값 24** (`/mvp-run --max-iter`는 필드에 기록). 도달 시 exit 0 + 미완 보고 |
 | `LOOP_MAX_MINUTES` | `120` | Stop훅 · headless | 시간 상한(분). 로드 순서: **env > `loop-state.json`의 `max_minutes` 필드 > 기본값 120** (`/mvp-run --max-minutes`는 필드에 기록). Stop훅은 `loop-state.json`의 `started_at`(**epoch 초**, `date +%s`) 대비, headless는 스크립트 시작 시각 대비. 초과 시 현 반복 완료 후 종료 + 재개 방법 보고 |

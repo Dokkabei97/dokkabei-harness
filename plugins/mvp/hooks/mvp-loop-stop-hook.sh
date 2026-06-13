@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 # =============================================================================
 # mvp-loop-stop-hook.sh — MVP PRD-driven 개발 루프 엔진 (Stop 훅)
-# flow-scaffolding templates/loop-stop-hook.sh 확장판 (확장 6건: 안전핀 ·
+# flow-scaffolding templates/loop-stop-hook.sh 확장판 (확장 7건: 안전핀 ·
 # gate-cmd 동적 로드 · all-passes AND 결합 · verified 마커 재검사 · 시간 상한 ·
-# 종료 경로 loop-active 해제).
+# 종료 경로 loop-active 해제 · E2E 수용 게이트).
 #   - exit 0 : 종료 허용 (루프 비활성 / 정지조건 충족 / 가드레일 도달)
 #   - exit 2 : 종료 차단. stderr가 Claude에게 전달되어 다음 반복이 이어진다.
 #
-# 정지조건 3결합 (판정 주체 = 본 훅, 모델 아님):
+# 정지조건 (판정 주체 = 본 훅, 모델 아님):
 #   ① 결정론 게이트: .planning/gate-cmd 실행(exit code 우선·grep 보조)
 #      AND jq -e '[.stories[].passes]|all' .planning/prd.json
 #   ② 회의적 Evaluator: passes:true 전환은 prd-guard.sh가 verified 마커로 1차 강제
 #      (단 Edit|Write 만 포착 — Bash 리다이렉션 우회 가능) → 본 훅이 all-passes
 #      확인 시 passes==true 각 id 의 .planning/verified/{id} 존재를 재검사 (최종 방어선)
+#   ②ᴱ E2E 수용 게이트(선택): .planning/e2e-gate-cmd(또는 LOOP_E2E_CMD env)가 있으면
+#      all-passes 도달 시점에만 1회 실행 — 전체 유저플로우의 최종 동작 보증.
+#      파일 부재 시 미적용(통과 간주)으로 기존 동작과 100% 호환. exit code 우선·grep 보조.
 #   ③ completion promise: progress.md 의 정확 문자열 일치 (grep -qF, 정규식 금지)
-#   종료 허용 = ① ∧ ③
+#   종료 허용 = ① ∧ ②ᴱ ∧ ③
 # 가드레일: max iterations · no-progress(md5 시그니처 연속 동일) · 시간 상한
 # =============================================================================
 set -euo pipefail
@@ -64,6 +67,13 @@ if [ -z "$GATE_CMD" ]; then
   exit 0
 fi
 
+# (b') E2E 수용 게이트 명령 동적 로드(선택) — LOOP_E2E_CMD env 우선, 없으면 .planning/e2e-gate-cmd 1행.
+# 비어 있으면 E2E 미적용(통과 간주) — 기존 동작과 100% 호환. all-passes 도달 시에만 실행한다.
+E2E_CMD="${LOOP_E2E_CMD:-}"
+if [ -z "$E2E_CMD" ] && [ -s "$PLAN/e2e-gate-cmd" ]; then
+  E2E_CMD="$(head -n 1 "$PLAN/e2e-gate-cmd" | tr -d '\r')"
+fi
+
 # stdin 해시 (no-progress 시그니처용) — macOS/Linux 이식성 폴백 (템플릿 로직 유지)
 hash_stdin() {
   if command -v md5sum >/dev/null 2>&1; then md5sum | cut -d' ' -f1
@@ -103,6 +113,10 @@ if [ "$started_at" -gt 0 ] && [ $(( now - started_at )) -ge $(( MAX_MINUTES * 60
   exit 0
 fi
 
+# 출력의 명백한 실패 표지 판정 — exit 0이어도 출력에 실패 카운트가 있으면 보수적으로 레드.
+# "0 failed" 류 오탐 방지: 행두 FAIL 또는 1 이상 카운트가 붙은 실패 표지만 매칭.
+has_failure_marker() { printf '%s\n' "$1" | grep -Eqi '(^FAIL([ :]|$)|[1-9][0-9]* +(fail(ed|ure|ures)?|errors?))'; }
+
 # ① 결정론 게이트 실행 — eval 금지, bash -c 사용. 판정은 exit code 우선.
 gate_exit=0
 test_out="$( (cd "$PROJ" && bash -c "$GATE_CMD") 2>&1 )" || gate_exit=$?
@@ -110,22 +124,7 @@ test_out="$( (cd "$PROJ" && bash -c "$GATE_CMD") 2>&1 )" || gate_exit=$?
 tests_pass=false
 if [ "$gate_exit" -eq 0 ]; then
   tests_pass=true
-  # 보조 판정(grep): exit 0이어도 출력에 명백한 실패 표지가 있으면 보수적으로 실패 처리.
-  # "0 failed" 류 오탐 방지 — 행두 FAIL 또는 1 이상 카운트가 붙은 실패 표지만 매칭.
-  if printf '%s\n' "$test_out" | grep -Eqi '(^FAIL([ :]|$)|[1-9][0-9]* +(fail(ed|ure|ures)?|errors?))'; then
-    tests_pass=false
-  fi
-fi
-
-# 실패 시그니처(md5) — no-progress 감지용 (실패 시에만 산출)
-fail_sig=""
-if [ "$tests_pass" = false ]; then
-  # 숫자 토큰 제거 정규화 — pytest "1 failed in 0.01s" 류 소요시간 비결정성 제거
-  sig_src="$(printf '%s' "$test_out" | grep -Ei 'fail|error' | sed -E 's/[0-9]+([.][0-9]+)?//g' | sort || true)"
-  if [ -z "$sig_src" ]; then
-    sig_src="exit=$gate_exit"$'\n'"$(printf '%s' "$test_out" | tail -20)"
-  fi
-  fail_sig="$(printf '%s' "$sig_src" | hash_stdin 2>/dev/null || echo "")"
+  has_failure_marker "$test_out" && tests_pass=false
 fi
 
 # ① AND 결합 (c): prd.json 전 스토리 passes
@@ -148,6 +147,36 @@ if [ -f "$PRD_JSON" ]; then
   done < <(jq -r '.stories[]? | select(.passes == true) | .id' "$PRD_JSON" 2>/dev/null || true)
 fi
 
+# ②ᴱ E2E 수용 게이트 — all-passes 도달 시점에만 1회 실행(전 스토리 완료 전엔 스킵해 루프 속도 보존).
+# E2E_CMD 미설정 시 e2e_pass=true 로 두어 기존 동작과 동일(회귀 0). 판정은 게이트와 동일 규약.
+e2e_required=false
+e2e_pass=true
+e2e_out=""
+e2e_exit=0
+if [ -n "$E2E_CMD" ] && [ "$all_passes" = true ]; then
+  e2e_required=true
+  e2e_out="$( (cd "$PROJ" && bash -c "$E2E_CMD") 2>&1 )" || e2e_exit=$?
+  if [ "$e2e_exit" -eq 0 ]; then
+    e2e_pass=true
+    has_failure_marker "$e2e_out" && e2e_pass=false
+  else
+    e2e_pass=false
+  fi
+fi
+
+# 실패 시그니처(md5) — no-progress 감지용. 단위 게이트 또는 E2E 게이트가 레드일 때 산출.
+fail_sig=""
+if [ "$tests_pass" = false ] || [ "$e2e_pass" = false ]; then
+  sig_src_raw="$test_out"
+  [ "$e2e_required" = true ] && sig_src_raw="$sig_src_raw"$'\n'"E2E:"$'\n'"$e2e_out"
+  # 숫자 토큰 제거 정규화 — "1 failed in 0.01s" 류 소요시간 비결정성 제거
+  sig_src="$(printf '%s' "$sig_src_raw" | grep -Ei 'fail|error' | sed -E 's/[0-9]+([.][0-9]+)?//g' | sort || true)"
+  if [ -z "$sig_src" ]; then
+    sig_src="exit=$gate_exit e2e=$e2e_exit"$'\n'"$(printf '%s' "$sig_src_raw" | tail -20)"
+  fi
+  fail_sig="$(printf '%s' "$sig_src" | hash_stdin 2>/dev/null || echo "")"
+fi
+
 # ③ completion promise — 정확 문자열 일치 (grep -qF, 정규식 금지)
 promise_found=false
 if [ -f "$PROGRESS_FILE" ] && grep -qF "$PROMISE" "$PROGRESS_FILE"; then
@@ -162,10 +191,12 @@ jq -n --argjson it "$next_iter" --arg sig "$fail_sig" --argjson st "$started_at"
   --argjson mi "${state_max_iter:-$MAX_ITER}" --argjson mm "${state_max_minutes:-$MAX_MINUTES}" \
   '{iteration:$it, last_fail_sig:$sig, started_at:$st, max_iter:$mi, max_minutes:$mm}' > "$STATE_FILE"
 
-# 정지 판정: ①(게이트 그린 AND all-passes AND verified 마커) ∧ ③(promise) → 종료 허용 + 루프 해제(e)
-if [ "$tests_pass" = true ] && [ "$all_passes" = true ] && [ "$markers_ok" = true ] && [ "$promise_found" = true ]; then
+# 정지 판정: ①(게이트 그린 AND all-passes AND verified 마커) ∧ ②ᴱ(E2E 그린) ∧ ③(promise) → 종료 허용 + 루프 해제(e)
+if [ "$tests_pass" = true ] && [ "$all_passes" = true ] && [ "$markers_ok" = true ] && [ "$e2e_pass" = true ] && [ "$promise_found" = true ]; then
   rm -f "$PLAN/loop-active"
-  echo "[mvp-loop] 정지조건 충족(게이트 그린 + all-passes + verified 마커 + promise) — iteration $next_iter 에서 루프 정상 종료(loop-active 해제)." >&2
+  e2e_note=""
+  [ "$e2e_required" = true ] && e2e_note=" + E2E 그린"
+  echo "[mvp-loop] 정지조건 충족(게이트 그린 + all-passes + verified 마커${e2e_note} + promise) — iteration $next_iter 에서 루프 정상 종료(loop-active 해제)." >&2
   exit 0
 fi
 
@@ -202,8 +233,12 @@ fi
   if [ "$markers_ok" = false ]; then
     echo "- verified 마커 없는 passes:true 스토리: $unverified_ids — mvp-verifier 반증을 통과시켜 마커(.planning/verified/{id})를 생성하라."
   fi
+  if [ "$e2e_required" = true ] && [ "$e2e_pass" = false ]; then
+    echo "- E2E 수용 게이트 실패 (cmd: $E2E_CMD, exit=$e2e_exit). 전 스토리 단위 테스트는 통과했으나 유저플로우가 실제로 동작하지 않는다. 출력 tail -20:"
+    printf '%s\n' "$e2e_out" | tail -20
+  fi
   if [ "$promise_found" = false ]; then
-    echo "- 모든 스토리 완료·검증 후 $PROGRESS_FILE 에 '$PROMISE' 를 정확히 기록하라."
+    echo "- 모든 스토리 완료·검증·E2E 그린 후 $PROGRESS_FILE 에 '$PROMISE' 를 정확히 기록하라."
   fi
 } >&2
 exit 2

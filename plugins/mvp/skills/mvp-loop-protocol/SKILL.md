@@ -38,7 +38,8 @@ mvp-orchestrator의 Stage 4(개발 루프)를 운영하는 단일 규약. 루프
 ├── prd.json          # {"stories":[{"id":"S-01","title":...,"acceptance":[...],"passes":false}]}
 ├── design-spec.md    # [story: S-xx] 태그
 ├── stack-decision.md # G2 기록(후보·트레이드오프·선택·근거)
-├── gate-cmd          # 결정론 게이트 명령 1줄(tech-architect 기록, 훅이 로드)
+├── gate-cmd          # 결정론 게이트(단위/통합) 명령 1줄(tech-architect 기록, 훅이 로드)
+├── e2e-gate-cmd      # (선택) E2E 수용 게이트 명령 1줄 — 있으면 all-passes 도달 시 1회 실행, 없으면 미적용
 ├── progress.md       # 반복 로그 1줄/회 + <promise>MVP_COMPLETE</promise>
 ├── loop-state.json   # {iteration, last_fail_sig, started_at(epoch 초), max_iter, max_minutes}
 ├── loop-active       # 루프 가동 플래그(빈 파일) — /mvp-run 생성, 훅 종료 경로에서 삭제
@@ -60,9 +61,13 @@ mvp-orchestrator의 Stage 4(개발 루프)를 운영하는 단일 규약. 루프
 | 6 | progress 갱신 | 메인 세션 | `.planning/progress.md`에 1줄 추가: `iter N \| S-xx verified \| passes n/m`. 마스터 파일 Checklist·Iteration·Feedback도 동기 갱신 |
 | 7 | 커밋 | 메인 세션 | `git add -A && git commit -m "feat(mvp): S-xx <변경 요지>"` — **커밋 1회에 구현+prd.json+progress.md 일괄 포함**, descriptive 커밋, 스토리 id 필수 |
 
-전 스토리 `passes:true` 도달 시: progress.md 마지막 줄에 `<promise>MVP_COMPLETE</promise>`를
-정확히 기록(앞뒤 변형 금지)하고 마스터 파일 `status: done`으로 전환 → Stop훅이 정지조건을
-확인하고 종료를 허용한다.
+전 스토리 `passes:true` 도달 시 **(E2E 수용 게이트 적용 프로젝트)**: promise 기록 전에 먼저
+`.planning/e2e-gate-cmd`(또는 `/e2e`)를 직접 실행해 전체 유저플로우가 동작하는지 확인한다.
+- E2E 그린 → progress.md 마지막 줄에 `<promise>MVP_COMPLETE</promise>`를 정확히 기록(앞뒤 변형 금지)하고 마스터 `status: done`으로 전환 → Stop훅이 정지조건(① ∧ ②ᴱ ∧ ③)을 재검사하고 종료를 허용한다.
+- E2E 레드 → promise를 기록하지 않는다. 깨진 플로우를 커버하는 스토리를 보완(필요 시 PS에 E2E 스토리 추가 요청)해 다시 단위 그린 → E2E 그린을 만든다. 성급히 promise를 적어도 Stop훅이 E2E 재검사로 종료를 차단한다.
+
+E2E 게이트 미적용(`e2e-gate-cmd` 없음) 프로젝트는 전 스토리 `passes:true` 도달 즉시 promise를
+기록하면 된다(기존 동작과 동일). promise 정확 기록 + 마스터 `status: done` 후 Stop훅이 종료를 허용한다.
 
 ## 재개 프로토콜 (4단계)
 
@@ -85,17 +90,20 @@ compaction된 기억에 의존하지 말고 매번 아티팩트에서 이해를 
 |---|------|-----------|
 | ① | 결정론 게이트 | `.planning/gate-cmd` 파일에서 명령 동적 로드(`LOOP_TEST_CMD` env가 있으면 그것이 우선) → **exit code 우선 판정**(출력의 `grep -Ei 'fail\|error'`는 보조 시그널 — exit 0인데 grep만 매칭되면 오탐 방지를 위해 통과로 본다) **AND** `jq -e '[.stories[].passes] \| all' .planning/prd.json`. all-passes 확인 시 passes==true인 각 id의 `.planning/verified/{id}` 마커 존재까지 재검사 — 마커 없는 passes:true 발견 시 미충족(exit 2)으로 해당 id와 "mvp-verifier 반증을 통과시켜 마커를 생성하라" 안내를 재주입(prd-guard가 못 잡는 Bash 리다이렉션 우회의 최종 방어선) |
 | ② | 회의적 Evaluator | passes:true 전환은 mvp-verifier의 `.planning/verified/{story-id}` 마커가 선행 필수. PostToolUse 훅 `prd-guard.sh`가 마커 없는 마킹을 exit 2로 차단하고 jq로 false 되돌림. **Evaluator의 확률적 판정을 파일 마커로 물화해 결정론 검사로 변환**한 것이 이 설계의 핵심 |
+| ②ᴱ | E2E 수용 게이트(선택) | `.planning/e2e-gate-cmd`(또는 `LOOP_E2E_CMD` env)가 있으면 **all-passes 도달 시점에만 1회** 실행 → exit 0 그린 필수. 파일 없으면 미적용(통과 간주, 회귀 0). 전체 유저플로우의 최종 동작 보증 — 단위 게이트가 못 잡는 통합 실패를 끝물에 차단 |
 | ③ | Completion promise | `.planning/progress.md`에 `<promise>MVP_COMPLETE</promise>` 정확 문자열 존재 — `grep -qF` 검사(정규식 금지) |
 
-종료 허용 = **① ∧ ③**. ②는 별도 평가 항목이 아니라 ①의 all-passes 검사에 전제로 인입된다
-(passes:true가 되려면 마커가 반드시 선행하므로). 셋 중 하나라도 미충족이면 훅이 exit 2로
-종료를 차단하고 stderr로 미충족 사유·테스트 출력 tail을 재주입한다.
+종료 허용 = **① ∧ ②ᴱ ∧ ③**. ②(마커)는 별도 평가 항목이 아니라 ①의 all-passes 검사에 전제로
+인입된다(passes:true가 되려면 마커가 반드시 선행하므로). ②ᴱ는 e2e-gate-cmd가 없으면 자동 통과라
+기존 동작에 영향이 없다. 하나라도 미충족이면 훅이 exit 2로 종료를 차단하고 stderr로 미충족
+사유·테스트/E2E 출력 tail을 재주입한다.
 
 ## 환경변수
 
 | 변수 | 기본값 | 용도 | 오버라이드 방법 |
 |------|--------|------|-----------------|
-| `LOOP_TEST_CMD` | 미설정 (`.planning/gate-cmd` 사용) | 결정론 게이트 명령을 일시적으로 강제 지정 (예: 부분 테스트로 빠른 반복) | 세션 시작 전 셸에서 `export LOOP_TEST_CMD="pytest -q tests/unit"`. 영구 변경은 env가 아니라 gate-cmd 파일 수정 |
+| `LOOP_TEST_CMD` | 미설정 (`.planning/gate-cmd` 사용) | 결정론 게이트(단위/통합) 명령을 일시적으로 강제 지정 (예: 부분 테스트로 빠른 반복) | 세션 시작 전 셸에서 `export LOOP_TEST_CMD="pytest -q tests/unit"`. 영구 변경은 env가 아니라 gate-cmd 파일 수정 |
+| `LOOP_E2E_CMD` | 미설정 (`.planning/e2e-gate-cmd` 사용, 없으면 E2E 미적용) | E2E 수용 게이트 명령 지정 — all-passes 도달 시 1회 실행. 비대화형·exit code 필수 | `export LOOP_E2E_CMD="npx playwright test"`. 영구 적용은 `.planning/e2e-gate-cmd` 파일에 1줄 기록 |
 | `LOOP_PROMISE` | `<promise>MVP_COMPLETE</promise>` | 완료 약속문(정확 문자열 일치 대상) | `export LOOP_PROMISE=...` — 변경 시 progress.md 기록 문자열도 반드시 일치시킬 것 |
 | `LOOP_MAX_ITER` | `24` (권장: 스토리 수 × 3) | 반복 상한 — 무한 spin 차단 | `/mvp-run --max-iter <n>`(`loop-state.json`의 `max_iter` 필드에 기록) 또는 `export LOOP_MAX_ITER=<n>`. 훅 로드 순서: env > loop-state.json 필드 > 기본값 |
 | `LOOP_MAX_MINUTES` | `120` | 시간 상한 — `loop-state.json`의 `started_at`(epoch 초) 대비 경과 분 | `/mvp-run --max-minutes <n>`(`loop-state.json`의 `max_minutes` 필드에 기록) 또는 `export LOOP_MAX_MINUTES=<n>`. 훅 로드 순서: env > loop-state.json 필드 > 기본값 |
