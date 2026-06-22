@@ -193,7 +193,8 @@ score(q, d) = SUM_over_t_in_q [
 
 여기서:
   IDF(t)  = ln(1 + (N - df(t) + 0.5) / (df(t) + 0.5))
-  tf(t,d) = sqrt(freq(t in d))    -- Lucene BM25Similarity 구현
+  tf(t,d) = freq(t,d) / (freq(t,d) + k1 * (1 - b + b * dl/avgdl))   -- BM25 saturation (ES 8.x 기본, _explain의 tf 항과 일치)
+            ※ sqrt(freq)는 구식 ClassicSimilarity(TF-IDF) 방식이며 BM25Similarity가 아님
   dl      = 문서 d의 필드 길이 (토큰 수, norms로 인코딩)
   avgdl   = 전체 문서의 평균 필드 길이
   N       = 전체 문서 수 (해당 shard 기준)
@@ -206,7 +207,7 @@ score(q, d) = SUM_over_t_in_q [
 
 | Component | 소스 | 저장 위치 | 설명 |
 |-----------|------|----------|------|
-| `tf` (Term Frequency) | Postings list `.doc` 파일 | freq 값에서 계산 | 문서 내 term 출현 빈도. Lucene은 `sqrt(freq)` 사용 |
+| `tf` (Term Frequency) | Postings list `.doc` 파일 | freq 값에서 계산 | 문서 내 term 출현 빈도. BM25는 saturation 식 `freq/(freq+k1*(1-b+b*dl/avgdl))` 적용 (`sqrt(freq)`는 구식 ClassicSimilarity) |
 | `df` (Document Frequency) | Term Dictionary 메타데이터 | 세그먼트별 `.tip` 파일 | term을 포함하는 문서 수 |
 | `dl` (Document Length) | Norms | `.nvd` 파일 | 필드의 토큰 수. `SmallFloat`로 1바이트 인코딩 |
 | `avgdl` | 세그먼트 메타데이터에서 계산 | `sumTotalTermFreq / docCount` | shard 전체의 평균 필드 길이 |
@@ -252,6 +253,8 @@ GET /products/_search?search_type=dfs_query_then_fetch
 // Pass 2: 글로벌 통계로 스코어링
 // 트레이드오프: 추가 라운드트립 발생. 대규모 클러스터에서는 오버헤드 주의
 ```
+
+> ⚠️ **글로벌 IDF는 `_explain/{id}`로 검증 불가**: `GET /idx/_explain/{id}`은 `search_type`을 무시한다(issue #2612). `dfs_query_then_fetch`를 줘도 단건 `_explain`은 여전히 per-shard IDF만 보여줘 실제 검색 점수와 어긋난다. dfs 글로벌 IDF·rescore가 반영된 점수는 `_search { "explain": true }`로만 확인하라.
 
 ### Custom Similarity 설정
 
@@ -392,6 +395,111 @@ GET /products/_explain/42
 - `dl` (document length)이 해당 문서의 실제 토큰 수와 일치하는지 확인
 - `freq`가 해당 문서 내 term 출현 수와 일치하는지 확인
 - filter 절은 score에 나타나지 않음 (0.0 기여)
+
+#### _termvectors로 색인된 실제 토큰 확인
+
+`_explain`이 "왜 이 점수인가"를 보여준다면, `_termvectors`는 "이 문서에 실제로 어떤 토큰이 색인되었는가"를 보여줍니다. 코덱 차원에서는 `.tvd`/`.tvx`/`.tvm`(`Lucene90TermVectorsFormat`, 위 Codec 표 참조)에 저장된 문서별 term 정보를 읽어옵니다.
+
+```json
+// 요청: 색인된 토큰 + 통계
+GET /products/_termvectors/42
+{
+  "fields": ["title"],
+  "term_statistics": true,
+  "field_statistics": true
+}
+
+// 응답 구조 (루트는 복수형 term_vectors)
+{
+  "_id": "42",
+  "found": true,
+  "term_vectors": {
+    "title": {
+      "field_statistics": {
+        "sum_doc_freq": 120000,
+        "doc_count": 50000,
+        "sum_ttf": 180000
+      },
+      "terms": {                          // ← 키 = 색인된 실제 토큰 (분석기 통과 후)
+        "무선": {
+          "doc_freq": 1200,               // ← _explain idf의 n과 동일 출처
+          "ttf": 1500,
+          "term_freq": 1,
+          "tokens": [
+            { "position": 0, "start_offset": 0, "end_offset": 2 }
+          ]
+        },
+        "이어폰": {
+          "doc_freq": 800,
+          "term_freq": 1,
+          "tokens": [
+            { "position": 1, "start_offset": 3, "end_offset": 6 }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+**교차검증 포인트**:
+- `terms` 맵의 **키가 색인된 실제 토큰**입니다. `_analyze`(search_analyzer)로 얻은 쿼리 토큰과 교집합이 비면 분석기 불일치가 확정됩니다.
+- `term_statistics: true`의 `doc_freq`는 `_explain` idf 설명의 `n`(documents containing term)과 **동일한 출처**입니다. 두 값이 다르면 샤드/세그먼트 경계 또는 통계 갱신 시점 차이를 의심합니다.
+
+**on-the-fly drift 함정**:
+- 매핑이 `term_vector: no`(기본값)이면 색인 시점에 term vector를 저장하지 않으므로, `_termvectors`는 `_source`를 **현재 index_analyzer로 즉석(on-the-fly) 재분석**해 토큰을 만듭니다.
+- 따라서 분석기를 바꾼 뒤 reindex를 누락하면, 실제 색인된(과거 분석기) 토큰과 on-the-fly(현재 분석기) 결과가 어긋나도 `_termvectors`만으로는 drift를 탐지하지 못합니다.
+- 진짜 색인 시점 토큰을 보려면 매핑을 `term_vector: with_positions_offsets`로 두거나(단, 소급 적용 불가 — 설정 이후 색인분부터), reindex로 교차검증해야 합니다.
+
+**offset 단위**: `start_offset`/`end_offset`은 UTF-16 code unit 기준입니다. 한글은 BMP 영역이라 1글자=1단위로 안전하지만, 이모지/보충문자(surrogate pair)는 1글자=2단위로 계산됩니다.
+
+> **[정정] `dfs` 파라미터 금지**: `_termvectors`에 `dfs` 파라미터는 **존재하지 않습니다**(ES 5.0, PR#16452에서 제거됨 — 8.x에 없음). 멀티샤드 간 통계(doc_freq) 편차를 정확히 보려면 단일 샤드 테스트 인덱스를 쓰거나 클라이언트에서 전역 통계를 재계산하십시오. artificial doc은 routing 미지정 시 무작위 샤드에 매핑되어 통계가 부정확해질 수 있습니다.
+
+#### _profile 5대 섹션과 timeout 원인 분리 결정 트리
+
+`_profile`(요청 본문에 `"profile": true`)은 **shard-level** 실행을 5개 섹션으로 분해합니다. `profile.shards[]` 배열의 각 샤드마다 다음 키가 (조건부로) 존재합니다.
+
+| 섹션 | 존재 조건 | 의미 |
+|------|----------|------|
+| `searches[].query[]` | 항상 | Lucene Query 실행 트리 (가장 흔한 주범) |
+| `searches[].rewrite_time` | 항상 | Query rewrite에 든 시간(nanos) |
+| `searches[].collector[]` | 항상 | 결과 수집 단계(top hits/count 등) |
+| `aggregations[]` | aggs가 있을 때만 | 집계 실행 트리 (aggs 없으면 **이 섹션 자체가 부재**) |
+| `fetch` | 항상 | hit 본문 로딩 단계 |
+
+**1차 절단 — '가장 느린 단일 샤드' 기준**: 샤드별 시간을 단순 합산하면 안 됩니다(병렬 실행이므로 wall-clock과 무관). 가장 느린 단일 샤드 하나를 골라 그 안에서 `Σquery time` vs `collector 루트 time` vs `Σaggregations time` vs `fetch.breakdown 합`을 비교해 주범 단계를 특정합니다.
+
+**query breakdown 9필드** (각각 `*_count` 동반):
+
+| 필드 | 호출 빈도 | 의미 |
+|------|----------|------|
+| `create_weight` | 세그먼트 무관 1회 | Weight 객체 생성(쿼리 정규화) |
+| `build_scorer` | 세그먼트마다 | Scorer 구축 (높으면 term 수/세그먼트 수 과다) |
+| `next_doc` | 매칭 문서 순회 | 다음 매칭 docID로 이동 |
+| `advance` | skip 시 | 특정 docID로 점프(conjunction) |
+| `match` | two-phase | 2단계 확인(phrase 등) |
+| `score` | 스코어링 시 | 점수 계산 |
+| `shallow_advance` | block-max WAND | 블록 단위 advance |
+| `compute_max_score` | block-max WAND | 블록 최대 점수 산출 |
+| `set_min_competitive_score` | top-k 가지치기 | 경쟁 컷 갱신 |
+
+**aggregation breakdown 6필드**: `initialize` / `build_leaf_collector` / `collect`(+`collect_count`) / `post_collection` / `build_aggregation` / `reduce`(= reserved, **항상 0**).
+
+**collector reason 사전**: `search_top_hits` / `search_count` / `search_query_phase` / `search_terminate_after_count` / `search_timeout` / `aggregation` / `global_aggregation`. ⚠️ collector time은 query time과 **시간대가 중복**되므로 두 값을 합산하지 마십시오.
+
+**fetch.breakdown 실제 필드**: `next_reader`/`next_reader_count`, `load_stored_fields`/`load_stored_fields_count`, `load_source`/`load_source_count`. `load_source`가 크면 거대 `_source` 로딩이 병목 — `_source` 필터링/`stored_fields` 검토.
+
+**took vs Σtime_in_nanos 갭**: 응답의 `took`이 profile의 모든 `time_in_nanos` 합보다 **현저히 크면**(took >> 합) 병목이 '단계 밖'에 있다는 신호입니다 — coordinating 노드 머지, 네트워크, rewrite/global ordinals lazy 빌드 등 profile이 측정하지 못하는 영역.
+
+**profile이 측정하지 못하는 항목**: coordinating 머지·네트워크 전송, rewrite/global ordinals 빌드(과소계상 또는 누락).
+
+> **[함정] profiling 오버헤드**: `_profile`은 WAND/block-max 등 Lucene 최적화를 **비활성화**하고 모든 단계를 계측하므로 절대 nanos가 부풀려집니다(공식 문서 'non-negligible overhead'). 따라서 (1) 단계 **간 상대 비교** 전용으로만 쓰고 절대 시간으로 SLA를 판단하지 말 것, (2) 프로덕션에서 기본 활성화 금지.
+
+**global ordinals — '첫 쿼리만 느림' 신호**: 고-카디널리티 keyword 필드(예: nori 분석 텍스트와 별개로 운영하는 `brand`/`category` keyword facet)의 terms 집계는 global ordinals를 필요로 합니다.
+- 기본(lazy): 첫 집계 쿼리의 `collect` 단계에 빌드 비용이 **과소계상**되거나 `took` 갭으로만 드러나, "첫 쿼리만 느리고 이후엔 빠름" 패턴을 만듭니다.
+- `eager_global_ordinals: true`로 두면 빌드가 refresh-time으로 이동해 쿼리 시점 profile에서 **완전히 사라집니다**(대신 색인/refresh 비용 증가). 첫 쿼리 지연이 반복 재현되면 이 설정을 검토합니다.
+
+> 증상 기반 진입은 search-diagnostics 스킬 참조
 
 ## 3. Segment Lifecycle -- Refresh, Flush, Merge, Commit
 

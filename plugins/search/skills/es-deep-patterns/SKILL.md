@@ -381,6 +381,104 @@ GET /_nodes/hot_threads
 GET /_cluster/allocation/explain
 ```
 
+### 증상 기반 진단 API 라우팅 마스터 테이블
+
+> 증상 기반 진입(증상 → 도구 시퀀스)은 `search-diagnostics` 스킬을 허브로 참조. 여기서는 각 도구의 깊은 사용법을 다룬다.
+
+위 Debugging APIs 블록을 증상별 시퀀스로 확장한다. 증상을 만나면 아래 표의 순서대로 도구를 좁혀 들어간다(같은 증상 행은 모든 search 스킬에서 동일하게 유지).
+
+| 증상 | 1차 절단 | 2차 정밀 | 3차 교차검증 | 확정/배제 |
+|------|---------|---------|-------------|----------|
+| **무결과/특정 문서 누락** | `_explain/{id}` (matched:false? filter 제거 재호출로 filter vs query 이분) | `_validate/query?rewrite=true&all_shards=true` (파싱된 Lucene term) | `_analyze`(search_analyzer 명시) ∩ `_termvectors/{id}`(색인된 실제 토큰) = ∅ → 분석기 불일치 확정 | [일치하는데 0건] `_field_caps` (searchable:false / 멀티인덱스 type conflict) |
+| **오정렬/순위·스코어 이상** | `_explain/{id}` (BM25/function_score 트리) | `_search` `explain:true` (상위 hit 좌우 비교; ★dfs 전역 IDF·rescore 점수는 여기서만 — `_explain`은 search_type 무시 issue#2612) | `_termvectors` `term_statistics:true` (doc_freq를 `_explain` idf의 n과 교차) | `min_score`/`from`·`size`(track_total_hits:true) 컷 배제 → `_rank_eval`(골든셋 nDCG/MRR) |
+| **timeout/느림** | `_search` `profile:true` 5섹션 1차 절단 (query vs collector vs aggregations vs fetch, '가장 느린 단일 샤드' 기준) | 주범 단계 정밀 breakdown (query 9필드 / agg 6필드 / fetch load_source·load_stored_fields) | took vs Σtime_in_nanos 갭 (took ≫ 합이면 '단계 밖') | [단계 밖] `_nodes/hot_threads` + `_tasks` + `_cat/thread_pool/search` + `_nodes/stats/breaker` |
+| **불안정 latency** | `_nodes/hot_threads?type=cpu` (여러 번 스냅샷) | `_cat/thread_pool/search?v` (active/queue/rejected) | `_nodes/stats/breaker` (data too big tripped, 증가율) | [첫 쿼리만 느림] eager_global_ordinals 검토 / [페이지마다 변동] PIT(`_pit`)+search_after / [벤치마크 변동] `_cache/clear?request=true` 후 재측정 |
+
+#### 무결과 플로우 상세 — `_validate/query` 역할 구분
+
+```bash
+# rewrite=true 가 실제 파싱된 Lucene term 문자열을 노출한다(무결과 1차 단서).
+# all_shards=true 미지정 시 단일 랜덤 샤드만 검사 → 비결정적. 반드시 명시.
+# explain=true 는 '에러 시 상세'용이지 term 확인용이 아니다 — 역할이 다르다.
+GET /products/_validate/query?rewrite=true&all_shards=true&explain=true
+{ "query": { "match": { "title": "무선 이어폰" } } }
+```
+
+이분 절차:
+1. `_explain/{id}` 의 `matched:false` → filter를 제거하고 재호출. 결과가 바뀌면 filter가 범인, 그대로면 query 자체가 범인.
+2. `_validate/query?rewrite=true&all_shards=true` 의 파싱 term 과,
+3. `_analyze`(검색 시점 분석기 명시) 토큰 ∩ `_termvectors/{id}`(색인 시점 토큰)을 비교.
+   - 교집합이 공집합이면 **분석기 불일치 확정**(검색 분석기 ≠ 색인 분석기, 또는 analyzer 변경 후 reindex 누락).
+4. 토큰이 일치하는데도 0건이면 `_field_caps` 로 `searchable:false` 또는 멀티인덱스 `type conflict` 확인.
+
+### `_termvectors`/`_mtermvectors` 색인 토큰 검증
+
+색인된 '실제 토큰'을 확인해 검색 분석기 토큰(`_analyze`)과 대조하는 도구. `_analyze`는 가설(검색 시점), `_termvectors`는 실측(색인 시점)이다.
+
+```bash
+# 단일 문서: 색인된 실제 토큰 + 통계
+GET /products/_termvectors/1?fields=title&term_statistics=true&field_statistics=true
+```
+
+응답 구조(검증된 사실):
+
+```json
+{
+  "term_vectors": {            // 루트는 복수형 term_vectors
+    "title": {
+      "field_statistics": { "doc_count": 1000, "sum_doc_freq": 5000, "sum_ttf": 7000 },
+      "terms": {               // 키 = 색인된 실제 토큰
+        "무선": {
+          "doc_freq": 320,     // term_statistics=true 일 때만; _explain idf의 n과 동일 출처
+          "ttf": 410,
+          "term_freq": 1,
+          "tokens": [ { "position": 0, "start_offset": 0, "end_offset": 2 } ]
+        },
+        "이어폰": {
+          "doc_freq": 290, "ttf": 350, "term_freq": 1,
+          "tokens": [ { "position": 1, "start_offset": 3, "end_offset": 6 } ]
+        }
+      }
+    }
+  }
+}
+```
+
+#### `_mtermvectors` body 2형식 + 문서군 일괄 대조
+
+```bash
+# 형식 1: 공통 옵션 — 같은 인덱스의 여러 id 에 동일 fields/term_statistics 적용
+POST /products/_mtermvectors
+{ "ids": ["1", "2", "3"], "fields": ["title"], "term_statistics": true }
+
+# 형식 2: 문서별 — 멀티인덱스 / per_field_analyzer / artificial doc 혼합
+POST /_mtermvectors
+{
+  "docs": [
+    { "_index": "products", "_id": "1", "fields": ["title"] },
+    { "_index": "products", "doc": { "title": "무선 이어폰" },
+      "per_field_analyzer": { "title": "nori_standard" } }
+  ]
+}
+```
+
+활용 — **'잡히는 문서군 vs 안 잡히는 문서군' 일괄 대조**: 검색에 걸린 id 와 안 걸린 id 를 형식 1로 한 번에 뽑아, 안 걸린 군에만 기대 토큰(예: `이어폰`)이 없으면 색인 단계(분석기/사전) 문제로 확정한다. **색인 품질 audit**: 토큰 0개(분석기가 전부 제거), 거대 토큰(분해 실패로 원문 통째), 사전 미반영(`삼성전자`가 `삼성`+`전자`로 쪼개짐) 같은 패턴을 문서군 단위로 스캔.
+
+#### 한계 및 함정 (검증된 사실)
+
+- **shard-local 통계**: `doc_freq`/`ttf`/`field_statistics`는 호출이 닿은 샤드 기준 — 전역 통계 아님. 멀티샤드 score 편차 디버깅 시 단일 샤드 테스트 인덱스 또는 클라이언트 재계산으로 대응한다(★`dfs` 파라미터는 ES 5.0 PR#16452에서 제거되어 8.x에 없음 — 절대 기재 금지).
+- **삭제 문서 doc_freq 잔존**: 세그먼트 머지 전까지 삭제 문서가 `doc_freq`에 남아 `_explain` idf의 n 과 미세하게 어긋날 수 있다.
+- **on-the-fly 재분석 drift**: 매핑이 `term_vector:no`(기본)면 `_source`를 '현재' index_analyzer로 즉석 재분석한다. analyzer 변경 후 reindex를 누락하면 stored(과거 색인) ≠ on-the-fly(현재) 라도 이 도구로는 drift가 안 잡힌다. 진짜 색인 토큰은 `term_vector:with_positions_offsets`(색인 시점부터, 소급 불가) 또는 reindex 후 교차검증.
+- **artificial doc routing**: artificial doc(`doc:{...}`)은 routing 미지정 시 무작위 샤드로 가 통계가 부정확하다. 통계 노이즈 없는 검증이 목적이면 artificial doc이 가장 깔끔하되 통계를 신뢰하지 말 것.
+- **per_field_analyzer + 저장 id**: 저장 문서(id)에 `per_field_analyzer`를 줘도 stored term을 무시하고 재생성한다 → 의도가 '저장된 그대로'면 id 형식, '다른 분석기로 시뮬레이션'이면 artificial doc 형식을 쓴다.
+- **offset 단위**: `start_offset`/`end_offset`은 UTF-16 code unit. 한글 BMP 1글자=1단위로 안전하나 이모지·보충문자만 2단위.
+
+#### 포터빌리티 경고 (ES 8.x ↔ OpenSearch)
+
+- `_disk_usage`·`_field_usage_stats`는 **ES 8.x 전용** — OpenSearch는 no handler.
+- PIT 엔드포인트가 다르다: ES `_pit` ↔ OpenSearch `_search/point_in_time`.
+- `_termvectors`의 `dfs` 파라미터는 ES 5.0에서 제거 — 어느 버전 예제에도 넣지 말 것.
+
 | Anti-Pattern | Fix | Severity |
 |-------------|-----|----------|
 | slow log 미설정 | 모든 주요 인덱스에 설정 | **High** |

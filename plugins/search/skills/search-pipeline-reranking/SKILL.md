@@ -651,6 +651,52 @@ POST /products/_search
 }
 ```
 
+### Named Queries로 절 매칭 디버깅·관측 (LTR feature logging과 용도 구분)
+
+위 Feature Logging의 `named_query`는 **`sltr` feature set 로깅 대상을 지정하는 LTR 학습 파이프라인 전용** 메커니즘이다. 이와 별개로, 일반 `bool` 절에 `_name`을 부착해 응답 `hit.matched_queries`로 **어떤 절이 매칭을 일으켰는지** 관측하는 디버깅·운영 용도가 있다. 둘은 이름이 비슷하나 목적이 다르다 — 전자는 모델 학습용 feature 값 추출, 후자는 매칭 경로 진단·ROI 데이터화.
+
+**절별 `_name` 부착으로 매칭 경로 집계**:
+```json
+POST /products/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        { "match":        { "title.exact":   { "query": "무선 이어폰", "_name": "exact" } } },
+        { "match":        { "title.synonym": { "query": "무선 이어폰", "_name": "synonym" } } },
+        { "fuzzy":        { "title":         { "value": "이어폰", "fuzziness": "AUTO", "_name": "typo" } } },
+        { "match_phrase": { "title":         { "query": "무선 이어폰", "boost": 2, "_name": "boost" } } }
+      ]
+    }
+  },
+  "include_named_queries_score": true
+}
+```
+
+**응답** (ES 8.8.0+에서 `include_named_queries_score:true`이면 `matched_queries`가 List → `{name: score}` Map으로 변경):
+```json
+{
+  "hits": {
+    "hits": [
+      {
+        "_id": "product_001",
+        "_score": 18.4,
+        "matched_queries": { "exact": 12.1, "synonym": 0.0, "boost": 6.3 }
+      }
+    ]
+  }
+}
+```
+- 절별 매칭 빈도를 집계하면 동의어/오타 절이 실제로 얼마나 매칭에 기여하는지 **ROI 데이터화**(예: `synonym` 절이 거의 매칭 안 되면 동의어 사전 점검).
+- ES 8.8.0 미만에서는 `matched_queries`가 매칭된 이름의 List(점수 없음)만 반환 — 절 기여 점수 관측은 8.8.0+ 필요.
+
+**함정**:
+- `matched_queries`는 **hit마다 절 재실행 오버헤드**가 있다 → 프로덕션 상시 사용 금지, `size` 제한·표본 추출로만.
+- `filter`/`must_not`/`constant_score`/`function_score` 내부의 `_name`은 **score에 비기여**(점수 0 또는 final score와 불일치) → "matched인데 점수 0"을 버그로 오해하지 말 것.
+- `nested` 쿼리 안의 named query는 루트 `matched_queries`가 아니라 **`inner_hits.matched_queries`로 봐야** 정확하다(issue#46231).
+
+> 절 매칭 디버깅 증상 진입은 search-diagnostics 스킬 참조.
+
 ### 모델 배포
 
 ```json

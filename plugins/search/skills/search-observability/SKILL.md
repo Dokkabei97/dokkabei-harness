@@ -561,6 +561,10 @@ fun <T> recordSearchWithExperiment(
 | 정렬 느림 | sort 포함 시 느림 | fielddata 미사용, doc_values 비활성 | `doc_values: true` 확인, 정렬 필드 최적화 |
 | 스크롤 타임아웃 | scroll 요청 실패 | scroll context 너무 많음, 메모리 부족 | `search_after`로 전환, `max_open_scroll_context` 조정 |
 
+**count 부하로 인한 timeout 완화**: 전체 히트 카운트와 terminate_after는 둘 다 정확도를 일부 희생해 부하를 줄인다.
+- `"track_total_hits": false` → 매칭 문서를 끝까지 세지 않아 부하가 크게 준다. 단 `hits.total.relation`이 `"eq"`가 아니게 되므로(정확한 총건수 미제공) "총 N건" UI·페이지네이션 총 페이지 수 표기에 영향. 정확 카운트가 필요하면 정수 임계(예: `10000`)로 절충.
+- `"terminate_after": N` → 샤드별로 N건 수집 후 조기 종료해 부하를 줄인다. 단 N은 **샤드별·세그먼트 across 미보장**이라 정확도를 희생하며, 응답의 `terminated_early`(boolean) 필드로 조기 종료 여부를 확인한다. `timed_out`(timeout 발동)과는 별개 필드임에 주의.
+
 ### SearchSlowQueryAspect (AOP)
 
 ```kotlin
@@ -633,6 +637,15 @@ PUT /products/_settings
 }
 ```
 
+**query phase vs fetch phase 로그 분리 해석**: slow log는 `query`와 `fetch` 임계를 별도 필드로 찍는다. 어느 쪽이 로깅되는지가 1차 분기다.
+- `query`만 임계 초과 → scoring/filtering/집계 단계가 주범. 다음 단계로 `_search` `"profile": true` 진입(아래 워크플로우).
+- `fetch`만 임계 초과 → 큰 `_source`·highlight·느린 디스크 I/O가 주범. `_source` 필터링(`source_excludes`)·highlight 범위 축소·디스크 사용량 점검(`GET <index>/_disk_usage?run_expensive_tasks=true`, ES 8.x 전용 — OpenSearch는 no handler).
+- 둘 다 초과 → query 단계부터 절단(query가 fetch 입력 hit 수를 좌우하므로).
+
+주의: slow log의 `took_millis`는 **샤드 레벨** 시간이라 coordinating 노드의 reduce/머지 시간을 포착하지 못한다(샤드는 빠른데 응답 전체는 느린 케이스는 '단계 밖' 플레이북 참조). 또한 `slowlog.source`로 쿼리 본문을 통째로 로깅하면 검색어에 포함된 PII가 로그에 남고 디스크를 잠식할 수 있으니 운영 인덱스에서는 길이 제한(예: `"256"`)·민감 인덱스 비활성화를 권장.
+
+> 증상 기반 진입은 search-diagnostics 스킬 참조.
+
 ### Slow Query 분석 워크플로우
 
 ```
@@ -642,20 +655,99 @@ PUT /products/_settings
 2. 쿼리 식별: _tasks API 또는 slow log에서 원인 쿼리 추출
     │
     ▼
-3. 프로파일링: _search + "profile": true 로 phase별 시간 확인
-    │    ├── Query phase: scoring, filtering
-    │    ├── Collect phase: aggregation
-    │    └── Fetch phase: _source 로딩
+3. 1차 절단: _search + "profile": true 로 4개 영역 시간 비교
+    │   '가장 느린 단일 샤드' 기준으로 본다(샤드별 편차가 평균을 가린다).
+    │    ├── query        : QueryPhase scoring/filtering (query breakdown)
+    │    ├── aggregations : 집계 (aggregation breakdown)
+    │    ├── collector    : 수집 단계 (search_top_hits 등 reason별)
+    │    └── fetch        : _source/stored fields 로딩 (fetch breakdown)
+    │   ※ collector time은 query time과 시간대가 중복 → 합산 금지.
     │
     ▼
-4. 원인 분석: 위 Root Causes 테이블 대조
+4. took vs Σ time_in_nanos 갭 확인
+    │   took >> 각 단계 nanos 합 → 시간이 '단계 밖'에 있음(아래 운영 플레이북).
+    │   (profile은 shard-level만 측정 → coordinating 머지·네트워크·rewrite·
+    │    lazy global ordinals 빌드는 누락/과소계상된다.)
+    │
+    ├── [단계 안] 주범 단계 확정 → 정밀 breakdown
+    │     ├── query 주범      → query breakdown 9필드
+    │     │     build_scorer(세그먼트마다)·next_doc·advance·match·score·
+    │     │     compute_max_score·set_min_competitive_score 중 어디서 시간이 쌓이나
+    │     ├── aggregations 주범 → aggregation breakdown 6필드
+    │     │     build_leaf_collector·collect(collect_count)·build_aggregation
+    │     │     (high cardinality 의심: collect_count 폭증 → execution_hint/별도 집계 인덱스)
+    │     └── fetch 주범      → fetch breakdown
+    │           load_source/load_source_count·load_stored_fields → _source 필터링
+    │     │
+    │     ▼
+    │   5. 분기: 쿼리 리라이트 / 매핑 변경(doc_values·eager_global_ordinals)
+    │      / 인덱스 구조(shard 분할·ILM) → 위 Root Causes 테이블 대조
+    │
+    └── [단계 밖] → 6. 단계 밖(took >> profile) 운영 플레이북
     │
     ▼
-5. 해결: 쿼리 리라이트 / 인덱스 변경 / 인프라 튜닝
-    │
-    ▼
-6. 검증: 변경 전후 latency 비교 (A/B 또는 before/after)
+7. 검증: 변경 전후 latency 비교 (A/B 또는 before/after)
+   ※ 벤치마크가 흔들리면 GET /<index>/_cache/clear?request=true 후 재측정.
 ```
+
+**profile 주의(절대값 금지)**: profiling은 WAND/block-max 등 Lucene 최적화를 비활성화하므로 nanos가 부풀려진다. **단계 간 상대 비교 전용**이며, 공식 문서도 'non-negligible overhead'를 경고한다 — 프로덕션 기본 활성 금지. 자세한 breakdown 필드 사전·실행 파이프라인은 lucene-internals 스킬 참조.
+
+### profile 기반 CI 성능 예산 게이트
+
+profiling 오버헤드 때문에 `time_in_nanos`의 **절대 임계로 fail/pass를 판정하면 안 된다**(같은 쿼리도 런마다 흔들리고, WAND 비활성으로 실제 프로덕션 latency와 무관). 대신 다음 3축으로 게이트를 설계한다.
+
+1. **단계별 시간 풀(pool) 비율**: 한 profile 내에서 query/aggregations/fetch가 차지하는 비율(예: fetch가 전체의 40% 초과 → 회귀 의심). 비율은 오버헤드에 비교적 강건하다.
+2. **baseline 대비 상대 증가율**: 동일 데이터셋·동일 쿼리 템플릿의 직전 baseline `total time_in_nanos` 스냅샷 대비 N%(예: +30%) 증가 시 경고. 절대값이 아니라 같은 측정 조건의 델타를 본다.
+3. **aggregation cardinality 조기 탐지**: aggregation breakdown의 `collect_count`(또는 terms agg의 결과 버킷 수) 스냅샷을 템플릿별로 저장 → 카디널리티가 임계 이상으로 튀면 차단(`execution_hint`/별도 집계 인덱스 신호).
+
+```kotlin
+// CI 게이트: 템플릿별 total time_in_nanos 스냅샷을 baseline과 비교
+data class ProfileBudget(
+    val template: String,
+    val baselineTotalNanos: Long,   // 직전 통과 빌드의 스냅샷
+    val maxRelativeIncrease: Double = 0.30, // +30% 초과 시 fail
+    val maxCollectCount: Long       // aggregation cardinality 가드
+)
+
+fun assertWithinBudget(profile: SearchProfile, budget: ProfileBudget) {
+    val total = profile.shards.maxOf { it.totalTimeInNanos() } // 가장 느린 샤드
+    val increase = (total - budget.baselineTotalNanos).toDouble() / budget.baselineTotalNanos
+    require(increase <= budget.maxRelativeIncrease) {
+        "[PERF_BUDGET] ${budget.template} +${"%.1f".format(increase * 100)}% vs baseline"
+    }
+    val collect = profile.aggregations.sumOf { it.breakdown["collect_count"] ?: 0L }
+    require(collect <= budget.maxCollectCount) {
+        "[CARDINALITY] ${budget.template} collect_count=$collect > ${budget.maxCollectCount}"
+    }
+}
+```
+
+### 단계 밖(took >> profile) 운영 플레이북
+
+profile 단계 합이 took에 한참 못 미치면 시간은 샤드 검색 밖(coordinating reduce, 큐 대기, GC, global ordinals lazy 빌드, breaker)에 있다. 무비용/저비용 API 순으로 좁힌다.
+
+```
+GET _nodes/hot_threads?type=cpu        # 여러 번 스냅샷(1회는 노이즈)
+   ├── search 스레드에 RegExp/Script   → 비싼 쿼리(스크립트·정규식·wildcard)
+   ├── merge 스레드 폭주               → 머지 폭주(인덱싱 부하와 경합)
+   └── GC 스레드 점유                  → heap 압박(breaker로 교차확인)
+
+GET _tasks?actions=*search&detailed&group_by=parents
+   └── running_time_in_nanos로 폭주 태스크 식별
+      ※ POST _tasks/<task_id>/_cancel 은 '협조적' 취소 —
+        안전 지점(safe point)에서만 멈춤, 즉시 kill 아님.
+
+GET _cat/thread_pool/search?v             # active/queue/rejected (무비용)
+   └── queue 적체·rejected > 0 → 풀 포화(용량/샤드 수/쿼리 동시성 문제)
+
+GET _nodes/stats/breaker
+   └── "data too big" tripped 카운트 '증가율' 관찰
+      (절대값보다 단위 시간당 증가가 신호) → fielddata/aggregation 메모리 압박
+```
+
+[첫 쿼리만 느림] 신호면 global ordinals lazy 빌드 의심 → `eager_global_ordinals: true`로 refresh-time 이동 검토(이 경우 profile에서 완전 부재, took 갭으로만 드러남).
+
+> 증상 기반 진입은 search-diagnostics 스킬 참조.
 
 ## 6. Search Quality Monitoring Dashboard
 

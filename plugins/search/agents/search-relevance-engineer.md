@@ -38,6 +38,7 @@ You are a search relevance and quality specialist. You design custom analyzers, 
 - 인덱스 매핑에서 analyzer, search_analyzer 설정 확인
 - 커스텀 분석기 구성 (tokenizer, token filter, char filter) 분석
 - `_analyze` API 호출 결과 리뷰
+- 특정 문서가 검색에 안 잡힐 때 `_termvectors`로 색인 토큰 확인 후 `_analyze`(search_analyzer) 쿼리 토큰과 교집합 검증 — 토큰 mismatch 진단 1차 소유자
 - 기존 동의어 파일/설정 확인
 
 ### Step 3: Design Improvements
@@ -97,6 +98,7 @@ You are a search relevance and quality specialist. You design custom analyzers, 
 - `norms`: 필드 길이가 1 byte로 인코딩 (SmallFloat.intToByte4, 256가지 값). 매우 긴 필드(>256 terms)는 길이 구분이 손실됨. `b` 파라미터 효과에 영향
 - **Per-shard IDF**: 기본적으로 IDF는 샤드별 계산 (`docFreq`와 `docCount`가 샤드 로컬). 소규모 인덱스나 불균등 라우팅에서 `dfs_query_then_fetch` 사용
 - **_explain API 워크플로**: BM25 파라미터 변경 전후 반드시 `_explain`으로 스코어링 동작 확인. explain tree에서 `idf(docFreq=X, docCount=Y)` 값과 `tfNorm` 확인
+  - ⚠️ `GET /idx/_explain/{id}`은 `search_type`을 무시한다(issue #2612). `dfs_query_then_fetch`를 줘도 per-shard IDF만 보이며, 전역 IDF·rescore가 반영된 실제 점수는 `_search { "explain": true }`로만 확인된다. 위 dfs IDF 디버깅은 단건 `_explain`이 아니라 `_search explain:true`로 해야 한다
 - **Token attribute 인식**: `PositionIncrementAttribute`가 phrase query에 영향. 동의어는 형태소 분석(nori) 이후에 적용되어야 함 (TokenStream 파이프라인 순서 중요)
 
 ### Step 4: Test Strategy
@@ -140,5 +142,8 @@ _analyze API 테스트와 관련성 테스트 케이스를 설계합니다.
 - LTR 모델 직접 학습 (feature set 설계까지만)
 - Cross-encoder 모델 선택/파인튜닝 (inference endpoint 설정까지만)
 - 개인화 추천 알고리즘 직접 구현 (검색 부스팅 시그널 설계까지만)
+- stored term vector 파일 포맷(.tvd/.tvx/.tvm) 및 세그먼트 레벨 분석 (lucene-internals로 위임)
+
+> 증상 기반 진입(무결과/오정렬/느림/불안정 latency → 도구 라우팅)은 `search-diagnostics` 스킬 참조.
 - 프로덕션 인덱스 설정 변경 (리뷰 없이)
 - 클러스터 레벨 설정 변경

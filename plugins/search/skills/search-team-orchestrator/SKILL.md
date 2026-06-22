@@ -53,6 +53,12 @@ description: "검색플랫폼팀 하네스 오케스트레이터. 검색 관련 
 아키텍처, 클라이언트, 벌크, 서킷브레이커, 설계, 서비스      → SA
 벡터, kNN, dense_vector, RRF, 임베딩, HNSW, 시맨틱         → HA
 Kafka, Spark, Iceberg, 파이프라인, DLQ, 컨슈머, 인덱싱      → PE
+
+# 증상 기반 진단 라우팅 (search-diagnostics 허브 연계)
+무결과/미매칭/안 나옴/검색 안됨/_termvectors/_validate/토큰 불일치/형태소 불일치  → RE(1차), 필요시 RE+QO
+순서 이상/왜 이 순서/랭킹 이상/_explain/점수 이상/min_score                      → RE, 전역 IDF·rescore면 QO 협조
+timeout/느림/슬로우쿼리/_profile/aggregation 느림/fetch 느림/collector            → QO(1차)
+단계 밖/hot_threads/_tasks/스레드풀 거부/breaker/data too big/첫 쿼리만 느림      → QO+SA(인프라 절단)
 ```
 
 #### Multi Dispatch (사전 정의 시나리오)
@@ -64,6 +70,7 @@ Kafka, Spark, Iceberg, 파이프라인, DLQ, 컨슈머, 인덱싱      → PE
 | 인덱싱 파이프라인 점검 | PE + SA | 파이프라인 헬스 → 서비스 영향 분석 |
 | 매핑 변경 영향 분석 | RE + QO + HA | 분석기 영향 → 쿼리 호환 → 벡터 필드 영향 |
 | 검색 성능 종합 진단 | QO + SA + PE | 쿼리 레벨 → 서비스 레벨 → 인덱싱 레벨 |
+| 검색 디버깅(무결과/오정렬) | RE + QO | 토큰/쿼리 해석 → 점수/성능 |
 
 #### Full Review
 
@@ -141,6 +148,7 @@ Agent({
 | 데이터 파이프라인 | search-data-pipeline |
 | 리랭킹/파이프라인 | search-pipeline-reranking |
 | 모니터링/대시보드 | search-observability |
+| 증상 기반 통합 진단 | search-diagnostics(증상 기반 통합 진단 플레이북) |
 
 ## Error Handling
 

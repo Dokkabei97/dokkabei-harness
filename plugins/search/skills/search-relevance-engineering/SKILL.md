@@ -128,8 +128,72 @@ POST /_analyze
   },
   "text": "삼성전자"
 }
-// 결과: ["삼성전자", "삼성", "전자"]
+// 결과(예시): ["삼성전자", "삼성", "전자"] — 단, 합성어 분해 여부는 사전/품사에 좌우된다.
+//   고유명사(NNP)나 user_dictionary 등재어는 단일 토큰일 수 있으니 반드시 _analyze로 실측할 것
 ```
+
+### 색인 토큰 vs 검색 토큰 mismatch 디버깅 — _termvectors × _analyze 페어
+
+특정 문서가 "분명히 매칭돼야 하는데 안 나오는" 무결과/누락 증상의 가장 흔한 근본 원인은 **색인된 토큰**과 **검색 시 생성되는 토큰**이 서로 어긋나는 것입니다. 두 API를 페어로 써서 교차 검증합니다.
+
+**진단 원리**: `_termvectors`가 보여주는 *색인 현실*(실제 인덱스에 들어간 토큰)과 `_analyze`가 보여주는 *검색 토큰*(search_analyzer로 분석한 쿼리 토큰)의 **차집합이 발생하면(교집합 = ∅) 그 문서는 절대 그 쿼리에 매칭되지 않습니다**. 둘 중 하나만 봐서는 어느 쪽이 틀렸는지 알 수 없으므로 반드시 둘을 대조합니다.
+
+**표준 3스텝**:
+
+```json
+// ① _termvectors/{id}: 이 문서에 색인된 실제 토큰 확인 (색인 현실)
+GET /products/_termvectors/42
+{
+  "fields": ["title"],
+  "term_statistics": true
+}
+// 응답 루트: term_vectors(복수형) → title → terms 맵
+// (키 = 색인된 실제 토큰, 각 term의 term_freq / doc_freq / ttf)
+
+// ② _analyze: 쿼리를 search_analyzer로 분석한 토큰 (검색 의도)
+POST /products/_analyze
+{
+  "analyzer": "nori_search",
+  "text": "무선이어폰"
+}
+// ⚠️ analyzer를 명시하지 않고 field만 주면 index analyzer(nori_standard)가
+//    적용되어 '검색 시' 실제로 생성되는 토큰이 안 나옴 → analyzer 명시 필수
+
+// ③ 차집합 원인 분류
+//    - _termvectors에는 있는데 _analyze에는 없음 → search_analyzer가 토큰을 못 만듦
+//    - _analyze에는 있는데 _termvectors에는 없음 → index analyzer가 색인을 안 함
+//    - 교집합 = ∅ → 이 문서는 이 쿼리에 영원히 매칭 안 됨 (분석기 불일치 확정)
+```
+
+`_analyze` 미지정+field만 주는 함정 주의: ES는 그 필드의 **index analyzer**를 쓰므로 search 토큰이 안 나옵니다. mismatch를 보려면 반드시 `"analyzer": "nori_search"`처럼 **search_analyzer를 명시**해야 합니다.
+
+**한 호출로 색인 vs 검색 대조 (artificial doc + per_field_analyzer)**: 저장 문서 없이 임의 텍스트를 두 분석기로 각각 돌려 토큰을 비교할 수 있습니다.
+
+```json
+// artificial doc: 인덱스에 저장하지 않고 즉석 텍스트를 분석 → 통계 노이즈 없음
+GET /products/_termvectors
+{
+  "doc": { "title": "무선이어폰" },
+  "fields": ["title"],
+  "per_field_analyzer": { "title": "nori_search" }
+}
+```
+
+- `per_field_analyzer`는 **저장 문서(id)에 줘도 stored term을 무시하고 재생성**하므로, 통계 오염 없이 가장 깔끔하게 보려면 위처럼 **artificial doc**(`doc:{...}`)을 쓰는 것이 좋습니다. 단 artificial doc은 routing 미지정 시 무작위 샤드로 가 doc_freq 등 통계는 부정확하니, 통계가 필요 없는 토큰 대조 용도로만 사용하세요.
+
+**이 스킬의 분리 설계가 단골 원인**: 위 [Nori 설정](#korean-specific-nori-tokenizer-설정)에서 index용 `nori_standard`(synonym 없음)와 search용 `nori_search`(synonym_filter 포함)를 분리했습니다. 이 비대칭이 mismatch의 흔한 진원지이며, [동의어가 precision 저하](#6-common-problems--solutions)(search-time synonym 전환) 항목과 같은 맥락입니다 — 동의어를 search 쪽에만 두면 색인 토큰과 어긋날 수 있으니 _termvectors×_analyze로 실측하세요.
+
+**decompound_mode 차이 확인**: nori `decompound_mode` 기본값은 `discard`(분해 토큰만 남기고 원형 폐기)이고 `mixed`는 원형+분해 둘 다 남깁니다. `mixed`에서 복합 토큰은 **2개 position을 점유**해 `match_phrase`/slop 계산에 영향을 줍니다. 또한 nori는 형태소·user_dictionary로 인식 가능한 합성어만 분해하므로 **"안 분해됨 = 설정 오류"로 단정하지 말고** 반드시 `_analyze`로 실측해 확인하세요.
+
+**역할 분담표**:
+
+| API | 보여주는 것 | 보여주지 않는 것 |
+|-----|-----------|----------------|
+| `_analyze` | 검색/색인 의도 토큰(analyzer 지정대로) | 통계 없음, 실제 색인 여부 모름 |
+| `_termvectors` | 색인 현실(실제 토큰), `doc_freq`/`ttf` | 점수·쿼리 매칭 여부 아님 |
+| `_explain` | 점수 분해, idf의 `n`(=doc_freq) | 토큰 목록·분석기 동작 아님 |
+
+> 증상 기반 진입(무결과/누락 디버깅 시퀀스)은 search-diagnostics 스킬 참조.
 
 ### Korean-Specific: Nori Tokenizer 설정
 
@@ -334,6 +398,33 @@ TV, 텔레비전, 티비, television
 - 형태소 분석 결과 기준으로 동의어 작성 (원형이 아닌 분석 결과 토큰)
 - 복합어는 user dictionary에 등록 후 동의어 설정
 
+### _termvectors filter — 경량 키워드 추출 / MLT 시드
+
+`_termvectors`의 `filter` 옵션은 문서 내 토큰을 **tf-idf로 점수화해 상위 N개만** 돌려주므로, 동의어 후보·태그 자동 생성·MLT(more_like_this) 시드 추출에 쓸 수 있는 경량 도구입니다.
+
+```json
+GET /products/_termvectors/42
+{
+  "fields": ["title", "description"],
+  "term_statistics": true,
+  "filter": {
+    "max_num_terms": 5,
+    "min_doc_freq": 3,
+    "min_word_length": 2,
+    "max_word_length": 20
+  }
+}
+```
+
+| filter 키 | 역할 |
+|-----------|------|
+| `max_num_terms` | 반환할 상위 term 개수 상한 |
+| `min_doc_freq` | doc_freq 하한 — 너무 희귀한 term 제외 |
+| `min_word_length` / `max_word_length` | term 길이 컷 |
+
+- **한국어 품질**: nori의 josa(`J`)/eomi(`E`) 등 POS를 `pos_filter`의 stoptags로 제거해두면, 조사·어미가 빠져 키워드 후보 품질이 양호합니다(위 [Nori 설정](#korean-specific-nori-tokenizer-설정)의 stoptags 참조).
+- **주의 — score는 shard-local**: filter가 매기는 tf-idf 점수는 **해당 샤드 로컬 통계** 기반이라 절대 랭킹 용도로는 부정확합니다. "이 문서의 대표 키워드 후보" 추출이나 MLT 시드 용도로만 쓰고, 전역 일관 점수가 필요하면 단일 샤드 인덱스에서 산출하세요.
+
 ## 5. Search Quality Evaluation
 
 ### Offline Metrics
@@ -389,6 +480,41 @@ GET /products/_rank_eval
   }
 }
 ```
+
+### _explain 기반 관련성 회귀 테스트
+
+`_rank_eval`(집계 메트릭, nDCG/MRR)이 "전체 품질이 떨어졌는가"를 측정한다면, `_explain` 기반 테스트는 "특정 골든셋 케이스가 깨졌는가"를 단언(assert)하는 **회귀 게이트**로 보완 사용합니다.
+
+**골든셋 케이스 스키마**: 각 쿼리에 대해 `must_match`(반드시 매칭), `must_not_match`(절대 매칭 금지), `must_rank_top`(상위에 와야 할 문서)을 단언으로 정의합니다.
+
+```json
+// 골든셋 1건 예시
+{
+  "query": "갤럭시 버즈3",
+  "must_match":     ["doc_buds3_white", "doc_buds3_black"],
+  "must_not_match": ["doc_s24_case"],
+  "must_rank_top":  "doc_buds3_white"
+}
+```
+
+**단언 방식**:
+- `must_match` / `must_not_match` → `GET /products/_explain/{id}` 의 `matched`(boolean)로 단언. matched가 false인데 매칭돼야 하면 회귀.
+- `must_rank_top` → 두 문서의 `_explain` 점수 **상대 순서**로 단언.
+
+```json
+// 매칭 여부 단언
+GET /products/_explain/doc_buds3_white
+{ "query": { "match": { "title": "갤럭시 버즈3" } } }
+// 응답의 "matched": true/false 로 must_match/must_not_match 검증
+```
+
+**중요 — 절대값이 아닌 상대 순서/매칭으로 단언**: `_explain` 점수는 **per-shard(샤드별 IDF 기반)** 이므로 절대 점수값을 회귀 기준으로 박으면 샤드 분포·문서 추가에 따라 비결정적으로 깨집니다. 따라서:
+- `matched` 불리언과 **두 문서 간 상대 순위**만 단언하거나,
+- 점수 절대값 비교가 꼭 필요하면 **단일 샤드 테스트 인덱스**(`number_of_shards: 1`)에서 실행해 IDF를 전역화하세요.
+
+> `_explain`은 `search_type`을 무시(issue#2612)해 per-shard IDF만 반영하고 dfs/rescore 점수는 안 나옵니다. 전역 IDF·rescore가 반영된 점수 비교가 필요하면 `_search`의 `explain:true`로 봐야 합니다 — 증상 기반 진입은 search-diagnostics 스킬 참조.
+
+`_rank_eval`(집계 추세)과 `_explain` 골든셋(개별 케이스 단언)을 함께 CI에 걸어, 전체 nDCG는 유지되는데 특정 핵심 쿼리만 깨지는 회귀를 잡습니다.
 
 ### Online Metrics
 

@@ -61,6 +61,47 @@ _profile API 출력이 제공된 경우 성능 병목을 해석합니다.
 - 세그먼트 간 시간 편차 → 불균등한 세그먼트 크기 (merge policy 확인) 또는 데이터 분포 불균형
 - `shallow_advance` → WAND/MaxScore 최적화 동작 중 (early termination이 작동하는 좋은 신호)
 
+**Aggregation Breakdown Interpretation (6필드):**
+profile 응답의 `aggregations[].breakdown`은 `initialize` / `build_leaf_collector` / `collect`(+`collect_count`) / `post_collection` / `build_aggregation` / `reduce`(="reserved, always 0") 6필드로 구성됩니다.
+- `collect` 지배 → 문서를 과다 순회 중. 매칭 문서 집합이 너무 크거나 filter로 후보를 줄이지 못함. `collect_count`로 실제 순회 횟수 확인
+- `build_aggregation` 지배 → 버킷 폭발(high-cardinality terms agg). 버킷 수 자체가 비용. `size` 제한 또는 composite agg 검토
+- `children` 배열로 느린 sub-agg를 식별: 카테고리(N) × 브랜드(M) 같은 중첩 terms agg는 곱셈으로 버킷이 폭발 → 어느 sub-agg가 지배적인지 children에서 확인
+- `debug.total_buckets`로 생성된 버킷 수를 직접 확인 가능. 단 `debug` 필드는 집계 타입·ES 버전별로 키가 상이하므로 존재 여부를 먼저 확인하고 해석할 것
+
+**Collector Reason 사전:**
+profile 응답의 `collector[].reason`은 어떤 수집 작업이 일어났는지를 나타냅니다.
+- `search_top_hits` → 상위 hit 정렬/수집. `size`/`from`이 거대하면 여기 시간이 큼 → `search_after`(+PIT) 전환 검토
+- `search_count` → hit 카운트만 (track_total_hits 관련)
+- `search_query_phase` → query phase 전체 수집
+- `search_terminate_after_count` → terminate_after 동작 중
+- `search_timeout` → timeout 설정 동작 중
+- `aggregation` / `global_aggregation` → 집계 수집
+- 주의: **collector time은 query time과 시간대가 중복**됩니다(collector가 query를 구동). 두 값을 합산하지 말 것 — 합산하면 실제보다 시간이 부풀려집니다.
+
+**Fetch Phase Interpretation:**
+profile 응답의 `fetch.breakdown`은 `next_reader`(+`_count`) / `load_stored_fields`(+`_count`) / `load_source`(+`_count`) 필드로 구성됩니다.
+- `load_source` 지배 → 거대 `_source` 로딩 비용. `_source` filtering(includes/excludes) 또는 `stored_fields` 활용 검토
+- `load_stored_fields` 지배 → stored field/highlight 비용. highlight 대상·필드를 줄이거나 `fvh`(fast vector highlighter) 등 검토
+- query/agg 단계는 빠른데 전체 took이 크면 fetch 단계를 의심 — load_source vs load_stored_fields로 거대 _source 비용과 highlight 비용을 분리해서 진단
+
+**Early Termination & Timeout 검증 (정정):**
+- `terminate_after` → 응답의 `terminated_early`(boolean) 필드로 확인. **샤드별로 적용되며 세그먼트 across로 보장되지 않음**(샤드마다 다른 시점에 끊길 수 있음)
+- `timeout` → 응답의 `timed_out`(boolean) 필드로 확인. **best-effort**이며 정밀한 컷오프를 보장하지 않음
+- 두 필드는 서로 별개입니다. terminated_early와 timed_out을 혼동하지 말 것
+
+**took >> Σprofile (단계 밖) 판정:**
+응답의 `took`이 profile에 집계된 단계 시간의 합(query + aggregations + fetch)보다 현저히 크면, 병목이 **profile이 측정하는 shard-level 단계 밖**에 있습니다(coordinating 머지, 네트워크, rewrite/global ordinals lazy 빌드, 스레드풀 큐잉 등). 이 경우 **쿼리 리라이트로는 고쳐지지 않습니다.**
+
+권장 진단 커맨드(에이전트는 라이브 실행하지 않으므로 사용자에게 '권장'으로 제시):
+```
+GET _nodes/hot_threads          # CPU 핫스팟 (여러 번 스냅샷)
+GET _tasks?actions=*search*&detailed   # 실행 중 search 작업
+GET _cat/thread_pool/search?v          # search 스레드풀 active/queue/rejected
+```
+큐잉/거부가 보이면 용량·동시성 문제, hot_threads에 머지/global ordinals가 보이면 단계 밖 비용으로 해석.
+
+> 증상 기반 진입(timeout/느림 → _profile 5섹션 1차 절단 → 단계 정밀 breakdown → took 갭 분기)은 search-diagnostics 스킬 참조. profile 필드별 deep breakdown 사전은 lucene-internals 참조.
+
 ### Step 5: Suggest Optimization
 최적화된 쿼리를 제안하고 설명합니다.
 
@@ -85,6 +126,7 @@ _profile API 출력이 제공된 경우 성능 병목을 해석합니다.
 - ES 쿼리 DSL 분석 및 안티패턴 탐지
 - 최적화된 쿼리 리라이트 제안 (JSON DSL 및 Kotlin 코드)
 - _profile API 출력을 Lucene 레벨 컨텍스트로 해석 (scorer 구성, postings 순회, skip-list 동작)
+- _profile의 aggregation/collector/fetch 단계 해석 (collect vs build_aggregation, collector reason, load_source vs load_stored_fields, took 갭 판정)
 - Kotlin elasticsearch-java 클라이언트 코드 리뷰
 - 페이지네이션 전략 비교 및 권장 (from/size vs search_after vs scroll)
 - Aggregation 최적화 (terms -> composite, nested -> filter)
