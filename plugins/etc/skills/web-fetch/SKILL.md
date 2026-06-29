@@ -1,14 +1,14 @@
 ---
 name: web-fetch
-description: Fetches web page content using Gemini CLI when Claude's native WebFetch fails or for explicit URL fetching. Returns clean Markdown.
+description: Fetches web page content using Antigravity CLI (agy) when Claude's native WebFetch fails or for explicit URL fetching. Returns clean Markdown.
 argument-hint: <url> [extraction instruction]
 disable-model-invocation: true
-allowed-tools: Bash(gemini *)
+allowed-tools: Bash(agy *)
 ---
 
-# Web Fetch via Gemini CLI
+# Web Fetch via Antigravity CLI
 
-Gemini CLI의 네이티브 웹 브라우징으로 URL 콘텐츠를 Markdown으로 가져옵니다.
+Antigravity CLI(`agy`)의 네이티브 웹 브라우징으로 URL 콘텐츠를 Markdown으로 가져옵니다.
 Claude의 WebFetch가 실패했을 때의 폴백 또는 명시적 웹 콘텐츠 요청에 사용합니다.
 
 ## When to Use
@@ -18,9 +18,9 @@ Claude의 WebFetch가 실패했을 때의 폴백 또는 명시적 웹 콘텐츠 
 - 문서, 기사, API 레퍼런스 등 URL 기반 정보를 조회할 때
 - 특정 페이지에서 원하는 부분만 추출하고 싶을 때
 
-## Gemini CLI Status
+## Antigravity CLI Status
 
-!`which gemini 2>/dev/null && echo "available" || echo "NOT INSTALLED — npm i -g @google/gemini-cli"`
+!`which agy 2>/dev/null && echo "available" || echo "NOT INSTALLED — curl -fsSL https://antigravity.google/cli/install.sh | bash"`
 
 ## Instructions
 
@@ -34,7 +34,7 @@ Claude의 WebFetch가 실패했을 때의 폴백 또는 명시적 웹 콘텐츠 
    URL="<target URL>"
    INSTRUCTION="<optional focus instruction>"
 
-   gemini -m gemini-3-flash-preview -p "다음 URL의 콘텐츠를 가져와서 깔끔한 Markdown으로 변환해줘.
+   agy --model "Gemini 3.5 Flash (Low)" -p "다음 URL의 콘텐츠를 가져와서 깔끔한 Markdown으로 변환해줘.
 
    URL: $URL
 
@@ -52,15 +52,16 @@ Claude의 WebFetch가 실패했을 때의 폴백 또는 명시적 웹 콘텐츠 
 3. Display:
    ```markdown
    **Fetched**: <url>
-   **Model**: gemini-3.1-flash-preview
+   **Model**: Gemini 3.5 Flash (Low)
 
    <content>
    ```
 
 ## Notes
 
-- 속도 우선으로 `gemini-3.1-flash-preview` 사용 (웹 fetch에 강력한 모델 불필요)
-- Timeout: 120초
+- 속도 우선으로 `Gemini 3.5 Flash (Low)` 사용 (웹 fetch에 강력한 모델 불필요)
+- `--model`에는 식별자가 아닌 따옴표 표시명을 전달 (정확한 목록은 `agy models`로 확인)
+- Timeout: 120초 (필요 시 `--print-timeout 2m` 추가)
 - 인증 필요 URL은 실패 → 사용자에게 안내
 - 여러 URL은 각각 별도 실행
 
