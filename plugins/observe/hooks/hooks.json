@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-prompt.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 사용자 프롬프트 원문을 .claude/skill-trace.jsonl 에 append (스킬 호출과 session_id로 결합할 prompt 레코드). stdout 무출력 — 컨텍스트 오염 0, 항상 exit 0."
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-skill.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 Skill 호출(skill·args)과 근거(현재 턴 preamble 추출)·trigger(user/model)를 .claude/skill-trace.jsonl 에 append. matcher 는 tool 명 regex — 표현식(tool == …)은 발화하지 않음을 실측 확인(2026-07). 추적 실패가 스킬 실행을 막지 않도록 항상 exit 0."
+      }
+    ]
+  }
+}

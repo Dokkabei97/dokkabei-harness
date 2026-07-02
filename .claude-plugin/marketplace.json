@@ -59,6 +59,15 @@
       "keywords": ["harness", "plugins"]
     },
     {
+      "name": "observe",
+      "source": "./plugins/observe",
+      "description": "스킬 사용 관측 하네스 — 어떤 프롬프트에서 어떤 스킬을 왜 호출했는지를 UserPromptSubmit + PreToolUse(Skill) 2훅으로 .claude/skill-trace.jsonl에 상관 로깅(프롬프트↔스킬↔근거, trigger=user/model 분류). OBSERVE_TRACE=1 opt-in. 비용/토큰 계측은 Claude Code 내장 OTel에 위임하는 직교 보완재.",
+      "version": "1.0.0",
+      "category": "harness",
+      "keywords": ["observe", "telemetry", "skill-tracking", "hooks", "audit", "otel", "observability"],
+      "requires": ["base"]
+    },
+    {
       "name": "backend-shared",
       "source": "./plugins/backend-shared",
       "description": "백엔드 언어 공통 — API 설계(REST/GraphQL), DB 마이그레이션, 헥사고날 아키텍처, 관측성/캐싱/이벤트/회복탄력성/보안/DTO 패턴, 백엔드 테스트. kotlin-spring, python-fastapi, go-mux와 함께 사용.",
