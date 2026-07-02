@@ -24,6 +24,14 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 
+# 경로 필터 — 정본 prd.json 편집일 때만 검사 (2차 정밀 필터: hooks.json matcher 는
+# tool 명 regex 만 유효해 Edit|Write 전건에 발화하므로 여기서 좁힌다)
+fp="$(printf '%s' "$input" | jq -r '.tool_input.file_path // ""' 2>/dev/null || echo "")"
+case "$fp" in
+  *.planning/prd.json) ;;
+  *) exit 0 ;;
+esac
+
 # passes==true 인 스토리 중 verified 마커 부재 id 수집 — while read 줄 단위 소비
 # (비인용 단어 분리 금지 — 공백 포함 id 도 안전. 파싱 불가 시 빈 결과 → 무동작, 스키마는 gate-prd 담당)
 nl=$'\n'

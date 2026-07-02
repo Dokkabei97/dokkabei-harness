@@ -3,7 +3,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run dev|pnpm( run)? dev|yarn dev|bun run dev|uvicorn|flask run|python.*manage\\\\.py runserver|uv run.*(uvicorn|flask|manage\\\\.py))\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -11,10 +11,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-dev-server.js"]
           }
         ],
-        "description": "Block dev servers outside tmux - ensures you can access logs (includes Python servers)"
+        "description": "Block dev servers outside tmux - ensures you can access logs (includes Python servers). 명령 패턴 필터는 스크립트 내부 — matcher 는 tool 명 regex 만 유효(표현식 미발화 실측, 2026-07)"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm (install|test)|pnpm (install|test)|yarn (install|test)?|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright|gradlew|pip install|uv (install|sync|pip|run)|tox)\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -22,10 +22,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-tmux.js"]
           }
         ],
-        "description": "Reminder to use tmux for long-running commands (includes gradlew, pip, uv)"
+        "description": "Reminder to use tmux for long-running commands (includes gradlew, pip, uv). 명령 패턴 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -33,10 +33,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-git-push.js"]
           }
         ],
-        "description": "Reminder before git push to review changes"
+        "description": "Reminder before git push to review changes. 명령 패턴 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(md|txt)$\" && !(tool_input.file_path matches \"README\\\\.md|CLAUDE\\\\.md|AGENTS\\\\.md|CONTRIBUTING\\\\.md\")",
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
@@ -44,12 +44,12 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-md-creation.js"]
           }
         ],
-        "description": "Block creation of random .md files - keeps docs consolidated"
+        "description": "Block creation of random .md files - keeps docs consolidated. 경로 필터는 스크립트 내부"
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "tool == \"Bash\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -60,7 +60,7 @@
         "description": "Log PR/MR URL and provide review command after GitHub PR or GitLab MR creation"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run build|pnpm build|yarn build)\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -70,10 +70,10 @@
             "timeout": 30
           }
         ],
-        "description": "Async hook for npm/pnpm/yarn build analysis (runs in background without blocking)"
+        "description": "Async hook for npm/pnpm/yarn build analysis (runs in background without blocking). 명령 패턴 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"gradlew.*build\"",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -83,10 +83,10 @@
             "timeout": 60
           }
         ],
-        "description": "Async hook for Gradle build analysis (runs in background without blocking)"
+        "description": "Async hook for Gradle build analysis (runs in background without blocking). 명령 패턴 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -94,10 +94,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-prettier.js"]
           }
         ],
-        "description": "Auto-format JS/TS files with Prettier after edits"
+        "description": "Auto-format JS/TS files with Prettier after edits. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(kt|kts)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -105,10 +105,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-ktlint.js"]
           }
         ],
-        "description": "Auto-format Kotlin files with ktlintFormat after edits"
+        "description": "Auto-format Kotlin files with ktlintFormat after edits. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -116,10 +116,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-tsc.js"]
           }
         ],
-        "description": "TypeScript check after editing .ts/.tsx files"
+        "description": "TypeScript check after editing .ts/.tsx files. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(kt|kts)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -127,10 +127,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-kotlin-compile.js"]
           }
         ],
-        "description": "Kotlin compile check after editing .kt/.kts files"
+        "description": "Kotlin compile check after editing .kt/.kts files. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -138,10 +138,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-console-log.js"]
           }
         ],
-        "description": "Warn about console.log statements after JS/TS edits"
+        "description": "Warn about console.log statements after JS/TS edits. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(kt|kts)$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -149,10 +149,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-println.js"]
           }
         ],
-        "description": "Warn about println() statements after Kotlin edits"
+        "description": "Warn about println() statements after Kotlin edits. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.py$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -160,10 +160,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-py-compile.js"]
           }
         ],
-        "description": "Python syntax check with py_compile after editing .py files"
+        "description": "Python syntax check with py_compile after editing .py files. 확장자 필터는 스크립트 내부"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.py$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -171,7 +171,7 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-print.js"]
           }
         ],
-        "description": "Warn about print() statements after Python edits"
+        "description": "Warn about print() statements after Python edits. 확장자 필터는 스크립트 내부"
       }
     ]
   }

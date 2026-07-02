@@ -7,7 +7,7 @@ const { readEvent, passthrough } = require('./_lib/hook-stdin');
 (async () => {
   const { raw, json } = await readEvent();
   const p = json.tool_input?.file_path;
-  if (!p || !fs.existsSync(p)) return passthrough(raw);
+  if (!p || !/\.py$/.test(p) || !fs.existsSync(p)) return passthrough(raw);
 
   try {
     execSync('python3 -m py_compile ' + JSON.stringify(p) + ' 2>&1', {

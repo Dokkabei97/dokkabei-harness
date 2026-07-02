@@ -19,7 +19,7 @@ const findGradleRoot = (start) => {
 (async () => {
   const { raw, json } = await readEvent();
   const p = json.tool_input?.file_path;
-  if (!p || !fs.existsSync(p)) return passthrough(raw);
+  if (!p || !/\.(kt|kts)$/.test(p) || !fs.existsSync(p)) return passthrough(raw);
 
   const root = findGradleRoot(path.dirname(p));
   if (!root || !fs.existsSync(path.join(root, 'gradlew'))) return passthrough(raw);

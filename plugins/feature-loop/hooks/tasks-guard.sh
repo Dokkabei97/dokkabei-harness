@@ -25,6 +25,14 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 
+# 경로 필터 — 정본 tasks.json 편집일 때만 검사 (2차 정밀 필터: hooks.json matcher 는
+# tool 명 regex 만 유효해 Edit|Write 전건에 발화하므로 여기서 좁힌다)
+fp="$(printf '%s' "$input" | jq -r '.tool_input.file_path // ""' 2>/dev/null || echo "")"
+case "$fp" in
+  *.planning/tasks.json) ;;
+  *) exit 0 ;;
+esac
+
 # passes==true 인 task 중 verified 마커 부재 id 수집 — while read 줄 단위 소비
 nl=$'\n'
 violations=""
