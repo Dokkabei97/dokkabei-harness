@@ -15,7 +15,7 @@ const PLANNING = /(^|\/)\.planning\//;
     console.error('[Hook] BLOCKED: Unnecessary documentation file creation');
     console.error('[Hook] File: ' + path);
     console.error('[Hook] Use README.md for documentation instead');
-    process.exit(1);
+    process.exit(2); // PreToolUse 차단은 exit 2 — exit 1 은 비차단 경고라 통과된다
   }
   passthrough(raw);
 })();

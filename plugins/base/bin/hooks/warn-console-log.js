@@ -6,7 +6,7 @@ const { readEvent, passthrough } = require('./_lib/hook-stdin');
 (async () => {
   const { raw, json } = await readEvent();
   const p = json.tool_input?.file_path;
-  if (!p || !fs.existsSync(p)) return passthrough(raw);
+  if (!p || !/\.(ts|tsx|js|jsx)$/.test(p) || !fs.existsSync(p)) return passthrough(raw);
 
   const lines = fs.readFileSync(p, 'utf8').split('\n');
   const matches = [];

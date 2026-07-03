@@ -22,14 +22,14 @@
         "description": "verifier 결과 기록 집행 — verify-round/{id} pending 상태에서 verified/refuted 마커 없이 종료 시 exit 2 재주입 (최대 2라운드, loop-active 부재 시 무개입)" }
     ],
     "PreToolUse": [
-      { "matcher": "tool == \"Bash\" && tool_input.command matches \"rm .*(test|spec)\"",
+      { "matcher": "Bash",
         "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/test-guard.sh\"", "timeout": 10 }],
-        "description": "루프 활성 중 테스트 파일 삭제 차단 — 회귀 게이트 신뢰성의 결정론 집행" }
+        "description": "루프 활성 중 테스트 파일 삭제 차단 — 회귀 게이트 신뢰성의 결정론 집행. rm test|spec 패턴 필터는 스크립트 내부(matcher 는 tool 명 regex 만 유효 — 표현식 미발화 실측, 2026-07)" }
     ],
     "PostToolUse": [
-      { "matcher": "(tool == \"Edit\" || tool == \"Write\") && tool_input.file_path matches \"\\\\.planning/tasks\\\\.json$\"",
+      { "matcher": "Edit|Write",
         "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/tasks-guard.sh\"", "timeout": 30 }],
-        "description": "maker/checker 분리 강제 — verified 마커 없는 passes:true를 exit 2 차단 + false 되돌림" }
+        "description": "maker/checker 분리 강제 — verified 마커 없는 passes:true를 exit 2 차단 + false 되돌림. tasks.json 경로 필터는 스크립트 내부" }
     ]
   }
 }

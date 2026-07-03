@@ -1,0 +1,8 @@
+{
+  "name": "observe",
+  "description": "스킬 사용 관측 하네스 — 어떤 프롬프트에서 어떤 스킬을 왜 호출했는지를 hook으로 상관 로깅한다. UserPromptSubmit + PreToolUse(Skill) 2훅이 session_id 키로 .claude/skill-trace.jsonl 에 append (프롬프트↔스킬↔근거 사후 결합, .gitignore 안전망·10MB 로테이션). why=현재 턴 preamble(마지막 실사용자 발화 이후 assistant 텍스트 — 턴 경계로 반복 호출 오귀속 차단), trigger 분류(user 슬래시/커맨드 래퍼 호출 vs model 자율 선택)로 '모델이 스킬을 알아서 잘 고르는가' 평가 지원. OBSERVE_TRACE=1 opt-in으로 mvp/feature-loop 루프에 무영향. 비용/토큰/tool_decision 계측은 Claude Code 내장 OTel(CLAUDE_CODE_ENABLE_TELEMETRY)에 위임 — 본 플러그인은 직교하는 '왜' 상관 감사 전용 (hooks 2)",
+  "version": "1.0.0",
+  "author": { "name": "장민규", "email": "wkdrn970@gmail.com" },
+  "license": "Apache-2.0",
+  "dependencies": ["base"]
+}

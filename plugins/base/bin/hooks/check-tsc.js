@@ -17,7 +17,7 @@ const findTsconfigDir = (start) => {
 (async () => {
   const { raw, json } = await readEvent();
   const p = json.tool_input?.file_path;
-  if (!p || !fs.existsSync(p)) return passthrough(raw);
+  if (!p || !/\.(ts|tsx)$/.test(p) || !fs.existsSync(p)) return passthrough(raw);
 
   const dir = findTsconfigDir(path.dirname(p));
   if (!dir) return passthrough(raw);

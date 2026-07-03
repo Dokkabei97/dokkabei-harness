@@ -7,7 +7,7 @@ const { readEvent, passthrough } = require('./_lib/hook-stdin');
 (async () => {
   const { raw, json } = await readEvent();
   const p = json.tool_input?.file_path;
-  if (p && fs.existsSync(p)) {
+  if (p && /\.(ts|tsx|js|jsx)$/.test(p) && fs.existsSync(p)) {
     try {
       execFileSync('npx', ['prettier', '--write', p], { stdio: ['pipe', 'pipe', 'pipe'] });
     } catch (_) {}
