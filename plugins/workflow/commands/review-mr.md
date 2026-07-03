@@ -1,6 +1,6 @@
 ---
 name: review-mr
-description: "GitLab Merge Request 코드 리뷰. MR diff를 분석하여 버그, 보안 취약점, 로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성합니다."
+description: "GitLab Merge Request 코드 리뷰. MR diff를 분석하여 버그, 보안 취약점, 로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성합니다. diff 성격에 따라 analyze 전문 에이전트(arch-reviewer/perf-reviewer/sql-analyzer)를 선택 디스패치하고, confidence 기반으로 low 지적사항을 제외·강등합니다."
 category: review
 complexity: standard
 mcp-servers: []
@@ -87,38 +87,77 @@ personas: []
    - 알려진 취약점이 있는가?
    - 라이선스가 프로젝트와 호환되는가?
 
-### Phase 3: 코드 분석 (Tests First)
+### Phase 3: 전문 에이전트 선택 디스패치 (Fan-out)
+
+> Phase 2의 파일 분류 결과에서 아래 diff 신호가 감지될 때만 `analyze` 플러그인의 전문 에이전트를 투입한다. **신호가 없으면 디스패치하지 않고 Phase 4의 단독 리뷰만 수행한다** — 기존 단독 리뷰 흐름은 그대로 유지된다.
+
+#### 선택 디스패치 (diff 신호 기반 라우팅)
+
+```
+패키지 이동/이름 변경, import 방향 변화, 모듈 경계 재편, 레이어 간 파일 이동      → arch-reviewer
+루프 내 DB/HTTP 호출, 쿼리 메서드 변경, ObjectMapper/직렬화, 컬렉션/캐싱/동시성     → perf-reviewer
+*.sql, Flyway/Alembic 마이그레이션, @Query/네이티브 쿼리 문자열, DDL/인덱스 변경    → sql-analyzer
+```
+
+| diff 신호 | 투입 | 근거 |
+|-----------|------|------|
+| **아키텍처 변경** — 패키지 이동, 의존 방향 변화(신규 import 방향), 모듈 경계 재편 | arch-reviewer | 레이어 위반·순환 의존·DTO 경계 침범 전문 탐지 |
+| **성능 민감 변경** — 루프 내 I/O, 쿼리 패턴, 직렬화 코드 수정 | perf-reviewer | N+1, ObjectMapper 재생성, runBlocking 등 안티패턴 9종 체크리스트 |
+| **SQL/마이그레이션** — `*.sql` 파일, Flyway/Alembic, 네이티브 쿼리 | sql-analyzer | 풀스캔·인덱스 활용·조인 최적화 2-Phase 분석 |
+| 위 신호 없음 | (디스패치 없음) | 기존 단독 리뷰(Phase 4)만 수행 |
+
+**디스패치 규칙:**
+- 신호가 2개 이상 감지되면 해당 에이전트를 **단일 메시지에 병렬 Agent 호출**로 Fan-out
+- 각 에이전트는 read-only 분석만 수행하며, MR 코멘트 게시는 이 커맨드가 전담
+- 에이전트는 이전 대화를 모른다 — 프롬프트에 diff 발췌, 파일 경로, 분석 범위를 명시
+
+```
+Agent({
+  description: "arch-reviewer — MR !42 패키지 이동 diff 아키텍처 검토",
+  subagent_type: "arch-reviewer",
+  prompt: "다음 MR diff에서 의존 방향 위반과 레이어 경계 침범만 분석하라.
+           [diff 발췌 + 변경 파일 경로 목록]
+           각 발견에 severity와 근거 라인(file:line)을 표 형식으로 반환하라."
+})
+```
+
+**Fan-in 규칙:**
+- 에이전트 결과는 Phase 4의 단독 리뷰 결과와 병합한 뒤, Phase 5의 심각도·confidence 분류를 동일하게 적용
+- 단독 리뷰와 에이전트가 공통으로 지적한 이슈는 confidence를 한 단계 올림
+- 에이전트 타임아웃/실패 시 해당 결과 없이 진행하고, 리포트에 "[타임아웃]"을 표시
+
+### Phase 4: 코드 분석 (Tests First)
 
 > **테스트를 먼저 리뷰한다.** 테스트는 변경의 의도와 커버리지를 드러낸다. 구현을 읽기 전에 테스트를 먼저 파악해야 "이 변경이 무엇을 하려는 것인지"를 정확히 이해할 수 있다.
 
-#### 3-A. Test (먼저 리뷰)
+#### 4-A. Test (먼저 리뷰)
 - 변경된 로직에 대한 테스트가 존재하는가?
 - 테스트가 **동작(behavior)**을 검증하는가, 구현 세부사항을 검증하는가?
 - 엣지케이스가 커버되는가?
 - 버그 수정이라면 재현 테스트(regression test)가 포함되어 있는가?
 - 테스트가 회귀를 감지할 수 있는가? (코드가 변경되었을 때 테스트가 깨지는가?)
 
-#### 3-B. Security
+#### 4-B. Security
 - SQL Injection, XSS, CSRF 등 OWASP Top 10 취약점
 - 하드코딩된 비밀키/토큰/비밀번호
 - 안전하지 않은 역직렬화
 - 인증/인가 우회 가능성
 
-#### 3-C. Logic
+#### 4-C. Logic
 - 잠재적 버그 (null 참조, 범위 오류, off-by-one)
 - 엣지케이스 미처리
 - 레이스 컨디션, 리소스 누수
 - 에러 핸들링 누락 또는 부적절한 처리
 
-#### 3-D. Style
+#### 4-D. Style
 - 코딩 컨벤션 위반, 네이밍 일관성
 - 중복 코드, 과도한 복잡도
 - 매직 넘버/스트링
 - 추상화가 복잡도를 정당화하는가? (단 하나의 구현만 있는 인터페이스 등)
 - Dead code 아티팩트: no-op 변수, 하위호환 shim, `// removed` 주석
 
-### Phase 4: 심각도 분류
-각 발견 사항을 심각도별로 분류:
+### Phase 5: 심각도·Confidence 분류
+각 발견 사항(단독 리뷰 + Phase 3 에이전트 결과)을 심각도별로 분류:
 
 | 심각도 | 설명 | 머지 차단 |
 |--------|------|-----------|
@@ -131,7 +170,23 @@ personas: []
 
 > **접두사로 의도를 명확히 한다.** `Optional:` 또는 `FYI:`를 코멘트 앞에 붙여서 작성자가 모든 피드백을 의무 사항으로 오해하지 않도록 한다.
 
-### Phase 5: Verify the Verification (검증의 검증)
+#### Confidence 산정 규약
+
+각 지적사항에 심각도와 **별도로** confidence(High/Medium/Low)를 산정한다:
+
+| 산정 기준 | High | Medium | Low |
+|-----------|------|--------|-----|
+| **재현 경로 구체성** | 입력→오동작 경로를 diff 라인 기준으로 구체적으로 제시 가능 | 재현 경로가 일부 추정에 의존 | 재현 경로를 제시할 수 없음 |
+| **규칙 위반 명확성** | 명문 규칙(OWASP, 아키텍처 규칙, 팀 컨벤션) 위반이 명백 | 관례 위반이지만 해석 여지 있음 | 취향/일반론 수준의 지적 |
+| **diff 내 직접 근거** | 근거가 diff 변경 라인에 직접 존재 | 근거가 Read로 확인한 주변 원본 코드에 존재 | diff 밖 코드에 대한 추정에 의존 |
+
+**종합 규칙:**
+- 세 기준 중 하나라도 **Low**면 종합 confidence는 **Low**
+- Low가 없고 Medium이 하나라도 있으면 **Medium**, 셋 다 High일 때만 **High**
+- **확신 없으면 강등**: 판정이 애매하면 항상 낮은 쪽을 택한다. 틀린 지적 하나가 리뷰 전체의 신뢰를 깎는다.
+- Phase 3에서 단독 리뷰와 에이전트가 공통 지적한 이슈는 confidence를 한 단계 올린다 (최대 High)
+
+### Phase 6: Verify the Verification (검증의 검증)
 리포트 작성 전에 다음을 확인:
 - [ ] 테스트가 실행되었는가? (CI 통과 여부)
 - [ ] 빌드가 성공했는가?
@@ -140,20 +195,31 @@ personas: []
 
 누락된 항목이 있으면 리뷰 리포트에 명시적으로 포함한다.
 
-### Phase 6: 리뷰 결과 작성 및 게시
-1. **리포트 생성**: 구조화된 리뷰 리포트 작성
-2. **MR 코멘트 작성**:
+### Phase 7: 리뷰 결과 작성 및 게시
+1. **Confidence 필터 적용** (게시 전):
+
+   | Confidence | 게시 방식 |
+   |------------|----------|
+   | High | 심각도 그대로 게시 (머지 차단 판정에 반영) |
+   | Medium | 게시하되 확인 요청 문구를 덧붙임 ("~로 보입니다. 확인 부탁드립니다") |
+   | Low | **MR 코멘트에서 제외**. 잠재 영향이 Critical/High인 경우에만 `FYI:` 접두사로 '참고' 섹션에 강등 게시 |
+
+   > confidence는 게시 필터로만 작동한다. MR 코멘트 형식에 confidence 필드를 추가하지 않으며, 아래 코멘트 형식과 glab 연동 흐름은 기존 그대로 유지한다.
+
+2. **리포트 생성**: 구조화된 리뷰 리포트 작성
+3. **MR 코멘트 작성**:
    ```bash
    # MR에 전체 리뷰 코멘트 작성
    glab mr note create <mr_number> --message "<review_comment>"
    ```
-3. **터미널 출력**: 리뷰 결과를 터미널에도 표시
+4. **터미널 출력**: 리뷰 결과를 터미널에도 표시
 
 ## Tool Coordination
 - **Bash**: `glab` CLI 실행 (MR 조회, diff 가져오기, 코멘트 작성)
 - **Read**: 변경된 파일의 전체 컨텍스트 읽기 (diff만으로 부족한 경우)
 - **Grep**: 패턴 기반 취약점/안티패턴 스캔
 - **Glob**: 변경된 파일의 테스트 파일 매칭 및 관련 파일 탐색
+- **Agent**: diff 신호 감지 시 `analyze` 전문 에이전트(arch-reviewer/perf-reviewer/sql-analyzer) 병렬 디스패치 (Phase 3)
 
 ## Examples
 
@@ -174,6 +240,14 @@ personas: []
 ```
 /review-mr https://gitlab.com/group/project/-/merge_requests/42
 # URL에서 MR 번호를 추출하여 리뷰
+```
+
+### 마이그레이션 + 패키지 이동이 포함된 MR (Fan-out 자동 발동)
+```
+/review-mr 57
+# diff에서 V3__add_index.sql과 domain→infrastructure 패키지 이동을 감지
+# → sql-analyzer + arch-reviewer를 병렬 디스패치하고 결과를 단독 리뷰와 병합
+# → confidence Low 지적은 MR 코멘트에서 제외하거나 FYI로 강등
 ```
 
 ## Output Format
@@ -290,7 +364,8 @@ personas: []
 **Will:**
 - `glab` CLI를 사용하여 GitLab MR 정보와 diff를 가져옴
 - 변경된 코드의 보안, 로직, 스타일, 테스트 측면을 분석
-- 심각도별로 분류된 구조화된 리뷰 리포트 생성
+- diff 신호 감지 시 `analyze` 에이전트 3종(arch-reviewer/perf-reviewer/sql-analyzer)을 선택 디스패치하고 결과를 병합
+- 심각도·confidence별로 분류된 구조화된 리뷰 리포트 생성 (confidence Low는 제외 또는 FYI 강등)
 - `glab mr note`로 MR에 리뷰 코멘트 직접 작성
 - diff 컨텍스트 부족 시 원본 파일을 Read하여 전체 맥락 파악
 
@@ -298,6 +373,8 @@ personas: []
 - 소스 코드를 직접 수정 (리뷰 의견만 제공)
 - MR을 승인(approve)하거나 머지(merge) 실행
 - CI/CD 파이프라인을 실행하거나 중단
+- 라우팅 신호가 없는 MR에 전문 에이전트를 강제 투입 (단독 리뷰 유지)
+- confidence Low 지적을 심각도 그대로 MR 코멘트에 게시
 - GitLab API 토큰을 직접 관리 (`glab auth`에 위임)
 - GitHub PR을 처리 (GitHub는 내장 `/review` 사용)
 
@@ -320,4 +397,5 @@ glab auth login
 - `/arch-review` - 아키텍처 관점의 코드 리뷰 (로컬 코드 대상)
 - `/perf-review` - 성능 관점의 코드 리뷰 (로컬 코드 대상)
 - `/review-mr` - GitLab MR 대상 종합 코드 리뷰 (이 커맨드)
+- `analyze` 플러그인 에이전트 3종 (arch-reviewer / perf-reviewer / sql-analyzer) - Phase 3 선택 디스패치에 재사용
 - Claude Code 내장 `/review` - GitHub PR 대상 리뷰 (관리형 서비스)
