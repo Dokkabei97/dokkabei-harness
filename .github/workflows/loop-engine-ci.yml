@@ -1,0 +1,57 @@
+# =============================================================================
+# loop-engine-ci.yml — 루프 엔진(Stop 훅) 회귀 테스트 CI
+# 잡 구성:
+#   ① bats — ubuntu-latest + macos-latest 매트릭스로 tests/hooks 전체 실행.
+#      macOS 포함 이유: md5sum 부재 환경의 md5/shasum 폴백과 bash 3.2 이식성 검증.
+#   ② shellcheck — plugins/*/{hooks,bin}/**/*.sh 정적 검사 (훅 + headless 러너).
+#      오탐 소음 방지를 위해 --severity=error 만 적용 (스타일 경고는 게이트하지 않는다).
+# =============================================================================
+name: loop-engine-ci
+
+on:
+  push:
+    paths:
+      - 'plugins/**/hooks/**'
+      - 'plugins/**/bin/**'
+      - 'tests/hooks/**'
+      - '.github/workflows/loop-engine-ci.yml'
+  pull_request:
+    paths:
+      - 'plugins/**/hooks/**'
+      - 'plugins/**/bin/**'
+      - 'tests/hooks/**'
+      - '.github/workflows/loop-engine-ci.yml'
+
+jobs:
+  bats:
+    name: bats (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bats 설치 (ubuntu는 npm, macos는 brew)
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            brew install bats-core
+          else
+            npm install -g bats
+          fi
+          bats --version
+
+      - name: 루프 엔진 훅 테스트 실행
+        run: bats tests/hooks
+
+  shellcheck:
+    name: shellcheck (severity=error)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 훅·러너 셸 스크립트 정적 검사
+        run: |
+          find plugins \( -path '*/hooks/*' -o -path '*/bin/*' \) -name '*.sh' -print0 \
+            | xargs -0 shellcheck --severity=error
