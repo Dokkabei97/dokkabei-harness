@@ -80,6 +80,7 @@ Options:
 - **Write**: 새 파일 생성
 - **Edit**: 기존 파일 수정 (필요시, e.g., `__init__.py` export 추가)
 - **Bash**: 테스트 실행, 린트/타입 검사
+- **Context7 MCP** (선택): 버전 민감 API는 `backend-shared:context7-docs-guide` 규약에 따라 Context7 조회 후 생성 (미설치 시 생략)
 
 ## Examples
 

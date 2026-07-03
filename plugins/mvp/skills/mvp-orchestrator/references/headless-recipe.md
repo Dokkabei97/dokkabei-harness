@@ -4,128 +4,48 @@ Stage 4 개발 루프의 **보조 엔진**. 기본 엔진(Stop훅 재주입)은 
 
 ## 핵심 원칙
 
-1. **동일 `.planning` · 동일 게이트 공유** — 정지 판정은 Stop훅과 똑같이 `gate-cmd` exit code + `prd.json` all-passes + (있으면) `e2e-gate-cmd` exit code + `<promise>MVP_COMPLETE</promise>`로 한다. 엔진을 바꿔도 정지조건은 불변이다.
+1. **동일 `.planning` · 동일 게이트 공유** — 정지 판정 규약은 Stop훅과 동일하다(has_failure_marker 포함): `gate-cmd` exit 0 + **실패 표지 보정**(has_failure_marker — exit 0이어도 출력에 행두 `FAIL` 또는 1 이상 실패 카운트가 있으면 레드) + `prd.json` all-passes + **verified 마커 재검사**(passes:true 각 id의 `.planning/verified/{id}` 존재) + (있으면, all-passes 도달 시에만) `e2e-gate-cmd` 동일 규약 판정 + `<promise>MVP_COMPLETE</promise>`. 엔진을 바꿔도 정지조건은 불변이다.
 2. **매 반복 컨텍스트 리셋** — 각 `claude -p` 세션은 이전 반복을 모른다. 재개 프로토콜(마스터 파일 → `git log` → 미완 스토리 1개)로 아티팩트에서 이해를 재생성한다. 파일시스템과 git history만이 상태다.
-3. **이중 가동 금지** — Stop훅 엔진과 동시에 돌리지 않는다. headless 모드에서는 `.planning/loop-active`를 **생성하지 않는다**: Stop훅의 안전핀(`loop-active` 부재 시 무동작)이 내부 세션의 정상 종료를 보장하고, 반복은 외부 `while`이 전담한다. `loop-active`가 이미 있으면 스크립트가 시작을 거부한다.
+3. **이중 가동 금지** — Stop훅 엔진과 동시에 돌리지 않는다. headless 모드에서는 `.planning/loop-active`를 **생성하지 않는다**: Stop훅의 안전핀(`loop-active` 부재 시 무동작)이 내부 세션의 정상 종료를 보장하고, 반복은 외부 `while`이 전담한다. `loop-active`가 이미 있으면 러너가 시작을 거부하고(exit 1), 러너 가동 중 출현해도 매 반복 재검사가 감지해 중단한다(exit 1). 러너끼리의 중첩 실행(크론 겹침)은 `.planning/headless-active` 락(PID 기록, 스테일 자동 정리)이 거부한다.
 4. **세션당 스토리 1개** — 프롬프트가 "이번 세션에서는 스토리 1개만 처리하고 종료"를 강제한다. 작은 단위 + 잦은 커밋이 중단·재개를 안전하게 만든다.
 
-## 스크립트
+## 동봉 러너
 
-프로젝트 루트에 `scripts/mvp-headless.sh`로 저장 후 실행한다(전제: Stage 0~3 완료, `gate-cmd` 그린, jq 설치).
+러너는 플러그인에 동봉된 **`bin/mvp-headless.sh`** 하나뿐이다 — 과거처럼 본 문서에 스크립트 본문을 복붙하지 않는다(문서/러너 소스 이원화 제거). 실행 경로는 `/mvp-run --headless`가 현재 설치 기준으로 출력하며, 아래 표에서는 `$RUNNER`로 표기한다. 전제(Stage 0~3 완료, `prd.json`·`gate-cmd` 존재, jq·claude CLI 설치)는 러너가 시작 시 스스로 검증하고 미충족이면 명확한 에러와 함께 exit 1로 거부한다.
 
-```bash
-#!/usr/bin/env bash
-# mvp-headless.sh — MVP Stage 4 무인 루프 (컨텍스트 리셋형 Ralph 패턴)
-# 사용: 프로젝트 루트에서  bash scripts/mvp-headless.sh
-set -euo pipefail
+원형 레시피 스크립트 대비 개선점 (판정 규약 전체는 러너 헤더 주석 참조):
 
-PLAN=".planning"
-MAX_ITER="${LOOP_MAX_ITER:-24}"          # 반복 상한 (권장: 스토리 수×3)
-MAX_MINUTES="${LOOP_MAX_MINUTES:-120}"   # 시간 상한(분)
-PROMISE="${LOOP_PROMISE:-<promise>MVP_COMPLETE</promise>}"  # promise 전체 문자열(Stop훅과 동일 규약)
-GATE_CMD="${LOOP_TEST_CMD:-$(cat "$PLAN/gate-cmd")}"  # 결정론 게이트 (env 우선)
-# E2E 수용 게이트(선택) — env 우선, 없으면 e2e-gate-cmd 파일, 그것도 없으면 빈 값(미적용)
-E2E_CMD="${LOOP_E2E_CMD:-$( [ -s "$PLAN/e2e-gate-cmd" ] && head -n1 "$PLAN/e2e-gate-cmd" || true )}"
+- **전제조건 검증 강화**: jq·claude 바이너리·`.planning/prd.json`·`gate-cmd` 부재 시 exit 1 — 판정 불가 상태로 헛도는 루프를 만들지 않는다.
+- **verified 마커 재검사**: 정지조건에 passes:true 각 id의 `.planning/verified/{id}` 존재 확인 추가 — Stop훅 ②(회의적 Evaluator) 최종 방어선과의 등가성 강화. 모델이 마커 없이 passes만 마킹해도 러너는 완료로 판정하지 않는다.
+- **`LOOP_CLAUDE_BIN`**: claude 바이너리 주입(기본 `claude`) — 래퍼 스크립트·테스트 스텁 대체용.
+- **판정 규약 통일**: 게이트·E2E 판정에 exit code 우선 + has_failure_marker 실패 표지 보정을 Stop훅과 공유 — `echo "3 failed"; exit 0` 같은 게이트도 두 엔진이 동일하게 레드로 판정한다.
+- **gate-cmd 반복당 1회 실행**: 같은 출력·exit를 정지 판정과 no-progress 시그니처 산출에 재사용 — 무거운 스위트의 배치 시간 2배를 방지한다.
+- **no-progress 정밀화**: 실패 시그니처를 단위 게이트 또는 E2E 레드일 때만 산출(그린 게이트에서의 정상 진행 오탐 제거)하고, Stop훅과 동일하게 E2E 출력을 `E2E:` 접두로 결합해 숫자 토큰 제거 정규화 후 md5로 비교한다.
+- **이중 가동 방어 강화**: 매 반복 시작 시 `loop-active` 재검사(가동 중 Stop훅 루프가 켜지면 즉시 중단) + `.planning/headless-active` 락으로 러너끼리의 중첩 실행(크론 겹침)을 거부한다.
+- **워치독**: `claude -p`를 백그라운드로 띄우고 폴링(기본 30초, `LOOP_WATCHDOG_INTERVAL`)으로 전역 시간 상한 초과 시 TERM→(최대 5초)→KILL — 세션이 행(hang)해도 시간 상한이 반복 도중 발동한다.
 
-# 이중 가동 금지: Stop훅 엔진이 살아 있으면 시작 거부
-if [ -f "$PLAN/loop-active" ]; then
-  echo "[headless] loop-active 존재 — Stop훅 엔진 가동 중. /mvp-stop 후 재시도하라." >&2
-  exit 1
-fi
-
-hash_text() {  # no-progress 시그니처 (macOS/Linux 이식성 폴백)
-  if command -v md5sum >/dev/null 2>&1; then md5sum | cut -d' ' -f1
-  elif command -v md5 >/dev/null 2>&1; then md5 -q
-  else shasum | cut -d' ' -f1; fi
-}
-
-stopped_ok() {  # 정지조건: ① 게이트 그린 ∧ all-passes ②ᴱ E2E 그린(있을 때) ③ promise
-  bash -c "$GATE_CMD" >/dev/null 2>&1 || return 1
-  jq -e '[.stories[].passes] | all' "$PLAN/prd.json" >/dev/null 2>&1 || return 1
-  # ②ᴱ E2E 수용 게이트 — all-passes 통과 후에만, 명령이 있을 때만 실행
-  [ -n "$E2E_CMD" ] && { bash -c "$E2E_CMD" >/dev/null 2>&1 || return 1; }
-  grep -qF "$PROMISE" "$PLAN/progress.md" 2>/dev/null || return 1
-  return 0
-}
-
-started_at="$(date +%s)"
-last_sig=""
-i=0
-while [ "$i" -lt "$MAX_ITER" ]; do
-  # 가드 1: 시간 상한
-  elapsed=$(( ( $(date +%s) - started_at ) / 60 ))
-  if [ "$elapsed" -ge "$MAX_MINUTES" ]; then
-    echo "[headless] 시간 상한 ${MAX_MINUTES}분 도달 — 중단. 같은 명령으로 재개 가능." >&2
-    exit 0
-  fi
-
-  # 정지조건 충족 시 완료 종료
-  if stopped_ok; then
-    echo "[headless] 정지조건 3결합 충족 — MVP 완료 (iteration $i)." >&2
-    exit 0
-  fi
-
-  i=$((i + 1))
-  # /mvp-status 가시성을 위해 loop-state.json 갱신
-  jq -n --argjson it "$i" --arg sig "$last_sig" --arg ts "$started_at" \
-    '{iteration:$it, last_fail_sig:$sig, started_at:($ts|tonumber)}' > "$PLAN/loop-state.json"
-
-  # 1 반복 = 1 스토리 — 매 회 새 세션(컨텍스트 리셋)
-  claude -p --permission-mode acceptEdits "$(cat <<'PROMPT'
-MVP Stage 4 개발 루프의 1회 반복을 수행하라. mvp-loop-protocol 스킬의 재개 프로토콜을 따른다:
-1) .planning/mvp-*.md 마스터와 git log --oneline -10 으로 현재 상태를 파악한다.
-2) .planning/prd.json 에서 passes:false 인 최우선 스토리 1개만 선택한다.
-3) 테스트 먼저 작성 → 최소 구현 → .planning/gate-cmd 의 명령이 그린(exit 0)이 될 때까지 수정한다.
-4) mvp-verifier 에이전트를 디스패치해 해당 스토리 AC를 반증시킨다. 반증 실패 시에만
-   .planning/verified/{story-id} 마커가 생성되며, 마커가 생긴 뒤에만 passes:true 로 마킹한다.
-5) feat(mvp): S-xx 형식으로 커밋하고 .planning/progress.md 에 1줄을 추가한다.
-6) 모든 스토리가 passes:true 이고 단위 게이트가 그린이면, .planning/e2e-gate-cmd 가 있을 경우
-   그 명령을 실행해 E2E 그린까지 확인한 뒤에만 progress.md 에 <promise>MVP_COMPLETE</promise> 를
-   정확히 기록한다. E2E 레드면 promise 를 적지 말고 깨진 플로우를 보완한다.
-규칙: 이번 세션에서는 스토리 1개만 처리하고 종료한다. 테스트 삭제·약화 금지.
-진행 불가 시 .planning/BLOCKED.md 에 시도·원인·권장 다음 행동을 기록하고 종료한다.
-PROMPT
-)" || echo "[headless] iteration $i: claude 비정상 종료 — 다음 반복에서 재개 프로토콜로 복구." >&2
-
-  # 가드 2: no-progress — 게이트 실패 시그니처가 직전과 동일하면 중단
-  gate_out="$(bash -c "$GATE_CMD" 2>&1 || true)"
-  sig="$(printf '%s' "$gate_out" | grep -Ei 'fail|error' | sort | hash_text || echo "")"
-  if [ -n "$sig" ] && [ "$sig" = "$last_sig" ]; then
-    {
-      echo "## headless no-progress — iteration $i"
-      echo "- 실패 시그니처: $sig"
-      echo '```'
-      printf '%s\n' "$gate_out" | tail -20
-      echo '```'
-    } >> "$PLAN/BLOCKED.md"
-    echo "[headless] no-progress(동일 실패 연속) — 중단. BLOCKED.md 확인." >&2
-    exit 0
-  fi
-  last_sig="$sig"
-done
-
-echo "[headless] max iterations($MAX_ITER) 도달 — 중단. 미완 스토리는 prd.json 참조, 같은 명령으로 재개." >&2
-exit 0
-```
+브라운필드용은 feature-loop 플러그인의 `bin/floop-headless.sh` — 동일 골격에 ②ᴿ baseline 회귀 게이트(기준선 대비 신규 실패 0)가 결합된다. `/floop-run --headless` 참조.
 
 ## 실행·재개·스케줄
 
+아래 표의 `$RUNNER`는 동봉 러너 경로다 (정확한 경로는 `/mvp-run --headless` 출력 참조).
+
 | 작업 | 방법 |
 |------|------|
-| 야간 무인 실행 | 프로젝트 루트에서 `nohup bash scripts/mvp-headless.sh > .planning/headless.log 2>&1 &` |
-| 가드 조정 | `LOOP_MAX_ITER=36 LOOP_MAX_MINUTES=300 bash scripts/mvp-headless.sh` |
+| 야간 무인 실행 | 프로젝트 루트에서 `nohup bash "$RUNNER" > .planning/headless.log 2>&1 &` |
+| 가드 조정 | `LOOP_MAX_ITER=36 LOOP_MAX_MINUTES=300 bash "$RUNNER"` |
 | **재개** | **같은 명령을 다시 실행** — 별도 재개 절차 없음. 정지조건·no-progress·시간 상한이 처음부터 재평가되고, 각 세션이 마스터+git에서 상태를 복구한다(어느 시점에 중단됐어도 안전) |
 | 진행 확인 | 다른 터미널/세션에서 `/mvp-status` 또는 `jq '.stories[] | {id, passes}' .planning/prd.json` |
-| 중단 | 셸 프로세스 종료(Ctrl-C/kill). `loop-active`를 쓰지 않으므로 잔존 플래그 정리 불필요 |
-| 크론 등록 | `MVP_PROJECT_DIR` 환경변수에 프로젝트 루트를 지정해 crontab에 `cd "$MVP_PROJECT_DIR" && bash scripts/mvp-headless.sh` 형태로 등록(절대경로 하드코딩 대신 env 사용) |
+| 중단 | 셸 프로세스 종료(Ctrl-C/kill). `loop-active`를 쓰지 않으므로 잔존 플래그 정리 불필요 — `headless-active` 락은 EXIT trap이 정리하고, 강제 종료로 남아도 다음 실행이 스테일(죽은 PID) 락으로 판정해 자동 제거한다 |
+| 크론 등록 | `MVP_PROJECT_DIR`(프로젝트 루트)·`MVP_RUNNER`(러너 경로) 환경변수를 지정해 crontab에 `cd "$MVP_PROJECT_DIR" && bash "$MVP_RUNNER"` 형태로 등록(절대경로 하드코딩 대신 env 사용) |
 
 ## 가드레일 대응표 (Stop훅 엔진과의 등가성)
 
 | 가드 | Stop훅 엔진 | headless 엔진 |
 |------|------------|---------------|
 | max iterations | 훅이 `loop-state.json` iteration 검사 | 외부 `while` 카운터 (`LOOP_MAX_ITER`) |
-| no-progress | 실패 시그니처 md5 연속 2회 | 동일 — 외부 루프가 게이트 출력 시그니처 비교 |
-| 시간 상한 | `loop-state.json` started_at 대비 | 동일 — 스크립트 시작 시각 대비 (`LOOP_MAX_MINUTES`) |
+| no-progress | 실패 시그니처 md5 연속 2회 | 동일 — 외부 루프가 단위 게이트 또는 E2E 레드의 실패 시그니처(E2E 출력 `E2E:` 접두 결합, 정규화 md5)를 직전 반복과 비교 |
+| 시간 상한 | `loop-state.json` started_at 대비 | 동일 — 스크립트 시작 시각 대비 (`LOOP_MAX_MINUTES`). 반복 도중에는 워치독(기본 30초 폴링, `LOOP_WATCHDOG_INTERVAL`)이 행(hang)한 `claude -p`를 TERM→KILL로 강제 종료 후 같은 경로로 합류 |
 | 킬스위치 | `/mvp-stop` (loop-active 삭제) | 셸 프로세스 종료 |
 | circuit breaker | 오케스트레이터 정책(동일 스토리 3연속 skip) | 세션 내 동일 — 각 세션의 BLOCKED 기록이 다음 세션에 승계 |
 
@@ -133,4 +53,4 @@ exit 0
 
 - `--permission-mode acceptEdits`는 무인 실행 전제다. 신뢰 가능한 그린필드 레포에서만 사용하고, 운영 자격증명이 있는 환경에서는 돌리지 않는다.
 - 비용 상한이 곧 안전장치다: 반복·시간 상한 없이 돌린 Stop훅 루프가 $3600/day를 청구한 실제 사고가 있다. 기본값(24회/120분)을 지우지 말 것.
-- 완료 판정은 promise 출력이 아니라 **외부 루프의 정지조건 3결합 검사**가 한다 — 모델이 promise를 성급히 기록해도 게이트 레드면 루프는 계속된다.
+- 완료 판정은 promise 출력이 아니라 **외부 루프의 정지조건 검사(게이트 그린(실패 표지 보정 포함) + all-passes + verified 마커 + E2E 그린(있을 때) + promise)** 가 한다 — 모델이 promise를 성급히 기록해도 게이트 레드거나 마커가 없으면 루프는 계속된다.

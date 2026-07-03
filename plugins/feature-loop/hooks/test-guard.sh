@@ -15,6 +15,11 @@ input="$(cat || true)"
 # 루프 비활성 시 무동작
 [ -f "$PROJ/.planning/loop-active" ] || exit 0
 
+# engine 스코프 가드 — loop-active 의 "engine=" 줄이 floop 이외 값이면 그 루프는
+# 타 엔진(mvp/generic) 소유 → 무개입 통과. 줄 없음 = 레거시 호환(자기 것). Stop훅과 동일 패턴.
+loop_engine="$(grep -m1 '^engine=' "$PROJ/.planning/loop-active" 2>/dev/null | tr -d '\r' || true)"
+[ -z "$loop_engine" ] || [ "${loop_engine#engine=}" = "floop" ] || exit 0
+
 # jq 부재 시 검사 불가 — 차단하지 않고 사유 명시 후 통과
 if ! command -v jq >/dev/null 2>&1; then
   echo "[floop] jq 미설치 — test-guard 검사 생략(차단 없음)" >&2

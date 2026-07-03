@@ -92,6 +92,24 @@ Stage 4 진입은 직접 트리거 경로를 포함해 항상 `/mvp-run` 절차(
 
 매 반복 표준 사이클: 미완(passes:false) 최우선 스토리 **1개만** 선택 → 테스트 먼저 → 최소 구현 → 게이트 그린 → MV 반증(통과까지 수정 반복) → verified 마커 → passes:true(메인 세션) → 커밋 1회(구현+prd.json+progress.md 일괄, `feat(mvp): S-xx`). 상세 운영(재개 프로토콜·BLOCKED 에스컬레이션)은 mvp-loop-protocol 스킬 참조.
 
+#### MV 디스패치 규약 — verify-round 상태 파일
+
+스토리 AC 반증(모드 ②) 디스패치의 오케스트레이터 의무 3가지 — SubagentStop 훅이 이 규약을 결정론 집행한다(마커 없는 verifier 종료를 exit 2 차단, round>=2는 최대 2라운드 규약으로 통과 허용).
+
+1. **디스패치 직전**: `.planning/verify-round/{story-id}`에 `round=1`(maker 수정 후 재검이면 `round=2`) 기록
+2. **결과 규약**: 반증 실패(통과) → MV가 `verified/{story-id}` 생성(기존 규약) / 반증 성공 → `refuted/{story-id}`에 구체 근거(파일:라인·실행 출력·재현 명령) 기록
+3. **결과 처리 후**: `refuted`를 maker 수정 라운드 입력으로 소비하고 `verify-round/{story-id}`를 정리(삭제)한다
+
+훅은 동일 pending 차단을 2회로 제한하고(`blocked=N` 카운터), 초과 시 스테일로 간주해 `verify-round/{story-id}`를 자동 정리한다 — verifier 재디스패치 필요.
+
+#### --cross-check 교차 모델 반증 (opt-in, 기본 off)
+
+`/mvp-run --cross-check` 지정 시 MV 1라운드 반증 실패 후 **verified 마커 생성 전에** 외부 CLI 교차 반증을 삽입한다 — **외부 반증도 실패해야 마커가 생성**된다(마커 사후 제거·refuted 병기 경로 원천 배제).
+
+- **실행**: 오케스트레이터가 MV 디스패치 프롬프트에 cross-check 지시를 포함 — MV가 마커 생성 직전 etc:with 라우팅 규약(`which` 기반 가용성 감지, Codex `codex exec` / Antigravity `agy -p`)으로 스토리 AC + diff를 외부 CLI에 전달해 독립 반증시킨다. 마커 생성 전 실행이라 SubagentStop 집행과 순서 충돌이 없다.
+- **외부 반증 성공 시**: 마커 미생성 + `refuted/{story-id}`에 외부 근거 기록 → maker 수정 후 round=2 재검. 외부 반증에도 '구체 근거 없는 FAIL 금지' 규약이 동일 적용된다(오반증 방지).
+- **폴백**: 외부 CLI 미설치(`which` 전건 실패) 시 기존 동일 모델 max 2라운드 규약으로 graceful 폴백(1줄 고지).
+
 ## Gate Policy (자율 통과 + 실패 시만 보고)
 
 | 결과 | 동작 |

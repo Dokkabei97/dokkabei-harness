@@ -11,6 +11,16 @@
         "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/mvp-loop-stop-hook.sh\"", "timeout": 600 }],
         "description": "MVP 루프 엔진 — loop-active 존재 시에만 정지조건 3결합 검증, 미충족 시 exit 2 재주입" }
     ],
+    "PreCompact": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/precompact-anchor.sh\" mvp", "timeout": 10 }],
+        "description": "compaction 직전 루프 재개 앵커 — loop-active 존재+mvp 엔진일 때만 마스터 경로·다음 대상·게이트·반복·규율 5줄 이내 출력, 일반 세션 무개입(항상 exit 0)" }
+    ],
+    "SubagentStop": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/subagent-stop-verify.sh\" mvp", "timeout": 10 }],
+        "description": "verifier 결과 기록 집행 — verify-round/{id} pending 상태에서 verified/refuted 마커 없이 종료 시 exit 2 재주입 (최대 2라운드, loop-active 부재 시 무개입)" }
+    ],
     "PreToolUse": [
       { "matcher": "Bash",
         "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/test-guard.sh\"", "timeout": 10 }],

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PreCompact": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-snapshot.sh\"", "timeout": 30 }],
+        "description": "HANDOFF 자동 스냅샷 — 컴팩션 직전 git 상태를 HANDOFF.md 의 auto-snapshot 마커 섹션에만 결정론 기록. loop-active 세션은 mvp/floop 앵커 소관으로 무동작, 항상 exit 0" }
+    ],
+    "SessionEnd": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-snapshot.sh\"", "timeout": 30 }],
+        "description": "HANDOFF 자동 스냅샷 — 세션 종료 시점의 상태를 동일 스크립트로 마커 섹션 갱신 (마커 밖 수동 작성 내용 무접촉, 실패해도 세션 비방해)" }
+    ]
+  }
+}

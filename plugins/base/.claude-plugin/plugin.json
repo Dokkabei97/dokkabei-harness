@@ -1,7 +1,7 @@
 {
   "name": "base",
-  "description": "코드 품질/보안/성능/아키텍처/SQL 종합 분석 — 코드 리뷰, 성능 안티패턴 탐지, 아키텍처 건강도 점수화, SQL 쿼리 최적화",
-  "version": "1.0.0",
+  "description": "공통 가드 훅 계층 + LSP — 실시간 보안 경고(warn-security: 시크릿/인젝션/역직렬화 등 15클래스, 경고 전용), dev-server tmux 강제·git push 리마인더·md 남발 차단, 포맷/컴파일 체크 등 훅 16종. 루프 하네스(mvp/feature-loop)가 requires로 전제하는 기반 계층.",
+  "version": "1.1.0",
   "author": {
     "name": "장민규",
     "email": "wkdrn970@gmail.com"

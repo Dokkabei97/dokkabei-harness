@@ -171,7 +171,29 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-print.js"]
           }
         ],
-        "description": "Warn about print() statements after Python edits. 확장자 필터는 스크립트 내부"
+        "description": "Warn about print() statements after Python edits"
+      },
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|kt|kts|py|go|java|sql|sh|yaml|yml|json|properties)$|\\\\.env(\\\\.[A-Za-z0-9_-]+)?$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
+          }
+        ],
+        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Edit on code files"
+      },
+      {
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|kt|kts|py|go|java|sql|sh|yaml|yml|json|properties)$|\\\\.env(\\\\.[A-Za-z0-9_-]+)?$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
+          }
+        ],
+        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Write on code files"
       }
     ]
   }

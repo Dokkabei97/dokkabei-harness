@@ -87,6 +87,7 @@ Options:
 - TypeScript strict mode — `any` 사용 금지
 - Zod 스키마가 있으면 `z.infer`로 타입 도출
 - 비즈니스 로직이 필요한 부분은 TODO(human) 마커 사용
+- 공식 `frontend-design` 스킬(anthropics/skills — 'AI 티 나는 밋밋한 UI' 방지)이 설치되어 있으면 컴포넌트·페이지의 시각 스타일링(타이포·색·간격·시각 위계)에 스킬 가이드를 조합 적용한다. 미설치 시 위 규칙만으로 기존 동작을 유지한다(graceful degrade)
 
 ### Phase 3: Verification
 생성된 코드가 타입 체크를 통과하고 올바른지 검증한다.
@@ -104,6 +105,8 @@ Options:
 - **Write**: 새 파일 생성
 - **Edit**: 기존 파일 수정 (필요시)
 - **Bash**: TypeScript 컴파일, 린트, 테스트 실행
+- **Context7 MCP** (선택): 버전 민감 API는 `backend-shared:context7-docs-guide` 규약에 따라 Context7 조회 후 생성 (미설치 시 생략)
+- **frontend-design 스킬** (선택): 시각 스타일링 단계에서 조합 활용 — 설치: `/plugin install frontend-design@claude-plugins-official` (미설치 시 생략)
 
 ## Examples
 

@@ -26,9 +26,10 @@ Reference these rules when:
 | `AGT-` | Agents | 30 rules |
 | `SKL-` | Skills | 21 rules |
 | `HK-` | Hooks | 13 rules |
+| `LOOP-` | Loop Engine Hooks | 10 rules |
 | `TEAM-` | Teams | 8 rules |
-| `ORC-` | Orchestrators | 8 rules |
-| `XRF-` | Cross-Reference | 15 rules |
+| `ORC-` | Orchestrators | 9 rules |
+| `XRF-` | Cross-Reference | 16 rules |
 | `SEC-` | Security | 7 rules |
 | `QUA-` | Quality | 7 rules |
 
@@ -45,7 +46,7 @@ Reference these rules when:
 
 Execute validation in this order for optimal dependency resolution:
 
-1. **Structural** (CMD/AGT/SKL/HK rules) - File exists, frontmatter valid, sections present
+1. **Structural** (CMD/AGT/SKL/HK/LOOP rules) - File exists, frontmatter valid, sections present
 2. **Content Quality** (QUA rules) - Descriptions specific, examples present, triggers concrete
 3. **Team Structural** (TEAM rules) - Team definition, members, orchestrator
 4. **Orchestrator** (ORC rules) - Phase sequence, data flow, error handling
@@ -124,6 +125,7 @@ Detailed rule definitions with examples:
 - [references/agt-rules.md](references/agt-rules.md) - Agent validation rules
 - [references/skl-rules.md](references/skl-rules.md) - Skill validation rules
 - [references/hk-rules.md](references/hk-rules.md) - Hook validation rules
+- [references/loop-rules.md](references/loop-rules.md) - Loop engine hook validation rules (Stop훅 루프 엔진 전용)
 - [references/team-rules.md](references/team-rules.md) - Team validation rules
 - [references/orc-rules.md](references/orc-rules.md) - Orchestrator validation rules
 - [references/xrf-rules.md](references/xrf-rules.md) - Cross-reference rules
