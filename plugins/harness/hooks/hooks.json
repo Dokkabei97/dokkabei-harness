@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "Stop": [
+      { "matcher": "*",
+        "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/generic-loop-stop-hook.sh\"", "timeout": 600 }],
+        "description": "generic 경량 루프 엔진 — loop-active에 engine=generic 명시 시에만 정지조건 2결합(게이트 그린+promise) 검증, 미충족 시 exit 2 재주입 (레거시 loop-active 무주장)" }
+    ]
+  }
+}

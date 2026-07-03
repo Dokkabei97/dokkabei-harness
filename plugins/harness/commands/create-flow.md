@@ -29,6 +29,7 @@ Options:
   --interactive true|false                Interactive mode (default: true)
   --team                               Team-aware mode: batch-generate from harness spec
   --team-name <name>                   Team name for batch generation
+  --from-lessons                       Hook mode: tasks/lessons.md의 '#가드-훅-후보' 태그 항목에서 warn/block 훅 초안 스캐폴딩 (사용자 승인 게이트 필수)
 ```
 
 ## Behavioral Flow
@@ -115,6 +116,12 @@ Define the scope and relationships of the new component.
 2. **Matcher Design**: Define the tool/condition matcher expression
 3. **Action Type**: Choose between block, warn, or transform
 4. **Script Logic**: Plan the hook's Node.js script logic
+
+**For Hooks (--from-lessons mode):**
+1. **후보 수집**: `tasks/lessons.md`에서 `#가드-훅-후보` 태그가 붙은 항목을 읽어 나열 — 태그 항목이 없으면 안내 후 종료 (태그 생산자는 `workflow:/retro` — 반복 실수 패턴을 lessons.md에 기록·태깅까지만 담당하고, 훅 스캐폴딩은 본 모드의 몫)
+2. **초안 스캐폴딩**: 각 후보를 warn(경고 후 진행) 또는 block(exit 2 차단) 훅 초안으로 변환 — flow-scaffolding 템플릿 기반, 셸 스크립트는 셸 훅 규약(set -euo pipefail·안전핀·jq graceful degrade) 준수
+3. **검증 위임**: 생성된 초안을 `/verify-flow --target hook`으로 검증 (HK-/SEC- 룰셋, 루프 엔진 파생물이면 LOOP- 룰셋 포함)
+4. **사용자 승인 게이트**: 검증 결과와 초안을 항목별 표로 제시하고 승인된 항목만 hooks 설정에 반영 — 자동 적용 금지 (전체 반려 시 초안 파일도 남기지 않음)
 
 **For Teams (--team mode):**
 1. **Team Spec Intake**: Receive team specification from team-harness skill
@@ -468,6 +475,15 @@ Compare AI outputs with Claude's design and select the best structure for each s
 # Selects optimal structure for each section
 ```
 
+### Scaffold Guard Hooks from Lessons
+```
+/create-flow --type hook --from-lessons
+# 1. tasks/lessons.md에서 '#가드-훅-후보' 태그 항목 2건 발견 (태그는 workflow:/retro가 기록)
+# 2. 각 항목을 warn/block 훅 초안으로 스캐폴딩 (flow-scaffolding 템플릿)
+# 3. /verify-flow --target hook 으로 검증 위임
+# 4. 검증 결과 표 제시 → 사용자가 승인한 항목만 적용 (자동 적용 금지)
+```
+
 ### Create Agent Team from Harness Spec
 ```
 /create-flow --team --team-name code-review-team
@@ -492,6 +508,7 @@ Compare AI outputs with Claude's design and select the best structure for each s
 - Check for naming conflicts with existing components
 - Generate complete multi-agent teams with orchestrator from harness team specs
 - Batch-create agents, orchestrator skills, and team hooks
+- Scaffold warn/block guard-hook drafts from `tasks/lessons.md` `#가드-훅-후보` entries (--from-lessons) and delegate validation to /verify-flow
 
 **Will Not:**
 - Overwrite existing components without explicit confirmation
@@ -501,6 +518,7 @@ Compare AI outputs with Claude's design and select the best structure for each s
 - Modify existing components (use dedicated editing commands instead)
 - Create components outside the standard directory structure
 - Design team architecture patterns (use team-harness skill for design phase)
+- Apply --from-lessons hook drafts without explicit per-item user approval (자동 적용 금지)
 
 ## Related
 
@@ -509,3 +527,4 @@ Compare AI outputs with Claude's design and select the best structure for each s
 - `skills/flow-scaffolding/SKILL.md` - Templates for each component type
 - `skills/flow-validation/SKILL.md` - Validation rules reference
 - `skills/team-harness/SKILL.md` - Team design meta-skill (harness integration)
+- `workflow:/retro` - `#가드-훅-후보` 태그 생산자 (반복 실수를 tasks/lessons.md에 기록·태깅 — --from-lessons 모드의 입력원)
