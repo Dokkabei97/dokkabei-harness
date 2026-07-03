@@ -25,6 +25,11 @@ PLAN="$PROJ/.planning"
 # (a) 안전핀 — 루프 미가동 세션의 종료는 절대 방해하지 않는다 (즉시 종료 허용)
 [ -f "$PLAN/loop-active" ] || exit 0
 
+# (a') engine 스코프 가드 — loop-active 의 "engine=" 줄이 floop 이외 값이면 그 루프는
+# 타 엔진(mvp/generic) 소유 → 개입 없이 종료 허용. 줄 없음 = 레거시 호환(자기 것)
+loop_engine="$(grep -m1 '^engine=' "$PLAN/loop-active" 2>/dev/null | tr -d '\r' || true)"
+[ -z "$loop_engine" ] || [ "${loop_engine#engine=}" = "floop" ] || exit 0
+
 # jq 부재 시 graceful degrade — 재주입도 통과 판정도 하지 않고, 사유 명시 후 종료 허용
 if ! command -v jq >/dev/null 2>&1; then
   echo "[floop-loop] jq 미설치 — 정지조건 판정 불가. 루프를 진행할 수 없어 종료를 허용한다. jq 설치 후 /floop-run 으로 재개하라. (loop-active 유지 — 해제는 /floop-stop)" >&2
