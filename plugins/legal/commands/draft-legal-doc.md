@@ -19,7 +19,7 @@ complexity: standard
 Options:
   --type contract|demand-letter|settlement|notice|nda  문서 유형
   --role 갑|을|발신|수신  작성자 입장
-  --format md|txt  출력 형식(기본: md)
+  --format md|txt|docx  출력 형식(기본: md)
 ```
 
 ## Behavioral Flow
@@ -44,11 +44,17 @@ Options:
 - 공증·내용증명 발송·등기 등 절차 안내
 - 변호사 검토 권장 지점 명시
 
+### Phase 5: 오피스 내보내기(선택)
+- `--format docx` 시 공식 `docx` 스킬(document-skills)에 위임해 md 초안을 docx로 변환
+- 전제조건: 공식 문서 스킬 설치 + python3 — 미충족 시 md 산출로 폴백(graceful degrade)
+- 폴백 시 설치 안내 1줄 출력: `/plugin marketplace add anthropics/skills` 후 `/plugin install document-skills@anthropic-agent-skills`
+
 ## Tool Coordination
 - **Agent**: contract-counsel/dispute-risk-counsel 위임(유형별)
 - **Read**: 기존 계약/사실관계 자료 참조
 - **WebSearch**: 표준계약서 양식·법정 요건 확인
 - **Write**: 초안 문서 파일 생성
+- **Skill**: 공식 `docx` 스킬(document-skills) — md 초안→docx 변환 위임(설치 시)
 
 ## Examples
 
@@ -62,12 +68,18 @@ Options:
 /draft-legal-doc --type demand-letter --role 발신 미지급 용역대금 500만원 청구
 ```
 
+### NDA 초안(docx 내보내기)
+```
+/draft-legal-doc --type nda --role 갑 --format docx 외주 개발사와의 비밀유지계약
+```
+
 ## Boundaries
 
 **Will:**
 - 표준 구조 기반 초안 작성
 - 핵심 조항 선택지 및 권장안 제시
 - 절차 안내
+- docx 내보내기(공식 문서 스킬 설치 시)
 
 **Will Not:**
 - 공증·내용증명 발송·등기 실무 대행

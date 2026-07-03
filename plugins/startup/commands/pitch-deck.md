@@ -21,6 +21,9 @@ Options:
   --format sequoia|yc|custom         피치덱 형식 (기본: sequoia)
   --slides [슬라이드수]               슬라이드 수 (기본: 12)
   --focus story|data|product         강조 방향
+  --export md|pptx                   내보내기 파일 형식 (기본: md)
+
+※ --format은 덱 구성 형식(스토리 골격), --export는 산출 파일 형식 — 서로 다른 옵션
 ```
 
 ## Behavioral Flow
@@ -73,11 +76,16 @@ Options:
 - 피치 타이밍 가이드 (10분 / 15분 / 20분)
 - 흔한 실수와 회피 전략
 
+### Phase 7: 내보내기(선택)
+- `--export pptx` 시 공식 `pptx` 스킬(document-skills)에 위임 — 슬라이드 구조+스피커 노트를 pptx로 변환
+- 공식 문서 스킬 미설치 시 md 산출로 폴백하고 설치 안내 1줄 출력: `/plugin marketplace add anthropics/skills` 후 `/plugin install document-skills@anthropic-agent-skills`
+
 ## Tool Coordination
 - **WebSearch**: 투자 트렌드, 유사 기업 밸류에이션, 벤치마크 조사
 - **Read**: 기존 린 캔버스/시장조사/재무 모델 파일 참조
 - **Write**: 피치덱 구조 마크다운 파일 생성
 - **WebFetch**: 경쟁사/시장 데이터 수집
+- **Skill**: 공식 `pptx` 스킬(document-skills) — 구조+스피커 노트→pptx 변환 위임(설치 시)
 
 ## Examples
 
@@ -96,6 +104,11 @@ Options:
 /pitch-deck --format yc --slides 10 개발자 도구 스타트업
 ```
 
+### pptx 내보내기
+```
+/pitch-deck --export pptx --stage seed 물류 최적화 B2B SaaS
+```
+
 ## Boundaries
 
 **Will:**
@@ -103,9 +116,10 @@ Options:
 - 스피커 노트 작성
 - Q&A 예상 질문 및 답변 준비
 - 라운드별 강조점 조정
+- pptx 내보내기(공식 pptx 스킬 설치 시)
 
 **Will Not:**
-- 실제 PPT/Keynote/Figma 파일 생성
+- Keynote/Figma 파일 생성 — pptx 내보내기는 공식 pptx 스킬 설치 시 지원, 비주얼 디자인(레이아웃·그래픽 작업) 자체는 여전히 범위 밖
 - 비주얼 디자인 (구조와 콘텐츠만)
 - 법률적 투자 조건 자문
 - 특정 투자자 추천
