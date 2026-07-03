@@ -16,6 +16,11 @@ Reference these guidelines when:
 - Server Component와 Client Component 선택이 필요할 때
 - 데이터 페칭 전략이나 캐싱 정책을 결정할 때
 - 프론트엔드 테스트 코드를 작성할 때
+- 버전 민감 API(App Router async params, 캐싱 기본값 등)는 backend-shared 플러그인의 Context7 최신 문서 조회 공통 규약(`context7-docs-guide`) 참조 (미설치 시 생략)
+
+**인접 도구와의 역할 경계** — 텍스트 와이어프레임·유저플로우·`[story: S-xx]` 스토리 매핑은 mvp 플러그인의 `ux-designer`(Stage 2) 소관이고,
+고충실도 시각 구현·스타일링('AI 티 나는 밋밋한 UI' 방지)은 공식 `frontend-design` 스킬(`/plugin install frontend-design@claude-plugins-official`, 미설치 시 본 가이드만으로 진행) 소관이며,
+코드 구조(Server/Client 경계·라우팅·데이터 페칭·테스트)는 본 nextjs 플러그인이 담당한다.
 
 ## Quick Reference
 
