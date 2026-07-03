@@ -12,10 +12,14 @@
     {
       "name": "base",
       "source": "./plugins/base",
-      "description": "보안 훅, lsp, mcp",
-      "version": "1.0.0",
-      "category": "development",
-      "keywords": ["hooks", "lsp", "mcp"],
+      "description": "공통 가드 훅(실시간 보안 경고 warn-security 포함, 훅 16종) + LSP. 루프 하네스의 기반 계층.",
+      "version": "1.1.0",
+      "category": "develop",
+      "keywords": [
+        "hooks",
+        "lsp",
+        "security"
+      ],
       "requires": []
     },
     {
@@ -24,7 +28,9 @@
       "description": "기타",
       "version": "1.0.0",
       "category": "productivity",
-      "keywords": ["etc"]
+      "keywords": [
+        "etc"
+      ]
     },
     {
       "name": "analyze",
@@ -32,7 +38,19 @@
       "description": "코드 품질/보안/성능/아키텍처/SQL 종합 분석 — 코드 리뷰, 성능 안티패턴 탐지, 아키텍처 건강도 점수화, SQL 쿼리 최적화, 코드 단순화 가이드",
       "version": "1.1.0",
       "category": "productivity",
-      "keywords": ["analyze", "code-review", "performance", "architecture", "security", "anti-pattern", "sql", "query-optimization", "index", "simplification", "refactoring"]
+      "keywords": [
+        "analyze",
+        "code-review",
+        "performance",
+        "architecture",
+        "security",
+        "anti-pattern",
+        "sql",
+        "query-optimization",
+        "index",
+        "simplification",
+        "refactoring"
+      ]
     },
     {
       "name": "test",
@@ -40,63 +58,136 @@
       "description": "테스트 자동화 — TDD 워크플로우, E2E 테스트 생성/실행, Chrome 기반 시각적 검증",
       "version": "1.0.0",
       "category": "productivity",
-      "keywords": ["test", "tdd", "e2e", "playwright", "chrome", "coverage"]
+      "keywords": [
+        "test",
+        "tdd",
+        "e2e",
+        "playwright",
+        "chrome",
+        "coverage"
+      ]
     },
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "개발 워크플로우 자동화 — PE 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리, 스펙 관리, 계획 수립, 배포 가이드, 폐기 관리",
-      "version": "1.0.0",
+      "description": "개발 워크플로우 자동화 — PE 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리, 스펙 관리, 계획 수립, 배포 가이드, 폐기 관리 + 회고 컴파운딩(/retro), MR 리뷰 confidence 필터, 문서 공동작성 가이드, 세션 자동 스냅샷 훅",
+      "version": "1.3.0",
       "category": "productivity",
-      "keywords": ["workflow", "review", "handoff", "documentation", "issue-tracker", "merge", "sync"]
+      "keywords": [
+        "workflow",
+        "review",
+        "handoff",
+        "documentation",
+        "issue-tracker",
+        "merge",
+        "sync"
+      ]
     },
     {
       "name": "harness",
       "source": "./plugins/harness",
-      "description": "하네스 구축용 플러그인",
-      "version": "1.0.0",
+      "description": "하네스 구축용 플러그인 — team-harness 설계, create-flow(--from-lessons 포함)/verify-flow(10룰셋), 경량 범용 루프(/loop-run)",
+      "version": "1.3.0",
       "category": "harness",
-      "keywords": ["harness", "plugins"]
+      "keywords": [
+        "harness",
+        "plugins",
+        "loop",
+        "validation"
+      ]
     },
     {
       "name": "backend-shared",
       "source": "./plugins/backend-shared",
       "description": "백엔드 언어 공통 — API 설계(REST/GraphQL), DB 마이그레이션, 헥사고날 아키텍처, 관측성/캐싱/이벤트/회복탄력성/보안/DTO 패턴, 백엔드 테스트. kotlin-spring, python-fastapi, go-mux와 함께 사용.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "develop",
-      "keywords": ["backend", "api-design", "rest", "graphql", "migration", "hexagonal", "observability", "caching", "kafka", "resilience", "security", "dto", "testing"]
+      "keywords": [
+        "backend",
+        "api-design",
+        "rest",
+        "graphql",
+        "migration",
+        "hexagonal",
+        "observability",
+        "caching",
+        "kafka",
+        "resilience",
+        "security",
+        "dto",
+        "testing"
+      ]
     },
     {
       "name": "kotlin-spring",
       "source": "./plugins/kotlin-spring",
       "description": "Kotlin + Spring Boot 특화 — 코드 생성, 프레임워크 가이드, CRUD 스캐폴딩, 관용 패턴 레퍼런스, 원칙/의사결정, Kotlin 네이밍. backend-shared와 조합.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "develop",
-      "keywords": ["kotlin", "spring", "spring-boot", "jpa", "coroutines", "webclient", "transaction"]
+      "keywords": [
+        "kotlin",
+        "spring",
+        "spring-boot",
+        "jpa",
+        "coroutines",
+        "webclient",
+        "transaction"
+      ],
+      "requires": [
+        "backend-shared"
+      ]
     },
     {
       "name": "python-fastapi",
       "source": "./plugins/python-fastapi",
       "description": "Python + FastAPI 특화 — 코드 생성, 프레임워크 가이드, CRUD/API 설계 스캐폴딩, 관용 패턴 레퍼런스, 원칙/의사결정. backend-shared와 조합.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "develop",
-      "keywords": ["python", "fastapi", "pydantic", "sqlalchemy", "alembic", "async", "strawberry"]
+      "keywords": [
+        "python",
+        "fastapi",
+        "pydantic",
+        "sqlalchemy",
+        "alembic",
+        "async",
+        "strawberry"
+      ],
+      "requires": [
+        "backend-shared"
+      ]
     },
     {
       "name": "go-mux",
       "source": "./plugins/go-mux",
       "description": "Go + stdlib net/http mux 특화 — 코드 생성, CRUD/API 설계 스캐폴딩, 개발 종합 가이드. backend-shared와 조합.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "develop",
-      "keywords": ["go", "golang", "mux", "net-http", "database-sql"]
+      "keywords": [
+        "go",
+        "golang",
+        "mux",
+        "net-http",
+        "database-sql"
+      ],
+      "requires": [
+        "backend-shared"
+      ]
     },
     {
       "name": "nextjs",
       "source": "./plugins/nextjs",
       "description": "Next.js App Router 프론트엔드 특화 — 코드 생성, 컴포넌트·페이지·레이아웃 스캐폴딩, 페이지/기능 UI 설계, 개발 종합 가이드. Server/Client Component 경계, 라우팅, 데이터 페칭.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "develop",
-      "keywords": ["nextjs", "next.js", "react", "app-router", "server-components", "frontend", "typescript"]
+      "keywords": [
+        "nextjs",
+        "next.js",
+        "react",
+        "app-router",
+        "server-components",
+        "frontend",
+        "typescript"
+      ]
     },
     {
       "name": "search",
@@ -104,41 +195,125 @@
       "description": "Elasticsearch 검색 엔지니어링 — ES 쿼리 최적화, 검색 관련성 튜닝, 벡터/하이브리드 검색(kNN/RRF), 데이터 파이프라인 연동(Kafka/Spark), 인덱스 수명주기, 한국어 분석. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션.",
       "version": "1.0.0",
       "category": "develop",
-      "keywords": ["elasticsearch", "search", "lucene", "vector-search", "knn", "rrf", "relevance", "korean-analyzer", "kafka", "indexing"]
+      "keywords": [
+        "elasticsearch",
+        "search",
+        "lucene",
+        "vector-search",
+        "knn",
+        "rrf",
+        "relevance",
+        "korean-analyzer",
+        "kafka",
+        "indexing"
+      ]
     },
     {
       "name": "startup",
       "source": "./plugins/startup",
       "description": "스타트업용 플러그인",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "startup",
-      "keywords": ["pm", "marketing"]
+      "keywords": [
+        "pm",
+        "marketing"
+      ]
     },
     {
       "name": "mvp",
       "source": "./plugins/mvp",
       "description": "신규 사업/서비스 MVP 루프 엔지니어링 하네스 — 아이디어→PRD→디자인→스택 선택·스캐폴딩→PRD-driven 개발 루프를 게이트 상태기계로 완주. Stop훅 루프 엔진+maker/checker 반증 검증+가드레일. startup 플러그인과 /mvp-from-startup으로 연계(비즈니스 가설→코드).",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "develop",
-      "keywords": ["mvp", "prd", "scaffolding", "greenfield", "loop", "gate", "startup", "product"],
-      "requires": ["base"]
+      "keywords": [
+        "mvp",
+        "prd",
+        "scaffolding",
+        "greenfield",
+        "loop",
+        "gate",
+        "startup",
+        "product"
+      ],
+      "requires": [
+        "base"
+      ]
     },
     {
       "name": "feature-loop",
       "source": "./plugins/feature-loop",
       "description": "기존(브라운필드) 코드베이스용 루프 엔지니어링 하네스 — 자연어 요청을 작업 분해(tasks.json)→baseline 캡처→회귀 안전 개발 루프로 완주. MVP 하네스의 Stop훅 루프 엔진·maker/checker 반증·가드레일을 재사용하되 입력은 작업 분해, 게이트는 baseline 회귀 방지. 루프 안에서 스택 플러그인·analyze·test·workflow를 호출. 이미 개발 중/완료된 프로젝트의 기능 추가·수정용(mvp는 그린필드 전용).",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "develop",
-      "keywords": ["feature-loop", "brownfield", "loop", "gate", "regression", "baseline", "tasks", "existing-codebase", "incremental"],
-      "requires": ["base"]
+      "keywords": [
+        "feature-loop",
+        "brownfield",
+        "loop",
+        "gate",
+        "regression",
+        "baseline",
+        "tasks",
+        "existing-codebase",
+        "incremental"
+      ],
+      "requires": [
+        "base"
+      ]
     },
     {
       "name": "legal",
       "source": "./plugins/legal",
       "description": "한국법 법무 하네스 — 계약 검토/작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄) 자문. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "legal",
-      "keywords": ["legal", "law", "korean-law", "contract", "compliance", "privacy", "labor", "ip", "corporate", "investment", "defamation", "criminal-risk", "risk-assessment"]
+      "keywords": [
+        "legal",
+        "law",
+        "korean-law",
+        "contract",
+        "compliance",
+        "privacy",
+        "labor",
+        "ip",
+        "corporate",
+        "investment",
+        "defamation",
+        "criminal-risk",
+        "risk-assessment"
+      ]
+    },
+    {
+      "name": "finance",
+      "source": "./plugins/finance",
+      "description": "운영 재무·세무 하네스 — 경비/증빙 적격성 검토, 재무제표 1차 해석, 한국 세무 리스크 스크리닝(부가세·원천세·법인세). legal의 Escalation Policy 골격 이식(세무조사 가능성×금액×기한 3축, 전문가 상담 강제). 세율·기준금액 하드코딩 금지(당해연도 WebSearch 확인 의무). startup:financial-modeler(사업계획)와 경계 분리. 세무사/회계사 자문을 대체하지 않는 1차 리스크 진단 도구.",
+      "version": "1.0.0",
+      "category": "finance",
+      "keywords": [
+        "finance",
+        "tax",
+        "korean-tax",
+        "expense",
+        "accounting",
+        "risk-assessment",
+        "vat",
+        "withholding"
+      ]
+    },
+    {
+      "name": "hr",
+      "source": "./plugins/hr",
+      "description": "HR 채용·피플옵스 하네스(축소판) — JD 초안(차별 표현 검사), 역량 기반 면접 킷, 온보딩 30-60-90 문서. 노동법 판단 필요 트리거는 legal:labor-ip-counsel 강제 교차 위임(도메인 간 리스크 에스컬레이션 규약). 실수요 확인 전 오케스트레이터·훅 확장 금지.",
+      "version": "1.0.0",
+      "category": "hr",
+      "keywords": [
+        "hr",
+        "recruiting",
+        "jd",
+        "interview",
+        "onboarding",
+        "people-ops",
+        "labor"
+      ]
     }
   ]
 }

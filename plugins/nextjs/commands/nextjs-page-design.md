@@ -81,6 +81,8 @@ Options:
 4. page.tsx, layout.tsx, loading.tsx, error.tsx 생성
 5. 타입 체크 실행 (`npx tsc --noEmit`)
 
+공식 `frontend-design` 스킬(anthropics/skills — 'AI 티 나는 밋밋한 UI' 방지)이 설치되어 있으면 스캐폴딩된 컴포넌트의 시각 스타일링 단계에서 스킬 가이드를 조합 적용한다. 미설치 시 기존 동작을 유지한다(graceful degrade).
+
 ## Tool Coordination
 - **Glob**: 기존 프로젝트 구조, 재사용 가능 컴포넌트 탐색
 - **Read**: 기존 컴포넌트/페이지 패턴 분석, 기존 타입 확인
@@ -88,6 +90,7 @@ Options:
 - **Write**: 새 파일 생성 (컴포넌트, 타입, 페이지)
 - **Edit**: 기존 파일 수정 (필요시)
 - **Bash**: TypeScript 타입 체크, 린트
+- **frontend-design 스킬** (선택): 시각 스타일링 단계에서 조합 활용 — 설치: `/plugin install frontend-design@claude-plugins-official` (미설치 시 생략)
 
 ## Examples
 

@@ -78,3 +78,9 @@
 - **Severity**: Low
 - **Check**: If team agents define hooks, verify hook events are relevant to team coordination (advisory)
 - **Auto-fixable**: No
+
+## XRF-016: Marketplace-Plugin Dependency Drift
+- **Severity**: High
+- **Check**: Dependency declarations must agree across three sources for each plugin: marketplace.json `plugins[].requires`, the plugin's plugin.json `dependencies`, and prose statements in the plugin's docs (README/commands referencing another plugin's hooks/commands as prerequisites). Flag any plugin where one source declares a dependency the others omit or contradict
+- **Auto-fixable**: No (source of truth must be decided by the maintainer — report drift only)
+- **Example**: `plugins/mvp/.claude-plugin/plugin.json` declares `"dependencies": ["base"]` → marketplace.json's `mvp` entry must declare `"requires": ["base"]`, and vice versa; a command doc stating "base 플러그인의 보안 훅 전제" with neither manifest declaring it is also drift

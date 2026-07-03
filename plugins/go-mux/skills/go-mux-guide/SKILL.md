@@ -16,6 +16,7 @@ Reference these guidelines when:
 - 기존 Go HTTP 코드를 리뷰하거나 리팩토링할 때
 - database/sql 쿼리 설계나 커넥션 풀 최적화가 필요할 때
 - 테스트 코드를 작성하거나 테스트 전략을 결정할 때
+- 버전 민감 API(Go 1.22+ ServeMux 패턴 매칭 등)는 `backend-shared:context7-docs-guide` 규약에 따라 Context7 조회 후 생성 (미설치 시 생략)
 
 ## Quick Reference
 

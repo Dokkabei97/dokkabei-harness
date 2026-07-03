@@ -137,6 +137,23 @@ Check each component against its type-specific structural requirements.
 | HK-011 | Handler type availability | Medium | Event supports type |
 | HK-012 | Async hook configuration | Low | Only on command type |
 
+**Loop Engine Hook Validation Rules:**
+
+> Note: 조건부 룰셋 — Stop훅 루프 엔진(mvp/floop/generic 훅 및 `flow-scaffolding/templates/loop-stop-hook.sh` 파생물)에만 적용한다. 상세: `skills/flow-validation/references/loop-rules.md`
+
+| ID | Rule | Severity | Check |
+|----|------|----------|-------|
+| LOOP-001 | Safety pin present | Critical | 최상단 `[ -f .planning/loop-active ] || exit 0` |
+| LOOP-002 | Engine scope guard | High | `engine=` 줄 판독 — 타 엔진 소유면 무개입 exit 0 |
+| LOOP-003 | jq graceful degrade | High | jq 부재 시 사유 명시 후 exit 0 (loop-active 유지) |
+| LOOP-004 | Promise exact-match only | High | `grep -qF` 정확 문자열 일치 (정규식 금지) |
+| LOOP-005 | Guardrails + kill-switch | Critical | max-iter·시간 상한·no-progress 3종 + 종료 경로 loop-active 해제 |
+| LOOP-006 | Stdin consumed first | Medium | 게이트 실행 전 stdin 선소비 (`input="$(cat || true)"`) |
+| LOOP-007 | Numeric defense | Medium | 수치 필드 `case (''|*[!0-9]*)` 방어 (bash 3.2 호환) |
+| LOOP-008 | Atomic state write | Medium | loop-state.json 임시파일→mv 원자 기록 |
+| LOOP-009 | Failure-marker correction | High | exit 0 + 실패 카운트 출력 → red 보정 ('0 failed' 오탐 금지) |
+| LOOP-010 | Loop-state update contract | Medium | iteration 증가·started_at/max_iter/max_minutes 보존 |
+
 **Team Validation Rules:**
 
 > Note: These rules are conditional — only apply when team metadata is detected.
@@ -164,9 +181,24 @@ Check each component against its type-specific structural requirements.
 | ORC-006 | Re-run/maintenance mode | Low | Partial re-execution documented |
 | ORC-007 | Pattern-specific structure | Medium | Phase structure matches team pattern |
 | ORC-008 | CLAUDE.md pointer registration | Medium | Team entry in claude/CLAUDE.md |
+| ORC-009 | Orchestrator skill line budget | High | Orchestrator SKILL.md under 500 lines (excess → references/) |
+
+**Quality Validation Rules:**
+
+> Note: 콘텐츠 품질 룰셋 — Phase 3(Content Quality Validation)의 체크리스트를 이 룰 ID로 판정한다. 상세: `skills/flow-validation/references/qua-rules.md`
+
+| ID | Rule | Severity | Check |
+|----|------|----------|-------|
+| QUA-001 | Description specificity | Medium | Specific description, 10-1024 chars, no vague blocked words |
+| QUA-002 | No placeholder text | High | No `{{...}}`, TODO, FIXME, TBD, XXX, PLACEHOLDER |
+| QUA-003 | Trigger concreteness | Medium | Triggers use concrete action phrases |
+| QUA-004 | Example completeness | Medium | Each example has `#` comments explaining behavior |
+| QUA-005 | Behavioral flow depth | Medium | Each phase has 2+ sub-steps |
+| QUA-006 | Boundary balance | Low | Will 3+ / Will Not 2+ items, max 10 each |
+| QUA-007 | Skill description standard compliance | Low | Skill description under 1024 chars (Agent Skills standard) |
 
 ### Phase 3: Content Quality Validation
-Assess the quality of component content beyond structure.
+Assess the quality of component content beyond structure. Findings map to QUA-001..QUA-007 (see Phase 2 Quality Validation Rules).
 
 **Description Quality:**
 - [ ] Description is specific (not generic like "does things")
@@ -249,14 +281,16 @@ Deductions:
   Each Low finding:       -1 point
 
 Rules per type (approximate):
-  Commands:      11 rules (CMD-001..CMD-013)
+  Commands:      13 rules (CMD-001..CMD-013)
   Agents:        30 rules (AGT-001..AGT-026 + 020a-d)
   Skills:        21 rules (SKL-001..SKL-021)
   Hooks:         13 rules (HK-001..HK-013)
+  Loop hooks:    10 rules (LOOP-001..LOOP-010, 루프 엔진 훅 한정)
   Teams:          8 rules (TEAM-001..TEAM-008)
-  Orchestrators:  8 rules (ORC-001..ORC-008)
-  Cross-ref:     15 rules (XRF-001..XRF-015)
+  Orchestrators:  9 rules (ORC-001..ORC-009)
+  Cross-ref:     16 rules (XRF-001..XRF-016)
   Security:       7 rules (SEC-001..SEC-007)
+  Quality:        7 rules (QUA-001..QUA-007)
 
 Rating:
   90-100: Excellent - Ready for production use

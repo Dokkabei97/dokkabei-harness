@@ -1,7 +1,7 @@
 {
   "name": "startup",
-  "description": "린 스타트업 하네스 — 시장조사, 제품 기획, 그로스 마케팅, 재무 모델링",
-  "version": "1.0.0",
+  "description": "린 스타트업 하네스 — 시장조사, 제품 기획, 그로스 마케팅, 재무 모델링 + 콘텐츠 제작(/content-draft, brand-voice.md 물화)·VoC 종합(/feedback-synthesis → mvp PRD 스토리 후보 연계), pitch-deck --export pptx(공식 스킬 연계).",
+  "version": "1.1.0",
   "author": {
     "name": "장민규",
     "email": "wkdrn970@gmail.com"

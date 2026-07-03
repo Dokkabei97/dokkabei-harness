@@ -1,7 +1,7 @@
 {
   "name": "legal",
-  "description": "한국법 법무 하네스 — 계약 검토/작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄) 자문. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구.",
-  "version": "1.0.0",
+  "description": "한국법 법무 하네스 — 계약 검토/작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄) 자문. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구. 커맨드 6종(계약 왕복 협상 /contract-redline 포함), draft-legal-doc --format docx(공식 document-skills 연계).",
+  "version": "1.1.0",
   "author": {
     "name": "장민규",
     "email": "wkdrn970@gmail.com"
