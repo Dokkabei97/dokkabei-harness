@@ -12,6 +12,11 @@ const MAX_SIZE = 1024 * 1024; // 1MB
 // 초장문 라인은 생성/압축 코드로 간주하고 검사 스킵 — 정규식 백트래킹 폭주(ReDoS) 방지 1차 방어선
 const MAX_LINE_LEN = 2000;
 
+// 검사 대상 코드 파일 확장자. hooks.json 이 tool 명 matcher(Edit|Write)로 등록되므로
+// 확장자 필터를 스크립트 내부에서 수행한다 — 표현식 matcher 는 실측상 미발화(2026-07)라
+// tool 명 regex + 스크립트 내부 필터 컨벤션(bff01ca)을 따른다.
+const CODE_EXT = /\.(ts|tsx|js|jsx|kt|kts|py|go|java|sql|sh|yaml|yml|json|properties)$|\.env(\.[A-Za-z0-9_-]+)?$/i;
+
 // placeholder/env 참조가 포함된 라인은 하드코딩 시크릿으로 보지 않는다.
 // '<...>' 는 <API_KEY> 류 대문자 placeholder 만 인정(i 플래그 없는 별도 정규식) —
 // 단독 '<' 매칭 시 JSX/제네릭 라인 전체가 억제되는 미탐 방지.
@@ -130,6 +135,7 @@ const RULES = [
   const p = json.tool_input?.file_path;
   if (!p || !fs.existsSync(p)) return passthrough(raw);
   if (/\.(md|lock)$/i.test(p)) return passthrough(raw);
+  if (!CODE_EXT.test(p)) return passthrough(raw); // 코드 파일 외 스킵(확장자 화이트리스트)
 
   let stat;
   try { stat = fs.statSync(p); } catch (_) { return passthrough(raw); }

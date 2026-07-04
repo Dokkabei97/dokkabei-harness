@@ -8,7 +8,10 @@ const { readEvent, passthrough } = require('./_lib/hook-stdin');
   const p = json.tool_input?.file_path;
   if (!p || !/\.(ts|tsx|js|jsx)$/.test(p) || !fs.existsSync(p)) return passthrough(raw);
 
-  const lines = fs.readFileSync(p, 'utf8').split('\n');
+  // existsSync 통과 후에도 읽기는 실패할 수 있다(EACCES/TOCTOU) — 조용히 passthrough
+  let content;
+  try { content = fs.readFileSync(p, 'utf8'); } catch (_) { return passthrough(raw); }
+  const lines = content.split('\n');
   const matches = [];
   lines.forEach((l, idx) => {
     if (/console\.log/.test(l)) matches.push((idx + 1) + ': ' + l.trim());

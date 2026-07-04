@@ -133,6 +133,33 @@ write_event() {
   [[ "$stderr" == *"AWS Access Key"* ]]
 }
 
+# ── 확장자 화이트리스트 (tool 명 matcher 전환 후 스크립트 내부 필터) ──────────
+
+# 코드 파일이 아닌 확장자(.txt) — 시크릿이 있어도 스킵 (matcher 가 Edit|Write tool 명이라
+# 확장자 필터는 스크립트 내부 CODE_EXT 가 담당; 표현식 matcher 미발화 회귀 대응)
+@test "warn-security: non-code extension (.txt) with secret -> skipped" {
+  printf 'AKIAABCDEFGHIJKLMNOP\n' > "$TEST_PROJ/secret.txt"
+  run --separate-stderr invoke_node_hook "$SECURITY_HOOK" "$(edit_event "$TEST_PROJ/secret.txt")"
+  [ "$status" -eq 0 ]
+  [ -z "$stderr" ]
+}
+
+# .env 파일 — 확장자 없이도 CODE_EXT 의 env 브랜치로 검사 대상
+@test "warn-security: .env file with secret -> warning" {
+  printf 'API_KEY="sk_live_abcdef123456"\n' > "$TEST_PROJ/.env"
+  run --separate-stderr invoke_node_hook "$SECURITY_HOOK" "$(edit_event "$TEST_PROJ/.env")"
+  [ "$status" -eq 0 ]
+  [[ "$stderr" == *"하드코딩된 시크릿"* ]]
+}
+
+# .env.production — env 접미사 브랜치도 검사 대상
+@test "warn-security: .env.production with secret -> warning" {
+  printf 'DB_PASSWORD="supersecretvalue123"\n' > "$TEST_PROJ/.env.production"
+  run --separate-stderr invoke_node_hook "$SECURITY_HOOK" "$(edit_event "$TEST_PROJ/.env.production")"
+  [ "$status" -eq 0 ]
+  [[ "$stderr" == *"하드코딩된 시크릿"* ]]
+}
+
 # ── 오탐·미탐 (placeholder 억제 정밀화) ──────────────────────────────────────
 
 # env 치환 커넥션 스트링 — 자격증명 URL 룰에도 placeholder 억제 적용 (오탐 방지)

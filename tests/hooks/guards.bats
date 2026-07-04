@@ -15,12 +15,17 @@ load 'helpers'
 setup()    { make_project; }
 teardown() { cleanup_project; }
 
+# prd-guard/tasks-guard 는 stdin 의 tool_input.file_path 가 정본 경로일 때만 검사한다
+# (2차 경로 필터). 실제 PostToolUse 이벤트를 시뮬레이션하려면 file_path 를 넣어야 한다.
+prd_event()   { printf '{"tool":"Edit","tool_input":{"file_path":"%s/.planning/prd.json"}}' "$TEST_PROJ"; }
+tasks_event() { printf '{"tool":"Edit","tool_input":{"file_path":"%s/.planning/tasks.json"}}' "$TEST_PROJ"; }
+
 # ── prd-guard — maker/checker 분리 강제 ──────────────────────────────────────
 
 # 마커 없는 passes:true — 차단 + prd.json passes 를 false 로 원복
 @test "prd-guard: passes true without marker -> exit 2 + passes reverted to false" {
   write_prd S-01=true S-02=false
-  run invoke_hook "$PRD_GUARD"
+  run invoke_hook "$PRD_GUARD" "$(prd_event)"
   [ "$status" -eq 2 ]
   [[ "$output" == *"false 로 원복"* ]]
   [[ "$output" == *"S-01"* ]]
@@ -31,7 +36,7 @@ teardown() { cleanup_project; }
 @test "prd-guard: passes true with marker -> exit 0 + passes kept" {
   write_prd S-01=true S-02=false
   mark_verified S-01
-  run invoke_hook "$PRD_GUARD"
+  run invoke_hook "$PRD_GUARD" "$(prd_event)"
   [ "$status" -eq 0 ]
   [ "$(jq -r '.stories[] | select(.id=="S-01") | .passes' "$TEST_PROJ/.planning/prd.json")" = "true" ]
 }
@@ -46,7 +51,7 @@ teardown() { cleanup_project; }
 
 @test "tasks-guard: passes true without marker -> exit 2 + passes reverted" {
   write_tasks T-01=true T-02=false
-  run invoke_hook "$TASKS_GUARD"
+  run invoke_hook "$TASKS_GUARD" "$(tasks_event)"
   [ "$status" -eq 2 ]
   [[ "$output" == *"false 로 원복"* ]]
   [ "$(jq -r '.tasks[] | select(.id=="T-01") | .passes' "$TEST_PROJ/.planning/tasks.json")" = "false" ]
@@ -55,7 +60,7 @@ teardown() { cleanup_project; }
 @test "tasks-guard: passes true with marker -> exit 0" {
   write_tasks T-01=true
   mark_verified T-01
-  run invoke_hook "$TASKS_GUARD"
+  run invoke_hook "$TASKS_GUARD" "$(tasks_event)"
   [ "$status" -eq 0 ]
   [ "$(jq -r '.tasks[] | select(.id=="T-01") | .passes' "$TEST_PROJ/.planning/tasks.json")" = "true" ]
 }

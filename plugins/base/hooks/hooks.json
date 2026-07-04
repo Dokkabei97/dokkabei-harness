@@ -174,7 +174,7 @@
         "description": "Warn about print() statements after Python edits"
       },
       {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|kt|kts|py|go|java|sql|sh|yaml|yml|json|properties)$|\\\\.env(\\\\.[A-Za-z0-9_-]+)?$\"",
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -182,10 +182,10 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
           }
         ],
-        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Edit on code files"
+        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Edit on code files. 확장자 필터는 스크립트 내부 — matcher 는 tool 명 regex 만 유효(표현식 미발화 실측, 2026-07)"
       },
       {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|kt|kts|py|go|java|sql|sh|yaml|yml|json|properties)$|\\\\.env(\\\\.[A-Za-z0-9_-]+)?$\"",
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
@@ -193,7 +193,7 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
           }
         ],
-        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Write on code files"
+        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Write on code files. 확장자 필터는 스크립트 내부"
       }
     ]
   }
