@@ -2,7 +2,6 @@
 name: nextjs-developer
 description: "Next.js App Router 코드 생성 전문 에이전트. 컴포넌트 요구사항으로부터 Page, Layout, Component, Form, Hook, Test 전체를 프로젝트 컨벤션에 맞춰 생성한다."
 tools: ["Read", "Grep", "Glob", "Bash", "Write", "Edit"]
-permissionMode: plan
 skills: ["nextjs-guide"]
 ---
 

@@ -4,7 +4,7 @@ description: Enforce test-driven development workflow. Scaffold interfaces, gene
 
 # TDD Command
 
-This command invokes the **tdd-guide** agent to enforce test-driven development methodology.
+This command applies the **tdd-workflow** skill (`test:tdd-workflow`) to enforce test-driven development methodology.
 
 ## What This Command Does
 
@@ -25,7 +25,7 @@ Use `/tdd` when:
 
 ## How It Works
 
-The tdd-guide agent will:
+The tdd-workflow skill guides you to:
 
 1. **Define interfaces** for inputs/outputs
 2. **Write tests that will FAIL** (because code doesn't exist yet)
@@ -51,7 +51,7 @@ REPEAT:   Next feature/scenario
 ```
 User: /tdd I need a function to calculate market liquidity score
 
-Agent (tdd-guide):
+TDD workflow:
 # TDD Session: Market Liquidity Score Calculator
 
 ## Step 1: Define Interface (SCAFFOLD)
@@ -258,7 +258,7 @@ Coverage: 100% ✅ (Target: 80%)
 ```
 User: /tdd I need a service to calculate market liquidity score (Kotlin + Spring Boot)
 
-Agent (tdd-guide):
+TDD workflow:
 # TDD Session: Market Liquidity Score Calculator (Kotlin)
 
 ## Step 1: Define Data Class & Interface (SCAFFOLD)
@@ -563,16 +563,13 @@ Never skip the RED phase. Never write code before tests.
 
 ## Integration with Other Commands
 
-- Use `/plan` first to understand what to build
+- Use `/plan` first to understand what to build (built-in Plan agent)
 - Use `/tdd` to implement with tests
-- Use `/build-and-fix` if build errors occur (or `./gradlew build` for Kotlin)
-- Use `/code-review` to review implementation
-- Use `/test-coverage` to verify coverage
+- Use `/code-review` to review implementation (built-in review skill)
+- Run the project build/test command directly to verify (e.g. `./gradlew build`, `npm test`)
 
-## Related Agents
+## Related Components
 
-This command invokes the `tdd-guide` agent located at:
-`~/.claude/agents/tdd-guide.md`
-
-And can reference the `tdd-workflow` skill at:
-`~/.claude/skills/tdd-workflow/`
+This command applies the `tdd-workflow` skill (`test:tdd-workflow`), which
+scaffolds interfaces, generates tests first, and drives the RED→GREEN→REFACTOR
+loop with 80%+ coverage for TypeScript (Jest/Vitest) and Kotlin (Kotest/MockK/Spring Boot Test).

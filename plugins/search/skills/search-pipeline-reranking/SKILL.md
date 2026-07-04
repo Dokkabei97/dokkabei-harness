@@ -1,6 +1,6 @@
 ---
 name: search-pipeline-reranking
-description: Use this skill when designing multi-stage retrieval, configuring ES search pipelines, implementing reranking (rescore/LTR/cross-encoder), query understanding, result diversification, or personalization. Covers ES 8.x search pipelines, Learning to Rank, and Kotlin service patterns for production search systems.
+description: Use this skill when designing multi-stage retrieval, configuring ES reranking (rescore/retriever/LTR/cross-encoder), query understanding, result diversification, or personalization. Covers ES 8.x rescore, the Retriever abstraction (RRF/kNN/text_similarity_reranker), Learning to Rank, and Kotlin service patterns for production search systems.
 ---
 
 # Search Pipeline & Reranking
@@ -17,138 +17,77 @@ description: Use this skill when designing multi-stage retrieval, configuring ES
 - 사용자 프로필 기반 개인화 검색 설계 시
 - Retriever abstraction (ES 8.14+) 활용 시
 
-## 1. Elasticsearch Search Pipelines (ES 8.x)
+## 1. 검색 요청/응답 후처리 (ES 8.x)
 
-### Search Pipeline vs Ingest Pipeline
+> ⚠️ **주의 — Search Pipeline 은 OpenSearch 전용이다.** `PUT _search/pipeline`,
+> `request_processors`/`response_processors`, `filter_query`·`rename_field` 프로세서,
+> `index.search.default_pipeline`, `?search_pipeline=` 쿼리 파라미터, 그리고
+> elasticsearch-java 의 `searchPipeline(...)` 은 **Elasticsearch 8.x 에 존재하지 않는다.**
+> (ES 의 `index.default_pipeline` 은 *ingest* 파이프라인 지정용으로 색인 시 동작하며,
+> 검색 요청/응답을 변환하지 않는다.) ES 에서 같은 목적을 달성하는 정석 수단:
 
-| 구분 | Ingest Pipeline | Search Pipeline |
-|------|----------------|-----------------|
-| **실행 시점** | 문서 인덱싱 시 | 검색 요청 시 |
-| **대상** | 문서 필드 변환/보강 | 검색 요청/응답 변환 |
-| **프로세서 유형** | set, rename, grok, script 등 | filter_query, script, rename_field 등 |
-| **용도** | ETL, 데이터 정제 | 멀티테넌트 필터, 결과 후처리 |
-| **API** | `PUT _ingest/pipeline` | `PUT _search/pipeline` |
+| 목적 | OpenSearch(참고용, ES 미지원) | Elasticsearch 8.x 대안 |
+|------|------------------------------|------------------------|
+| 멀티테넌트 격리 필터 자동 주입 | search pipeline `filter_query` | **filtered alias** / 애플리케이션 `bool.filter` / DLS(상용) |
+| 삭제 문서 제외 | search pipeline `filter_query` | filtered alias 또는 soft-delete 필드 필터 |
+| 응답 필드명 변경 | search pipeline `rename_field` | 서버측 미지원 — 애플리케이션 매핑, 또는 `fields` + runtime field |
+| 동적 boost·재랭킹 | search pipeline `script` | **Rescore(§2)** / `function_score` / **Retriever(§3)** |
 
-### Built-in Request Processors
+### 멀티테넌트 격리 — filtered alias
 
-| Processor | 역할 | 활용 시나리오 |
-|-----------|------|-------------|
-| `filter_query` | 검색 요청에 필터 쿼리 자동 주입 | 멀티테넌트 격리, 삭제 문서 제외 |
-| `script` | Painless 스크립트로 요청/응답 변환 | 동적 boost 조정, 필드 추가/변환 |
-| `rename_field` | 응답 필드명 변경 | API 호환성 유지, 내부 필드명 숨김 |
-
-### Search Pipeline 생성
+alias 에 filter 를 걸면, 그 alias 로 검색하는 모든 요청에 필터가 자동 적용된다.
+애플리케이션이 매 쿼리에 조건을 붙이는 것을 잊어도 격리가 보장되는 게 핵심 이점이다.
 
 ```json
-// 멀티테넌트 필터 자동 주입 파이프라인
-PUT _search/pipeline/tenant_filter_pipeline
+// 테넌트 격리 + 삭제 문서 제외를 결합한 filtered alias
+POST _aliases
 {
-  "description": "Automatically inject tenant filter for multi-tenant isolation",
-  "request_processors": [
+  "actions": [
     {
-      "filter_query": {
-        "tag": "tenant_isolation",
-        "description": "Filter by tenant_id from request context",
-        "query": {
-          "term": {
-            "tenant_id": "{{_request.tenant_id}}"
+      "add": {
+        "index": "products",
+        "alias": "products_secure_42",
+        "filter": {
+          "bool": {
+            "filter": [
+              { "term": { "tenant_id": "42" } },
+              { "term": { "is_deleted": false } }
+            ]
           }
         }
-      }
-    }
-  ],
-  "response_processors": [
-    {
-      "rename_field": {
-        "field": "internal_score",
-        "target_field": "relevance_score"
       }
     }
   ]
 }
 ```
 
-### 인덱스에 기본 파이프라인 설정
-
 ```json
-// 인덱스 레벨 기본 search pipeline 설정
-PUT /products/_settings
-{
-  "index.search.default_pipeline": "tenant_filter_pipeline"
-}
-
-// 검색 시 자동 적용 (명시적 지정도 가능)
-GET /products/_search?search_pipeline=tenant_filter_pipeline
+// 검색은 alias 로만 — 필터가 항상 적용된다
+GET products_secure_42/_search
 {
   "query": { "match": { "title": "무선 이어폰" } }
 }
 ```
 
-### 멀티테넌트 필터 주입 Use Case
+### 동적 컨텍스트 필터 — 애플리케이션 레벨 (Kotlin)
 
-```json
-// 삭제 플래그 + 테넌트 격리를 동시에 처리하는 파이프라인
-PUT _search/pipeline/secure_search_pipeline
-{
-  "request_processors": [
-    {
-      "filter_query": {
-        "tag": "exclude_deleted",
-        "query": {
-          "term": { "is_deleted": false }
-        }
-      }
-    },
-    {
-      "filter_query": {
-        "tag": "tenant_filter",
-        "query": {
-          "term": { "tenant_id": "{{_request.tenant_id}}" }
-        }
-      }
-    },
-    {
-      "script": {
-        "lang": "painless",
-        "source": """
-          if (ctx._source['boost_new_arrivals'] == true) {
-            // 최근 7일 상품에 가산점
-            ctx._request['rescore'] = [
-              'window_size': 100,
-              'query': [
-                'rescore_query': [
-                  'range': ['created_at': ['gte': 'now-7d']]
-                ],
-                'query_weight': 1.0,
-                'rescore_query_weight': 1.5
-              ]
-            ];
-          }
-        """
-      }
-    }
-  ]
-}
-```
-
-### Kotlin: Search Pipeline 지정
+요청별 테넌트처럼 alias 로 관리하기 번거로운 동적 조건은 서비스에서 `bool.filter` 로 주입한다.
+`filter` 절은 스코어에 영향을 주지 않아(캐시 가능) 격리·삭제 제외에 적합하다.
 
 ```kotlin
 @Service
-class PipelineSearchService(
+class TenantSearchService(
     private val client: ElasticsearchClient
 ) {
-    fun searchWithPipeline(
-        keyword: String,
-        tenantId: String,
-        pipeline: String = "tenant_filter_pipeline"
-    ): List<Product> {
-        // search_pipeline 파라미터는 elasticsearch-java에서 직접 지원
+    fun search(keyword: String, tenantId: String): List<Product> {
         val response = client.search({ s ->
             s.index("products")
-                .searchPipeline(pipeline)
                 .query { q ->
-                    q.match { m -> m.field("title").query(keyword) }
+                    q.bool { b ->
+                        b.must { m -> m.match { mm -> mm.field("title").query(keyword) } }
+                         .filter { f -> f.term { t -> t.field("tenant_id").value(tenantId) } }
+                         .filter { f -> f.term { t -> t.field("is_deleted").value(false) } }
+                    }
                 }
                 .size(20)
         }, Product::class.java)
@@ -157,6 +96,8 @@ class PipelineSearchService(
     }
 }
 ```
+
+검색 결과 재랭킹·후처리는 **§2 Rescore Query**, 다단계·하이브리드 검색은 **§3 Retriever** 를 참조.
 
 ## 2. Rescore Query (Built-in Reranking)
 

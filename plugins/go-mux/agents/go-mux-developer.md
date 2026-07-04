@@ -2,7 +2,6 @@
 name: go-mux-developer
 description: "Go + stdlib net/http mux 코드 생성 전문 에이전트. 도메인 모델로부터 Model, Repository, Service, Handler, DTO, Test 전체 계층을 프로젝트 컨벤션에 맞춰 생성한다."
 tools: ["Read", "Grep", "Glob", "Bash", "Write", "Edit"]
-permissionMode: plan
 skills: ["go-mux-guide"]
 ---
 
