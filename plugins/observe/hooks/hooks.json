@@ -1,6 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-session.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 세션 시작(source, plugin_root=설치 루트 근거)을 .claude/skill-trace.jsonl 에 session_start 레코드로 append. plugin_root 는 리포트가 미사용 자산 분모(인벤토리)를 트레이스와 동일 설치본에서 열거하기 위한 join 근거. SessionStart stdout 은 컨텍스트로 주입되므로 무출력 — 항상 exit 0."
+      }
+    ],
     "UserPromptSubmit": [
       {
         "matcher": "*",
@@ -12,7 +26,7 @@
             "timeout": 10
           }
         ],
-        "description": "OBSERVE_TRACE=1 시에만 사용자 프롬프트 원문을 .claude/skill-trace.jsonl 에 append (스킬 호출과 session_id로 결합할 prompt 레코드). stdout 무출력 — 컨텍스트 오염 0, 항상 exit 0."
+        "description": "OBSERVE_TRACE=1 시에만 사용자 프롬프트 원문을 .claude/skill-trace.jsonl 에 append (스킬 호출과 session_id/prompt_id 로 결합할 prompt 레코드, is_command 근사 플래그 포함). stdout 무출력 — 컨텍스트 오염 0, 항상 exit 0."
       }
     ],
     "PreToolUse": [
@@ -26,7 +40,47 @@
             "timeout": 10
           }
         ],
-        "description": "OBSERVE_TRACE=1 시에만 Skill 호출(skill·args)과 근거(현재 턴 preamble 추출)·trigger(user/model)를 .claude/skill-trace.jsonl 에 append. matcher 는 tool 명 regex — 표현식(tool == …)은 발화하지 않음을 실측 확인(2026-07). 추적 실패가 스킬 실행을 막지 않도록 항상 exit 0."
+        "description": "OBSERVE_TRACE=1 시에만 Skill 호출(skill·args)과 근거(현재 턴 preamble 추출)·trigger(user/model)·turn_command(커맨드 연쇄 provenance)·tool_use_id(결과 join 키)를 .claude/skill-trace.jsonl 에 append. matcher 는 tool 명 regex — 표현식(tool == …)은 발화하지 않음을 실측 확인(2026-07). 추적 실패가 스킬 실행을 막지 않도록 항상 exit 0."
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-agent.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 서브에이전트 호출(subagent_type·description·prompt 앞 300자)과 근거(현재 턴 preamble)를 .claude/skill-trace.jsonl 에 agent 레코드로 append. Agent 는 v2.1.63 에서 Task 가 개명된 툴명이라 양쪽 matcher 병기(레거시 호환). 항상 exit 0, stdout 무출력."
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-result.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 스킬/에이전트 호출의 완료를 .claude/skill-trace.jsonl 에 result 레코드로 append (tool_use_id 로 Pre 레코드와 join → 소요시간, response_bytes 로 산출물 유무 프록시 — 본문은 용량·민감정보상 미기록). PostToolUse 는 성공 호출에만 발화하므로 레코드 존재 자체가 완주 신호. 항상 exit 0, stdout 무출력."
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/trace-session.js"],
+            "timeout": 10
+          }
+        ],
+        "description": "OBSERVE_TRACE=1 시에만 세션 종료(reason)를 .claude/skill-trace.jsonl 에 session_end 레코드로 append — 세션 경계·완주 여부 판별용('마지막 스킬'과 '로그 절단' 구분). SessionEnd 는 비차단 이벤트(관측 전용). 항상 exit 0, stdout 무출력."
       }
     ]
   }

@@ -99,11 +99,23 @@
     {
       "name": "observe",
       "source": "./plugins/observe",
-      "description": "스킬 사용 관측 하네스 — 어떤 프롬프트에서 어떤 스킬을 왜 호출했는지를 UserPromptSubmit + PreToolUse(Skill) 2훅으로 .claude/skill-trace.jsonl에 상관 로깅(프롬프트↔스킬↔근거, trigger=user/model 분류). OBSERVE_TRACE=1 opt-in. 비용/토큰 계측은 Claude Code 내장 OTel에 위임하는 직교 보완재.",
-      "version": "1.0.0",
+      "description": "하네스 사용 관측·개선 — 어떤 프롬프트에서 어떤 스킬/에이전트를 왜 호출했고 완주했는지를 훅 6종(SessionStart/UserPromptSubmit/PreToolUse Skill·Agent/PostToolUse/SessionEnd)으로 .claude/skill-trace.jsonl에 상관 로깅하고, /observe-report가 결정론 집계(호출·완주·미사용 자산·미발화 후보)→해석→개선 제안서(description 튜닝·사장 자산, 파일 수정 없음)를 산출. OBSERVE_TRACE=1 opt-in. 비용/토큰 계측은 내장 OTel 위임, 발화율 사전 벤치마크는 skill-creator eval 소관인 직교 보완재.",
+      "version": "1.1.0",
       "category": "harness",
-      "keywords": ["observe", "telemetry", "skill-tracking", "hooks", "audit", "otel", "observability"],
-      "requires": ["base"]
+      "keywords": [
+        "observe",
+        "telemetry",
+        "skill-tracking",
+        "hooks",
+        "audit",
+        "otel",
+        "observability",
+        "agent-tracking",
+        "harness-report"
+      ],
+      "requires": [
+        "base"
+      ]
     },
     {
       "name": "backend-shared",

@@ -69,3 +69,102 @@
 
 ## Review
 (완료 후 기록)
+
+---
+
+# 하네스 분석 (2026-07-03)
+
+## Plan
+- [x] 저장소 구조와 플러그인/하네스 엔트리포인트 파악
+- [x] 실제 에이전트·스킬·커맨드 파일과 등록 문서 대조
+- [x] 오케스트레이터/검증/루프 하네스 핵심 계약 점검
+- [x] 주요 리스크와 개선 우선순위 정리
+
+## Review
+- 구조: 18개 플러그인, 72개 스킬, 42개 에이전트 파일, 71개 커맨드. marketplace 등록명과 plugins 디렉터리는 일치.
+- 검증: `bats tests/hooks` 151/151 통과. hooks.json 5개 모두 jq 파싱 성공.
+- 주요 리스크: `claude/CLAUDE.md` 하네스 등록 포인터 부재, `product-strategist` 에이전트명 중복, 19개 SKILL.md가 500줄 규약 초과, 일부 레거시 커맨드가 CMD 필수 섹션/frontmatter 미충족.
+- 권장 순서: 등록면 정합화 -> 에이전트명 충돌 해소/디스패치 네임스페이스 확정 -> 장문 스킬 references 분리 -> 레거시 커맨드 구조 보강.
+
+---
+
+# 하네스 평가·보완·추가 (2026-07-04)
+
+리서치 워크플로우(7클러스터 감사 + 반증검증 ∥ 5축 외부 리서치)로 60+ findings·40+ 후보 도출.
+세션 한도로 판정·합성 단계는 실패 — 완료 산출물 실측 후 핵심 high findings를 직접 검증해 범위 확정.
+
+## 보완(수정) — 완료
+
+- [x] **base warn-security 회귀 복구(high)** — 간판 보안 훅 2엔트리만 표현식 matcher(`tool == ...`)라 실측상 미발화 = 완전히 죽어 있었음(bff01ca에서 고친 컨벤션을 5507ba7이 재도입한 회귀). hooks.json matcher를 `Edit`/`Write` tool명으로 전환 + 확장자 필터를 스크립트 내부(CODE_EXT)로 이관.
+- [x] **check-py-compile RCE 수정(high, 보안)** — 파일명을 execSync 문자열에 JSON.stringify 보간 → `$()`/백틱 명령 치환 가능(PoC 확인). execFileSync 인자배열로 전환(format-prettier 패턴). 회귀 가드 bats 추가.
+- [x] **block-md-creation ↔ workflow 충돌 해소(high)** — `/handoff`(HANDOFF.md)·`/retro`(tasks/lessons.md)·`/release-notes`(CHANGELOG.md) 산출물이 차단됨. ALLOWED에 HANDOFF/CHANGELOG 추가 + `tasks/` 경로 예외.
+- [x] **permissionMode 위반 제거(high)** — 플러그인 배포 에이전트 4종(spring/fastapi/go-mux/nextjs-developer)이 AGT-020d(보안상 금지) 위반. `permissionMode: plan` 제거.
+- [x] **tdd.md 유령 참조 교정(high)** — 존재하지 않는 tdd-guide 에이전트 5회 참조 → 실제 `test:tdd-workflow` 스킬로 교정, 없는 커맨드 참조 정리.
+- [x] **search-pipeline-reranking §1 사실 오류 정정(high)** — §1 전체가 OpenSearch 전용 API(`_search/pipeline`, request/response_processors)를 ES 8.x로 오기. ES 실제 대안(filtered alias/애플리케이션 filter/rescore/retriever)으로 대체 + 경고 콜아웃 + description 정정.
+- [x] **guards.bats 테스트-구현 드리프트 해소** — prd-guard/tasks-guard 테스트가 file_path 없이 호출해 경로 필터에서 조기 종료 → 핵심 집행 로직(마커 없는 passes 원복+차단)을 검증 못 하고 있었음(거짓 통과/실패). file_path 이벤트 주입으로 실제 계약 검증.
+- [x] **warn-console-log/println/print 크래시 방지** — existsSync 통과 후 read 실패(EACCES/TOCTOU)에 무방비 → try/catch passthrough 가드(warn-security 패턴).
+- [x] **문서 드리프트** — README(구 agents/gemini/hooks 구조 → plugins/ 19종·설치법·테스트), claude/CLAUDE.md(하네스/마켓플레이스 등록 포인터 신설).
+
+## 추가(신규) — 완료
+
+- [x] **workflow `/release-notes` 커맨드** — glab MR 머지 이력 → conventional 분류 → 한국어 체인지로그 → semver 판단 → 태그/Release 안내. post-merge(이슈/문서)·review-mr(리뷰)와 경계 명시. CMD 6필드+8섹션 준수.
+- [x] **tests/hooks/hooks-registration.bats(신규 lint)** — 모든 plugin hooks.json의 matcher가 tool명 regex인지(표현식 미발화 회귀 클래스 검출)·참조 스크립트 실재를 검사. warn-security류 등록면 결함을 CI에서 결정론적으로 잡는 안전망.
+
+## 기각(중복/과의존)
+
+- pipeline-triage 스킬 — search의 index-pipeline-check 커맨드 + search-data-pipeline(lag 모니터링 포함) + search-diagnostics와 중복.
+- daily-brief — glab+Plane+Slack 3중 외부 의존으로 유지보수 렌즈 감점.
+- devops/incident-response 신규 플러그인 — 규모 과대(large), 이번 범위 밖.
+
+## 검증
+
+- bats 177/177 그린(151→177, +26 신규 케이스). JS 6종 `node --check` 클린, hooks.json/marketplace jq 파싱, 신규 커맨드 CMD 구조 충족.
+- 자가 반증 리뷰: CODE_EXT 오탐 경계(.environment 미매칭), TASKS 정규식 경계(mytasks/ 미매칭), execFileSync stderr 캡처, block-md 과허용 특성(기존 README와 동일) 확인.
+
+## 플래그 — 별도 결정(무단 수정 금지 원칙 준수)
+
+- **버전 범프 필요(통합/릴리즈 시)**: base·workflow·kotlin-spring·python-fastapi·go-mux·nextjs·test·search plugin.json + marketplace. 이번엔 파일 변경만, 버전은 미변경.
+- **test 플러그인 버전 드리프트**: marketplace 1.0.0 vs plugin.json 1.1.0.
+- **훅 no-op/오도(로직 수정 필요)**: log-pr-mr.js가 없는 필드 `tool_output.output` 참조(→ tool_response), notify-build-async가 '분석' 없이 메시지만 출력.
+- **미수정 findings(규모/전문성)**: search 에이전트 6종 AGT-009/007/011 미충족, search-code-reviewer 참조 계약 6건 깨짐, post-merge↔issue-tracker v2.0 드리프트, backend-shared 분업 위반(api-design/dto-design가 Kotlin 전용), SKILL 500줄 초과 19+종, HK-005 룰 vs base 중복 matcher 상충, product-strategist 에이전트명 중복(mvp/startup), etc/startup 마켓플레이스 메타 빈약.
+- **claude/settings.json 레거시 스냅샷**: 인라인 node -e 훅 15건이 표현식 matcher(미발화) + base와 이중 소유 — 별도 정리 필요.
+
+## 원칙(유지)
+- 커밋은 사용자 요청 시에만. marketplace.json/plugin.json은 통합 패스에서만.
+- 훅 로직 버그는 무단 수정 금지 — 플래그 후 별도 결정(단, 죽은 기능 복원·RCE·명백한 플러그인 충돌은 저장소 자체 컨벤션 복원으로 수정).
+
+---
+
+# observe 고도화 — 계측 기반 하네스 개선 루프 (2026-07-04)
+
+방향: hermes(사용 패턴→스킬 생성, 생성형)와 대비되는 **평가형 루프** — 기존 하네스(스킬 72·커맨드 72·에이전트 42·훅 34)가 잘 호출·사용되는지 계측하고 그 결과로 개선을 제안한다. 비용/토큰은 내장 OTel 위임 원칙 유지, hook 전용 영역(미발화·why 상관·세션 경계)에 집중. 발화율 사전 벤치마크는 skill-creator eval 경계 밖(재구현 금지 — /skill-eval 보류 결정 준수).
+
+## Plan
+- [x] W0 기준선: 기존 2훅(trace-prompt/trace-skill) bats 회귀 테스트 신설 (tests/hooks/observe-trace.bats) — 실트레이스 0건·테스트 전무 상태이므로 확장 전 현행 스키마 검증이 선행
+- [x] W1 수집 확장 (additive, OBSERVE_TRACE 게이트·stdout 무출력·항상 exit 0 계약 상속):
+  - [x] turn-context 추출을 _lib/turn-context.js로 분리 (trace-skill 동작 불변)
+  - [x] trace-skill.js: +tool_use_id, +prompt_id, +turn_command(이미 파싱되고 버려지던 provenance), +부모 에이전트(agent_id/agent_type)
+  - [x] trace-prompt.js: +prompt_id, +is_command
+  - [x] 신규 trace-agent.js — PreToolUse(Agent|Task): type:'agent' 레코드(subagent_type, description·prompt 절단, why, 부모 에이전트)
+  - [x] 신규 trace-result.js — PostToolUse(Skill|Agent|Task): type:'result' 레코드(tool_use_id join 키, response_bytes) → duration/완료 여부 사후 계산
+  - [x] 신규 trace-session.js — SessionStart/SessionEnd: 세션 경계 레코드(reason, plugin_root — 인벤토리 join 루트 근거)
+  - [x] hooks.json 4엔트리 추가 (matcher는 tool명 regex만 — hooks-registration.bats 자동 커버)
+- [x] W2 분석·개선 레이어:
+  - [x] bin/observe-report.js — 의존성 없는 결정론 집계기 (--json/--trace/--plugins-dir/--window/--candidates)
+  - [x] tests/hooks/observe-report.bats — 픽스처 트레이스+가짜 플러그인 트리로 집계 검증
+  - [x] commands/observe-report.md — /observe-report: 수집 상태 점검→집계→LLM 해석(미발화 judge·user-only 스킬·사장 자산)→개선 제안 라우팅(retro (c)형 제안서까지만, 파일 수정 금지)
+- [x] W3 통합: README observe 문단, plugin.json 1.1.0 + marketplace.json observe 엔트리 정합, bats 전체 그린, 반증 리뷰
+
+## Review (2026-07-05 완료)
+- 규모: observe 훅 2→6종(+_lib/turn-context.js 분리), 집계기 1종, 커맨드 1종, bats 신규 57케이스(트레이스 35 + 집계 22). 전체 스위트 234/234 그린(기존 177 유지).
+- 검증: bats + node --check + jq + 실트리 라이브 프로브(인벤토리 19플러그인·72스킬·73커맨드·42에이전트 정합) + 훅→트레이스→집계 엔드투엔드 프로브.
+- 반증 리뷰(4관점 finder → 발견별 반증, 26에이전트): 발견 22건 중 확정 19건(관점 간 중복 3건 포함) 전건 조치:
+  - 훅: local-command-stdout 레코드의 턴 경계 오염(trigger/why/turn_command 소실) 수정, is_command 절대경로("/Users/…") 오탐 수정
+  - 집계기: 프롬프트 확장 전용 커맨드의 사용 크레딧 누락(HIGH — 매일 써도 미사용 표시) 수정, tail 매칭의 동명 자산 오폭(mvp/startup product-strategist 실충돌) → 네임스페이스 정확 일치 + bare 이름만 tail 허용, result join 근사 폴백(세션+target) 구현, null 라인 크래시·candidates 0 무제한·CRLF frontmatter·깨진 plugin.json 플러그인 전체 탈락·윈도우 밖 plugin_root 소실 수정
+  - 문서: CMD-012 Related 섹션 추가, README 트레이스 경로 표기 교정
+- 남긴 플래그(무단 수정 금지 원칙 — 별도 결정): _lib/trace.js 10MB 로테이션이 락 없는 statSync→renameSync 2단계라 동시 훅 실행 시 이론상 .1 덮어쓰기 경합(v1.0.0 기존 설계, best-effort 관측이라 영향 한정). 로컬 커맨드(/model 등)의 command-name 래퍼 레코드가 턴 경계로 채택되는 기존 동작은 유지(v1.0.0 의미 보존).
+- 활성화 안내: 수집은 OBSERVE_TRACE=1 opt-in — 도그푸딩하려면 셸 프로필 또는 settings.json env 설정 필요(자동 활성화 안 함: 프롬프트 원문이 기록되므로 사용자 결정).
+
+## 원칙(유지)
+- 커밋은 사용자 요청 시에만. 훅 로직 버그 발견 시 플래그 후 별도 결정.
+- 트레이스 스키마는 type 판별자 additive 확장만 — 기존 필드(trigger 의미, why null 규약) 재정의 금지, 소비자는 tolerant reader.
