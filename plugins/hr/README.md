@@ -1,45 +1,47 @@
+> **English** · [한국어](README_KO.md)
+
 # hr
 
-> 채용(JD·면접)과 피플옵스(온보딩·평가)의 실무 산출물을 만드는 HR 하네스. 노동법 판단은 `legal:labor-ip-counsel`로 넘기는 1차 실무 도구.
+> An HR harness that produces practical deliverables for recruiting (JD/interviews) and people-ops (onboarding/evaluation). A first-line practical tool that hands labor-law judgments off to `legal:labor-ip-counsel`.
 
-## 개요
+## Overview
 
-`hr`은 채용과 입사 이후 경험(피플옵스)의 실무 문서를 구조화해 만드는 축소판 HR 하네스다. 직무기술서(JD) 초안, 역량 기반 면접 킷, 온보딩 30-60-90 플랜을 두 명의 읽기 전용 자문 에이전트와 세 개의 커맨드, 하나의 공통 가이드 스킬로 생산한다. "좋은 사람"이라는 모호한 기준을 검증 가능한 역량으로, "알아서 적응"을 측정 가능한 램프업으로, "감(感) 평가"를 앵커 기준 루브릭으로 바꾸는 것이 목표다.
+`hr` is a compact HR harness that structures and produces practical documents for recruiting and the post-hire experience (people-ops). It produces job-description (JD) drafts, competency-based interview kits, and onboarding 30-60-90 plans through two read-only advisory agents, three commands, and one shared guide skill. The goal is to turn the vague standard of "a good person" into verifiable competencies, "figuring things out on their own" into a measurable ramp-up, and "gut-feel evaluation" into an anchor-based rubric.
 
-핵심 설계 원칙은 **실무와 법률 판단의 분리**다. 채용 차별·해고·취업규칙·연차/수당 등 노동법 쟁점은 이 하네스가 확정 판단하지 않고, `hiring-guide` 스킬의 '도메인 플러그인 간 리스크 에스컬레이션 규약'에 따라 `legal:labor-ip-counsel`로 강제 교차 위임한다. 즉 hr은 실무 구조를 설계하고, 법적 적법성 판단은 legal 하네스로 넘기는 1차 실무 도구다.
+The core design principle is the **separation of practical work from legal judgment**. Labor-law issues such as hiring discrimination, dismissal, work rules, and annual leave/allowances are not conclusively judged by this harness; per the 'cross-domain-plugin risk escalation protocol' in the `hiring-guide` skill, they are forcibly cross-delegated to `legal:labor-ip-counsel`. In other words, hr is a first-line practical tool that designs the practical structure and hands legal-compliance judgment off to the legal harness.
 
-또 하나의 원칙은 **실수요 확인 전 확장 금지**다. 오케스트레이터와 훅은 실제 필요가 확인되기 전에는 두지 않는다(축소판). 그래서 커맨드는 각자 대응하는 자문 에이전트에 직접 위임하는 단순한 구조로 동작한다.
+Another principle is **no expansion before confirming real demand**. Orchestrators and hooks are not placed until real need is confirmed (compact edition). So the commands operate with a simple structure that delegates directly to their corresponding advisory agent.
 
-## 구성요소
+## Components
 
-### 커맨드
+### Commands
 
-- `/jd-draft` — 직무기술서(JD) 초안을 역할·핵심 책임·필수/우대 요건으로 구조화하고, 연령·성별·용모·출신·혼인 등 차별 표현을 휴리스틱으로 검사해 중립 대체 표현을 반영한다. `--check-only`로 기존 JD 검사만, `--benchmark`로 시장 벤치마크 반영.
-- `/interview-kit` — 역량 모델, 행동 질문(STAR), 4단계 앵커 평가 루브릭을 설계하고 금지 질문 목록을 동봉한 면접 킷을 생성한다. `/jd-draft` 산출물을 자동 승계하며 `--stages`·`--competencies`·`--with-assignment` 지원.
-- `/onboarding-doc` — 입사 전(D-7)~첫 주 체크리스트와 30-60-90 램프업 플랜을 담당자 지정·측정 가능한 완료 기준·매니저 체크인 어젠다와 함께 작성한다. `--format`·`--team`·`--buddy` 지원.
+- `/jd-draft` — Structures a job-description (JD) draft into role, key responsibilities, and required/preferred qualifications, and heuristically inspects for discriminatory expressions regarding age, gender, appearance, origin, marital status, etc., applying neutral replacement wording. Use `--check-only` to inspect an existing JD only, and `--benchmark` to reflect market benchmarks.
+- `/interview-kit` — Designs a competency model, behavioral (STAR) questions, and a 4-level anchor evaluation rubric, and generates an interview kit that includes a list of prohibited questions. It automatically inherits the `/jd-draft` deliverable and supports `--stages`, `--competencies`, and `--with-assignment`.
+- `/onboarding-doc` — Writes a pre-hire (D-7)–through–first-week checklist and a 30-60-90 ramp-up plan, together with assigned owners, measurable completion criteria, and a manager check-in agenda. Supports `--format`, `--team`, and `--buddy`.
 
-### 에이전트
+### Agents
 
-- `recruiting-advisor` — 채용 자문 에이전트(읽기 전용). JD 설계, 채용 퍼널 구성, 역량 기반 면접(질문·루브릭)을 자문하고 공고의 차별 표현을 휴리스틱으로 탐지한다. 적법성 확정 판단은 하지 않고 legal 위임을 권고한다.
-- `people-ops-advisor` — 피플옵스 자문 에이전트(읽기 전용). 온보딩(30-60-90), 평가 루브릭·성과 리뷰 체계, 조직 문서(핸드북·R&R·회의체)를 자문한다. 취업규칙·해고·연차/수당 등 법령 접점을 플래그하고 legal 위임을 권고한다.
+- `recruiting-advisor` — Recruiting advisory agent (read-only). Advises on JD design, recruiting funnel composition, and competency-based interviews (questions/rubrics), and heuristically detects discriminatory expressions in postings. It does not make conclusive compliance judgments and recommends delegating to legal.
+- `people-ops-advisor` — People-ops advisory agent (read-only). Advises on onboarding (30-60-90), evaluation rubrics/performance-review systems, and organizational documents (handbook/R&R/meeting bodies). It flags points of contact with statute such as work rules, dismissal, and annual leave/allowances, and recommends delegating to legal.
 
-### 스킬
+### Skill
 
-- `hiring-guide` — 하네스 공통 실무 토대. 채용 퍼널 표준 구조, JD 표준 구조와 차별 표현 셀프 체크 표, 역량 기반 면접·4단계 앵커 루브릭, 온보딩 30-60-90 표준을 제공한다. 핵심은 **법률 판단 필요 트리거 표**(채용 차별·해고·취업규칙·연차/수당·근로계약·고용형태·괴롭힘·조직규모 경계)와 **도메인 간 리스크 에스컬레이션 규약**으로, 트리거 감지 시 `legal:labor-ip-counsel` 호출을 강제한다.
+- `hiring-guide` — The shared practical foundation of the harness. Provides a standard recruiting-funnel structure, a standard JD structure and a discriminatory-expression self-check table, competency-based interviews and a 4-level anchor rubric, and an onboarding 30-60-90 standard. The core is the **legal-judgment-needed trigger table** (hiring discrimination, dismissal, work rules, annual leave/allowances, employment contracts, employment type, harassment, organization-size boundary) and the **cross-domain risk escalation protocol**, which forces a `legal:labor-ip-counsel` call when a trigger is detected.
 
-## 사용법
+## Usage
 
-- **커맨드 직접 호출**: 목적이 분명하면 해당 커맨드를 바로 쓴다. 예) `/jd-draft 백엔드 개발자 (Kotlin/Spring, 검색 플랫폼팀)`, `/interview-kit --stages 3 --with-assignment 데이터 분석가`, `/onboarding-doc --team 검색플랫폼팀 --format full 데이터 엔지니어`.
-- **채용 파이프라인 연계**: `/jd-draft`가 `.planning/hr/jd/{직무명}.md`에 저장한 산출물을 `/interview-kit`이 자동 승계한다. JD 작성 → 면접 킷 설계 → 온보딩 문서 순으로 이어진다.
-- **자동 발화**: `hiring, job description, interview kit, rubric, onboarding` 등 채용/온보딩 키워드가 감지되면 `hiring-guide` 스킬이 트리거되어 표준 구조와 에스컬레이션 규약을 적용한다.
-- **자문만 필요할 때**: 문서 생성 없이 설계 방향만 얻고 싶으면 에이전트가 읽기 전용으로 자문한다. 산출물 저장은 에이전트가 아니라 메인 세션(`Write`)이 `.planning/hr/` 아래에 수행한다.
-- **법률 트리거 처리**: 산출물에 수습 해지·연차 부여·조건부 오퍼·차별 소지 문구 등이 나타나면 해당 위치에 `⚠ 법률 판단 필요`를 표시하고 사실관계 요약과 함께 `legal:labor-ip-counsel`에 위임한다. legal 미설치 시 해당 항목을 미결로 남기고 사용자에게 legal 하네스 실행을 안내한다.
+- **Calling commands directly**: If the purpose is clear, use the relevant command right away. e.g. `/jd-draft 백엔드 개발자 (Kotlin/Spring, 검색 플랫폼팀)`, `/interview-kit --stages 3 --with-assignment 데이터 분석가`, `/onboarding-doc --team 검색플랫폼팀 --format full 데이터 엔지니어`.
+- **Recruiting-pipeline linkage**: The deliverable that `/jd-draft` saves to `.planning/hr/jd/{직무명}.md` is automatically inherited by `/interview-kit`. It proceeds in the order JD writing → interview-kit design → onboarding document.
+- **Automatic activation**: When recruiting/onboarding keywords such as `hiring, job description, interview kit, rubric, onboarding` are detected, the `hiring-guide` skill is triggered and applies the standard structure and escalation protocol.
+- **When only advice is needed**: If you want only design direction without generating a document, the agent advises read-only. Saving deliverables is performed not by the agent but by the main session (`Write`) under `.planning/hr/`.
+- **Handling legal triggers**: When wording such as probation termination, annual-leave grant, a conditional offer, or potentially discriminatory phrasing appears in a deliverable, mark `⚠ 법률 판단 필요` at that location and delegate to `legal:labor-ip-counsel` along with a summary of the facts. If legal is not installed, leave the item unresolved and guide the user to run the legal harness.
 
-## 참고
+## Notes
 
-- **전문가 자문 대체 아님**: 모든 산출물은 실무 구조 설계이며 노무사·변호사 자문을 대체하지 않는다. 법률 쟁점은 `legal:labor-ip-counsel`의 1차 진단을 기반으로 하고, 최종 산출물에 그 한계를 명시한다.
-- **확정 판단 금지**: hr 하네스는 채용 차별·해고·취업규칙·연차/수당·근로계약 조항의 적법성을 "위반이다/합법이다"로 확정하지 않는다. 이런 판단은 전적으로 `legal:labor-ip-counsel` 영역이며, hr은 신호를 탐지·플래그해 위임할 뿐이다.
-- **legal 하네스 연계 권장**: 노동법 판단이 필요한 작업에서는 `legal` 플러그인을 함께 설치하는 것이 좋다. 별도의 필수 플러그인 의존성은 없지만, 트리거 발생 시 legal이 없으면 해당 항목은 미결로 남는다.
-- **조직 규모 경계 주의**: 5인 미만↔이상 전환은 적용 법령이 달라지는 경계이므로 온보딩·평가 제도 설계 시 조직 규모를 먼저 확인하고, 관련 항목은 법률 트리거로 다룬다.
-- **차별 표현 검사는 휴리스틱**: JD·면접 질문의 차별 표현 탐지는 신호 기반 휴리스틱이며 위법 여부의 확정이 아니다. 채용 차별은 남녀고용평등법·고령자고용법·채용절차법 등에서 제재 대상이 될 수 있어 확정 판단은 legal에 위임한다.
-- **확장 정책**: 오케스트레이터·훅·평가 제도 심화는 실수요 확인 전에는 추가하지 않는다(`plugin.json` 축소판 원칙).
+- **Not a substitute for expert advice**: All deliverables are practical structural designs and do not replace advice from a labor attorney or lawyer. Legal issues are based on the first-line diagnosis of `legal:labor-ip-counsel`, and the final deliverable states that limitation explicitly.
+- **No conclusive judgments**: The hr harness does not conclude the legality of hiring discrimination, dismissal, work rules, annual leave/allowances, or employment-contract clauses as "a violation / lawful." Such judgment is entirely the domain of `legal:labor-ip-counsel`; hr merely detects and flags signals and delegates.
+- **legal-harness linkage recommended**: For tasks requiring labor-law judgment, it is advisable to install the `legal` plugin alongside. There is no separate mandatory plugin dependency, but if legal is absent when a trigger occurs, that item is left unresolved.
+- **Beware the organization-size boundary**: The transition from under-5 employees to 5-or-more is a boundary where the applicable statutes change, so when designing onboarding/evaluation systems, confirm organization size first and treat the relevant items as legal triggers.
+- **Discriminatory-expression inspection is heuristic**: Detection of discriminatory expressions in JDs and interview questions is a signal-based heuristic and not a conclusive determination of illegality. Hiring discrimination can be subject to sanctions under the Equal Employment Opportunity Act, the Age Discrimination Prohibition Act, the Hiring Procedures Act, and others, so conclusive judgment is delegated to legal.
+- **Expansion policy**: Orchestrators, hooks, and deeper evaluation systems are not added before real demand is confirmed (`plugin.json` compact-edition principle).

@@ -1,32 +1,34 @@
+> **English** · [한국어](README_KO.md)
+
 # etc
-> 외부 AI CLI(Antigravity·Codex·Copilot)를 Claude Code에 연결하는 범용 유틸리티 스킬 모음
+> A collection of general-purpose utility skills that connect external AI CLIs (Antigravity, Codex, Copilot) to Claude Code
 
-## 개요
-`etc`는 특정 도메인에 묶이지 않는 범용 유틸리티 스킬을 모아둔 "기타" 플러그인입니다. 현재는 외부 AI CLI 도구를 Claude Code 세션 안에서 슬래시 커맨드로 호출하는 두 스킬을 제공합니다. 하나는 Antigravity CLI(`agy`)로 웹 페이지를 깔끔한 Markdown으로 가져오는 폴백 fetcher, 다른 하나는 Codex·Antigravity·Copilot에게 작업을 복잡도 기반으로 라우팅해 협업·위임·병렬로 실행하는 오케스트레이터입니다. 두 스킬 모두 `disable-model-invocation: true`로 설정되어 모델이 스스로 발화하지 않고, 사용자가 명시적으로 슬래시 커맨드를 입력할 때만 실행되는 opt-in 방식입니다.
+## Overview
+`etc` is a "miscellaneous" plugin that gathers general-purpose utility skills not tied to any specific domain. Currently it provides two skills that invoke external AI CLI tools as slash commands from within a Claude Code session. One is a fallback fetcher that uses the Antigravity CLI (`agy`) to fetch web pages as clean Markdown; the other is an orchestrator that routes tasks to Codex, Antigravity, and Copilot based on complexity and runs them in collaborate, delegate, or parallel modes. Both skills are set to `disable-model-invocation: true`, so the model does not activate them on its own — they run opt-in, only when the user explicitly types the slash command.
 
-## 구성요소
+## Components
 
-### 스킬
-- `web-fetch` (`/web-fetch <url> [추출 지시]`) — Antigravity CLI(`agy`)의 네이티브 웹 브라우징으로 URL 콘텐츠를 깔끔한 Markdown으로 가져옵니다. Claude 네이티브 `WebFetch`가 실패했을 때의 폴백 또는 명시적 URL 조회·부분 추출에 사용하며, 속도를 위해 `Gemini 3.5 Flash (Low)` 모델을 사용합니다. 허용 도구는 `Bash(agy *)`로 제한됩니다.
-- `with` (`/with <agent|all> <작업 설명>`) — Codex·Antigravity·Copilot 외부 AI CLI 에이전트에 작업을 전달하는 오케스트레이터입니다. 작업 복잡도를 6개 항목으로 자동 점수화(0~5+)해 에이전트별 모델과 effort를 선택하고, 협업(Claude 주도 + 에이전트 참고)·위임(에이전트 주도)·병렬(전 에이전트 응답 비교·종합) 세 가지 모드로 동작합니다. 컨텍스트 분리를 위해 `context: fork`로 실행됩니다.
+### Skills
+- `web-fetch` (`/web-fetch <url> [extraction instruction]`) — Fetches URL content as clean Markdown using the native web browsing of the Antigravity CLI (`agy`). Use it as a fallback when Claude's native `WebFetch` fails, or for explicit URL lookups and partial extraction; it uses the `Gemini 3.5 Flash (Low)` model for speed. Allowed tools are restricted to `Bash(agy *)`.
+- `with` (`/with <agent|all> <task description>`) — An orchestrator that passes tasks to the Codex, Antigravity, and Copilot external AI CLI agents. It automatically scores task complexity across 6 items (0–5+) to select the model and effort per agent, and operates in three modes: collaborate (Claude-led + agents for reference), delegate (agent-led), and parallel (compare and synthesize responses from all agents). It runs with `context: fork` for context isolation.
 
-## 사용법
-두 스킬 모두 자동 발화하지 않으므로 슬래시 커맨드로 직접 호출합니다.
+## Usage
+Neither skill activates automatically, so call them directly via slash command.
 
 **web-fetch**
 - `/web-fetch https://docs.python.org/3/library/asyncio.html`
-- `/web-fetch https://react.dev/reference/react/useState API 레퍼런스 테이블만 추출`
+- `/web-fetch https://react.dev/reference/react/useState extract only the API reference table`
 
-**with** — 첫 단어로 에이전트를 지정하거나(`codex` / `antigravity`(별칭 `agy`) / `copilot` / `all`), 생략하면 작업 유형으로 자동 선택합니다(코드→Codex, 리서치→Antigravity, GitHub→Copilot). 프롬프트의 키워드로 모드를 판별합니다("같이·의견"→협업, "맡겨·처리해"→위임, "비교·전부·all"→병렬, 키워드가 없으면 기본값 협업).
-- `/with codex 이 함수 리팩토링해줘` → Simple, Codex 단일
-- `/with antigravity 맡겨 - REST API 설계` → Medium 위임
-- `/with all 이 아키텍처 접근법 비교해줘` → Complex 병렬
-- `/with 이 에러 디버깅해줘` → 에이전트 자동 선택(Codex)
+**with** — Specify the agent as the first word (`codex` / `antigravity` (alias `agy`) / `copilot` / `all`), or omit it to auto-select by task type (code→Codex, research→Antigravity, GitHub→Copilot). The mode is determined by keywords in the prompt ("together, opinion"→collaborate, "take it, handle it"→delegate, "compare, all, all"→parallel; default is collaborate when no keyword is present).
+- `/with codex refactor this function` → Simple, Codex only
+- `/with antigravity take it - design the REST API` → Medium delegate
+- `/with all compare these architecture approaches` → Complex parallel
+- `/with debug this error` → auto-select agent (Codex)
 
-## 참고
-- 플러그인 자체의 선언적 의존성은 없으나, 각 스킬은 외부 CLI가 설치되어 있어야 동작합니다.
-  - `web-fetch`: Antigravity CLI `agy` 필요 (`curl -fsSL https://antigravity.google/cli/install.sh | bash`)
-  - `with`: `codex`, `agy`, `copilot` 중 최소 하나. 미설치 시 설치 명령을 안내하고, 병렬 실행에서는 설치된 에이전트 결과만 표시합니다.
-- `agy --model`에는 식별자가 아닌 따옴표로 감싼 표시명을 전달합니다(정확한 목록은 `agy models`로 확인).
-- 인증이 필요하거나 접근 불가한 URL은 실패하며, 실패 시 사용자에게 안내합니다.
-- 외부 에이전트 호출은 복잡도에 따라 최대 20분까지 소요될 수 있습니다(병렬 실행 시 에이전트별 타임아웃이 개별 적용됨).
+## Notes
+- The plugin itself has no declarative dependencies, but each skill requires the external CLI to be installed to work.
+  - `web-fetch`: requires the Antigravity CLI `agy` (`curl -fsSL https://antigravity.google/cli/install.sh | bash`)
+  - `with`: at least one of `codex`, `agy`, `copilot`. If none are installed, it guides you through the install command, and in parallel runs it shows only the results of installed agents.
+- Pass a quoted display name — not an identifier — to `agy --model` (check the exact list with `agy models`).
+- URLs that require authentication or are inaccessible will fail, and on failure the user is notified.
+- External agent calls can take up to 20 minutes depending on complexity (in parallel runs, the per-agent timeout is applied individually).

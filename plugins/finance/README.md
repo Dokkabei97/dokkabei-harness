@@ -1,61 +1,63 @@
+> **English** · [한국어](README_KO.md)
+
 # finance
 
-> 이미 발생한 운영 재무·세무를 읽기 전용으로 검토해 증빙 공백·이상 신호·한국 세무 리스크를 진단하는 하네스.
+> A harness that reviews already-incurred operational finance and tax in read-only mode to diagnose evidence gaps, anomaly signals, and Korean tax risks.
 
-## 개요
+## Overview
 
-`finance`는 이미 지출된 경비와 이미 작성된 재무 자료를 대상으로, 숫자를 다시 만들지 않고 그 숫자에서 이상 신호·증빙 공백·세무 리스크를 끌어내는 read-only 진단 도구다. 경비·증빙 적격성 검토, 재무제표(손익계산서·재무상태표)·손익 1차 해석, 한국 세무 리스크 스크리닝(부가세·원천세·법인세/종합소득세) 세 갈래를 다룬다. 결산·신고 전 스스로 자료를 이해하거나, 세무사에게 보내기 전 쟁점을 미리 정리하거나, 세무서 통지를 받아 어디부터 봐야 할지 막막할 때 쓴다.
+`finance` is a read-only diagnostic tool that, targeting already-spent expenses and already-prepared financial materials, does not re-create the numbers but instead draws out anomaly signals, evidence gaps, and tax risks from those numbers. It covers three tracks: expense/documentation eligibility review, financial statement (income statement, balance sheet) and profit-and-loss first-pass interpretation, and Korean tax risk screening (VAT, withholding tax, corporate tax/comprehensive income tax). Use it when you want to understand the materials yourself before closing/filing, when you want to organize the issues in advance before sending them to a tax accountant, or when you have received a tax office notice and are at a loss for where to start.
 
-설계는 두 축을 중심으로 돈다. 하나는 **면책·에스컬레이션 원칙** — 모든 산출물은 1차 리스크 진단일 뿐 세무사/회계사의 자문을 대체하지 않으며, 확정 판단("문제없다", "손금 인정된다") 대신 가능성·신호 수준으로만 서술한다. 세무조사 가능성 × 금액 규모 × 신고기한 임박 3축으로 강제/권고 트리거를 판정해, 강제 트리거 시 보고서 최상단에 "⚠️ 반드시 세무사/회계사 상담"을 강제 배치한다(legal 플러그인의 Escalation Policy 골격을 이식). 다른 하나는 **세율·기준금액 하드코딩 금지** — 한국 세법은 매년 개정되므로 세율·한도·기한이 판정에 개입하면 반드시 WebSearch로 당해연도 기준을 확인하고 출처·확인 연도를 병기하며, 확인 실패 시 수치를 비워 두고 "확인 필요"로 표기한다.
+The design revolves around two axes. One is the **disclaimer/escalation principle** — every deliverable is only a first-pass risk diagnosis and does not replace the advice of a tax accountant/CPA, and instead of definitive judgments ("no problem", "deductible as a loss") it describes only at the level of possibility/signal. It judges mandatory/advisory triggers along the three axes of tax audit likelihood × amount scale × filing deadline imminence, and on a mandatory trigger it forcibly places "⚠️ Must consult a tax accountant/CPA" at the very top of the report (transplanting the skeleton of the legal plugin's Escalation Policy). The other is the **no-hardcoding of tax rates/threshold amounts** — because Korean tax law is revised every year, whenever a tax rate/limit/deadline enters into a judgment it must confirm the current-year basis via WebSearch and cite the source and confirmation year alongside it, and on confirmation failure it leaves the figure blank and marks it "confirmation needed".
 
-본 플러그인은 **이미 발생한 운영 재무·세무만** 다룬다. 사업계획용 유닛 이코노믹스·번레이트/런웨이·펀딩 전략 같은 미래 지향 모델링은 경계 밖이며 `startup:financial-modeler`가 담당한다.
+This plugin covers **only already-incurred operational finance and tax**. Forward-looking modeling such as unit economics for business planning, burn rate/runway, and funding strategy is out of scope and is handled by `startup:financial-modeler`.
 
-## 구성요소
+## Components
 
-### 커맨드
+### Commands
 
-- `/expense-review` — 경비·지출 증빙 적격성 검토. 지출 내역에서 적격증빙 공백, 사적 비용 혼입, 계정 분류 이상을 탐지하고 보완 방향을 제시한다. `--target`(파일 경로) `--period`(기간) `--focus 증빙|분류|사적혼입` 옵션 지원. `finance-analyst`에 위임하고 세무 직결 항목은 `tax-risk-advisor`로 교차 확인한다.
-- `/financial-review` — 재무제표·손익 1차 해석. 손익계산서/재무상태표의 추세·비율·이상 항목을 분석하고 현금흐름 경고 신호를 식별한다. `--target` `--compare`(전기 비교) `--focus 손익|재무상태|현금흐름` 옵션 지원.
-- `/tax-risk-scan` — 한국 세무 리스크 스크리닝. 부가세·원천세·법인세(종합소득세) 신고 관점에서 무신고/과소신고/증빙불비 리스크를 탐지하고 임박 기한을 표시한다. `--scope vat|withholding|corporate|all` `--entity 법인|개인-일반|개인-간이` `--target` `--deadline` 옵션 지원. `tax-risk-advisor`에 위임하고 증빙 쟁점은 `finance-analyst`로 교차 확인한다.
+- `/expense-review` — Expense/spending documentation eligibility review. Detects qualified-evidence gaps, commingling of personal costs, and account classification anomalies in spending records, and proposes remediation directions. Supports `--target` (file path), `--period` (period), `--focus 증빙|분류|사적혼입` options. Delegates to `finance-analyst` and cross-checks tax-directly-related items with `tax-risk-advisor`.
+- `/financial-review` — Financial statement/profit-and-loss first-pass interpretation. Analyzes trends, ratios, and anomalous items in the income statement/balance sheet and identifies cash flow warning signals. Supports `--target`, `--compare` (prior-period comparison), `--focus 손익|재무상태|현금흐름` options.
+- `/tax-risk-scan` — Korean tax risk screening. Detects non-filing/under-filing/documentation-deficiency risks from the perspective of VAT, withholding tax, and corporate tax (comprehensive income tax) filing, and flags imminent deadlines. Supports `--scope vat|withholding|corporate|all`, `--entity 법인|개인-일반|개인-간이`, `--target`, `--deadline` options. Delegates to `tax-risk-advisor` and cross-checks documentation issues with `finance-analyst`.
 
-### 에이전트
+### Agents
 
-- `finance-analyst` — 운영 재무 분석 전문가. 경비·지출 증빙 적격성 검토, 재무제표 1차 해석(추세·비율·이상 항목), 비용 구조·현금흐름 이상 신호 탐지를 수행하는 read-only 자문 에이전트. 확정 판단 없이 리스크 신호만 식별한다.
-- `tax-risk-advisor` — 한국 세무 리스크 스크리닝 전문가. 부가세·원천세·법인세(종합소득세) 관점에서 가산세 리스크 축(무신고·과소신고·납부지연·증빙불비·지급명세서 미제출)을 기준으로 신호를 탐지한다. 구체 세율·기준금액은 WebSearch로 당해연도 확인 후 출처를 병기하는 read-only 자문 에이전트.
+- `finance-analyst` — Operational finance analysis specialist. A read-only advisory agent that performs expense/spending documentation eligibility review, financial statement first-pass interpretation (trends, ratios, anomalous items), and detection of cost-structure and cash flow anomaly signals. Identifies only risk signals without definitive judgments.
+- `tax-risk-advisor` — Korean tax risk screening specialist. Detects signals based on the penalty-tax risk axes (non-filing, under-filing, late payment, documentation deficiency, non-submission of payment statements) from the perspective of VAT, withholding tax, and corporate tax (comprehensive income tax). A read-only advisory agent that confirms specific tax rates/threshold amounts for the current year via WebSearch and cites the source alongside them.
 
-### 스킬
+### Skills
 
-- `korean-tax-foundations` — 한국 세무 하네스 공통 기초. 세목 구조(부가세·원천세·법인세·종합소득세·지방세), 신고 주기 축, 가산세 리스크 축, 적격증빙 체계, 면책 원칙을 제공한다. 구체 세율·기준금액은 담지 않고 WebSearch 당해연도 확인을 강제한다.
-- `finance-escalation-policy` — 에스컬레이션 정책. 세무조사 가능성 × 금액 규모 × 신고기한 임박 3축으로 8개 강제/권고 트리거를 판정하고, 강제 트리거 시 보고서 최상단에 전문가 상담 경고 블록 배치를 강제한다. 판정 모호 시 보수적 상향(놓치는 비용 > 과잉 경고 비용) 규칙을 적용한다.
+- `korean-tax-foundations` — Common foundations for the Korean tax harness. Provides the tax-item structure (VAT, withholding tax, corporate tax, comprehensive income tax, local tax), the filing-cycle axis, the penalty-tax risk axis, the qualified-evidence system, and the disclaimer principle. Does not carry specific tax rates/threshold amounts and enforces current-year confirmation via WebSearch.
+- `finance-escalation-policy` — Escalation policy. Judges 8 mandatory/advisory triggers along the three axes of tax audit likelihood × amount scale × filing deadline imminence, and on a mandatory trigger enforces placement of an expert-consultation warning block at the very top of the report. When the judgment is ambiguous, applies a conservative-upgrade rule (cost of missing > cost of over-warning).
 
-## 사용법
+## Usage
 
-세 커맨드를 직접 호출한다. 커맨드는 자료 확인 → 에이전트 디스패치 → 세무 연계 교차 확인 → 에스컬레이션 판정·보고의 4단계로 흐른다. 스킬은 별도 호출 없이 세무 판단·경비 검토 맥락에서 자동 로드되어 판단 토대(공통 기초)와 에스컬레이션 규칙을 보강한다.
+Call the three commands directly. A command flows through 4 stages: material confirmation → agent dispatch → tax-linked cross-check → escalation judgment/reporting. The skills are loaded automatically in tax-judgment/expense-review contexts without a separate call, reinforcing the judgment foundation (common foundations) and the escalation rules.
 
 ```
-# 상반기 경비 내역 증빙 적격성 점검
+# Check documentation eligibility for first-half expense records
 /expense-review --target ./경비내역_2026상반기.csv --period 2026-1H
 
-# 법인카드 주말 사용 건 사적혼입 집중 점검
+# Focused check on commingled personal costs for corporate-card weekend usage
 /expense-review --focus 사적혼입 법인카드 주말 사용 건이 많은데 문제 없는지
 
-# 전기 대비 재무제표 해석
+# Financial statement interpretation vs. prior period
 /financial-review --target ./재무제표_2025.csv --compare ./재무제표_2024.csv
 
-# 부가세 확정신고 전 종합 리스크 점검
+# Comprehensive risk check before final VAT filing
 /tax-risk-scan --entity 법인 --scope all 7월 부가세 확정신고 전 리스크 점검 --target ./거래내역
 
-# 세무서 소명 요구 수령 후 점검 (강제 에스컬레이션 사전 판별)
+# Check after receiving a tax office request for explanation (advance identification of mandatory escalation)
 /tax-risk-scan --entity 개인-일반 세무서에서 매출 과소신고 소명 요구를 받음 --deadline 2026-07-20
 ```
 
-`/expense-review`와 `/tax-risk-scan`은 발견 쟁점의 성격에 따라 두 에이전트를 교차 호출하며, 결과가 상충하면 보수적 안을 우선 제시한다. 강제 에스컬레이션 트리거(과세관청 접촉, 조세범 처벌 결부, 기한 7일 이내/경과, 고액 쟁점, 불복 절차)에 해당하면 최종 보고서 최상단에 "⚠️ 반드시 세무사/회계사 상담"과 사유가 표시된다.
+`/expense-review` and `/tax-risk-scan` cross-call the two agents depending on the nature of the discovered issues, and when results conflict they present the conservative option first. If a mandatory escalation trigger applies (contact from the taxation authority, involvement of tax-crime punishment, deadline within/past 7 days, high-value issues, appeal procedures), "⚠️ Must consult a tax accountant/CPA" and the reason are displayed at the very top of the final report.
 
-## 참고
+## Notes
 
-- **본 플러그인의 모든 산출물은 1차 리스크 진단이며, 세무사·회계사의 자문을 대체하지 않는다.** 신고·소명·납부·불복 등 실제 실행 전에는 반드시 전문가 상담을 권고한다.
-- 모든 에이전트는 read-only다 — 재무제표 작성·수정, 분개·결산·신고서 작성, 홈택스 절차 대행을 하지 않는다.
-- 세율·한도·기준금액·신고 기한은 하드코딩하지 않는다. 판정에 개입하면 WebSearch로 당해연도 기준(국세청 nts.go.kr, 국가법령정보센터 law.go.kr 등 1차 출처)을 확인하고 확인 연도를 병기하며, 확인 실패 시 수치를 비워 두고 "확인 필요"로 표기한다.
-- 조세 회피·탈루 설계(매출 누락 은폐, 가공경비, 허위 세금계산서 등)는 조력하지 않는다.
-- WebSearch로 당해연도 세율·기한·기준금액을 확인하려면 웹 접근이 가능한 환경이 전제된다.
-- 사업계획용 재무 모델링·펀딩 전략은 경계 밖이다 — `startup:financial-modeler`와 함께 쓰면 좋다.
+- **Every deliverable of this plugin is a first-pass risk diagnosis and does not replace the advice of a tax accountant/CPA.** Before actually executing filing, explanation, payment, appeal, etc., always consulting an expert is recommended.
+- All agents are read-only — they do not prepare/modify financial statements, do journal entries/closing/filing preparation, or act as a proxy for Hometax procedures.
+- Tax rates, limits, threshold amounts, and filing deadlines are not hardcoded. When they enter into a judgment, confirm the current-year basis via WebSearch (primary sources such as the National Tax Service nts.go.kr, the Korea Law Information Center law.go.kr, etc.) and cite the confirmation year alongside it, and on confirmation failure leave the figure blank and mark it "confirmation needed".
+- It does not assist with tax avoidance/evasion schemes (concealment of omitted sales, fabricated expenses, false tax invoices, etc.).
+- Confirming current-year tax rates/deadlines/threshold amounts via WebSearch presupposes an environment with web access.
+- Financial modeling for business planning and funding strategy is out of scope — it pairs well with `startup:financial-modeler`.

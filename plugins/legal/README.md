@@ -1,60 +1,62 @@
+> **English** · [한국어](README_KO.md)
+
 # legal
 
-> 한국법 기준 계약·기업투자·노동IP·규제·형사분쟁 리스크를 다루는 법무팀 하네스. 변호사 자문을 대체하지 않는 1차 리스크 진단 도구.
+> A legal-team harness handling contract, corporate-investment, labor-IP, regulatory, and criminal-dispute risk under Korean law. A first-pass risk-diagnosis tool that does not replace attorney counsel.
 
-## 개요
+## Overview
 
-`legal`은 한국법을 기준으로 법적 사안을 진단하는 멀티 에이전트 법무 하네스다. 계약 검토·작성, 기업·투자 법무, 노동·지식재산, 규제 컴플라이언스, 형사·분쟁 리스크(명예훼손·모욕·성범죄 등)를 5명의 전문 에이전트가 나눠 맡고, `legal-team-orchestrator`가 사안을 분류해 적합한 전문가를 골라 붙인다.
+`legal` is a multi-agent legal harness that diagnoses legal matters under Korean law. Five specialist agents divide up contract review/drafting, corporate/investment legal work, labor/intellectual property, regulatory compliance, and criminal/dispute risk (defamation, insult, sex offenses, etc.), and the `legal-team-orchestrator` classifies the matter and attaches the appropriate specialist.
 
-팀 구성은 **Expert Pool + Fan-out/Fan-in** 하이브리드다. 단일 영역이면 1명을 디스패치하고, 2개 이상 영역이 교차하면 관련 에이전트를 병렬로 투입한 뒤 교차 리스크를 통합 보고한다. 모든 분석은 `korean-legal-foundations`의 면책·인용·에스컬레이션 원칙을 공통 토대로 삼는다.
+The team composition is an **Expert Pool + Fan-out/Fan-in** hybrid. For a single domain it dispatches one specialist; when two or more domains intersect, it deploys the relevant agents in parallel and then reports the cross-domain risk in an integrated fashion. All analysis takes the disclaimer, citation, and escalation principles of `korean-legal-foundations` as a shared foundation.
 
-핵심 설계 의도는 **오판 비용의 비대칭성**에 대응하는 것이다. 형사 신호, 성 관련 사안, 진행 중 소송, 고액·비가역 거래 등에 걸리면 산출물 최상단에 "반드시 변호사 상담"을 강제 표시하고, 하네스 결과만으로 행동하지 않도록 안내한다. 즉 이 도구는 결론을 내리는 자문이 아니라, 전문가에게 갈지 말지·무엇을 물을지를 가려내는 1차 스크리너다.
+The core design intent is to respond to the **asymmetry of the cost of misjudgment**. When a matter trips a criminal signal, a sex-related issue, ongoing litigation, or a high-value/irreversible transaction, it forces a "must consult an attorney" notice at the very top of the output and advises against acting on the harness result alone. In other words, this tool is not advice that reaches a conclusion, but a first-pass screener that sorts out whether or not to go to a specialist and what to ask.
 
-## 구성요소
+## Components
 
-### 커맨드
+### Commands
 
-- `/contract-review` — 계약서·NDA·용역·투자계약 등의 독소조항을 조항별 리스크 등급과 수정 문구(redline)로 검토하고 누락 조항을 식별한다.
-- `/contract-redline` — 상대방 수정안(카운터 초안)과 원안을 조항 단위로 diff 정렬하고, 변경별 수용/수정/거부 권고와 3버전 대안 문구, 협상 우선순위를 제시한다.
-- `/draft-legal-doc` — 계약서·내용증명·합의서·통지서 등을 한국법 표준 구조로 초안화하고 핵심 조항의 선택지를 제시한다. `--format docx`는 공식 `docx` 스킬에 위임한다.
-- `/compliance-check` — 개인정보보호법·전자상거래법·정보통신망법 준수 항목을 점검하고 위반 리스크와 시정 조치를 제시한다.
-- `/defamation-assess` — 명예훼손·모욕 구성요건 성립 가능성을 분석하고 피해자/피의자 관점별 대응 옵션을 제시한다. 형사 사안이므로 변호사 선임을 강하게 권고한다.
-- `/legal-risk-scan` — 사안을 분석해 관련 전문 에이전트를 병렬 투입하고 영역 교차 리스크를 통합 보고하는 종합 스캔.
+- `/contract-review` — Reviews toxic clauses in contracts, NDAs, service agreements, investment agreements, etc., with per-clause risk grades and revised wording (redline), and identifies missing clauses.
+- `/contract-redline` — Diff-aligns the counterparty's revision (counter draft) against the original clause by clause, and offers accept/revise/reject recommendations per change, three-version alternative wordings, and negotiation priorities.
+- `/draft-legal-doc` — Drafts contracts, certified-mail (content-certified) letters, settlement agreements, notices, etc., in a Korean-law standard structure and presents options for key clauses. `--format docx` delegates to the official `docx` skill.
+- `/compliance-check` — Checks compliance items under the Personal Information Protection Act, the Act on Consumer Protection in Electronic Commerce, and the Network Act, and presents violation risks and corrective actions.
+- `/defamation-assess` — Analyzes the likelihood that the elements of defamation/insult are met and presents response options by victim/suspect perspective. Since it is a criminal matter, it strongly recommends retaining an attorney.
+- `/legal-risk-scan` — A comprehensive scan that analyzes the matter, deploys the relevant specialist agents in parallel, and reports cross-domain risk in an integrated fashion.
 
-### 에이전트
+### Agents
 
-- `contract-counsel` — 계약 법무 전문가. 민법·상법 기준으로 독소조항을 탐지하고 NDA·용역·위임·투자·라이선스 계약을 검토·초안하며 조항별 리스크 등급과 수정 문구를 낸다.
-- `corporate-counsel` — 기업·투자 법무 전문가. 상법·벤처기업법 기준으로 법인 설립, 주주간계약(SHA), 투자유치(텀시트·SAFE·전환사채), 스톡옵션, 지분 구조, M&A 기초를 창업자 관점의 희석·통제권 리스크로 분석한다.
-- `labor-ip-counsel` — 노동·지식재산 전문가. 근로기준법 기준 해고·임금·취업규칙 리스크와 상표·저작권·특허·영업비밀·직무발명 보호 전략을 다룬다.
-- `compliance-counsel` — 규제 컴플라이언스 전문가. 개인정보보호법·전자상거래법·정보통신망법·위치정보법·업종별 인허가 준수를 코드/운영 관점에서 점검하고 제재 리스크를 정량화한다.
-- `dispute-risk-counsel` — 형사·분쟁 리스크 전문가. 형법·정보통신망법·성폭력처벌법 기준으로 명예훼손·모욕·성범죄·협박·스토킹 성립 요건과 고소/방어 대응을 평가하며 항상 변호사 선임을 우선 권고한다.
+- `contract-counsel` — Contract-law specialist. Detects toxic clauses under the Civil Act and Commercial Act, reviews and drafts NDAs and service, mandate, investment, and license agreements, and produces per-clause risk grades and revised wording.
+- `corporate-counsel` — Corporate/investment legal specialist. Under the Commercial Act and the Venture Business Act, analyzes company formation, shareholders' agreements (SHA), fundraising (term sheets, SAFE, convertible bonds), stock options, equity structure, and M&A fundamentals through the founder's-perspective lens of dilution and control risk.
+- `labor-ip-counsel` — Labor/intellectual property specialist. Handles dismissal/wage/employment-rules risk under the Labor Standards Act, and protection strategies for trademarks, copyrights, patents, trade secrets, and employee inventions.
+- `compliance-counsel` — Regulatory compliance specialist. Checks compliance with the Personal Information Protection Act, the Act on Consumer Protection in Electronic Commerce, the Network Act, the Location Information Act, and industry-specific licensing from a code/operations perspective, and quantifies sanction risk.
+- `dispute-risk-counsel` — Criminal/dispute risk specialist. Under the Criminal Act, the Network Act, and the Act on the Punishment of Sexual Violence, evaluates the elements of defamation, insult, sex offenses, intimidation, and stalking, along with complaint/defense responses, and always recommends retaining an attorney as a priority.
 
-### 스킬
+### Skills
 
-- `legal-team-orchestrator` — 법무팀 오케스트레이터. 사안을 Single/Multi/Full Scan으로 분류해 에이전트를 라우팅·병렬 디스패치하고, 교차 분석·우선순위 액션 플랜으로 통합 보고하며 에스컬레이션을 강제한다.
-- `korean-legal-foundations` — 하네스 공통 기초. 법체계·법원(法源) 위계, 법령 인용·검증 규칙, 면책 원칙과 변호사 에스컬레이션 기준, 사실/평가 구분 원칙을 제공한다.
-- `contract-law-guide` — 계약법 실무 가이드. 독소조항 체크리스트, 유형별 필수 조항, 위약금·손해배상·약관규제법 법리, redline 작성 패턴.
-- `corporate-investment-guide` — 기업·투자 법무 가이드. 법인 설립, SHA 핵심 조항, 투자계약(RCPS·전환사채·SAFE형) 조건, 스톡옵션 구조, 희석/통제권 분석.
-- `labor-ip-guide` — 노동·지식재산 실무 가이드. 해고·임금 리스크(근로기준법), 상표·저작권·특허·영업비밀 보호, 직무발명·업무상저작물 귀속.
-- `compliance-guide` — 규제 컴플라이언스 가이드. 개인정보보호법(2023 개정) 라이프사이클, 전자상거래법 의무, 정보통신망법 광고 규제, 업종별 인허가.
-- `dispute-criminal-risk-guide` — 형사·분쟁 리스크 가이드. 명예훼손·모욕·사이버 명예훼손 구성요건, 성 관련 범죄 개관, 협박·스토킹, 증거 보전과 피해자/피의자 대응 절차.
+- `legal-team-orchestrator` — The legal-team orchestrator. Classifies the matter as Single/Multi/Full Scan, routes and parallel-dispatches agents, reports in an integrated fashion via cross-analysis and a prioritized action plan, and forces escalation.
+- `korean-legal-foundations` — The harness's shared foundation. Provides the legal system and the hierarchy of sources of law (法源), rules for citing and verifying statutes, disclaimer principles and attorney-escalation criteria, and the principle of distinguishing fact from evaluation.
+- `contract-law-guide` — Practical contract-law guide. Toxic-clause checklist, mandatory clauses by type, legal doctrine on penalties, damages, and the Act on the Regulation of Terms and Conditions, and redline-drafting patterns.
+- `corporate-investment-guide` — Corporate/investment legal guide. Company formation, key SHA clauses, investment-agreement (RCPS, convertible-bond, SAFE-type) terms, stock-option structure, dilution/control analysis.
+- `labor-ip-guide` — Practical labor/intellectual property guide. Dismissal/wage risk (Labor Standards Act), protection of trademarks, copyrights, patents, and trade secrets, attribution of employee inventions and works made for hire.
+- `compliance-guide` — Regulatory compliance guide. Personal Information Protection Act (2023 amendment) lifecycle, obligations under the Act on Consumer Protection in Electronic Commerce, advertising regulation under the Network Act, industry-specific licensing.
+- `dispute-criminal-risk-guide` — Criminal/dispute risk guide. Elements of defamation, insult, and cyber-defamation, overview of sex-related crimes, intimidation/stalking, evidence preservation, and victim/suspect response procedures.
 
-## 사용법
+## Usage
 
-- **커맨드 직접 호출**: 목적이 분명하면 해당 커맨드를 바로 쓴다. 예) `/contract-review --role 을 --type service 용역계약.pdf`, `/defamation-assess --role 피해자 --channel online 악성 댓글 상황`.
-- **레드라인 왕복**: `/contract-redline 원안.md 상대방수정안.md --role 을 --round 2` 로 카운터 초안을 원안과 조항 단위 비교한다. 변경 추적 docx 한 장만 넘겨도 된다.
-- **종합 스캔(자동 오케스트레이션)**: "법적으로 문제없어?", "리스크 전체 점검", "법무 종합 검토" 같은 요청이나 여러 법 영역이 얽힌 사안에서는 `legal-team-orchestrator`가 트리거되어 관련 에이전트를 병렬 투입하고 통합 리스크 보고서를 낸다. `/legal-risk-scan [상황] --scope all --target [경로]` 로 직접 시작할 수도 있다.
-- **통합 보고 흐름**: 오케스트레이터는 사안 분류(Single/Multi/Full) → 라우팅 → 병렬 디스패치 → 교차 분석·우선순위 액션 플랜 순으로 진행하며, 에스컬레이션 대상이면 보고서 최상단에 "⚠️ 반드시 변호사 상담"과 사유를 강제 표시한다.
+- **Direct command invocation**: When the purpose is clear, use the relevant command directly. E.g., `/contract-review --role 을 --type service 용역계약.pdf`, `/defamation-assess --role 피해자 --channel online 악성 댓글 상황`.
+- **Redline round-trips**: With `/contract-redline 원안.md 상대방수정안.md --role 을 --round 2`, compare the counter draft against the original clause by clause. Handing over a single tracked-changes docx is enough.
+- **Comprehensive scan (automatic orchestration)**: For requests like "Is there any legal problem?", "full risk check", "comprehensive legal review", or for matters entangling multiple legal domains, the `legal-team-orchestrator` is triggered to deploy the relevant agents in parallel and produce an integrated risk report. You can also start it directly with `/legal-risk-scan [상황] --scope all --target [경로]`.
+- **Integrated reporting flow**: The orchestrator proceeds in the order matter classification (Single/Multi/Full) → routing → parallel dispatch → cross-analysis and prioritized action plan, and if the matter is an escalation target, it forces a "⚠️ Must consult an attorney" notice with the reason at the very top of the report.
 
-## 의존성
+## Dependencies
 
-- 별도 필수 플러그인 의존성은 없다.
-- `/draft-legal-doc --format docx` 는 선택적으로 공식 `docx` 스킬(`document-skills`)과 `python3`를 사용한다. 미설치 시 md 산출로 자동 폴백(graceful degrade)하고, 설치 안내를 한 줄 출력한다: `/plugin marketplace add anthropics/skills` 후 `/plugin install document-skills@anthropic-agent-skills`.
-- 도메인 경계상 재무·세무 사안은 `finance` 플러그인이 `legal`의 Escalation Policy 골격을 이식해 별도로 다루며, HR 사안에서 노동법 판단이 필요하면 `hr` 플러그인이 `legal:labor-ip-counsel`로 교차 위임한다.
+- There are no separate required plugin dependencies.
+- `/draft-legal-doc --format docx` optionally uses the official `docx` skill (`document-skills`) and `python3`. If not installed, it automatically falls back (graceful degrade) to md output and prints a one-line installation guide: `/plugin marketplace add anthropics/skills` then `/plugin install document-skills@anthropic-agent-skills`.
+- By domain boundary, financial/tax matters are handled separately by the `finance` plugin, which transplants the skeleton of `legal`'s Escalation Policy; and when an HR matter requires a labor-law determination, the `hr` plugin cross-delegates to `legal:labor-ip-counsel`.
 
-## 참고
+## Notes
 
-- **전문가 자문 대체 아님**: 모든 산출물은 1차 리스크 진단이며 변호사 자문을 대체하지 않는다. 특히 형사 신호(입건·수사·출석·압수수색·고소장 접수), 성 관련 사안, 진행 중 소송의 본안, 거래금액 1억원 이상·부동산·M&A·연대보증 등 비가역·고액 거래는 서명·송금·진술·제출 전 변호사 검토가 강제된다.
-- **에스컬레이션 기준값은 조정 가능**: 금액 컷오프(1억/1천만원)와 강제/권고 경계는 개인 사용자 기준의 보수적 기본값이며, 본인 리스크 허용도에 맞춰 조정할 수 있다. 트리거가 모호하면 상향(보수적) 적용한다.
-- **법령 하드코딩 주의**: 법령·요건은 개정될 수 있으므로 인용 시 최신 조문을 확인한다. 에이전트는 `WebSearch`/`WebFetch`로 근거를 확인할 수 있다.
-- **확정 판단 금지**: 하네스는 "위반이다"가 아니라 "요건 충족 가능성·리스크 수준"으로 서술하며, 증거 인멸·허위 고소·탈법 설계 등 위법행위 조력은 하지 않는다.
+- **Not a replacement for expert counsel**: All outputs are a first-pass risk diagnosis and do not replace attorney counsel. In particular, for criminal signals (booking, investigation, summons, search and seizure, receipt of a complaint), sex-related matters, the merits of ongoing litigation, and irreversible/high-value transactions such as those with a transaction value of KRW 100 million or more, real estate, M&A, or joint-and-several guarantees, attorney review is mandatory before signing, remitting, making statements, or submitting.
+- **Escalation thresholds are adjustable**: The amount cutoffs (KRW 100 million / 10 million) and the mandatory/recommended boundary are conservative defaults calibrated to an individual user, and can be adjusted to your own risk tolerance. If a trigger is ambiguous, apply it upward (conservatively).
+- **Beware of hard-coded statutes**: Statutes and requirements may be amended, so verify the latest provisions when citing. Agents can verify grounds via `WebSearch`/`WebFetch`.
+- **No definitive determinations**: The harness describes not "this is a violation" but "the likelihood the elements are met / the risk level," and does not assist in unlawful acts such as evidence destruction, false accusation, or law-evasion design.

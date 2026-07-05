@@ -1,94 +1,87 @@
+> **English** · [한국어](README_KO.md)
+
 # mvp
 
-> 아이디어 한 줄을 기획(PRD) → 디자인 → 스택 선택·스캐폴딩 → PRD-driven 개발 루프로 완주시키는 그린필드 MVP 루프 엔지니어링 하네스.
+> A greenfield MVP loop engineering harness that carries a one-line idea through planning (PRD) → design → stack selection·scaffolding → a PRD-driven development loop to completion.
 
-## 개요
+## Overview
 
-`mvp`는 빈 레포에서 신규 사업/서비스를 만들 때, "무엇을 만들지"조차 정해지지 않은 아이디어 한 줄에서 출발해
-동작하는 MVP까지를 **게이트 기반 상태기계**로 끌고 가는 하네스다. Stage 0(인테이크) → 1(기획 PRD) → 2(디자인 스펙)
-→ 3(스택 선택·스캐폴딩) → 4(PRD-driven 개발 루프)로 이어지며, 각 Stage 전이는 결정론 게이트 스크립트와
-회의적 checker 에이전트의 반증을 모두 통과해야만 열린다.
+`mvp` is a harness that, when building a new business/service from an empty repo, starts from a one-line idea where even "what to build" is undecided and drives it all the way to a working MVP as a **gate-based state machine**. It proceeds through Stage 0 (intake) → 1 (planning PRD) → 2 (design spec) → 3 (stack selection·scaffolding) → 4 (PRD-driven development loop), and each Stage transition opens only after passing both the deterministic gate script and the skeptical checker agent's refutation.
 
-설계의 핵심은 **완료 판정의 주체가 모델이 아니라 하네스**라는 점이다. Stage 4 개발 루프는 `Stop` 훅 루프 엔진이
-매 반복마다 정지조건(결정론 게이트 그린 + 전 스토리 passes + verified 마커 + E2E 게이트(선택) + completion promise)을
-검증하고, 미충족 시 `exit 2` 재주입으로 루프를 지속시킨다. maker(구현)와 checker(반증)를 완전히 분리한
-Producer-Reviewer 교차검증으로 "테스트 사기"를 막고, max-iter·no-progress·시간 상한·킬스위치 등 가드레일로
-폭주를 봉쇄한다. `.planning/` 디렉토리가 메모리 겸 재개 지점이 되어 세션이 끊겨도 이어서 진행할 수 있다.
+The core of the design is that **the arbiter of completion is the harness, not the model**. The Stage 4 development loop's `Stop` hook loop engine, on every iteration, verifies the stop conditions (deterministic gate green + all-stories passes + verified marker + E2E gate (optional) + completion promise), and when unmet, sustains the loop via `exit 2` re-injection. It blocks "test fraud" through Producer-Reviewer cross-verification that fully separates the maker (implementation) and the checker (refutation), and it seals off runaway behavior with guardrails such as max-iter·no-progress·time cap·kill switch. The `.planning/` directory becomes both memory and a resume point, so work can continue even if the session is interrupted.
 
-이 하네스는 **그린필드 전용**이다. 기존(브라운필드) 코드베이스의 기능 추가·수정은 `feature-loop` 또는 스택별
-플러그인(kotlin-spring·python-fastapi·go-mux·nextjs·search)에 위임한다. 반대로 사업 가설 수립 단계는 `startup`
-플러그인이 담당하며, `/mvp-from-startup`으로 그 산출물을 이어받는다.
+This harness is **greenfield-only**. Feature additions·modifications on an existing (brownfield) codebase are delegated to `feature-loop` or the stack-specific plugins (kotlin-spring·python-fastapi·go-mux·nextjs·search). Conversely, the business-hypothesis phase is handled by the `startup` plugin, and its output is taken over via `/mvp-from-startup`.
 
-## 구성요소
+## Components
 
-### 커맨드 (7)
+### Commands (7)
 
-- `/mvp-new "<아이디어 한 줄>"` — 하네스 진입점. Stage 0~3(인테이크→기획→디자인→스캐폴딩)을 게이트 기반으로 실행하고 개발 루프 가동 여부를 확인.
-- `/mvp-from-startup` — `startup` 플러그인 산출물(`.planning/business/`)을 Stage 0 인테이크로 승계하는 브릿지. 검증된 사업 가설에서 곧장 기획 PRD로 진입.
-- `/mvp-run` — Stage 4 개발 루프 시작/재개. 재개 프로토콜 수행 후 `loop-active`·`loop-state.json`을 초기화하고 Stop훅 루프 엔진에 진입.
-- `/mvp-status` — 진행 현황 읽기 전용 조회(스토리 n/m·반복 수·경과 시간·verified 마커·BLOCKED·loop-active 잔존). 어떤 상태도 변경하지 않음.
-- `/mvp-stop` — 루프 안전 중단 킬스위치. `loop-active` 삭제로 Stop훅 엔진을 즉시 무력화하고 핸드오프 기록 후 status를 paused로 전환.
-- `/mvp-gate` — 현 Stage 게이트 수동 (재)실행. 마스터 파일에서 Stage를 판별해 해당 게이트 스크립트와 checker를 돌리고 통과/실패/모호를 보고.
-- `/mvp-eval` — 제품 검증(평가) 실행. PRD 성공지표가 모델 품질(F1·정확도 등)일 때 골든셋 + 실제 모델 호출로 실측하고 `gate-eval.sh`로 임계값 판정.
+- `/mvp-new "<one-line idea>"` — Harness entry point. Runs Stage 0~3 (intake→planning→design→scaffolding) on a gate basis and confirms whether to start the development loop.
+- `/mvp-from-startup` — A bridge that succeeds the `startup` plugin's output (`.planning/business/`) into Stage 0 intake. Enters straight into the planning PRD from a validated business hypothesis.
+- `/mvp-run` — Starts/resumes the Stage 4 development loop. After performing the resume protocol, it initializes `loop-active`·`loop-state.json` and enters the Stop hook loop engine.
+- `/mvp-status` — Read-only lookup of progress (story n/m·iteration count·elapsed time·verified marker·BLOCKED·leftover loop-active). Changes no state.
+- `/mvp-stop` — Loop safe-stop kill switch. Immediately neutralizes the Stop hook engine by deleting `loop-active`, records a handoff, then switches status to paused.
+- `/mvp-gate` — Manual (re)run of the current Stage gate. Determines the Stage from the master file, runs the corresponding gate script and checker, and reports pass/fail/ambiguous.
+- `/mvp-eval` — Runs product validation (evaluation). When the PRD success metric is model quality (F1·accuracy, etc.), it measures against a golden set + real model calls and decides thresholds via `gate-eval.sh`.
 
-### 에이전트 (6, 전원 opus)
+### Agents (6, all opus)
 
-- `product-strategist` — 기획 전략가. 아이디어 인테이크(질문 최대 3개+추천 기본값), PRD 작성, prd.json 유저 스토리 초안, Stage 2 커버리지 매트릭스 검증.
-- `ux-designer` — 디자인 스펙 설계자. PRD를 `design-spec.md` 단일 산출로 변환(IA·유저플로우·화면 명세·와이어프레임·토큰·4상태). 코드 생성 금지.
-- `tech-architect` — 스택 선정·스캐폴딩 전문가. 표준 4스택 후보 2~3개 비교 추천(비강제), 레포 골격+smoke 테스트 생성, `.planning/` 초기화·gate-cmd 기록·초기 커밋.
-- `mvp-builder` — 개발 루프 maker 규율. 미완 스토리 1개를 test-first로 구현해 게이트 그린을 만들고 검증 통과 후 1커밋으로 마감(기본은 메인 세션이 체화).
-- `mvp-verifier` — 회의적 checker. maker와 분리된 이중 반증(Stage 1 PRD 반증 / Stage 4 스토리 AC 반증). 반증 실패 시에만 `verified/{story-id}` 마커 생성.
-- `eval-engineer` — 제품 검증 엔지니어. "검증된 코드 ≠ 검증된 제품" 간극을 메운다. 골든셋 구축·실제 모델 호출·지표 산출(macro F1 등)을 결정론 회귀와 분리해 수행.
+- `product-strategist` — Planning strategist. Idea intake (up to 3 questions + recommended defaults), PRD authoring, prd.json user story draft, Stage 2 coverage matrix verification.
+- `ux-designer` — Design spec designer. Converts the PRD into a single `design-spec.md` output (IA·user flow·screen spec·wireframe·tokens·4 states). No code generation.
+- `tech-architect` — Stack selection·scaffolding specialist. Comparative recommendation of 2~3 candidates from the standard 4 stacks (non-coercive), repo skeleton + smoke test generation, `.planning/` initialization·gate-cmd recording·initial commit.
+- `mvp-builder` — Development loop maker discipline. Implements one unfinished story test-first to make the gate green, and after passing verification closes it with one commit (by default the main session internalizes this).
+- `mvp-verifier` — Skeptical checker. Double refutation separated from the maker (Stage 1 PRD refutation / Stage 4 story AC refutation). Creates the `verified/{story-id}` marker only when refutation fails.
+- `eval-engineer` — Product validation engineer. Fills the "verified code ≠ verified product" gap. Performs golden-set construction·real model calls·metric computation (macro F1, etc.) separately from the deterministic regression.
 
-### 스킬 (5)
+### Skills (5)
 
-- `mvp-orchestrator` — 하네스 오케스트레이터 정본. Stage 상태기계 전체 로직을 수행하며 "MVP 만들어줘"·그린필드 신규 구축·`/mvp-new`·`/mvp-run`에 자동 트리거. (references: gate-policy·headless-recipe·stack-presets)
-- `mvp-loop-protocol` — Stage 4 루프 운영 프로토콜. 매 반복 표준 사이클, `/mvp-run` 재개 4단계, 정지조건 3결합, 환경변수 튜닝, `loop-active` 수명주기, 가드레일 5종, BLOCKED 에스컬레이션.
-- `prd-authoring` — PRD 작성 표준. 필수 섹션, Given-When-Then AC(반증 가능한 검증형), prd.json 스키마·jq 검증식, 스코프 컷 2주 룰, 1 스토리=1 반복 크기.
-- `mvp-design-spec` — 디자인 스펙 작성 표준. IA·유저플로우·화면 명세·토큰 필수 구조, `[story: S-xx]` 매핑 태그 형식(gate-design.sh 호환), 4상태 의무, 커버리지 매트릭스.
-- `mvp-eval-harness` — 제품 검증(평가) 하니스 표준. 골든셋 구축 기준, `@pytest.mark.eval` 분리(기본 skip), report.json 스키마, `gate-eval.sh` 소프트 게이트 계약, 임계값=PRD 정본 원칙.
+- `mvp-orchestrator` — The canonical harness orchestrator. Performs the entire Stage state machine logic and auto-triggers on "build me an MVP"·greenfield new builds·`/mvp-new`·`/mvp-run`. (references: gate-policy·headless-recipe·stack-presets)
+- `mvp-loop-protocol` — Stage 4 loop operating protocol. Standard cycle per iteration, `/mvp-run` 4-step resume, 3-way stop-condition combination, environment variable tuning, `loop-active` lifecycle, 5 guardrails, BLOCKED escalation.
+- `prd-authoring` — PRD authoring standard. Required sections, Given-When-Then AC (falsifiable verification form), prd.json schema·jq validation expression, scope-cut 2-week rule, 1 story = 1 iteration sizing.
+- `mvp-design-spec` — Design spec authoring standard. Required structure of IA·user flow·screen spec·tokens, `[story: S-xx]` mapping tag format (gate-design.sh compatible), mandatory 4 states, coverage matrix.
+- `mvp-eval-harness` — Product validation (evaluation) harness standard. Golden-set construction criteria, `@pytest.mark.eval` separation (skip by default), report.json schema, `gate-eval.sh` soft-gate contract, threshold = PRD canon principle.
 
-### 훅 (6)
+### Hooks (6)
 
-- `SessionStart` → `mvp-session-init.sh` — `.planning/mvp-*.md` status가 in_progress일 때만 재개 안내 컨텍스트 주입, 그 외 무동작.
-- `Stop` → `mvp-loop-stop-hook.sh` — 루프 엔진. `loop-active` 존재 시에만 정지조건 3결합을 검증하고 미충족 시 `exit 2` 재주입.
-- `PreCompact` → `precompact-anchor.sh mvp` — compaction 직전 재개 앵커(마스터 경로·다음 대상·게이트·반복·규율)를 5줄 이내 출력, 일반 세션 무개입.
-- `SubagentStop` → `subagent-stop-verify.sh mvp` — verify-round pending인데 verified/refuted 마커 없이 종료하면 `exit 2` 재주입(최대 2라운드, 차단 시 자가치유).
-- `PreToolUse(Bash)` → `test-guard.sh` — 루프 활성 중 테스트 파일 삭제(`rm test|spec`) 차단. 테스트 삭제 금지 규칙의 결정론 집행.
-- `PostToolUse(Edit|Write)` → `prd-guard.sh` — maker/checker 분리 강제. verified 마커 없는 `passes:true`를 `exit 2` 차단하고 false로 되돌림.
+- `SessionStart` → `mvp-session-init.sh` — Injects resume-guidance context only when the `.planning/mvp-*.md` status is in_progress; otherwise no action.
+- `Stop` → `mvp-loop-stop-hook.sh` — The loop engine. Verifies the 3-way stop-condition combination only when `loop-active` exists, and re-injects via `exit 2` when unmet.
+- `PreCompact` → `precompact-anchor.sh mvp` — Just before compaction, prints a resume anchor (master path·next target·gate·iteration·discipline) within 5 lines; does not intervene in ordinary sessions.
+- `SubagentStop` → `subagent-stop-verify.sh mvp` — If a verify-round is pending but it exits without a verified/refuted marker, re-injects via `exit 2` (up to 2 rounds, self-healing when blocked).
+- `PreToolUse(Bash)` → `test-guard.sh` — Blocks test file deletion (`rm test|spec`) while the loop is active. Deterministic enforcement of the no-test-deletion rule.
+- `PostToolUse(Edit|Write)` → `prd-guard.sh` — Enforces maker/checker separation. Blocks `passes:true` without a verified marker via `exit 2` and reverts it to false.
 
-### 게이트 스크립트 (훅 미등록 — 오케스트레이터/커맨드가 Bash 호출)
+### Gate scripts (not hook-registered — called via Bash by the orchestrator/commands)
 
-- `gate-prd.sh` (Stage 1) — prd.md 필수 헤딩 + prd.json jq 스키마 + 스토리 수 3~10.
-- `gate-design.sh` (Stage 2) — 전 story id의 `[story: S-xx]` 태그가 design-spec.md에 등장하는지 grep 확인.
-- `gate-scaffold.sh` (Stage 3) — 작업 트리 클린 + 초기 커밋 존재 + `.planning/` 필수 파일·verified 디렉토리.
-- `gate-eval.sh` (평가) — report.json 존재·필수 필드·`value ≥ threshold`. 데이터/모델 의존 소프트 게이트(미측정=경고 exit 2).
+- `gate-prd.sh` (Stage 1) — prd.md required headings + prd.json jq schema + story count 3~10.
+- `gate-design.sh` (Stage 2) — grep-checks that every story id's `[story: S-xx]` tag appears in design-spec.md.
+- `gate-scaffold.sh` (Stage 3) — clean working tree + initial commit exists + `.planning/` required files·verified directory.
+- `gate-eval.sh` (evaluation) — report.json exists·required fields·`value ≥ threshold`. A data/model-dependent soft gate (unmeasured = warning exit 2).
 
-### 러너
+### Runner
 
-- `bin/mvp-headless.sh` — Stage 4 무인/야간 루프 러너(컨텍스트 리셋형 Ralph 패턴). 외부 `while`가 매 반복 `claude -p`를 새로 띄운다. Stop훅 엔진과 동일 `.planning`·동일 게이트·동일 판정 규약을 공유하는 보조 엔진.
+- `bin/mvp-headless.sh` — Stage 4 unattended/overnight loop runner (context-reset Ralph pattern). An external `while` spins up a fresh `claude -p` each iteration. An auxiliary engine that shares the same `.planning`·same gates·same decision protocol as the Stop hook engine.
 
-## 사용법
+## Usage
 
-1. **시작**: `/mvp-new "구직자용 이력서 첨삭 서비스"` → 인테이크 질문(최대 3개) → PRD → 디자인 스펙 → 스택 선택·스캐폴딩. 진행 중 사용자 게이트 2개(★G1 스코프 승인, ★G2 스택 선택)에서 확인을 받는다.
-2. **루프 가동**: 스캐폴딩까지 통과하면 `/mvp-run`으로 Stage 4 개발 루프에 진입. 이후 완료 판정은 Stop훅이 자동으로 수행한다.
-3. **상태 확인**: 언제든 `/mvp-status`(읽기 전용)로 스토리 진행·반복 수·경과 시간·잔존 플래그를 조회.
-4. **중단**: `/mvp-stop`으로 즉시 안전 중단(킬스위치). 이후 `/mvp-run`으로 재개.
-5. **재검증·평가**: 산출물을 손본 뒤 `/mvp-gate`로 현 Stage 게이트를 재실행. 모델 품질 지표가 있으면 `/mvp-eval`로 실측.
+1. **Start**: `/mvp-new "resume-polishing service for job seekers"` → intake questions (up to 3) → PRD → design spec → stack selection·scaffolding. Along the way, confirmation is taken at 2 user gates (★G1 scope approval, ★G2 stack selection).
+2. **Loop start**: Once scaffolding passes, enter the Stage 4 development loop with `/mvp-run`. From then on the completion decision is performed automatically by the Stop hook.
+3. **Status check**: At any time, use `/mvp-status` (read-only) to look up story progress·iteration count·elapsed time·leftover flags.
+4. **Stop**: Immediately safe-stop (kill switch) with `/mvp-stop`. Resume afterward with `/mvp-run`.
+5. **Re-verification·evaluation**: After touching up an artifact, re-run the current Stage gate with `/mvp-gate`. If there is a model quality metric, measure it with `/mvp-eval`.
 
-옵션: `--auto`(게이트 2개를 추천안으로 자동 채택, 해커톤용), `--stack <preset>`(kotlin-spring·python-fastapi·react-next·go-mux 사전 지정으로 ★G2 생략), `--stories-max <n>`(스토리 수 상한, 기본 10), `--max-iter`/`--max-minutes`(이번 가동 가드레일 조정), `--headless`(무인 러너 실행 안내), `--cross-check`(교차 모델 반증 opt-in).
+Options: `--auto` (auto-adopt the 2 gates as recommendations, for hackathons), `--stack <preset>` (pre-specify kotlin-spring·python-fastapi·react-next·go-mux to skip ★G2), `--stories-max <n>` (story count cap, default 10), `--max-iter`/`--max-minutes` (adjust this run's guardrails), `--headless` (guidance for running the unattended runner), `--cross-check` (opt-in cross-model refutation).
 
-자동 발화: `mvp-orchestrator` 스킬은 "MVP 만들어줘"·"신규 서비스 프로토타입"·"아이디어를 동작하는 제품으로" 같은 요청과 그린필드 신규 구축에 트리거된다. 기존 코드베이스의 단일 기능 작업에는 발동하지 않는다.
+Auto-activation: the `mvp-orchestrator` skill triggers on requests like "build me an MVP"·"new service prototype"·"turn an idea into a working product" and on greenfield new builds. It does not activate for single-feature work on an existing codebase.
 
-## 의존성
+## Dependencies
 
-- **requires**: `base` — 공통 훅/설정 기반.
-- **연계**: `startup`(사업 가설 → `/mvp-from-startup`으로 승계), `feature-loop`(브라운필드 대응 루프, 루프 엔진 공유), 스택별 플러그인(kotlin-spring·python-fastapi·go-mux·nextjs·search — 루프 안에서 호출), `etc`(`--cross-check`의 교차 모델 반증에 `etc:with` 활용, 미설치 시 동일 모델 2라운드로 폴백).
+- **requires**: `base` — common hook/config foundation.
+- **linkage**: `startup` (business hypothesis → succeeded via `/mvp-from-startup`), `feature-loop` (brownfield-facing loop, shares the loop engine), stack-specific plugins (kotlin-spring·python-fastapi·go-mux·nextjs·search — called within the loop), `etc` (uses `etc:with` for `--cross-check`'s cross-model refutation; falls back to same-model 2 rounds when not installed).
 
-## 참고
+## Notes
 
-- **모델 품질 평가는 회귀를 대체하지 않는다**: `/mvp-eval`·`eval-engineer`는 결정론 회귀 스위트(`@pytest.mark.eval` 분리, 기본 skip)와 별개의 소프트 게이트다. `MVP_EVAL_F1_MIN`으로 임계값 override 가능하나 정본은 PRD 성공지표.
-- **환경변수 튜닝**: `LOOP_TEST_CMD`·`LOOP_PROMISE`·`LOOP_MAX_ITER`(기본 24)·`LOOP_MAX_MINUTES`(기본 120)·`MVP_STORIES_MAX`(기본 10)·`LOOP_CLAUDE_BIN`·`LOOP_WATCHDOG_INTERVAL`.
-- **가드레일**: max-iter(기본 24)·no-progress(2회)·시간 상한(기본 120분)·킬스위치(`/mvp-stop`). 세션 비정상 종료 시 `loop-active` 잔존을 `/mvp-status`로 점검하고 `/mvp-stop`으로 정돈.
-- **레포당 MVP 1개 전제**: `.planning/mvp-*.md`가 이미 있으면 `/mvp-new`는 새로 만들지 않고 재개를 안내한다.
-- **표준 4스택은 비강제**: `tech-architect`는 후보를 비교 추천하되 강제하지 않으며, 4스택 밖 제안에는 근거를 요구한다.
+- **Model quality evaluation does not replace regression**: `/mvp-eval`·`eval-engineer` are a soft gate separate from the deterministic regression suite (`@pytest.mark.eval` separation, skip by default). The threshold can be overridden with `MVP_EVAL_F1_MIN`, but the canon is the PRD success metric.
+- **Environment variable tuning**: `LOOP_TEST_CMD`·`LOOP_PROMISE`·`LOOP_MAX_ITER` (default 24)·`LOOP_MAX_MINUTES` (default 120)·`MVP_STORIES_MAX` (default 10)·`LOOP_CLAUDE_BIN`·`LOOP_WATCHDOG_INTERVAL`.
+- **Guardrails**: max-iter (default 24)·no-progress (2 times)·time cap (default 120 minutes)·kill switch (`/mvp-stop`). On abnormal session termination, check for leftover `loop-active` with `/mvp-status` and tidy up with `/mvp-stop`.
+- **One MVP per repo premise**: if `.planning/mvp-*.md` already exists, `/mvp-new` does not create a new one but guides toward resuming.
+- **The standard 4 stacks are non-coercive**: `tech-architect` recommends candidates comparatively but does not force them, and requires justification for proposals outside the 4 stacks.

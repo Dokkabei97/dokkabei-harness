@@ -1,64 +1,66 @@
+> **English** · [한국어](README_KO.md)
+
 # kotlin-spring
 
-> Kotlin + Spring Boot 프로젝트에서 관용적인 CRUD 계층 코드를 생성하고, 프레임워크 진단·원칙·네이밍·관용 패턴을 한 벌로 묶은 백엔드 특화 플러그인.
+> A backend-specialized plugin that generates idiomatic CRUD-layer code in Kotlin + Spring Boot projects and bundles framework diagnostics, principles, naming, and idiomatic patterns into a single set.
 
-## 개요
+## Overview
 
-`kotlin-spring`은 Kotlin + Spring Boot 스택에 특화된 코드 생성·진단·레퍼런스 도구 모음이다. 도메인명 하나로 Entity → Repository → Service → Controller → DTO → Test 전체 계층을 프로젝트 기존 컨벤션에 맞춰 스캐폴딩하는 것이 핵심 기능이며(`/spring-gen` + `spring-developer`), 여기에 프레임워크 레벨 문제를 진단하는 전문 에이전트(`spring-boot-guide`)와 개발 원칙·네이밍·관용 패턴을 필요한 순간 붙여주는 스킬들이 결합된다.
+`kotlin-spring` is a collection of code generation, diagnostic, and reference tools specialized for the Kotlin + Spring Boot stack. Its core capability is scaffolding the entire Entity → Repository → Service → Controller → DTO → Test layer from a single domain name, aligned with the project's existing conventions (`/spring-gen` + `spring-developer`). Combined with this are a specialist agent that diagnoses framework-level problems (`spring-boot-guide`) and skills that attach development principles, naming, and idiomatic patterns at the moment they are needed.
 
-코드 생성은 "먼저 분석하고 그다음 생성한다"는 규율을 따른다. `build.gradle.kts`·`application.yml`과 기존 소스를 스캔해 패키지 구조, DTO 패턴, 테스트 프레임워크(Kotest/JUnit·MockK), 에러 처리 방식, Audit 패턴을 추출한 뒤 그 컨벤션대로 코드를 낸다. Java 관용구(`Optional`, getter/setter, `!!`)를 배제한 Kotlin First 스타일을 강제하고, 비즈니스 로직은 임의 구현하지 않고 `TODO(human)` 마커로 남긴다.
+Code generation follows the discipline of "analyze first, then generate." It scans `build.gradle.kts`, `application.yml`, and existing sources to extract the package structure, DTO patterns, test framework (Kotest/JUnit·MockK), error-handling approach, and Audit patterns, then emits code following those conventions. It enforces a Kotlin First style that excludes Java idioms (`Optional`, getter/setter, `!!`), and it does not arbitrarily implement business logic — leaving it behind as `TODO(human)` markers instead.
 
-언어중립 백엔드 공통 관심사(REST/GraphQL API 계약, DB 마이그레이션 안전성, 헥사고날 아키텍처, 관측성/캐싱/이벤트/회복탄력성/보안)는 이 플러그인이 다루지 않고 `backend-shared` 플러그인에 위임한다. Kotlin/Spring 특화 부분만 담당하므로 둘을 함께 설치해 조합하는 것을 전제로 한다.
+Language-neutral backend cross-cutting concerns (REST/GraphQL API contracts, DB migration safety, hexagonal architecture, observability/caching/events/resilience/security) are not handled by this plugin and are delegated to the `backend-shared` plugin. Because it covers only the Kotlin/Spring-specific parts, it presumes the two are installed together and combined.
 
-## 구성요소
+## Components
 
-### 커맨드
+### Commands
 
-- `/spring-gen [도메인명]` — Kotlin Spring Boot CRUD 전체 계층을 스캐폴딩한다. Discovery(컨벤션 분석) → Generation(계층별 생성) → Verification(컴파일·테스트) 3단계로 진행하며, `--fields`, `--layers`, `--no-test`, `--reactive`(WebFlux + R2DBC), `--soft-delete`, `--audit` 옵션으로 생성 범위와 패턴을 조절한다.
+- `/spring-gen [domain-name]` — Scaffolds the full Kotlin Spring Boot CRUD layer. It proceeds in 3 stages: Discovery (convention analysis) → Generation (per-layer generation) → Verification (compile·test), and the `--fields`, `--layers`, `--no-test`, `--reactive` (WebFlux + R2DBC), `--soft-delete`, and `--audit` options adjust the generation scope and patterns.
 
-### 에이전트
+### Agents
 
-- `spring-developer` — 코드 생성 전문 에이전트. `/spring-gen`의 실제 생성 엔진으로, 프로젝트 컨벤션을 추출(Decision Matrix)해 관용적 Kotlin 전체 CRUD 스택을 만든다. 도구는 Read/Grep/Glob/Bash/Write/Edit, 스킬 `kotlin-spring-guide`를 참조한다.
-- `spring-boot-guide` — Spring Boot(Kotlin) 프레임워크 진단 전문가(읽기 전용: Read/Grep/Glob/Bash). DI/빈 충돌, `@Transactional` 전파·프록시(self-invocation) 이슈, Spring Security, Data JPA/R2DBC, N+1, 테스트 슬라이스, 자동설정, Spring for GraphQL 문제를 진단하고 패턴을 권장한다.
+- `spring-developer` — A code generation specialist agent. As the actual generation engine of `/spring-gen`, it extracts the project's conventions (Decision Matrix) to build an idiomatic Kotlin full CRUD stack. Its tools are Read/Grep/Glob/Bash/Write/Edit, and it references the skill `kotlin-spring-guide`.
+- `spring-boot-guide` — A Spring Boot (Kotlin) framework diagnostics expert (read-only: Read/Grep/Glob/Bash). It diagnoses DI/bean conflicts, `@Transactional` propagation·proxy (self-invocation) issues, Spring Security, Data JPA/R2DBC, N+1, test slices, auto-configuration, and Spring for GraphQL problems, and recommends patterns.
 
-### 스킬
+### Skills
 
-- `kotlin-spring-guide` — 개발 원칙·의사결정 가이드. Kotlin First, 레이어 규율(위→아래 의존), Fail Fast(3중 방어), Convention over Configuration 원칙과 아키텍처/스택/테스트 프레임워크 선택 기준을 제공한다. 세부 레퍼런스로 `references/layer-patterns.md`(계층별 패턴), `references/jpa-patterns.md`(Entity 설계·N+1 방지·연관관계·영속성 컨텍스트), `references/testing-patterns.md`(Kotest·MockK·@WebMvcTest·@DataJpaTest)를 포함한다.
-- `spring-boot-patterns` — 실제 구현 코드 예제 중심 관용 패턴 레퍼런스. `@Transactional` 시맨틱(propagation/isolation/readOnly/rollbackFor·프록시 함정), Spring Data JPA 쿼리(메서드 쿼리·JPQL·QueryDSL·@EntityGraph·Page/Slice), `@ControllerAdvice`(RFC 7807 ProblemDetail)·에러 코드 체계, Bean Validation(그룹 검증·커스텀 Validator), 설정 바인딩(@ConfigurationProperties·relaxed binding), Spring for GraphQL(@BatchMapping·DataLoader), Coroutines 통합, WebClient 패턴을 다룬다.
-- `naming-conventions` — Kotlin 네이밍 관용구. 목적 중심 vs 구현 중심(`isExpired` vs `expiredAt`), Enum 이름 불변성(`POPULARITY` vs `POPULARITY_SCORE`), 변환 함수 동사형(`convertTo~` vs `to~`), `const val` 대문자, 파라미터는 함수 입장 기준, 도메인 용어 일관성(`~Info`/`~Data` 지양), `Map<String, Any>` 파라미터 지양, primitive 확장함수 지양을 규칙과 체크리스트로 정리한다.
+- `kotlin-spring-guide` — A development-principles·decision-making guide. It provides the Kotlin First, layer discipline (top→bottom dependencies), Fail Fast (triple defense), and Convention over Configuration principles, along with the selection criteria for architecture/stack/test framework. As detailed references it includes `references/layer-patterns.md` (per-layer patterns), `references/jpa-patterns.md` (Entity design·N+1 prevention·associations·persistence context), and `references/testing-patterns.md` (Kotest·MockK·@WebMvcTest·@DataJpaTest).
+- `spring-boot-patterns` — An idiomatic-pattern reference centered on actual implementation code examples. It covers `@Transactional` semantics (propagation/isolation/readOnly/rollbackFor·proxy pitfalls), Spring Data JPA queries (method queries·JPQL·QueryDSL·@EntityGraph·Page/Slice), `@ControllerAdvice` (RFC 7807 ProblemDetail)·error-code system, Bean Validation (group validation·custom Validator), configuration binding (@ConfigurationProperties·relaxed binding), Spring for GraphQL (@BatchMapping·DataLoader), Coroutines integration, and WebClient patterns.
+- `naming-conventions` — Kotlin naming idioms. It organizes into rules and checklists: purpose-oriented vs implementation-oriented (`isExpired` vs `expiredAt`), Enum name invariance (`POPULARITY` vs `POPULARITY_SCORE`), verb-form conversion functions (`convertTo~` vs `to~`), uppercase `const val`, parameters named from the function's standpoint, domain-term consistency (avoiding `~Info`/`~Data`), avoiding `Map<String, Any>` parameters, and avoiding primitive extension functions.
 
-## 사용법
+## Usage
 
-CRUD 스캐폴딩은 `/spring-gen`으로 직접 호출한다. 도메인명 뒤에 옵션을 붙여 필드·계층·스택을 지정한다.
+CRUD scaffolding is invoked directly with `/spring-gen`. Append options after the domain name to specify fields·layers·stack.
 
 ```
-# Order 도메인의 전체 CRUD 계층 생성
+# Generate the full CRUD layer for the Order domain
 /spring-gen Order
 
-# 필드를 정의해 Product 계층 생성
+# Generate the Product layer with fields defined
 /spring-gen Product --fields "name:String, price:BigDecimal, stock:Int"
 
-# Controller 없이 Entity/Repository/Service만
+# Only Entity/Repository/Service, without Controller
 /spring-gen Payment --layers "entity,repo,service"
 
-# WebFlux + R2DBC 리액티브 스택 (suspend/Flow)
+# WebFlux + R2DBC reactive stack (suspend/Flow)
 /spring-gen Notification --reactive
 
-# soft delete + audit 필드 적용
+# Apply soft delete + audit fields
 /spring-gen Member --soft-delete --audit
 ```
 
-에이전트와 스킬은 별도 명령 없이 맥락에서 동작한다. `spring-developer`는 `/spring-gen` 실행 시 생성을 수행하고, `spring-boot-guide`는 트랜잭션/DI/GraphQL 등 프레임워크 진단이 필요할 때 활용된다. 스킬(`kotlin-spring-guide`·`spring-boot-patterns`·`naming-conventions`)은 Kotlin + Spring 코드를 작성·리뷰·리팩터링하는 순간 자동으로 로드되어 원칙과 패턴 예제, 네이밍 판단 기준을 보강한다. 원칙·의사결정은 `kotlin-spring-guide`, 구체적 구현 코드 예제는 `spring-boot-patterns`로 역할이 나뉜다.
+Agents and skills operate from context without separate commands. `spring-developer` performs generation when `/spring-gen` runs, and `spring-boot-guide` is used when framework diagnostics for transactions/DI/GraphQL and the like are needed. The skills (`kotlin-spring-guide`·`spring-boot-patterns`·`naming-conventions`) are loaded automatically the moment you write·review·refactor Kotlin + Spring code, reinforcing principles, pattern examples, and naming decision criteria. The roles are split between `kotlin-spring-guide` for principles·decision-making and `spring-boot-patterns` for concrete implementation code examples.
 
-## 의존성
+## Dependencies
 
-- **requires / dependencies**: `backend-shared`. 언어중립 백엔드 공통 패턴(API 계약, 마이그레이션, 헥사고날, 관측성/캐싱/이벤트/회복탄력성/보안, DTO·테스트 패턴)은 `backend-shared`가 담당하므로 함께 설치해 조합한다.
-- Python/FastAPI 특화가 필요하면 `python-fastapi` 플러그인이 대응된다.
+- **requires / dependencies**: `backend-shared`. Because language-neutral backend common patterns (API contracts, migrations, hexagonal, observability/caching/events/resilience/security, DTO·test patterns) are handled by `backend-shared`, install it together and combine.
+- If Python/FastAPI specialization is needed, the `python-fastapi` plugin corresponds to that.
 
-## 참고
+## Notes
 
-- `/spring-gen`은 기존 파일을 무단 수정하지 않으며, 비즈니스 로직은 임의 구현하지 않고 `TODO(human)` 마커로 표시한다.
-- `build.gradle.kts` 의존성 추가는 사용자 확인 없이 하지 않고, 프로젝트에 없는 의존성을 요구하는 코드도 생성하지 않는다.
-- Java 스타일 Kotlin(`Optional.get()`, getter/setter, `!!`, Java Stream)은 생성하지 않는다.
-- 컴파일·테스트 실행(`./gradlew compileKotlin`, `./gradlew test`)은 검증 단계에서 수행하며, 생성 코드가 프로젝트 컨벤션과 일치하는지 확인한 뒤 리포트로 정리한다.
-- 버전 민감 API(Spring Boot 3.x 설정 등)는 `backend-shared:context7-docs-guide` 규약에 따라 Context7 조회 후 반영하며, 미설치 시 생략한다.
+- `/spring-gen` does not modify existing files without authorization, and it does not arbitrarily implement business logic — marking it with `TODO(human)` markers instead.
+- It does not add `build.gradle.kts` dependencies without user confirmation, and it does not generate code that requires dependencies absent from the project.
+- It does not generate Java-style Kotlin (`Optional.get()`, getter/setter, `!!`, Java Stream).
+- Compile·test execution (`./gradlew compileKotlin`, `./gradlew test`) is performed in the verification stage, and after confirming that the generated code matches the project conventions, it is compiled into a report.
+- Version-sensitive APIs (Spring Boot 3.x configuration, etc.) are reflected after a Context7 lookup per the `backend-shared:context7-docs-guide` convention, and are omitted when it is not installed.
