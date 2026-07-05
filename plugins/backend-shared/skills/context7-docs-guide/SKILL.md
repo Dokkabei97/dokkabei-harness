@@ -1,6 +1,8 @@
 ---
 name: context7-docs-guide
-description: "Context7 최신 문서 조회 규약 — 버전 민감 API 판단 기준, resolve-library-id → query-docs 절차, 미설치 시 graceful degrade, 스택별 적용 지점, 조회 비용 트레이드오프"
+description: |
+  Context7 최신 문서 조회 규약 — 버전 민감 API 판단 기준, resolve-library-id → query-docs 절차, 미설치 시 graceful degrade, 스택별 적용 지점, 조회 비용 트레이드오프
+  Protocol for fetching up-to-date library docs via Context7 — criteria for version-sensitive APIs, the resolve-library-id → query-docs procedure, graceful degrade when not installed, per-stack usage points, and lookup cost tradeoffs. Use when: verifying current framework APIs, resolving version-sensitive library usage, deciding whether to query Context7.
 ---
 
 # Context7 최신 문서 조회 규약

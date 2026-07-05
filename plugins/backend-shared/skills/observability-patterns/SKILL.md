@@ -1,6 +1,8 @@
 ---
 name: observability-patterns
-description: "관측성 패턴 레퍼런스 — OpenTelemetry 기반 로깅/트레이싱/메트릭, OTel Collector, Actuator, Health Check"
+description: |
+  관측성 패턴 레퍼런스 — OpenTelemetry 기반 로깅/트레이싱/메트릭, OTel Collector, Actuator, Health Check
+  Reference for observability patterns — OpenTelemetry-based logging/tracing/metrics, OTel Collector, Actuator, and Health Check. Use when: instrumenting a service with OpenTelemetry, setting up tracing or metrics export, configuring Actuator endpoints and health checks.
 ---
 
 # 관측성(Observability) 패턴 레퍼런스 — OpenTelemetry 기준

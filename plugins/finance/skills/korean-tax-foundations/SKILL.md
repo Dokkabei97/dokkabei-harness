@@ -7,6 +7,7 @@ description: |
   Use when: 세무 판단·경비 검토·신고 리스크 분석의 공통 토대가 필요할 때,
   tax, VAT, withholding, corporate tax, 부가세, 원천세, 법인세, 가산세, 증빙 키워드 감지 시.
   세부 리스크 판정은 tax-risk-advisor, 에스컬레이션 판정은 finance-escalation-policy에 위임.
+  Shared foundation for the Korean tax harness: tax-item structure (VAT, withholding, corporate/comprehensive income tax), filing cycles, penalty-risk axes, the qualified-receipt system, and disclaimer/escalation principles; holds no specific rates and mandates current-year WebSearch verification. Use when: Korean tax judgment, expense review, or filing-risk analysis needs common grounding.
 metadata:
   version: 1.0.0
   category: finance

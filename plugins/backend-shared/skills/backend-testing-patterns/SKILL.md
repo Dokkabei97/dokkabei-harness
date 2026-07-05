@@ -1,6 +1,8 @@
 ---
 name: backend-testing-patterns
-description: "백엔드 테스트 설정 & 패턴 레퍼런스 — Spring Boot 슬라이스, MockK, Kotest, FastAPI, pytest, Testcontainers, GraphQL 테스트"
+description: |
+  백엔드 테스트 설정 & 패턴 레퍼런스 — Spring Boot 슬라이스, MockK, Kotest, FastAPI, pytest, Testcontainers, GraphQL 테스트
+  Reference for backend test setup and patterns — Spring Boot slice tests, MockK, Kotest, FastAPI, pytest, Testcontainers, and GraphQL testing. Use when: setting up backend tests, choosing slice vs full-context tests, mocking with MockK or pytest-mock, using Testcontainers.
 ---
 
 # 백엔드 테스트 설정 & 패턴 레퍼런스

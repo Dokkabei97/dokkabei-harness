@@ -1,6 +1,8 @@
 ---
 name: api-designer
-description: REST/GraphQL API 계약 설계 전문가 — OpenAPI 스펙, GraphQL SDL, DTO/Input Type 설계, 유효성 검증, 에러 응답 표준화, 버전 관리 (Kotlin/Spring Boot, Python/FastAPI)
+description: |
+  REST/GraphQL API 계약 설계 전문가 — OpenAPI 스펙, GraphQL SDL, DTO/Input Type 설계, 유효성 검증, 에러 응답 표준화, 버전 관리 (Kotlin/Spring Boot, Python/FastAPI)
+  Designs REST/GraphQL API contracts — OpenAPI specs, GraphQL SDL, DTO/Input Type design, validation, standardized error responses, and versioning for Kotlin/Spring Boot and Python/FastAPI. Use when: designing an API contract, writing an OpenAPI spec or GraphQL SDL, standardizing error responses, planning API versioning.
 tools: Read, Grep, Glob
 model: sonnet
 ---

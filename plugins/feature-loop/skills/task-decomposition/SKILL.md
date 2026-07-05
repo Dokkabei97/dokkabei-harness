@@ -1,6 +1,8 @@
 ---
 name: task-decomposition
-description: "feature-loop 작업 분해 표준 — 자연어 기능 요청을 코드베이스 분석 기반 tasks.json으로 분해하는 규약. 수직 슬라이스(독립 테스트·커밋 가능 최소 단위) 사이징, Given-When-Then 검증형 AC 작성법(feature-verifier가 반증 가능한 문장), 회귀 보존 AC(기존 동작 유지 명시) 의무, tasks.json 스키마와 jq 검증식, gate-tasks.sh 통과 기준(id ^T-[0-9]{2}$·개수 2~10·전건 passes:false), 1 task=1 루프 반복 크기 가이드. task-planner가 Stage B에서 tasks.json을 작성·수정할 때, feature-verifier가 분해를 반증할 때, gate-tasks.sh 실패를 진단할 때 참조."
+description: |
+  feature-loop 작업 분해 표준 — 자연어 기능 요청을 코드베이스 분석 기반 tasks.json으로 분해하는 규약. 수직 슬라이스(독립 테스트·커밋 가능 최소 단위) 사이징, Given-When-Then 검증형 AC 작성법(feature-verifier가 반증 가능한 문장), 회귀 보존 AC(기존 동작 유지 명시) 의무, tasks.json 스키마와 jq 검증식, gate-tasks.sh 통과 기준(id ^T-[0-9]{2}$·개수 2~10·전건 passes:false), 1 task=1 루프 반복 크기 가이드. task-planner가 Stage B에서 tasks.json을 작성·수정할 때, feature-verifier가 분해를 반증할 때, gate-tasks.sh 실패를 진단할 때 참조.
+  Standard for feature-loop task decomposition: turning a feature request into codebase-analysis-based tasks.json — vertical-slice sizing, Given-When-Then falsifiable acceptance criteria, regression-preserving AC, the tasks.json schema with jq checks, and gate-tasks.sh pass criteria. Use when: writing or editing tasks.json in Stage B, falsifying a decomposition, or debugging gate-tasks.sh failures.
 ---
 
 # Task Decomposition Standard (브라운필드)

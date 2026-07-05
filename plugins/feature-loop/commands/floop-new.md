@@ -1,6 +1,8 @@
 ---
 name: floop-new
-description: "feature-loop 하네스 진입점 — 기존 코드베이스에서 자연어 기능 요청 한 줄을 받아 Stage A(인테이크+스택감지+baseline 캡처)→Stage B(코드베이스 분석 기반 작업 분해+G1 승인)를 게이트 기반으로 실행하고 개발 루프 가동 여부를 확인. 브라운필드 전용(빈 레포는 /mvp-new 위임). --worktree로 전용 git worktree 격리 시작 지원(stage① — 순차 루프 불변)"
+description: |
+  feature-loop 하네스 진입점 — 기존 코드베이스에서 자연어 기능 요청 한 줄을 받아 Stage A(인테이크+스택감지+baseline 캡처)→Stage B(코드베이스 분석 기반 작업 분해+G1 승인)를 게이트 기반으로 실행하고 개발 루프 가동 여부를 확인. 브라운필드 전용(빈 레포는 /mvp-new 위임). --worktree로 전용 git worktree 격리 시작 지원(stage① — 순차 루프 불변)
+  Entry point of the feature-loop harness: takes a one-line feature request and runs Stage A (intake + stack detection + baseline capture) then Stage B (task decomposition + G1 approval) as a gated pipeline, confirming whether to start the dev loop; --worktree starts in an isolated git worktree. Use when: adding or changing a feature in a brownfield codebase — empty repos go to /mvp-new.
 category: workflow
 complexity: advanced
 mcp-servers: []

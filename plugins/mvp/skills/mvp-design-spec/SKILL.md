@@ -1,6 +1,8 @@
 ---
 name: mvp-design-spec
-description: "MVP 디자인 스펙(design-spec.md) 작성 표준 — IA 트리·Mermaid 유저플로우·화면 명세·디자인 토큰·컴포넌트 인벤토리 필수 구조, [story: S-xx] 매핑 태그 정확 형식(gate-design.sh grep 호환), ASCII 와이어프레임 컨벤션, 색·타이포·간격 토큰 최소 셋, 빈/로딩/에러/성공 4상태 의무, 스토리×화면 커버리지 매트릭스. ux-designer가 Stage 2에서 design-spec.md를 작성할 때, product-strategist가 checker로 커버리지를 검증할 때, gate-design.sh 실패를 진단할 때 참조."
+description: |
+  MVP 디자인 스펙(design-spec.md) 작성 표준 — IA 트리·Mermaid 유저플로우·화면 명세·디자인 토큰·컴포넌트 인벤토리 필수 구조, [story: S-xx] 매핑 태그 정확 형식(gate-design.sh grep 호환), ASCII 와이어프레임 컨벤션, 색·타이포·간격 토큰 최소 셋, 빈/로딩/에러/성공 4상태 의무, 스토리×화면 커버리지 매트릭스. ux-designer가 Stage 2에서 design-spec.md를 작성할 때, product-strategist가 checker로 커버리지를 검증할 때, gate-design.sh 실패를 진단할 때 참조.
+  Authoring standard for the MVP design spec (design-spec.md): required IA tree, Mermaid user flows, screen specs, design tokens, exact [story: S-xx] tag format (gate-design.sh grep-compatible), ASCII wireframe conventions, mandatory empty/loading/error/success states, and the coverage matrix. Use when: writing design-spec.md in Stage 2, checking coverage, or diagnosing gate-design.sh failures.
 ---
 
 # MVP 디자인 스펙 표준

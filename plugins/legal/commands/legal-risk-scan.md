@@ -1,6 +1,8 @@
 ---
 name: legal-risk-scan
-description: "종합 법적 리스크 스캔. 사안을 분석해 관련 전문 에이전트를 병렬 투입하고, 영역 교차 리스크를 통합 보고한다."
+description: |
+  종합 법적 리스크 스캔. 사안을 분석해 관련 전문 에이전트를 병렬 투입하고, 영역 교차 리스크를 통합 보고한다.
+  Runs a comprehensive legal risk scan: analyzes the matter, dispatches the relevant specialist counsel agents in parallel, and consolidates cross-domain risks into a unified report. Use when: overall legal risk assessment, multi-area legal review of a business or incident, unsure which legal domain applies.
 category: legal
 complexity: advanced
 ---

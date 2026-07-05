@@ -1,6 +1,8 @@
 ---
 name: draft-legal-doc
-description: "법률 문서 초안 작성. 계약서·내용증명·합의서·통지서 등을 한국법 기준 표준 구조로 초안화하고 핵심 조항의 선택지를 제시한다."
+description: |
+  법률 문서 초안 작성. 계약서·내용증명·합의서·통지서 등을 한국법 기준 표준 구조로 초안화하고 핵심 조항의 선택지를 제시한다.
+  Drafts Korean legal documents — contracts, demand letters, settlement agreements, and formal notices — in standard structures under Korean law and presents options for key clauses. Use when: drafting a contract, writing a demand letter or settlement agreement, preparing a formal legal notice draft.
 category: legal
 complexity: standard
 ---

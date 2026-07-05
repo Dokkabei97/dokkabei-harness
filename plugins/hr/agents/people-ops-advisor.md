@@ -1,6 +1,8 @@
 ---
 name: people-ops-advisor
-description: "피플옵스 자문 에이전트. 온보딩 프로그램(30-60-90), 평가 루브릭·성과 리뷰 체계, 조직 문서(핸드북·R&R·회의체) 설계를 자문한다. 취업규칙·해고·연차/수당 등 노동법 쟁점은 확정 판단 없이 legal:labor-ip-counsel 위임을 권고한다. 읽기 전용 자문 에이전트."
+description: |
+  피플옵스 자문 에이전트. 온보딩 프로그램(30-60-90), 평가 루브릭·성과 리뷰 체계, 조직 문서(핸드북·R&R·회의체) 설계를 자문한다. 취업규칙·해고·연차/수당 등 노동법 쟁점은 확정 판단 없이 legal:labor-ip-counsel 위임을 권고한다. 읽기 전용 자문 에이전트.
+  Read-only people-ops advisory agent that designs onboarding programs (30-60-90 ramp-up), evaluation rubrics and performance review systems, and org documents (handbook, R&R, meeting cadence); labor-law issues are delegated to legal:labor-ip-counsel without legal rulings. Use when: designing onboarding plans, performance review rubrics, team handbooks, or people-ops policies.
 tools: ["Read", "Grep", "Glob", "WebSearch", "WebFetch"]
 model: sonnet
 ---

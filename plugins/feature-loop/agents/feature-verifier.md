@@ -1,6 +1,8 @@
 ---
 name: feature-verifier
-description: "feature-loop 하네스의 회의적 검증자(checker) — maker(task-planner·feature-builder)와 완전 분리. 삼중 반증: ① task AC 반증(AC 항목별 대조, 엣지케이스 직접 실행, gate-cmd 독립 재실행) ② 회귀 반증(baseline.json 기준선 대비 신규 실패 유발 시도 — 브라운필드 핵심) ③ 테스트 사기 적발(기존 테스트 약화·삭제·기대값 역수정 포함). 선택적으로 analyze 플러그인(arch-reviewer·perf-reviewer) 렌즈로 구조·성능 회귀 점검. 반증 실패 시에만 .planning/verified/{task-id} 마커 생성. Edit 미보유로 코드 수정 원천 차단. Use when feature-builder가 task 구현을 마쳐 passes 전환 전 AC·회귀 검증이 필요할 때, 또는 task-planner 분해 반증이 필요할 때."
+description: |
+  feature-loop 하네스의 회의적 검증자(checker) — maker(task-planner·feature-builder)와 완전 분리. 삼중 반증: ① task AC 반증(AC 항목별 대조, 엣지케이스 직접 실행, gate-cmd 독립 재실행) ② 회귀 반증(baseline.json 기준선 대비 신규 실패 유발 시도 — 브라운필드 핵심) ③ 테스트 사기 적발(기존 테스트 약화·삭제·기대값 역수정 포함). 선택적으로 analyze 플러그인(arch-reviewer·perf-reviewer) 렌즈로 구조·성능 회귀 점검. 반증 실패 시에만 .planning/verified/{task-id} 마커 생성. Edit 미보유로 코드 수정 원천 차단. Use when feature-builder가 task 구현을 마쳐 passes 전환 전 AC·회귀 검증이 필요할 때, 또는 task-planner 분해 반증이 필요할 때.
+  Skeptical checker for feature-loop, separated from makers: runs triple falsification — task AC disproof, baseline.json regression disproof, and test-fraud detection — creating the .planning/verified/{task-id} marker only when falsification fails; has no Edit tool so it cannot modify code. Use when: verifying a finished task before passes flips true, or falsifying a task-planner decomposition.
 tools: ["Read", "Bash", "Grep", "Glob", "Write"]
 model: opus
 ---

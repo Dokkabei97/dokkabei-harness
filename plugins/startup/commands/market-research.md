@@ -1,6 +1,8 @@
 ---
 name: market-research
-description: "시장조사 리포트 생성. TAM/SAM/SOM 산정, 경쟁사 분석, 고객 세그먼트 분석을 포함한다."
+description: |
+  시장조사 리포트 생성. TAM/SAM/SOM 산정, 경쟁사 분석, 고객 세그먼트 분석을 포함한다.
+  Generates a market research report including TAM/SAM/SOM sizing, competitor analysis, and customer segment analysis. Use when: researching a market, estimating TAM/SAM/SOM, analyzing competitors or customer segments, or preparing market data for an investor deck.
 category: research
 complexity: advanced
 ---

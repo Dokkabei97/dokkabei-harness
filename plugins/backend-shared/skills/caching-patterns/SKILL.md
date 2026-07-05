@@ -1,6 +1,8 @@
 ---
 name: caching-patterns
-description: "캐싱 패턴 레퍼런스 — Spring Cache @Cacheable/CacheEvict, Valkey 패턴, FastAPI 캐싱, TTL 전략"
+description: |
+  캐싱 패턴 레퍼런스 — Spring Cache @Cacheable/CacheEvict, Valkey 패턴, FastAPI 캐싱, TTL 전략
+  Reference for caching patterns — Spring Cache @Cacheable/CacheEvict, Valkey patterns, FastAPI caching, and TTL strategy. Use when: adding a cache layer, configuring @Cacheable/CacheEvict, caching FastAPI responses, choosing TTL and invalidation strategies.
 ---
 
 # 캐싱 패턴 레퍼런스

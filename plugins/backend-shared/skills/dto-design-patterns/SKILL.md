@@ -1,6 +1,8 @@
 ---
 name: dto-design-patterns
-description: "Kotlin DTO 설계 패턴 — Request/Response/Projection 구분, Map 지양 data class 우선, 필수 필드 명시(channel), 확장성 vs 단순성 결정 기준, nullable 정책, Jackson/Pydantic 직렬화. DTO/Request/Response 작성·리뷰 시 참조."
+description: |
+  Kotlin DTO 설계 패턴 — Request/Response/Projection 구분, Map 지양 data class 우선, 필수 필드 명시(channel), 확장성 vs 단순성 결정 기준, nullable 정책, Jackson/Pydantic 직렬화. DTO/Request/Response 작성·리뷰 시 참조.
+  Kotlin DTO design patterns — Request/Response/Projection separation, preferring data classes over Maps, explicit required fields (channel), extensibility vs simplicity criteria, nullable policy, and Jackson/Pydantic serialization. Use when: writing or reviewing DTOs, request/response models, or serialization mappings.
 ---
 
 # Kotlin DTO 설계 패턴

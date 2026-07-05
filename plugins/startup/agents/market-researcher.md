@@ -1,6 +1,8 @@
 ---
 name: market-researcher
-description: "시장조사 전문 에이전트. TAM/SAM/SOM 시장 규모 산정, 경쟁사 분석, 고객 세그먼트 발굴, 산업 트렌드 분석을 수행한다. 웹 검색 기반 실시간 데이터 수집과 정량적 분석 리포트를 생성한다."
+description: |
+  시장조사 전문 에이전트. TAM/SAM/SOM 시장 규모 산정, 경쟁사 분석, 고객 세그먼트 발굴, 산업 트렌드 분석을 수행한다. 웹 검색 기반 실시간 데이터 수집과 정량적 분석 리포트를 생성한다.
+  Market research agent that performs TAM/SAM/SOM market sizing, competitor analysis, customer segment discovery, and industry trend analysis, generating quantitative reports from real-time web-search-based data collection. Use when: researching a market, sizing TAM/SAM/SOM, analyzing competitors, or finding customer segments.
 tools: ["Read", "Write", "Grep", "Glob", "Bash", "WebSearch", "WebFetch"]
 model: opus
 ---

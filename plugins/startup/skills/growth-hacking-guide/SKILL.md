@@ -4,6 +4,9 @@ description: |
   그로스 해킹 프레임워크 가이드. AARRR 퍼널 설계, Bullseye 채널 전략, ICE 실험 우선순위,
   바이럴 루프 설계, North Star Metric 정의를 제공한다.
   Use when: 마케팅 전략 수립, 그로스 실험 설계, 채널 선택, 퍼널 최적화 시
+  Growth hacking framework guide covering AARRR funnel design, Bullseye channel strategy,
+  ICE experiment prioritization, viral loop design, and North Star Metric definition.
+  Use when: building a marketing strategy, designing growth experiments, selecting acquisition channels, or optimizing a funnel.
 metadata:
   version: 1.0.0
   category: marketing

@@ -1,6 +1,8 @@
 ---
 name: go-api-design
-description: "Go stdlib mux REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Handler + DTO + 에러 핸들링 + 미들웨어 코드를 생성한다."
+description: |
+  Go stdlib mux REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Handler + DTO + 에러 핸들링 + 미들웨어 코드를 생성한다.
+  Designs and implements REST APIs for Go stdlib net/http mux projects: turns requirements into endpoint designs and generates Handler + DTO + error handling + middleware code. Use when: designing a new Go REST API, adding or refactoring endpoints, deciding response/error formats, or structuring middleware chains and auth in a Go stdlib mux project.
 category: development
 complexity: advanced
 mcp-servers: []

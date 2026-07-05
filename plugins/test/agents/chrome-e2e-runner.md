@@ -1,6 +1,8 @@
 ---
 name: chrome-e2e-runner
-description: "Chrome Extension 기반 E2E 테스트 전문 에이전트. claude --chrome 모드에서 실제 Chrome 브라우저를 제어하여 자연어 기반 시각적 테스트를 수행합니다."
+description: |
+  Chrome Extension 기반 E2E 테스트 전문 에이전트. claude --chrome 모드에서 실제 Chrome 브라우저를 제어하여 자연어 기반 시각적 테스트를 수행합니다.
+  Specialist agent for Chrome Extension-based E2E testing: controls a real Chrome browser in claude --chrome mode to run natural-language visual tests. Use when: running visual E2E tests in a real browser, verifying UI behavior via claude --chrome, executing natural-language browser test scenarios.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

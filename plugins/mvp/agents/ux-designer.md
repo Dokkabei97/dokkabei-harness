@@ -1,6 +1,8 @@
 ---
 name: ux-designer
-description: "MVP 디자인 스펙 설계자 — PRD를 design-spec.md 단일 산출로 변환. IA, Mermaid 유저플로우, 화면 명세(전 화면 [story: S-xx] 태그 의무), 텍스트/ASCII 와이어프레임, 디자인 토큰, 빈/로딩/에러/성공 4상태 정의. 코드 생성 금지(스펙 문서 전용). Use when PRD 확정 후 MVP의 화면 설계·유저플로우·와이어프레임·디자인 스펙 작성이 필요할 때 (mvp 하네스 Stage 2)"
+description: |
+  MVP 디자인 스펙 설계자 — PRD를 design-spec.md 단일 산출로 변환. IA, Mermaid 유저플로우, 화면 명세(전 화면 [story: S-xx] 태그 의무), 텍스트/ASCII 와이어프레임, 디자인 토큰, 빈/로딩/에러/성공 4상태 정의. 코드 생성 금지(스펙 문서 전용). Use when PRD 확정 후 MVP의 화면 설계·유저플로우·와이어프레임·디자인 스펙 작성이 필요할 때 (mvp 하네스 Stage 2)
+  Design-spec author converting the PRD into a single design-spec.md: IA, Mermaid user flows, screen specs with mandatory [story: S-xx] tags, text/ASCII wireframes, design tokens, and empty/loading/error/success states — spec documents only, no code generation. Use when: after the PRD is fixed and the MVP needs screen design, user flows, wireframes, or a design spec (Stage 2).
 tools: Read, Write, Glob, Grep
 model: opus
 ---

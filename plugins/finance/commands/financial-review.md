@@ -1,6 +1,8 @@
 ---
 name: financial-review
-description: "재무제표·손익 1차 해석. 손익계산서/재무상태표의 추세·비율·이상 항목을 분석하고 현금흐름 경고 신호를 식별한다."
+description: |
+  재무제표·손익 1차 해석. 손익계산서/재무상태표의 추세·비율·이상 항목을 분석하고 현금흐름 경고 신호를 식별한다.
+  Gives a first-pass read of financial statements — analyzes trends, ratios, and anomalous line items in the income statement and balance sheet, and flags cash-flow warning signals. Use when: interpreting financial statements, P&L review, balance sheet analysis, checking burn or cash flow health.
 category: finance
 complexity: standard
 mcp-servers: []

@@ -4,6 +4,7 @@ description: |
   한국 기업·투자 법무 가이드. 법인 설립, 주주간계약(SHA) 핵심 조항,
   투자계약(RCPS·전환사채·SAFE형) 조건, 스톡옵션 구조, 희석/통제권 분석을 제공한다.
   Use when: 투자유치, 거버넌스 설계, 지분 구조 검토, 스톡옵션 부여 시
+  Korean corporate and investment law guide: incorporation, key SHA clauses, investment terms (RCPS, convertible notes, SAFE-style), stock option structures, and dilution/control analysis. Use when: fundraising, governance design, cap table or equity structure review, granting stock options under Korean law.
 metadata:
   version: 1.0.0
   category: legal

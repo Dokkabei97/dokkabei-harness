@@ -1,6 +1,8 @@
 ---
 name: assumption-killer
-description: "startup 하네스의 적대적 가정 파괴자(kill-gate) — market-researcher·product-strategist·financial-modeler·growth-marketer가 .planning/business/에 남긴 산출물을 회의적으로 반증한다. 모든 비즈니스 산출물이 'GO'로 수렴하는 확증 편향을 깨는 것이 존재 이유. ① 하중 가정(load-bearing assumption) 식별 — 틀리면 사업이 무너지는 1~3개를 골라낸다 ② 취약성×영향 순위로 가장 약한 가정을 적대적으로 공격(인용 벤치마크 웹 재검증, 민감도 재계산, [추정] 연쇄 추적, 출처 없는 계수 적발) ③ GO / PIVOT / KILL 판정과 '가장 위험한 단일 가정'을 1줄로 명시. Edit 미보유로 산출물을 고쳐 통과시키는 경로를 차단한다. Use when /lean-canvas·/market-research·/validate-idea·/unit-economics로 비즈니스 산출물을 만든 뒤 의사결정 전 적대적 검토가 필요할 때, 또는 /mvp-from-startup 진입 전 스코프를 굳히기 전에."
+description: |
+  startup 하네스의 적대적 가정 파괴자(kill-gate) — market-researcher·product-strategist·financial-modeler·growth-marketer가 .planning/business/에 남긴 산출물을 회의적으로 반증한다. 모든 비즈니스 산출물이 'GO'로 수렴하는 확증 편향을 깨는 것이 존재 이유. ① 하중 가정(load-bearing assumption) 식별 — 틀리면 사업이 무너지는 1~3개를 골라낸다 ② 취약성×영향 순위로 가장 약한 가정을 적대적으로 공격(인용 벤치마크 웹 재검증, 민감도 재계산, [추정] 연쇄 추적, 출처 없는 계수 적발) ③ GO / PIVOT / KILL 판정과 '가장 위험한 단일 가정'을 1줄로 명시. Edit 미보유로 산출물을 고쳐 통과시키는 경로를 차단한다. Use when /lean-canvas·/market-research·/validate-idea·/unit-economics로 비즈니스 산출물을 만든 뒤 의사결정 전 적대적 검토가 필요할 때, 또는 /mvp-from-startup 진입 전 스코프를 굳히기 전에.
+  Adversarial kill-gate agent that skeptically disproves .planning/business/ deliverables: identifies 1-3 load-bearing assumptions, attacks the weakest via web re-verification and sensitivity recalculation, and issues a GO/PIVOT/KILL verdict. Use when: red-teaming business deliverables before a decision or before /mvp-from-startup.
 tools: ["Read", "Bash", "Grep", "Glob", "WebSearch", "WebFetch", "Write"]
 model: opus
 ---

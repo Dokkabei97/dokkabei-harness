@@ -1,6 +1,8 @@
 ---
 name: compliance-counsel
-description: "규제 컴플라이언스 전문 에이전트. 한국법 기준으로 개인정보보호법, 전자상거래법, 정보통신망법, 위치정보법, 업종별 인허가 준수를 점검한다. 서비스·제품의 규제 적합성을 코드/운영 관점에서 진단하고 시정 조치를 제시한다."
+description: |
+  규제 컴플라이언스 전문 에이전트. 한국법 기준으로 개인정보보호법, 전자상거래법, 정보통신망법, 위치정보법, 업종별 인허가 준수를 점검한다. 서비스·제품의 규제 적합성을 코드/운영 관점에서 진단하고 시정 조치를 제시한다.
+  Regulatory compliance counsel agent: audits services/products against Korean law — PIPA, E-Commerce Act, Network Act, Location Information Act, industry licensing — from a code/operations view and proposes corrective actions. Use when: privacy or data-protection compliance checks, e-commerce/ad regulation review, Korean licensing requirements.
 tools: ["Read", "Write", "Grep", "Glob", "WebSearch", "WebFetch"]
 model: opus
 ---

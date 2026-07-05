@@ -1,6 +1,8 @@
 ---
 name: product-strategist
-description: "제품 전략 전문 에이전트. 린 캔버스 작성, MVP 정의, 가설 수립/검증 설계, 피벗 전략 수립을 수행한다. Build-Measure-Learn 사이클과 Customer Development 방법론을 적용한다."
+description: |
+  제품 전략 전문 에이전트. 린 캔버스 작성, MVP 정의, 가설 수립/검증 설계, 피벗 전략 수립을 수행한다. Build-Measure-Learn 사이클과 Customer Development 방법론을 적용한다.
+  Product strategy agent that writes lean canvases, defines MVPs, designs hypothesis creation/validation, and builds pivot strategies, applying the Build-Measure-Learn cycle and Customer Development methodology. Use when: shaping product strategy, defining an MVP, drafting a lean canvas, or planning validation and pivots.
 tools: ["Read", "Write", "Grep", "Glob", "Bash", "WebSearch", "WebFetch"]
 model: opus
 ---

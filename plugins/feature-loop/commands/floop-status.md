@@ -1,6 +1,8 @@
 ---
 name: floop-status
-description: "feature-loop 진행 현황 읽기 전용 조회 — task passes n/m, iteration/상한, 경과 시간, baseline 상태, verified 마커, BLOCKED 여부, loop-active 상태와 수동 해제법을 1화면 보고. 어떤 상태도 변경하지 않음"
+description: |
+  feature-loop 진행 현황 읽기 전용 조회 — task passes n/m, iteration/상한, 경과 시간, baseline 상태, verified 마커, BLOCKED 여부, loop-active 상태와 수동 해제법을 1화면 보고. 어떤 상태도 변경하지 않음
+  Read-only progress report for feature-loop: shows task passes n/m, iteration/limits, elapsed time, baseline state, verified markers, BLOCKED status, and loop-active state with the manual release procedure on a single screen, changing no state at all. Use when: checking feature-loop progress or loop status, or inspecting how many tasks passed without side effects.
 category: utility
 complexity: basic
 mcp-servers: []

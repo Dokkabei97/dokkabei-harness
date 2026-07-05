@@ -1,6 +1,8 @@
 ---
 name: mvp-status
-description: "MVP 진행 현황 읽기 전용 조회 — 스토리 passes n/m, iteration/상한, 경과 시간, verified 마커, BLOCKED 여부, loop-active 상태와 수동 해제법을 1화면 보고. 어떤 상태도 변경하지 않음"
+description: |
+  MVP 진행 현황 읽기 전용 조회 — 스토리 passes n/m, iteration/상한, 경과 시간, verified 마커, BLOCKED 여부, loop-active 상태와 수동 해제법을 1화면 보고. 어떤 상태도 변경하지 않음
+  Read-only status report for the MVP harness: shows story passes n/m, iteration vs cap, elapsed time, verified markers, BLOCKED state, and loop-active status with manual-release instructions in one screen, changing no state. Use when: checking MVP loop progress, counting passed stories, or diagnosing whether the loop is active or blocked.
 category: utility
 complexity: basic
 mcp-servers: []

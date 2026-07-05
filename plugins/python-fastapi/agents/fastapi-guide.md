@@ -1,6 +1,8 @@
 ---
 name: fastapi-guide
-description: FastAPI (Python) 프레임워크 전문가 — Depends DI, Pydantic v2, async SQLAlchemy, Alembic, 미들웨어, BackgroundTasks, Strawberry GraphQL
+description: |
+  FastAPI (Python) 프레임워크 전문가 — Depends DI, Pydantic v2, async SQLAlchemy, Alembic, 미들웨어, BackgroundTasks, Strawberry GraphQL
+  FastAPI (Python) framework expert covering Depends dependency injection, Pydantic v2, async SQLAlchemy, Alembic, middleware, BackgroundTasks, and Strawberry GraphQL. Use when: asking FastAPI framework questions, debugging Depends/DI chains, writing Pydantic v2 models, configuring async SQLAlchemy or Alembic migrations, or building Strawberry GraphQL resolvers.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

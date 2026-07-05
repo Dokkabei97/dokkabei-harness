@@ -4,6 +4,7 @@ description: |
   한국 규제 컴플라이언스 가이드. 개인정보보호법(2023 개정) 라이프사이클 점검,
   전자상거래법 의무, 정보통신망법 광고 규제, 업종별 인허가를 제공한다.
   Use when: 개인정보 처리·전자상거래·광고 규제 적합성 점검 시
+  Korean regulatory compliance guide covering the PIPA (2023 amendment) data lifecycle checklist, E-Commerce Act obligations, Network Act advertising rules, and industry-specific licensing. Use when: privacy compliance check, e-commerce or online advertising regulation review, Korean data-protection audit of a service.
 metadata:
   version: 1.0.0
   category: legal

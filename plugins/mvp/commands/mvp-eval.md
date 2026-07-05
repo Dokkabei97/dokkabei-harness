@@ -1,6 +1,8 @@
 ---
 name: mvp-eval
-description: "제품 검증(평가) 실행 — '검증된 코드 ≠ 검증된 제품' 간극을 메운다. PRD 성공지표(분류 F1·정확도 등 모델 품질)를 골든셋 + 실제 LLM 호출로 실측하고, 결정론 회귀 게이트와 분리(@pytest.mark.eval)해 .planning/eval/report.json 에 기록한 뒤 gate-eval.sh 로 임계값 판정."
+description: |
+  제품 검증(평가) 실행 — '검증된 코드 ≠ 검증된 제품' 간극을 메운다. PRD 성공지표(분류 F1·정확도 등 모델 품질)를 골든셋 + 실제 LLM 호출로 실측하고, 결정론 회귀 게이트와 분리(@pytest.mark.eval)해 .planning/eval/report.json 에 기록한 뒤 gate-eval.sh 로 임계값 판정.
+  Runs product validation to close the 'verified code vs validated product' gap: measures PRD success metrics (classification F1, accuracy) with a golden set plus real LLM calls separated from deterministic gates (@pytest.mark.eval), records .planning/eval/report.json, and judges thresholds with gate-eval.sh. Use when: evaluating model quality vs PRD metrics, measuring F1/accuracy on real data.
 category: utility
 complexity: advanced
 mcp-servers: []

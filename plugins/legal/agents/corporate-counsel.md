@@ -1,6 +1,8 @@
 ---
 name: corporate-counsel
-description: "기업·투자 법무 전문 에이전트. 한국법(상법·벤처기업법) 기준으로 법인 설립, 주주간계약(SHA), 투자유치(텀시트·SAFE·전환사채), 주식매수선택권(스톡옵션), 지분 구조, M&A 기초를 자문한다. 창업자 관점에서 지분 희석과 통제권 리스크를 분석한다."
+description: |
+  기업·투자 법무 전문 에이전트. 한국법(상법·벤처기업법) 기준으로 법인 설립, 주주간계약(SHA), 투자유치(텀시트·SAFE·전환사채), 주식매수선택권(스톡옵션), 지분 구조, M&A 기초를 자문한다. 창업자 관점에서 지분 희석과 통제권 리스크를 분석한다.
+  Corporate/investment counsel agent: advises under Korean law (Commercial Act, Venture Business Act) on incorporation, shareholder agreements (SHA), fundraising (term sheet, SAFE, convertible notes), stock options, equity structure, and M&A basics, analyzing dilution and control risk for founders. Use when: raising investment, negotiating a term sheet or SHA, granting stock options, cap table review.
 tools: ["Read", "Write", "Grep", "Glob", "WebSearch", "WebFetch"]
 model: opus
 ---

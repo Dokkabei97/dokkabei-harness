@@ -1,6 +1,8 @@
 ---
 name: fastapi-developer
-description: "Python + FastAPI 코드 생성 전문 에이전트. 도메인 모델로부터 SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, Test 전체 계층을 프로젝트 컨벤션에 맞춰 생성한다."
+description: |
+  Python + FastAPI 코드 생성 전문 에이전트. 도메인 모델로부터 SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, Test 전체 계층을 프로젝트 컨벤션에 맞춰 생성한다.
+  Specialized code-generation agent for Python + FastAPI: produces the full layer stack — SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, and Test — from a domain model, following project conventions. Use when: generating FastAPI CRUD layers, scaffolding SQLAlchemy models and Pydantic schemas, or building repository/service/router code for a domain.
 tools: ["Read", "Grep", "Glob", "Bash", "Write", "Edit"]
 skills: ["python-fastapi-guide"]
 ---

@@ -4,6 +4,9 @@ description: |
   린 스타트업 핵심 방법론 가이드. Build-Measure-Learn 사이클, Customer Development 4단계,
   MVP 유형별 선택 기준, 피벗 판단 프레임워크를 제공한다.
   Use when: 스타트업 방법론 적용, 가설 검증 설계, MVP 정의, 피벗 결정 시
+  Core lean startup methodology guide covering the Build-Measure-Learn cycle, the 4 stages of
+  Customer Development, MVP type selection criteria, and a pivot decision framework.
+  Use when: applying startup methodology, designing hypothesis validation, defining an MVP, or deciding whether to pivot.
 metadata:
   version: 1.0.0
   category: strategy

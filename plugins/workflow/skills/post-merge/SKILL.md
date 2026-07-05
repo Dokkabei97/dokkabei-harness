@@ -3,6 +3,7 @@ name: post-merge
 description: |
   MR 머지 완료 후 Plane 이슈 종료와 Outline 문서 업데이트를 자동으로 처리하는 오케스트레이터 스킬입니다.
   issue-tracker와 document-latest 스킬을 연계 실행하여 머지 후 후속 작업을 일괄 처리합니다.
+  Orchestrates post-merge follow-up after an MR is merged: chains the issue-tracker and document-latest skills to close the Plane issue and update Outline wiki docs in a single batch. Use when: an MR was just merged, closing tickets and syncing documentation after a merge, post-merge cleanup.
 metadata:
   version: 1.0.0
   category: workflow

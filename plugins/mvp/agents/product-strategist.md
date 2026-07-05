@@ -1,6 +1,8 @@
 ---
 name: product-strategist
-description: MVP 기획 전략가 — 아이디어 인테이크(질문 최대 3개+추천 기본값), PRD 작성(.planning/prd.md), prd.json 유저 스토리 초안({id,title,acceptance[],passes:false}), Stage 2 디자인-PRD 커버리지 매트릭스 검증 겸임. Use when 신규 서비스 아이디어를 MVP 스코프의 PRD로 구체화하거나, 유저 스토리/수용 기준(AC) 작성, design-spec.md의 스토리 커버리지 검증이 필요할 때 (mvp 하네스 Stage 0~2, 그린필드 전용, WebSearch 유사 서비스 1-pass 조사)
+description: |
+  MVP 기획 전략가 — 아이디어 인테이크(질문 최대 3개+추천 기본값), PRD 작성(.planning/prd.md), prd.json 유저 스토리 초안({id,title,acceptance[],passes:false}), Stage 2 디자인-PRD 커버리지 매트릭스 검증 겸임. Use when 신규 서비스 아이디어를 MVP 스코프의 PRD로 구체화하거나, 유저 스토리/수용 기준(AC) 작성, design-spec.md의 스토리 커버리지 검증이 필요할 때 (mvp 하네스 Stage 0~2, 그린필드 전용, WebSearch 유사 서비스 1-pass 조사)
+  MVP planning strategist: runs idea intake (max 3 questions with recommended defaults), authors the PRD (.planning/prd.md) and prd.json user-story drafts, and doubles as the Stage 2 design-PRD coverage-matrix checker. Use when: shaping a new service idea into an MVP-scoped PRD, writing user stories and acceptance criteria, or verifying story coverage of design-spec.md (Stage 0-2, greenfield only).
 tools: Read, Write, Glob, Grep, WebSearch
 model: opus
 ---

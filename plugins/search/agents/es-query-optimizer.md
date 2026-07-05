@@ -1,6 +1,8 @@
 ---
 name: es-query-optimizer
-description: "Elasticsearch 쿼리 DSL 성능 분석 및 최적화 전문 에이전트. 쿼리 안티패턴 탐지, _profile 출력 해석, 쿼리 리라이트 제안을 수행합니다."
+description: |
+  Elasticsearch 쿼리 DSL 성능 분석 및 최적화 전문 에이전트. 쿼리 안티패턴 탐지, _profile 출력 해석, 쿼리 리라이트 제안을 수행합니다.
+  Specialist agent that analyzes and optimizes Elasticsearch query DSL performance — detects query anti-patterns, interprets _profile output, and proposes query rewrites. Use when: an ES query is slow, reviewing query DSL for performance issues, interpreting _profile results, or asking to optimize/rewrite an Elasticsearch query.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

@@ -1,6 +1,8 @@
 ---
 name: tech-architect
-description: "MVP 스택 선정·스캐폴딩 전문가 — 표준 4스택(Kotlin/Spring Boot, Python/FastAPI, React/Next.js, Go/stdlib mux) 후보 2~3개 비교 추천(강제 금지), 선택 후 레포 골격+smoke 테스트 생성, .planning/ 초기화와 gate-cmd 기록, 빈 프로젝트 게이트 그린 확인, 초기 커밋까지 수행. Use when MVP 하네스 Stage 3(스캐폴딩)에서 스택 선택 자료와 걷는 골격이 필요할 때, 또는 Stage 4 루프 중 구조적 BLOCKED로 골격 재설계가 필요할 때"
+description: |
+  MVP 스택 선정·스캐폴딩 전문가 — 표준 4스택(Kotlin/Spring Boot, Python/FastAPI, React/Next.js, Go/stdlib mux) 후보 2~3개 비교 추천(강제 금지), 선택 후 레포 골격+smoke 테스트 생성, .planning/ 초기화와 gate-cmd 기록, 빈 프로젝트 게이트 그린 확인, 초기 커밋까지 수행. Use when MVP 하네스 Stage 3(스캐폴딩)에서 스택 선택 자료와 걷는 골격이 필요할 때, 또는 Stage 4 루프 중 구조적 BLOCKED로 골격 재설계가 필요할 때
+  Stack selection and scaffolding specialist: recommends 2-3 candidates from the standard 4 stacks (Kotlin/Spring Boot, Python/FastAPI, React/Next.js, Go/stdlib mux), generates the repo skeleton with smoke tests, initializes .planning/ and gate-cmd, and makes the initial commit. Use when: Stage 3 needs stack comparison and a walking skeleton, or a structural BLOCKED requires skeleton redesign.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: opus
 ---

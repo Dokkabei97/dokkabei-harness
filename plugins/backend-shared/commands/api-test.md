@@ -1,6 +1,8 @@
 ---
 name: api-test
-description: "기존 API 엔드포인트 통합 테스트 자동 생성 — @WebMvcTest/TestClient, MockK/pytest-mock, 인증/GraphQL 시나리오"
+description: |
+  기존 API 엔드포인트 통합 테스트 자동 생성 — @WebMvcTest/TestClient, MockK/pytest-mock, 인증/GraphQL 시나리오
+  Auto-generates integration tests for existing API endpoints — @WebMvcTest/TestClient, MockK/pytest-mock, auth and GraphQL scenarios. Use when: adding integration tests to existing endpoints, covering auth flows or GraphQL queries, generating controller test suites.
 category: testing
 complexity: basic
 mcp-servers: []

@@ -4,6 +4,7 @@ description: |
   plane-cli를 활용한 Plane 이슈 트래커 연동 스킬.
   브랜치명에서 이슈를 자동 감지하고, 작업 상태 추적, 변경 이력 기록,
   서브태스크 분할 제안까지 개발 전 과정에서 이슈를 관리합니다.
+  Integrates with the Plane issue tracker via plane-cli: auto-detects the issue from the branch name, then manages it across the whole dev cycle — work status tracking, change history logging, and subtask split suggestions. Use when: linking or tracking issues, updating Plane tickets, recording work history, connecting a branch to its issue.
 metadata:
   version: 2.0.0
   category: workflow

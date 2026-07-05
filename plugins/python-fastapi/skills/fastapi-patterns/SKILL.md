@@ -1,6 +1,8 @@
 ---
 name: fastapi-patterns
-description: "FastAPI (Python) 프레임워크 관용 패턴 레퍼런스 — DI, Pydantic v2, async SQLAlchemy, Alembic, 미들웨어, Strawberry GraphQL"
+description: |
+  FastAPI (Python) 프레임워크 관용 패턴 레퍼런스 — DI, Pydantic v2, async SQLAlchemy, Alembic, 미들웨어, Strawberry GraphQL
+  Idiomatic pattern reference for the FastAPI (Python) framework — DI, Pydantic v2, async SQLAlchemy, Alembic, middleware, and Strawberry GraphQL. Use when: writing FastAPI code and needing concrete idioms for Depends injection, Pydantic v2 models, async SQLAlchemy sessions, Alembic migrations, or GraphQL resolvers.
 ---
 
 # FastAPI (Python) 관용 패턴 레퍼런스

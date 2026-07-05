@@ -1,6 +1,8 @@
 ---
 name: security-patterns
-description: "인증/인가 패턴 레퍼런스 — Spring Security JWT/OAuth2/RBAC, FastAPI OAuth2PasswordBearer/Depends 기반 권한, Three-Tier Boundary System, OWASP Top 10 매핑"
+description: |
+  인증/인가 패턴 레퍼런스 — Spring Security JWT/OAuth2/RBAC, FastAPI OAuth2PasswordBearer/Depends 기반 권한, Three-Tier Boundary System, OWASP Top 10 매핑
+  Reference for authentication/authorization patterns — Spring Security JWT/OAuth2/RBAC, FastAPI OAuth2PasswordBearer/Depends-based permissions, the Three-Tier Boundary System, and OWASP Top 10 mapping. Use when: implementing login/JWT/OAuth2 flows, designing RBAC, adding FastAPI auth dependencies, mapping OWASP risks.
 ---
 
 # 인증/인가(Security) 패턴 레퍼런스

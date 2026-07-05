@@ -4,6 +4,7 @@ description: |
   한국 계약법 실무 가이드. 독소조항 체크리스트, 유형별 필수 조항,
   위약금·손해배상·약관규제법 핵심 법리, redline 작성 패턴을 제공한다.
   Use when: 계약서 검토·작성, 독소조항 탐지, 협상 전략 수립 시
+  Korean contract law practice guide: toxic-clause checklists, required clauses by contract type, core doctrines on penalties, damages, and the Standard Terms Act, and redline drafting patterns. Use when: contract review or drafting, detecting unfair or toxic clauses, building contract negotiation strategy under Korean law.
 metadata:
   version: 1.0.0
   category: legal

@@ -3,6 +3,7 @@ name: nextjs-guide
 description: |
   Next.js App Router 개발 종합 가이드. Server/Client Component 판별, 라우팅 패턴, 데이터 페칭, 테스트 전략을 제공한다.
   코드 작성 시 자동으로 참조하여 Next.js 15 모범 사례를 적용한다.
+  Comprehensive Next.js App Router development guide — covers Server/Client Component decisions, routing patterns, data fetching, and testing strategy, applying Next.js 15 best practices automatically during code writing. Use when: writing Next.js components or pages, choosing Server vs Client Components, deciding data fetching or caching strategy, writing frontend tests.
 ---
 
 # Next.js App Router Development Guide

@@ -7,6 +7,7 @@ description: |
   Use when: "하네스 구성해줘", "팀 설계해줘", "에이전트 팀 만들어줘",
   "build a harness", "design agent team", 멀티 에이전트 협업이 필요한 복합 작업.
   Delegates component creation to /create-flow and validation to /verify-flow.
+  Performs domain analysis, team architecture pattern selection (6 patterns), agent definition, and orchestrator design for multi-agent teams. Use when: composing a harness, designing an agent team, setting up multi-agent collaboration for complex workflows.
 metadata:
   version: 1.0.0
   category: workflow

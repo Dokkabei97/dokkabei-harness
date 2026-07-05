@@ -1,6 +1,8 @@
 ---
 name: spring-boot-guide
-description: Spring Boot (Kotlin) 프레임워크 전문가 — DI, @Transactional, Spring Security, Data JPA/R2DBC, 프로파일, 테스트 슬라이스, 자동설정, Spring for GraphQL
+description: |
+  Spring Boot (Kotlin) 프레임워크 전문가 — DI, @Transactional, Spring Security, Data JPA/R2DBC, 프로파일, 테스트 슬라이스, 자동설정, Spring for GraphQL
+  Spring Boot (Kotlin) framework expert agent covering DI, @Transactional, Spring Security, Spring Data JPA/R2DBC, profiles, test slices, auto-configuration, and Spring for GraphQL. Use when: debugging Spring Boot config or DI issues, transaction/security questions, JPA/R2DBC mapping, test slice setup, or deep framework-level Spring guidance.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

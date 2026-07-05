@@ -1,6 +1,8 @@
 ---
 name: interview-kit
-description: "역량 기반 면접 킷 생성. 역량 모델, 행동 질문(STAR), 4단계 앵커 평가 루브릭을 설계한다."
+description: |
+  역량 기반 면접 킷 생성. 역량 모델, 행동 질문(STAR), 4단계 앵커 평가 루브릭을 설계한다.
+  Generates a competency-based interview kit: derives a competency model, writes behavioral (STAR) questions, and designs a 4-level anchored evaluation rubric. Use when: creating interview questions for a position, standardizing interviewer scoring with a rubric, building an interview scorecard, or designing a structured interview process.
 category: hr
 complexity: intermediate
 mcp-servers: []

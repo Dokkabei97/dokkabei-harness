@@ -1,6 +1,8 @@
 ---
 name: fastapi-api-design
-description: "FastAPI REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Router + Schema + 에러 핸들링 코드를 생성한다."
+description: |
+  FastAPI REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Router + Schema + 에러 핸들링 코드를 생성한다.
+  Designs and implements FastAPI REST APIs: turns requirements into endpoint designs and generates Router + Schema + error-handling code. Use when: designing a REST API in FastAPI, creating new API endpoints from requirements, or generating FastAPI routers and Pydantic schemas with error handling.
 category: development
 complexity: advanced
 mcp-servers: []

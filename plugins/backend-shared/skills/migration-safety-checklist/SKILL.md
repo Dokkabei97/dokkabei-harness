@@ -1,6 +1,8 @@
 ---
 name: migration-safety-checklist
-description: "DB 마이그레이션 안전성 체크리스트 — 무중단 변경 판단, Expand-Contract 패턴, Flyway/Alembic 규칙, 롤백 전략"
+description: |
+  DB 마이그레이션 안전성 체크리스트 — 무중단 변경 판단, Expand-Contract 패턴, Flyway/Alembic 규칙, 롤백 전략
+  Checklist for database migration safety — judging zero-downtime compatibility, the Expand-Contract pattern, Flyway/Alembic rules, and rollback strategy. Use when: reviewing a migration for safety, planning zero-downtime schema changes, applying expand-contract, preparing rollback plans.
 ---
 
 # DB 마이그레이션 안전성 체크리스트

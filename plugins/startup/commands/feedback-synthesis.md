@@ -1,6 +1,8 @@
 ---
 name: feedback-synthesis
-description: "고객 피드백 종합. 이미 확보한 인터뷰 노트·VoC·리뷰 덤프 파일을 입력받아 패턴·인사이트·기회 가설을 구조화하고 .planning/business/feedback-synthesis.md를 산출한다. '스토리 후보' 섹션은 mvp 하네스(prd-authoring)가 읽을 수 있는 형태. 고객 피드백 파일이 있을 때만 발동."
+description: |
+  고객 피드백 종합. 이미 확보한 인터뷰 노트·VoC·리뷰 덤프 파일을 입력받아 패턴·인사이트·기회 가설을 구조화하고 .planning/business/feedback-synthesis.md를 산출한다. '스토리 후보' 섹션은 mvp 하네스(prd-authoring)가 읽을 수 있는 형태. 고객 피드백 파일이 있을 때만 발동.
+  Synthesizes customer feedback: takes existing interview notes, VoC, and review dump files, structures patterns, insights, and opportunity hypotheses, and produces .planning/business/feedback-synthesis.md whose 'story candidate' section is readable by the mvp harness (prd-authoring). Use when: you have customer feedback files to analyze and distill.
 category: research
 complexity: advanced
 mcp-servers: []

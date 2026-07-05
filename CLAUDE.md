@@ -32,6 +32,9 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 ## Conventions
 
 - Commits: Conventional Commits + Korean body (`feat(scope): …`, `fix(base): …`)
+- Component descriptions (skills/commands/agents frontmatter) are **bilingual**: Korean original first,
+  then an English summary + `Use when: …` trigger clause appended (keeps activation working for both
+  Korean and English prompts; total ≤ 1,400 chars — the skill listing truncates at 1,536)
 - Component rules / validation ruleset: `plugins/harness/skills/flow-validation/` (used by `/verify-flow`;
   SKILL.md token budget optimized to <3.5k)
 - Scaffolding templates: `plugins/harness/skills/flow-scaffolding/` (used by `/create-flow`)

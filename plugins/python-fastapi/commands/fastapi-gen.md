@@ -1,6 +1,8 @@
 ---
 name: fastapi-gen
-description: "Python FastAPI CRUD 계층 코드 생성. 도메인명을 입력하면 SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다."
+description: |
+  Python FastAPI CRUD 계층 코드 생성. 도메인명을 입력하면 SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
+  Generates Python FastAPI CRUD layer code: given a domain name, automatically scaffolds SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, and Test following project conventions. Use when: scaffolding a new FastAPI domain, generating CRUD boilerplate, or creating model/schema/repository/service/router layers for an entity.
 category: development
 complexity: advanced
 mcp-servers: []

@@ -1,6 +1,8 @@
 ---
 name: mvp-eval-harness
-description: "MVP 제품 검증(평가) 하니스 표준 — '검증된 코드 ≠ 검증된 제품' 간극을 메우는 규약. PRD 성공지표가 모델 품질(F1·정확도·관련성)에 의존할 때, 결정론 회귀 게이트(Fake 주입)와 분리된 평가 경로를 두는 방법: 골든셋 구축 기준(층화·held-out·현실성), @pytest.mark.eval 분리(기본 skip), report.json 스키마, gate-eval.sh 소프트 게이트 계약, 임계값=PRD 정본 원칙. eval-engineer가 평가 하니스를 구축할 때, /mvp-eval 실행 시, gate-eval.sh 실패를 진단할 때 참조."
+description: |
+  MVP 제품 검증(평가) 하니스 표준 — '검증된 코드 ≠ 검증된 제품' 간극을 메우는 규약. PRD 성공지표가 모델 품질(F1·정확도·관련성)에 의존할 때, 결정론 회귀 게이트(Fake 주입)와 분리된 평가 경로를 두는 방법: 골든셋 구축 기준(층화·held-out·현실성), @pytest.mark.eval 분리(기본 skip), report.json 스키마, gate-eval.sh 소프트 게이트 계약, 임계값=PRD 정본 원칙. eval-engineer가 평가 하니스를 구축할 때, /mvp-eval 실행 시, gate-eval.sh 실패를 진단할 때 참조.
+  Standard for the MVP product-validation (eval) harness closing the 'verified code vs validated product' gap: golden-set criteria (stratified, held-out, realistic), @pytest.mark.eval separation (skip by default), report.json schema, the gate-eval.sh soft-gate contract, and the thresholds-in-PRD principle. Use when: building an eval harness, running /mvp-eval, or diagnosing gate-eval.sh failures.
 ---
 
 # MVP 제품 검증(평가) 하니스 표준

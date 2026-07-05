@@ -1,6 +1,8 @@
 ---
 name: search-pipeline-engineer
-description: "데이터 파이프라인 → Elasticsearch 인덱싱 통합 전문 에이전트. Kafka 컨슈머 설정, Spark 배치 인덱싱, Iceberg 동기화, 파이프라인 모니터링을 다룹니다. 검색팀 소비자 관점에서 파이프라인 연동을 설계하고 트러블슈팅합니다."
+description: |
+  데이터 파이프라인 → Elasticsearch 인덱싱 통합 전문 에이전트. Kafka 컨슈머 설정, Spark 배치 인덱싱, Iceberg 동기화, 파이프라인 모니터링을 다룹니다. 검색팀 소비자 관점에서 파이프라인 연동을 설계하고 트러블슈팅합니다.
+  Specialist agent for integrating data pipelines with Elasticsearch indexing — Kafka consumer configuration, Spark batch indexing, Iceberg sync, and pipeline monitoring, designed and troubleshot from the search team's consumer perspective. Use when: wiring Kafka/Spark/Iceberg into ES indexing, debugging ingestion or indexing lag, or reviewing pipeline integration.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

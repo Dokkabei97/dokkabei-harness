@@ -1,6 +1,8 @@
 ---
 name: task-planner
-description: "브라운필드 작업 분해 maker — 자연어 기능 요청 한 줄을 기존 코드베이스 분석(Grep/Glob으로 영향 범위·기존 패턴·재사용 지점 파악) 기반으로 수직 슬라이스 단위 tasks.json({id:T-xx,title,acceptance[],passes:false})으로 분해. 각 task의 AC는 feature-verifier가 반증 시도 가능한 Given-When-Then 검증형 문장. 1 task = 1 루프 반복 크기. gate-tasks.sh 스키마(id ^T-[0-9]{2}$·개수 2~10·전건 passes:false) 충족. Use when feature-loop Stage B에서 요청을 작업 목록으로 분해할 때, 또는 루프 중 BLOCKED task의 재분해가 필요할 때 (기존 코드베이스 전용 — 새 스택 생성 금지)"
+description: |
+  브라운필드 작업 분해 maker — 자연어 기능 요청 한 줄을 기존 코드베이스 분석(Grep/Glob으로 영향 범위·기존 패턴·재사용 지점 파악) 기반으로 수직 슬라이스 단위 tasks.json({id:T-xx,title,acceptance[],passes:false})으로 분해. 각 task의 AC는 feature-verifier가 반증 시도 가능한 Given-When-Then 검증형 문장. 1 task = 1 루프 반복 크기. gate-tasks.sh 스키마(id ^T-[0-9]{2}$·개수 2~10·전건 passes:false) 충족. Use when feature-loop Stage B에서 요청을 작업 목록으로 분해할 때, 또는 루프 중 BLOCKED task의 재분해가 필요할 때 (기존 코드베이스 전용 — 새 스택 생성 금지)
+  Brownfield decomposition maker: turns a feature request into vertical-slice tasks.json entries ({id:T-xx,title,acceptance[],passes:false}) via codebase analysis, with Given-When-Then acceptance criteria feature-verifier can falsify, meeting the gate-tasks.sh schema. Use when: decomposing a request into tasks in feature-loop Stage B, or re-decomposing a BLOCKED task (existing codebases only).
 tools: Read, Write, Glob, Grep, Bash
 model: opus
 ---

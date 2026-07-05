@@ -7,6 +7,10 @@ description: |
   content draft, brand voice, press release, newsletter, copywriting 작업 시.
   콘텐츠 '전략'(채널 선택·캘린더·퍼널)은 growth-hacking-guide, 표시광고법·광고성 정보 규제의
   법적 판정은 legal 플러그인 /compliance-check로 위임 — 이 스킬은 작성 규격만 다룬다.
+  Startup content production guide providing structure templates per type (blog/sns/pr/email)
+  plus the .planning/business/brand-voice.md schema and 5-question interview spec.
+  Use when: running /content-draft, drafting blog posts, SNS copy, press releases, or newsletters,
+  or defining/updating a brand voice; strategy goes to growth-hacking-guide, legal rulings to /compliance-check.
 metadata:
   version: 1.0.0
   category: marketing

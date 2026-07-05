@@ -1,6 +1,8 @@
 ---
 name: lean-canvas
-description: "린 캔버스 9블록 작성. 아이디어를 구조화된 비즈니스 가설로 변환한다."
+description: |
+  린 캔버스 9블록 작성. 아이디어를 구조화된 비즈니스 가설로 변환한다.
+  Writes a 9-block Lean Canvas that converts a raw idea into a structured, testable business hypothesis. Use when: structuring a startup idea, sketching a business model on one page, drafting a lean canvas, or preparing business hypotheses before validation or MVP planning.
 category: strategy
 complexity: intermediate
 ---

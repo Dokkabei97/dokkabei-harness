@@ -1,6 +1,8 @@
 ---
 name: compliance-check
-description: "규제 컴플라이언스 점검. 개인정보보호법·전자상거래법·정보통신망법 준수 항목을 점검하고 위반 리스크와 시정 조치를 제시한다."
+description: |
+  규제 컴플라이언스 점검. 개인정보보호법·전자상거래법·정보통신망법 준수 항목을 점검하고 위반 리스크와 시정 조치를 제시한다.
+  Runs a regulatory compliance check against Korean law — PIPA (privacy), E-Commerce Act, and Network Act — and reports violation risks with corrective actions. Use when: privacy/data-protection compliance check, e-commerce or online ad regulation review, Korean regulatory audit of a service.
 category: legal
 complexity: standard
 ---

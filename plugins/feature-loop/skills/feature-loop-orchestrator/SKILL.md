@@ -1,6 +1,8 @@
 ---
 name: feature-loop-orchestrator
-description: "기존(브라운필드) 코드베이스용 루프 엔지니어링 하네스 오케스트레이터. 자연어 기능 요청 한 줄을 코드베이스 분석 기반 작업 분해(tasks.json)→baseline 캡처→회귀 안전 개발 루프의 게이트 상태기계로 자율 완주시킨다. \"이 기능 추가해줘\", \"X 리팩토링\", \"이 코드베이스에 Y 붙여줘\" 등 이미 개발 중/완료된 프로젝트의 기능 추가·수정 요청과 /floop-new·/floop-run 커맨드 실행 시 적용. MVP의 검증된 루프 인프라(Stop훅 엔진·maker/checker 반증·가드레일·.planning 메모리)를 재사용하되 입력은 작업 분해, 게이트는 baseline 회귀 방지. 루프 안에서 스택 플러그인·analyze·test·workflow를 호출. 빈/신규 레포의 기획부터 시작하는 그린필드 신규 서비스에는 발동하지 않음 — mvp 플러그인으로 위임한다."
+description: |
+  기존(브라운필드) 코드베이스용 루프 엔지니어링 하네스 오케스트레이터. 자연어 기능 요청 한 줄을 코드베이스 분석 기반 작업 분해(tasks.json)→baseline 캡처→회귀 안전 개발 루프의 게이트 상태기계로 자율 완주시킨다. "이 기능 추가해줘", "X 리팩토링", "이 코드베이스에 Y 붙여줘" 등 이미 개발 중/완료된 프로젝트의 기능 추가·수정 요청과 /floop-new·/floop-run 커맨드 실행 시 적용. MVP의 검증된 루프 인프라(Stop훅 엔진·maker/checker 반증·가드레일·.planning 메모리)를 재사용하되 입력은 작업 분해, 게이트는 baseline 회귀 방지. 루프 안에서 스택 플러그인·analyze·test·workflow를 호출. 빈/신규 레포의 기획부터 시작하는 그린필드 신규 서비스에는 발동하지 않음 — mvp 플러그인으로 위임한다.
+  Loop-engineering orchestrator for existing (brownfield) codebases: drives a one-line feature request through task decomposition (tasks.json), baseline capture, and a regression-safe gated dev loop, reusing MVP loop infrastructure (Stop-hook engine, maker/checker, guardrails). Use when: 'add this feature', 'refactor X', /floop-new, /floop-run on an existing project — greenfield goes to mvp.
 ---
 
 # Feature Loop Orchestrator (브라운필드)

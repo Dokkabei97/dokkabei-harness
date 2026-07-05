@@ -4,6 +4,7 @@ description: |
   코드 변경 작업 완료 후 Outline 위키 문서를 자동으로 최신화합니다.
   변경 내용을 분석하여 문서 유형을 자동 분류하고, 기존 문서 업데이트 또는 신규 문서 생성을 판단하여
   Outline 위키에 한국어 문서를 작성합니다. 민감정보 자동 마스킹을 포함합니다.
+  Automatically refreshes Outline wiki documentation after code changes: analyzes the diff, classifies the document type, decides between updating an existing doc or creating a new one, and writes Korean docs to the Outline wiki with automatic sensitive-data masking. Use when: updating the wiki after finishing work, syncing documentation, documenting API changes in Outline.
 metadata:
   version: 1.0.0
   category: documentation

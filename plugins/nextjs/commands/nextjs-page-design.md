@@ -1,6 +1,8 @@
 ---
 name: nextjs-page-design
-description: "Next.js 페이지/기능 UI 설계 및 컴포넌트 분해. 요구사항을 분석하여 컴포넌트 트리, Server/Client 경계, 데이터 흐름, 라우트 구조를 설계하고 스캐폴딩한다."
+description: |
+  Next.js 페이지/기능 UI 설계 및 컴포넌트 분해. 요구사항을 분석하여 컴포넌트 트리, Server/Client 경계, 데이터 흐름, 라우트 구조를 설계하고 스캐폴딩한다.
+  Designs Next.js page/feature UI and decomposes it into components — analyzes requirements to design the component tree, Server/Client Component boundaries, data flow, and route structure, then scaffolds them. Use when: designing the UI structure of a new page or feature, breaking a complex feature into components, restructuring an existing Next.js page.
 category: development
 complexity: advanced
 mcp-servers: []

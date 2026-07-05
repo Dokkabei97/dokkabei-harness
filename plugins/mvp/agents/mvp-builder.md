@@ -1,6 +1,8 @@
 ---
 name: mvp-builder
-description: "MVP 개발 루프 maker 규율 — 기본은 메인 세션이 체화해 직접 수행하는 규율 정의. .planning/prd.json의 미완(passes:false) 스토리를 한 번에 1개만 선택해 테스트 먼저(test-first) 작성 후 최소 구현으로 게이트 그린을 만들고, mvp-verifier 반증 통과(verified 마커)·passes:true(메인 세션) 후 구현+prd.json+progress.md를 feat(mvp): S-xx 1커밋으로 일괄 마감. verified 마커 없는 passes 마킹·테스트 삭제 절대 금지. Use when MVP 하네스 Stage 4 PRD-driven 루프에서 스토리 구현 반복이 필요할 때 — 병렬 feature 구현 시에만 worktree 격리 서브에이전트로 디스패치 (스택: Kotlin/Spring Boot, Python/FastAPI, React/Next.js, Go/stdlib mux)"
+description: |
+  MVP 개발 루프 maker 규율 — 기본은 메인 세션이 체화해 직접 수행하는 규율 정의. .planning/prd.json의 미완(passes:false) 스토리를 한 번에 1개만 선택해 테스트 먼저(test-first) 작성 후 최소 구현으로 게이트 그린을 만들고, mvp-verifier 반증 통과(verified 마커)·passes:true(메인 세션) 후 구현+prd.json+progress.md를 feat(mvp): S-xx 1커밋으로 일괄 마감. verified 마커 없는 passes 마킹·테스트 삭제 절대 금지. Use when MVP 하네스 Stage 4 PRD-driven 루프에서 스토리 구현 반복이 필요할 때 — 병렬 feature 구현 시에만 worktree 격리 서브에이전트로 디스패치 (스택: Kotlin/Spring Boot, Python/FastAPI, React/Next.js, Go/stdlib mux)
+  Maker discipline for the MVP dev loop: picks one incomplete (passes:false) story from .planning/prd.json at a time, writes tests first, implements minimally to turn the gate green, and after mvp-verifier verification lands one feat(mvp): S-xx commit for code+prd.json+progress.md. Use when: iterating story implementation in Stage 4; dispatched as a worktree subagent only for parallel feature work.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: opus
 ---

@@ -1,6 +1,8 @@
 ---
 name: e2e-chrome
-description: "Chrome Extension 기반 E2E 테스트. 실제 Chrome 브라우저를 제어하여 자연어 시나리오로 시각적 검증을 수행합니다."
+description: |
+  Chrome Extension 기반 E2E 테스트. 실제 Chrome 브라우저를 제어하여 자연어 시나리오로 시각적 검증을 수행합니다.
+  Runs Chrome Extension-based E2E tests by controlling a real Chrome browser to perform visual verification from natural-language test scenarios. Use when: running E2E tests in a real Chrome browser, visually verifying UI behavior or frontend changes, writing browser test scenarios in natural language.
 category: testing
 ---
 

@@ -1,6 +1,8 @@
 ---
 name: kill-check
-description: "비즈니스 산출물 적대적 검토(kill-gate) — .planning/business/ 산출물의 하중 가정을 식별·공격하고 GO/PIVOT/KILL 판정. 모든 산출물이 'GO'로 수렴하는 확증 편향을 깨기 위한 반대 평형추."
+description: |
+  비즈니스 산출물 적대적 검토(kill-gate) — .planning/business/ 산출물의 하중 가정을 식별·공격하고 GO/PIVOT/KILL 판정. 모든 산출물이 'GO'로 수렴하는 확증 편향을 깨기 위한 반대 평형추.
+  Runs an adversarial kill-gate review of business deliverables: identifies and attacks the load-bearing assumptions in .planning/business/ outputs and issues a GO/PIVOT/KILL verdict, acting as a counterweight to confirmation bias. Use when: stress-testing a business plan, red-teaming startup deliverables, or making a go/no-go decision.
 category: strategy
 complexity: advanced
 mcp-servers: []

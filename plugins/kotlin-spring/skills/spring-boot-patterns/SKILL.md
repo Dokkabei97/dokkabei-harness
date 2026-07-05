@@ -1,6 +1,8 @@
 ---
 name: spring-boot-patterns
-description: "Spring Boot (Kotlin) 프레임워크 관용 패턴 레퍼런스 — 트랜잭션, JPA, 에러 처리, 유효성 검사, 설정, GraphQL"
+description: |
+  Spring Boot (Kotlin) 프레임워크 관용 패턴 레퍼런스 — 트랜잭션, JPA, 에러 처리, 유효성 검사, 설정, GraphQL
+  Idiomatic Spring Boot (Kotlin) framework pattern reference covering transactions, JPA, error handling, validation, configuration, and GraphQL. Use when: implementing @Transactional or JPA mappings, designing exception handling and validation, configuring Spring Boot properties, or writing Spring for GraphQL code in Kotlin.
 ---
 
 # Spring Boot (Kotlin) 관용 패턴 레퍼런스

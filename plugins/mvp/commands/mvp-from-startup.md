@@ -1,6 +1,8 @@
 ---
 name: mvp-from-startup
-description: "startup 플러그인 산출물(.planning/business/)을 MVP 하네스 인테이크로 승계하는 브릿지 — 린 캔버스·검증 가설·시장조사를 읽어 Stage 0 인테이크 질문을 미리 채운 뒤 mvp-orchestrator를 Stage 1(기획 PRD)로 진입시킨다. 그린필드 전용. startup으로 사업 가설을 세운 뒤 코드까지 이어갈 때 사용."
+description: |
+  startup 플러그인 산출물(.planning/business/)을 MVP 하네스 인테이크로 승계하는 브릿지 — 린 캔버스·검증 가설·시장조사를 읽어 Stage 0 인테이크 질문을 미리 채운 뒤 mvp-orchestrator를 Stage 1(기획 PRD)로 진입시킨다. 그린필드 전용. startup으로 사업 가설을 세운 뒤 코드까지 이어갈 때 사용.
+  Bridge that carries startup plugin outputs (.planning/business/) into MVP harness intake: reads the lean canvas, validated hypotheses, and market research to pre-fill Stage 0 intake questions, then enters mvp-orchestrator at Stage 1 (PRD); greenfield only. Use when: continuing from startup-plugin business planning into code, turning a validated business hypothesis into an MVP.
 category: workflow
 complexity: advanced
 mcp-servers: []

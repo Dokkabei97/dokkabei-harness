@@ -1,6 +1,8 @@
 ---
 name: search-relevance-engineer
-description: "검색 품질 및 관련성 튜닝 전문 에이전트. 분석기 설계, 스코어링 전략, 동의어 관리, 한국어 형태소 분석, 검색 품질 평가를 수행합니다."
+description: |
+  검색 품질 및 관련성 튜닝 전문 에이전트. 분석기 설계, 스코어링 전략, 동의어 관리, 한국어 형태소 분석, 검색 품질 평가를 수행합니다.
+  Specialist agent for search quality and relevance tuning — handles analyzer design, scoring strategy, synonym management, Korean morphological analysis, and search quality evaluation. Use when: improving relevance or ranking, designing Elasticsearch analyzers, managing synonyms, tuning scoring behavior, or evaluating search result quality.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

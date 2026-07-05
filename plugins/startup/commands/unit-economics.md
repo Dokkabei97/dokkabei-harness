@@ -1,6 +1,8 @@
 ---
 name: unit-economics
-description: "유닛 이코노믹스 분석. CAC, LTV, 번레이트, 런웨이를 계산하고 재무 건전성을 평가한다."
+description: |
+  유닛 이코노믹스 분석. CAC, LTV, 번레이트, 런웨이를 계산하고 재무 건전성을 평가한다.
+  Analyzes unit economics by calculating CAC, LTV, burn rate, and runway, and evaluates overall financial health. Use when: computing CAC, LTV, burn rate, or runway, checking whether the business model is financially sound, or reviewing startup finances.
 category: finance
 complexity: intermediate
 ---

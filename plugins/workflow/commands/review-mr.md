@@ -1,6 +1,8 @@
 ---
 name: review-mr
-description: "GitLab Merge Request 코드 리뷰. MR diff를 분석하여 버그, 보안 취약점, 로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성합니다. diff 성격에 따라 analyze 전문 에이전트(arch-reviewer/perf-reviewer/sql-analyzer)를 선택 디스패치하고, confidence 기반으로 low 지적사항을 제외·강등합니다."
+description: |
+  GitLab Merge Request 코드 리뷰. MR diff를 분석하여 버그, 보안 취약점, 로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성합니다. diff 성격에 따라 analyze 전문 에이전트(arch-reviewer/perf-reviewer/sql-analyzer)를 선택 디스패치하고, confidence 기반으로 low 지적사항을 제외·강등합니다.
+  Reviews GitLab Merge Requests: analyzes the MR diff to detect bugs, security vulnerabilities, and logic errors, then posts review comments on the MR, selectively dispatching analyze specialist agents (arch-reviewer/perf-reviewer/sql-analyzer) by diff type and demoting or dropping low-confidence findings. Use when: reviewing a GitLab MR, code review of a merge request diff.
 category: review
 complexity: standard
 mcp-servers: []

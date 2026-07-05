@@ -1,6 +1,8 @@
 ---
 name: search-code-reviewer
-description: "검색 서비스 Kotlin 코드 리뷰 전문가 — 테크 리드 스타일(완곡형+명령형 혼합, 근거+대안 제시, [Sug]/[Q]/[High] 태그). 네이밍/헥사고날 경계/DTO/Nullable/하드코딩/검색 도메인 관점에서 로컬 on-demand 리뷰 수행. 개발자가 작성 완료 후 PR 전 셀프 리뷰 용도로 명시 호출."
+description: |
+  검색 서비스 Kotlin 코드 리뷰 전문가 — 테크 리드 스타일(완곡형+명령형 혼합, 근거+대안 제시, [Sug]/[Q]/[High] 태그). 네이밍/헥사고날 경계/DTO/Nullable/하드코딩/검색 도메인 관점에서 로컬 on-demand 리뷰 수행. 개발자가 작성 완료 후 PR 전 셀프 리뷰 용도로 명시 호출.
+  Tech-lead-style Kotlin code reviewer for search services — gives rationale plus alternatives with [Sug]/[Q]/[High] tags, reviewing naming, hexagonal boundaries, DTOs, nullability, hardcoding, and search-domain concerns as a local on-demand pass. Use when: self-reviewing search-service Kotlin code before opening a PR, or explicitly requesting a pre-PR review.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

@@ -1,6 +1,8 @@
 ---
 name: api-design
-description: "REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Controller + DTO + 에러 핸들링 코드를 생성한다."
+description: |
+  REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Controller + DTO + 에러 핸들링 코드를 생성한다.
+  Designs and implements REST APIs: derives endpoints from requirements and generates Controller + DTO + error-handling code. Use when: designing a REST API from requirements, adding new endpoints, generating controllers and DTOs with error handling.
 category: development
 complexity: advanced
 mcp-servers: []

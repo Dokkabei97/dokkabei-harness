@@ -1,6 +1,8 @@
 ---
 name: spring-gen
-description: "Kotlin Spring Boot CRUD 계층 코드 생성. 도메인명을 입력하면 Entity, Repository, Service, Controller, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다."
+description: |
+  Kotlin Spring Boot CRUD 계층 코드 생성. 도메인명을 입력하면 Entity, Repository, Service, Controller, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
+  Generates Kotlin Spring Boot CRUD layer code: given a domain name, it auto-generates Entity, Repository, Service, Controller, DTO, and Test files following project conventions. Use when: creating CRUD for a new domain, scaffolding a Spring Boot domain end to end, or generating repository/service/controller boilerplate in Kotlin Spring projects.
 category: development
 complexity: advanced
 mcp-servers: []

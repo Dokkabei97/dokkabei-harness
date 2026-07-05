@@ -1,6 +1,8 @@
 ---
 name: loop-stop
-description: "generic 경량 루프 안전 중단(킬스위치) — loop-active(engine=generic) 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 목표·iteration·마지막 게이트 결과를 progress.md에 핸드오프 기록. 타 엔진(mvp/floop) 소유 loop-active는 건드리지 않고 해당 킬스위치를 안내. 가드레일과 별개의 수동 중단 수단"
+description: |
+  generic 경량 루프 안전 중단(킬스위치) — loop-active(engine=generic) 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 목표·iteration·마지막 게이트 결과를 progress.md에 핸드오프 기록. 타 엔진(mvp/floop) 소유 loop-active는 건드리지 않고 해당 킬스위치를 안내. 가드레일과 별개의 수동 중단 수단
+  Kill switch that safely stops the generic lightweight loop: deletes loop-active (engine=generic) to immediately disarm the Stop-hook loop engine, then hands off the goal, iteration, and last gate result to progress.md; loop-active owned by other engines (mvp/floop) stays untouched. Use when: stop the loop, cancel or kill the running generic loop, manual abort separate from guardrails.
 category: workflow
 complexity: basic
 mcp-servers: []

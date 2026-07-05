@@ -1,6 +1,8 @@
 ---
 name: floop-run
-description: "feature-loop 개발 루프(Stage C) 시작/재개 — 마스터 파일 status 기반 재개 프로토콜 수행 후 loop-active 플래그와 loop-state.json을 초기화하고 Stop훅 루프 엔진에 진입. 정지조건(결정론 게이트 그린+baseline 회귀 0+all-passes+verified 마커+E2E 게이트(선택)+completion promise)은 훅이 판정"
+description: |
+  feature-loop 개발 루프(Stage C) 시작/재개 — 마스터 파일 status 기반 재개 프로토콜 수행 후 loop-active 플래그와 loop-state.json을 초기화하고 Stop훅 루프 엔진에 진입. 정지조건(결정론 게이트 그린+baseline 회귀 0+all-passes+verified 마커+E2E 게이트(선택)+completion promise)은 훅이 판정
+  Starts or resumes the feature-loop dev loop (Stage C): runs the resume protocol, initializes the loop-active flag and loop-state.json, and enters the Stop-hook loop engine; the hook judges stop conditions (gates green + zero baseline regressions + all-passes + verified markers + completion promise). Use when: starting implementation after /floop-new, or resuming an interrupted feature loop.
 category: workflow
 complexity: advanced
 mcp-servers: []

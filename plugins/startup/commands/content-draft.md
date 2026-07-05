@@ -1,6 +1,8 @@
 ---
 name: content-draft
-description: "브랜드 보이스 기반 콘텐츠 초안 생성. blog/sns/pr/email 유형별 템플릿으로 초안을 작성하며, 첫 실행 시 5문항 인터뷰로 .planning/business/brand-voice.md를 물화하고 이후 모든 콘텐츠가 이 파일을 참조한다."
+description: |
+  브랜드 보이스 기반 콘텐츠 초안 생성. blog/sns/pr/email 유형별 템플릿으로 초안을 작성하며, 첫 실행 시 5문항 인터뷰로 .planning/business/brand-voice.md를 물화하고 이후 모든 콘텐츠가 이 파일을 참조한다.
+  Generates brand-voice-based content drafts using per-type templates (blog/sns/pr/email); on first run it materializes .planning/business/brand-voice.md via a 5-question interview, and all later content references that file. Use when: drafting a blog post, SNS copy, press release, or newsletter in a consistent brand voice.
 category: marketing
 complexity: standard
 mcp-servers: []

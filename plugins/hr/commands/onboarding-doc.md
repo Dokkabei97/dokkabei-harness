@@ -1,6 +1,8 @@
 ---
 name: onboarding-doc
-description: "온보딩 문서 생성. 입사 전~첫 주 체크리스트와 30-60-90 램프업 플랜을 작성한다."
+description: |
+  온보딩 문서 생성. 입사 전~첫 주 체크리스트와 30-60-90 램프업 플랜을 작성한다.
+  Generates onboarding documents: pre-start-to-first-week checklists and a 30-60-90 ramp-up plan with milestone completion criteria. Use when: preparing onboarding for a new hire, creating a 30-60-90 plan or new-employee checklist, or turning ad-hoc team onboarding into a structured ramp-up program.
 category: hr
 complexity: basic
 mcp-servers: []

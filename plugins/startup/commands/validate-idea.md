@@ -1,6 +1,8 @@
 ---
 name: validate-idea
-description: "Build-Measure-Learn 기반 아이디어/가설 검증. 리스크가 높은 가설을 식별하고 실험을 설계한다."
+description: |
+  Build-Measure-Learn 기반 아이디어/가설 검증. 리스크가 높은 가설을 식별하고 실험을 설계한다.
+  Validates ideas and hypotheses using the Build-Measure-Learn loop: identifies the highest-risk hypotheses and designs experiments to test them. Use when: validating a startup idea, prioritizing risky assumptions, designing validation experiments, or applying lean startup hypothesis testing.
 category: strategy
 complexity: advanced
 ---

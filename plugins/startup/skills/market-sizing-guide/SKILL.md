@@ -4,6 +4,9 @@ description: |
   TAM/SAM/SOM 시장 규모 산정 가이드. Top-Down, Bottom-Up, Value Theory 3가지 접근법과
   산출 절차, 공개 데이터 소스, 투자자 관점 검증 기준을 제공한다.
   Use when: 시장 규모 산정, 투자 자료 준비, 시장 진입 판단 시
+  TAM/SAM/SOM market sizing guide covering the Top-Down, Bottom-Up, and Value Theory approaches
+  with calculation procedures, public data sources, and investor-perspective validation criteria.
+  Use when: estimating market size, preparing investor materials, or judging market entry.
 metadata:
   version: 1.0.0
   category: research

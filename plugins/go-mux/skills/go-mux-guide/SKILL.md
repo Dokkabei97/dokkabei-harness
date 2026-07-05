@@ -3,6 +3,7 @@ name: go-mux-guide
 description: |
   Go + stdlib net/http mux 개발 종합 가이드. 계층별 구현 패턴, database/sql 모범 사례, 테스트 전략을 제공한다.
   코드 작성 시 자동으로 참조하여 관용적 Go와 stdlib mux 모범 사례를 적용한다.
+  Comprehensive development guide for Go + stdlib net/http mux covering per-layer implementation patterns, database/sql best practices, and testing strategy, referenced automatically while writing code to keep it idiomatic. Use when: writing or reviewing Go stdlib mux HTTP code, designing database/sql queries or connection pools, planning Go test strategy.
 ---
 
 # Go + stdlib net/http mux Development Guide

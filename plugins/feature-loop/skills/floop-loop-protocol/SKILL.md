@@ -7,6 +7,7 @@ description: |
   (LOOP_TEST_CMD·LOOP_E2E_CMD·LOOP_PROMISE·LOOP_MAX_ITER·LOOP_MAX_MINUTES), loop-active 플래그 수명주기,
   가드레일 5종, BLOCKED.md 에스컬레이션을 정의한다. /floop-run으로 루프를 시작·재개할 때,
   중단된 루프를 복구할 때, 가드레일 기본값을 조정할 때, baseline 회귀 차단을 해석할 때, BLOCKED를 처리할 때 참조.
+  Defines the feature-loop Stage C operating protocol: the per-iteration cycle, the /floop-run resume protocol, the 4-part stop condition, env-var tuning (LOOP_TEST_CMD, LOOP_MAX_ITER, etc.), the loop-active flag lifecycle, 5 guardrails, and BLOCKED.md escalation. Use when: starting or resuming the loop, recovering an interrupted loop, tuning guardrails, or reading a baseline-regression block.
 ---
 
 # Feature Loop Protocol (브라운필드 Stage C)

@@ -1,6 +1,8 @@
 ---
 name: contract-counsel
-description: "계약 법무 전문 에이전트. 한국법(민법·상법) 기준으로 계약서의 독소조항·리스크 조항을 탐지하고, NDA·용역·위임·투자·라이선스 계약을 검토하거나 초안을 작성한다. 조항별 리스크 등급과 수정 문구를 제시한다."
+description: |
+  계약 법무 전문 에이전트. 한국법(민법·상법) 기준으로 계약서의 독소조항·리스크 조항을 탐지하고, NDA·용역·위임·투자·라이선스 계약을 검토하거나 초안을 작성한다. 조항별 리스크 등급과 수정 문구를 제시한다.
+  Contract counsel agent: detects toxic and high-risk clauses under Korean law (Civil/Commercial Code), reviews or drafts NDA, service, mandate, investment, and license agreements, and returns per-clause risk grades with redline wording. Use when: reviewing a contract, drafting an NDA or service agreement, flagging unfair clauses, contract risk grading.
 tools: ["Read", "Write", "Grep", "Glob", "WebSearch", "WebFetch"]
 model: opus
 ---

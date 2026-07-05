@@ -7,6 +7,7 @@ description: |
   legal:labor-ip-counsel 호출을 강제한다 — 법령 해석·적법성 확정 판단은 이 스킬 범위 밖.
   Use when: JD 작성, 채용 공고, 면접 설계, 평가 루브릭, 온보딩 문서 작업 시.
   hiring, job description, interview kit, rubric, onboarding 키워드에 트리거.
+  Practical hiring guide covering hiring funnel design, JD structure, competency-based (STAR) interviews with anchored rubrics, 30-60-90 onboarding standards, and a cross-plugin risk-escalation protocol that mandates calling legal:labor-ip-counsel on labor-law triggers. Use when: writing job descriptions or postings, designing interviews or evaluation rubrics, or drafting onboarding documents.
 metadata:
   version: 1.0.0
   category: hr

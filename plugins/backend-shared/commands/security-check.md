@@ -1,6 +1,8 @@
 ---
 name: security-check
-description: "인증/인가 설정 검증 — CORS, CSRF, 헤더 보안, 엔드포인트 보호 누락 탐지 (Spring Boot/FastAPI)"
+description: |
+  인증/인가 설정 검증 — CORS, CSRF, 헤더 보안, 엔드포인트 보호 누락 탐지 (Spring Boot/FastAPI)
+  Validates authentication/authorization configuration — CORS, CSRF, security headers, and detection of unprotected endpoints in Spring Boot/FastAPI. Use when: auditing security config, checking CORS/CSRF settings, finding endpoints missing auth protection, hardening HTTP headers.
 category: validation
 complexity: intermediate
 mcp-servers: []

@@ -1,6 +1,8 @@
 ---
 name: mvp-stop
-description: "MVP 루프 안전 중단(킬스위치) — loop-active 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 현 스토리 상태를 progress.md에 핸드오프 기록한 뒤 마스터 status를 paused로 전환. 가드레일과 별개의 수동 중단 수단"
+description: |
+  MVP 루프 안전 중단(킬스위치) — loop-active 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 현 스토리 상태를 progress.md에 핸드오프 기록한 뒤 마스터 status를 paused로 전환. 가드레일과 별개의 수동 중단 수단
+  Kill switch that safely halts the MVP loop: deletes loop-active to disarm the Stop-hook loop engine immediately, writes a handoff of the current story state to progress.md, and flips the master status to paused — a manual stop path independent of the guardrails. Use when: stopping or pausing a running MVP loop, aborting the autonomous loop safely.
 category: workflow
 complexity: basic
 mcp-servers: []

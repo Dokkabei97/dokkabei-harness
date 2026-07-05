@@ -1,6 +1,8 @@
 ---
 name: hybrid-search-architect
-description: "벡터 검색(kNN), 시맨틱 검색, 하이브리드 검색(RRF) 설계 전문 에이전트. 임베딩 모델 선택, dense_vector 매핑 설계, HNSW 튜닝, 하이브리드 검색 파이프라인 구축, 한국어 임베딩 최적화를 수행합니다."
+description: |
+  벡터 검색(kNN), 시맨틱 검색, 하이브리드 검색(RRF) 설계 전문 에이전트. 임베딩 모델 선택, dense_vector 매핑 설계, HNSW 튜닝, 하이브리드 검색 파이프라인 구축, 한국어 임베딩 최적화를 수행합니다.
+  Specialist agent for designing vector search (kNN), semantic search, and hybrid search (RRF) on Elasticsearch — embedding model selection, dense_vector mapping design, HNSW tuning, hybrid pipeline construction, Korean embedding optimization. Use when: building vector/semantic/hybrid search, choosing an embedding model, or tuning kNN and RRF.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

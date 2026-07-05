@@ -1,6 +1,8 @@
 ---
 name: resilience-patterns
-description: "회복 탄력성 패턴 레퍼런스 — Circuit Breaker(Resilience4j), Retry, Timeout, Bulkhead, Spring WebClient 에러 처리, httpx retry"
+description: |
+  회복 탄력성 패턴 레퍼런스 — Circuit Breaker(Resilience4j), Retry, Timeout, Bulkhead, Spring WebClient 에러 처리, httpx retry
+  Reference for resilience patterns — Circuit Breaker (Resilience4j), Retry, Timeout, Bulkhead, Spring WebClient error handling, and httpx retry. Use when: hardening calls to unreliable dependencies, adding circuit breakers or retries, setting timeouts, handling WebClient/httpx failures.
 ---
 
 # 회복 탄력성(Resilience) 패턴 레퍼런스

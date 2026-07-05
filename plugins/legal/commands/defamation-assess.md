@@ -1,6 +1,8 @@
 ---
 name: defamation-assess
-description: "명예훼손·모욕 리스크 평가. 구성요건 성립 가능성을 분석하고 피해자/피의자 관점별 대응 옵션을 제시한다. 형사 사안은 변호사 선임을 강하게 권고한다."
+description: |
+  명예훼손·모욕 리스크 평가. 구성요건 성립 가능성을 분석하고 피해자/피의자 관점별 대응 옵션을 제시한다. 형사 사안은 변호사 선임을 강하게 권고한다.
+  Assesses defamation and insult risk under Korean criminal law: analyzes whether statutory elements are met and lays out response options from both victim and accused perspectives, strongly recommending a lawyer for criminal matters. Use when: defamation or insult exposure check, cyber defamation over posts/reviews/comments, deciding how to respond as victim or accused.
 category: legal
 complexity: advanced
 ---

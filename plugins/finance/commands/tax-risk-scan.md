@@ -1,6 +1,8 @@
 ---
 name: tax-risk-scan
-description: "한국 세무 리스크 스크리닝. 부가세·원천세·법인세(종합소득세) 신고 관점에서 무신고/과소신고/증빙불비 리스크를 탐지하고 임박 기한을 표시한다."
+description: |
+  한국 세무 리스크 스크리닝. 부가세·원천세·법인세(종합소득세) 신고 관점에서 무신고/과소신고/증빙불비 리스크를 탐지하고 임박 기한을 표시한다.
+  Screens Korean tax risk from the filing perspective of VAT, withholding, and corporate/comprehensive income tax — detects non-filing, underreporting, and missing-documentation risks and highlights imminent deadlines. Use when: tax risk scan, checking filing deadlines, penalty exposure review, Korean tax compliance check.
 category: finance
 complexity: advanced
 mcp-servers: []

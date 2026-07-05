@@ -1,6 +1,8 @@
 ---
 name: graphql-check
-description: "GraphQL 스키마 검증 — 네이밍 컨벤션, N+1 감지, DataLoader 누락, depth limit, introspection, field-level 권한"
+description: |
+  GraphQL 스키마 검증 — 네이밍 컨벤션, N+1 감지, DataLoader 누락, depth limit, introspection, field-level 권한
+  Validates GraphQL schemas — naming conventions, N+1 detection, missing DataLoaders, depth limits, introspection exposure, and field-level authorization. Use when: reviewing a GraphQL schema, checking resolvers for N+1, hardening depth limit or introspection settings, auditing field permissions.
 category: validation
 complexity: intermediate
 mcp-servers: []

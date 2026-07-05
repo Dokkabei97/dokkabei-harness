@@ -1,6 +1,8 @@
 ---
 name: prd-authoring
-description: "MVP PRD 작성 표준 — 필수 섹션(문제정의·페르소나·범위 In/Out·유저스토리+AC·성공지표), Given-When-Then AC 작성법(mvp-verifier가 반증 가능한 검증형 문장), prd.json 스키마와 jq 검증식, 스코프 컷 2주 룰(결제·푸시알림·관리자 디폴트 Out), 1 스토리=1 루프 반복 크기 가이드. product-strategist가 Stage 1에서 prd.md/prd.json을 작성·수정할 때, mvp-verifier가 PRD를 반증할 때, gate-prd.sh 실패를 진단할 때 참조."
+description: |
+  MVP PRD 작성 표준 — 필수 섹션(문제정의·페르소나·범위 In/Out·유저스토리+AC·성공지표), Given-When-Then AC 작성법(mvp-verifier가 반증 가능한 검증형 문장), prd.json 스키마와 jq 검증식, 스코프 컷 2주 룰(결제·푸시알림·관리자 디폴트 Out), 1 스토리=1 루프 반복 크기 가이드. product-strategist가 Stage 1에서 prd.md/prd.json을 작성·수정할 때, mvp-verifier가 PRD를 반증할 때, gate-prd.sh 실패를 진단할 때 참조.
+  Authoring standard for MVP PRDs: required sections (problem, personas, scope In/Out, user stories + AC, success metrics), Given-When-Then AC style that mvp-verifier can falsify, prd.json schema with jq validation, the 2-week scope-cut rule, and 1-story-per-loop-iteration sizing. Use when: writing prd.md/prd.json in Stage 1, falsifying a PRD as mvp-verifier, or diagnosing gate-prd.sh failures.
 ---
 
 # MVP PRD 작성 표준

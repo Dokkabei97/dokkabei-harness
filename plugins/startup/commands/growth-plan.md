@@ -1,6 +1,8 @@
 ---
 name: growth-plan
-description: "AARRR 퍼널 기반 그로스 전략 수립. 채널 전략, 그로스 실험 백로그, 30/60/90일 실행 계획을 생성한다."
+description: |
+  AARRR 퍼널 기반 그로스 전략 수립. 채널 전략, 그로스 실험 백로그, 30/60/90일 실행 계획을 생성한다.
+  Builds an AARRR-funnel-based growth strategy, generating a channel strategy, a growth experiment backlog, and a 30/60/90-day execution plan. Use when: creating a marketing or growth plan, planning acquisition channels, or setting up a growth experiment roadmap.
 category: marketing
 complexity: advanced
 ---

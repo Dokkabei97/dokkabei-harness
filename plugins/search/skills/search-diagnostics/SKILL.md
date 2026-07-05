@@ -1,6 +1,8 @@
 ---
 name: search-diagnostics
-description: Use this skill when an Elasticsearch search misbehaves and you must localize the cause — results missing (문서가 검색에 안 잡힘), wrong ranking (순서·스코어 이상), slow/timeout (느림), or unstable latency (간헐 느림·p99 튐). Routes each symptom to the right diagnostic API (_profile, _explain, _termvectors, _validate, _analyze, _tasks/hot_threads/breaker) with decision trees and cross-links to deep references. Korean nori context, ES 8.x.
+description: |
+  Use this skill when an Elasticsearch search misbehaves and you must localize the cause — results missing (문서가 검색에 안 잡힘), wrong ranking (순서·스코어 이상), slow/timeout (느림), or unstable latency (간헐 느림·p99 튐). Routes each symptom to the right diagnostic API (_profile, _explain, _termvectors, _validate, _analyze, _tasks/hot_threads/breaker) with decision trees and cross-links to deep references. Korean nori context, ES 8.x.
+  Diagnoses misbehaving Elasticsearch searches by routing each symptom to the right diagnostic API with decision trees. Use when: documents are not showing up in search results, ranking or relevance scores look wrong, queries are slow or time out, or latency is intermittently unstable with p99 spikes on an ES 8.x cluster.
 ---
 
 # Search Diagnostics (진단 허브)

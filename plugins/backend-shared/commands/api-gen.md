@@ -1,6 +1,8 @@
 ---
 name: api-gen
-description: "API 엔드포인트 스캐폴딩 생성 — Controller/Router, Service, DTO/Schema, 테스트 스텁 (REST/GraphQL, Kotlin/Python)"
+description: |
+  API 엔드포인트 스캐폴딩 생성 — Controller/Router, Service, DTO/Schema, 테스트 스텁 (REST/GraphQL, Kotlin/Python)
+  Scaffolds API endpoints — Controller/Router, Service, DTO/Schema, and test stubs for REST/GraphQL in Kotlin/Python. Use when: scaffolding a new endpoint, generating boilerplate controller/service/DTO layers, creating test stubs for a new API.
 category: scaffold
 complexity: basic
 mcp-servers: []

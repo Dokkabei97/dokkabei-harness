@@ -4,6 +4,7 @@ description: |
   한국 노동·지식재산 실무 가이드. 근로계약·해고·임금 리스크(근로기준법),
   상표·저작권·특허·영업비밀 보호 전략, 직무발명·업무상저작물 귀속을 제공한다.
   Use when: 고용 리스크 진단, 해고·임금 검토, IP 권리 확보·침해 대응 시
+  Korean labor and IP practice guide: employment contract, dismissal, and wage risk (Labor Standards Act), trademark/copyright/patent/trade-secret protection strategy, and ownership of employee inventions and works made for hire. Use when: employment risk diagnosis, dismissal or wage review, securing IP rights, responding to infringement.
 metadata:
   version: 1.0.0
   category: legal

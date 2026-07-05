@@ -4,6 +4,9 @@ description: |
   유닛 이코노믹스 프레임워크 가이드. CAC/LTV/Payback Period 계산법,
   수익 모델별 핵심 지표, 번레이트/런웨이 관리, 벤치마크를 제공한다.
   Use when: 재무 지표 분석, 수익 모델 설계, 투자 유치 재무 준비 시
+  Unit economics framework guide covering CAC/LTV/Payback Period calculation methods,
+  key metrics per revenue model, burn rate/runway management, and benchmarks.
+  Use when: analyzing financial metrics, designing a revenue model, or preparing financials for fundraising.
 metadata:
   version: 1.0.0
   category: finance

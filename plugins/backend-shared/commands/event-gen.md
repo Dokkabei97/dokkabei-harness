@@ -1,6 +1,8 @@
 ---
 name: event-gen
-description: "이벤트 기반 코드 스캐폴딩 생성 — Kafka Producer/Consumer, Spring ApplicationEvent, AsyncAPI 스펙"
+description: |
+  이벤트 기반 코드 스캐폴딩 생성 — Kafka Producer/Consumer, Spring ApplicationEvent, AsyncAPI 스펙
+  Scaffolds event-driven code — Kafka Producer/Consumer, Spring ApplicationEvent, and AsyncAPI specs. Use when: adding Kafka producers or consumers, wiring Spring application events, writing an AsyncAPI spec for event contracts.
 category: scaffold
 complexity: basic
 mcp-servers: []

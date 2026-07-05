@@ -1,6 +1,8 @@
 ---
 name: pitch-deck
-description: "피치덱 구조 설계. 투자자 관점에서 스토리라인을 구성하고 슬라이드별 핵심 메시지를 정의한다."
+description: |
+  피치덱 구조 설계. 투자자 관점에서 스토리라인을 구성하고 슬라이드별 핵심 메시지를 정의한다.
+  Designs a pitch deck structure from an investor's perspective, building the storyline and defining the core message of each slide. Use when: creating a pitch deck outline, preparing an IR presentation, structuring an investor story, or defining slide-by-slide key messages.
 category: fundraising
 complexity: advanced
 ---

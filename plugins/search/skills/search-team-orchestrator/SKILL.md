@@ -1,6 +1,8 @@
 ---
 name: search-team-orchestrator
-description: "검색플랫폼팀 하네스 오케스트레이터. 검색 관련 복합 작업을 분석하여 전문 에이전트를 선택·조합하고, 병렬 분석 결과를 통합하여 통합 보고서를 산출합니다. 검색 설계, 리뷰, 최적화, 파이프라인 작업에 자동 트리거됩니다."
+description: |
+  검색플랫폼팀 하네스 오케스트레이터. 검색 관련 복합 작업을 분석하여 전문 에이전트를 선택·조합하고, 병렬 분석 결과를 통합하여 통합 보고서를 산출합니다. 검색 설계, 리뷰, 최적화, 파이프라인 작업에 자동 트리거됩니다.
+  Search platform team harness orchestrator — analyzes complex search-related tasks, selects and combines specialist agents, and merges their parallel analysis results into a unified report. Use when: multi-faceted search work spanning design, review, optimization, or pipeline tasks that needs multiple search experts coordinated in one pass.
 ---
 
 # Search Team Orchestrator

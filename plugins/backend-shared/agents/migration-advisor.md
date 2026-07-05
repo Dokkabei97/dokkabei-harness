@@ -1,6 +1,8 @@
 ---
 name: migration-advisor
-description: DB 마이그레이션 안전성 전문가 — Flyway/Alembic, 무중단 스키마 변경, expand-contract 패턴, 롤백 전략, 데이터 백필, 인덱스 영향 분석
+description: |
+  DB 마이그레이션 안전성 전문가 — Flyway/Alembic, 무중단 스키마 변경, expand-contract 패턴, 롤백 전략, 데이터 백필, 인덱스 영향 분석
+  Advises on database migration safety — Flyway/Alembic, zero-downtime schema changes, the expand-contract pattern, rollback strategy, data backfill, and index impact analysis. Use when: reviewing a DB migration, planning a zero-downtime schema change, writing rollback scripts, assessing index or backfill impact.
 tools: Read, Grep, Glob, Bash
 model: opus
 ---

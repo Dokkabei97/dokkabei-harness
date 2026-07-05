@@ -1,6 +1,8 @@
 ---
 name: async-event-patterns
-description: "비동기 & 이벤트 패턴 레퍼런스 — Kotlin Coroutines, Spring Kafka Producer/Consumer, FastAPI BackgroundTasks, PG/Valkey/Kafka 인프라 연동"
+description: |
+  비동기 & 이벤트 패턴 레퍼런스 — Kotlin Coroutines, Spring Kafka Producer/Consumer, FastAPI BackgroundTasks, PG/Valkey/Kafka 인프라 연동
+  Reference for async and event-driven patterns — Kotlin Coroutines, Spring Kafka Producer/Consumer, FastAPI BackgroundTasks, and PG/Valkey/Kafka infrastructure integration. Use when: writing coroutine or background-task code, implementing Kafka producers/consumers, wiring async infra integrations.
 ---
 
 # 비동기 & 이벤트 패턴 레퍼런스

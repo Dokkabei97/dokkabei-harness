@@ -3,6 +3,7 @@ name: python-fastapi-guide
 description: |
   Python + FastAPI 개발 원칙/의사결정 가이드. Pythonic First 철학, 레이어 규율, Fail Fast, 아키텍처·스택·테스트 프레임워크 선택 기준을 제공한다.
   구체적 구현 코드 예제(Depends DI, Pydantic v2, async SQLAlchemy, Alembic, Strawberry 관용구)는 fastapi-patterns를 참조할 것.
+  Provides Python + FastAPI development principles and decision guidance: Pythonic First philosophy, layer discipline, Fail Fast, and selection criteria for architecture, stack, and test frameworks. Use when: deciding FastAPI project structure or architecture, choosing test frameworks, or applying Python backend design principles; for concrete code idioms see fastapi-patterns.
 ---
 
 # Python + FastAPI Development Guide

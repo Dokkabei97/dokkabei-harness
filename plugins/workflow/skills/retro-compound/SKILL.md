@@ -11,6 +11,7 @@ description: |
   Delegation boundaries: 컨벤션 변화의 CLAUDE.md 반영은 workflow:sync-claude-md에 위임(직접
   편집 금지), 가드 훅 스캐폴딩은 harness:create-flow에 위임(이 스킬은 #가드-훅-후보 태그
   표기까지만), 플러그인 스킬 본문은 수정 제안만 산출(자동 수정 금지).
+  Provides a lesson-compounding methodology for session retrospectives: extracts corrections, mistakes, and discoveries, filters by quality criteria, and routes them to tasks/lessons.md, CLAUDE.md sync delegation, or skill-edit proposals with duplicate checks and user-approval gates. Use when: running /retro, doing a retrospective, consolidating lessons learned, preventing repeated mistakes.
 metadata:
   version: 1.0.0
   category: workflow

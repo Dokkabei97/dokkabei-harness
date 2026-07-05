@@ -1,6 +1,8 @@
 ---
 name: loop-run
-description: "단발 반복 작업용 경량 루프 시작 — 목표 프롬프트와 --gate-cmd(필수)로 loop-active(engine=generic)·loop-state.json을 초기화하고 Stop훅 루프 엔진(generic-loop-stop-hook.sh)에 진입. 정지조건(결정론 게이트 그린+completion promise)은 훅이 판정. prd/tasks 산출물 구조 없이 'lint 0까지'·'테스트 그린까지' 류 반복에 사용"
+description: |
+  단발 반복 작업용 경량 루프 시작 — 목표 프롬프트와 --gate-cmd(필수)로 loop-active(engine=generic)·loop-state.json을 초기화하고 Stop훅 루프 엔진(generic-loop-stop-hook.sh)에 진입. 정지조건(결정론 게이트 그린+completion promise)은 훅이 판정. prd/tasks 산출물 구조 없이 'lint 0까지'·'테스트 그린까지' 류 반복에 사용
+  Starts a lightweight generic loop for one-off iterative tasks: a goal prompt plus required --gate-cmd initializes loop-active (engine=generic) and loop-state.json and enters the Stop-hook loop engine (generic-loop-stop-hook.sh), which judges the stop condition (deterministic gate green + completion promise). Use when: loop until lint is 0 or tests are green, no prd/tasks artifacts needed.
 category: workflow
 complexity: basic
 mcp-servers: []

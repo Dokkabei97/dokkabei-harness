@@ -7,6 +7,7 @@ description: |
   Use when: finance 에이전트·커맨드가 산출물의 전문가 상담 필요 수준을 판정할 때,
   escalation, 세무조사, 소명 요구, 과세예고, 신고기한, 가산세 위험 키워드 감지 시.
   세목·증빙 기초 지식은 korean-tax-foundations에 위임.
+  Escalation policy for the finance/tax harness: scores mandatory vs recommended triggers on three axes (tax-audit likelihood × amount scale × filing-deadline proximity) and, on mandatory triggers, forces a top-of-report warning to consult a tax accountant/CPA. Use when: deciding whether a finance output needs expert referral — tax audit, deadline, or penalty-risk escalation.
 metadata:
   version: 1.0.0
   category: finance

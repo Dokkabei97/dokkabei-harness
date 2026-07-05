@@ -1,6 +1,8 @@
 ---
 name: financial-modeler
-description: "재무 모델링 전문 에이전트. 유닛 이코노믹스 분석, 번레이트/런웨이 계산, 수익 모델 설계, 펀딩 전략 수립을 수행한다. 스타트업 단계별 재무 지표와 투자 유치 준비를 지원한다."
+description: |
+  재무 모델링 전문 에이전트. 유닛 이코노믹스 분석, 번레이트/런웨이 계산, 수익 모델 설계, 펀딩 전략 수립을 수행한다. 스타트업 단계별 재무 지표와 투자 유치 준비를 지원한다.
+  Financial modeling agent that performs unit economics analysis, burn rate/runway calculation, revenue model design, and funding strategy, supporting stage-specific startup financial metrics and fundraising preparation. Use when: modeling startup finances, computing CAC/LTV, burn rate, or runway, or preparing for investment.
 tools: ["Read", "Write", "Grep", "Glob", "Bash", "WebSearch", "WebFetch"]
 model: opus
 ---

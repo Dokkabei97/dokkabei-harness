@@ -1,6 +1,8 @@
 ---
 name: floop-stop
-description: "feature-loop 루프 안전 중단(킬스위치) — loop-active 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 현 task 상태를 progress.md에 핸드오프 기록한 뒤 마스터 status를 paused로 전환. 가드레일과 별개의 수동 중단 수단"
+description: |
+  feature-loop 루프 안전 중단(킬스위치) — loop-active 삭제로 Stop훅 루프 엔진을 즉시 무력화하고, 현 task 상태를 progress.md에 핸드오프 기록한 뒤 마스터 status를 paused로 전환. 가드레일과 별개의 수동 중단 수단
+  Kill switch for the feature-loop loop: deletes loop-active to instantly disarm the Stop-hook loop engine, records the current task state to progress.md as a handoff, then flips the master status to paused. Use when: stopping, pausing, or cancelling a running feature loop safely — a manual stop mechanism independent of the automatic guardrails.
 category: workflow
 complexity: basic
 mcp-servers: []

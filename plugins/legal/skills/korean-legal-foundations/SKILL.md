@@ -4,6 +4,7 @@ description: |
   한국법 법무 하네스 공통 기초. 법체계·법원(法源) 위계, 법령 인용·검증 규칙,
   면책 원칙과 변호사 에스컬레이션 기준, 사실/평가 구분 원칙을 제공한다.
   Use when: 모든 법률 자문의 공통 토대가 필요할 때, 법령 인용·면책 처리 시
+  Common foundations for the Korean legal harness: hierarchy of legal sources, statute citation and verification rules, disclaimer principles, lawyer-escalation criteria, and fact/opinion separation. Use when: any Korean legal advice needs a shared baseline, citing or verifying statutes, handling disclaimers or escalation to a lawyer.
 metadata:
   version: 1.0.0
   category: legal

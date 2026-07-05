@@ -1,6 +1,8 @@
 ---
 name: sql-analyze
-description: "SQL 쿼리 성능 분석 — 풀스캔 탐지, 인덱스 활용도, 서브쿼리 효율성, 조인 최적화"
+description: |
+  SQL 쿼리 성능 분석 — 풀스캔 탐지, 인덱스 활용도, 서브쿼리 효율성, 조인 최적화
+  Analyzes SQL query performance — detects full table scans, evaluates index utilization, checks subquery efficiency, and suggests join optimizations. Use when: reviewing slow SQL queries, optimizing database query performance, finding missing indexes, tuning JOINs or subqueries, diagnosing slow query causes.
 category: review
 complexity: standard
 mcp-servers: []

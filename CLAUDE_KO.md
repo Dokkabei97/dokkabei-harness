@@ -32,6 +32,9 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 19
 ## 컨벤션
 
 - 커밋: Conventional Commits + 한국어 본문 (`feat(scope): …`, `fix(base): …`)
+- 컴포넌트 description(스킬/커맨드/에이전트 frontmatter)은 **이중언어**: 한글 원문 먼저, 그 뒤에
+  영어 요약 + `Use when: …` 트리거절을 덧붙인다 (한/영 프롬프트 양쪽에서 발화 유지;
+  총 1,400자 이하 — 스킬 목록은 1,536자에서 잘림)
 - 컴포넌트 규칙·검증 룰셋: `plugins/harness/skills/flow-validation/` (`/verify-flow`가 사용;
   SKILL.md 토큰 예산 <3.5k 최적)
 - 스캐폴딩 템플릿: `plugins/harness/skills/flow-scaffolding/` (`/create-flow`가 사용)

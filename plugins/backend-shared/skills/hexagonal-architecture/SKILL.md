@@ -1,6 +1,8 @@
 ---
 name: hexagonal-architecture
-description: "헥사고날 아키텍처 가이드 — 포트/어댑터 구조, 패키지 레이아웃(Kotlin/Python), 의존성 방향, 모듈 경계"
+description: |
+  헥사고날 아키텍처 가이드 — 포트/어댑터 구조, 패키지 레이아웃(Kotlin/Python), 의존성 방향, 모듈 경계
+  Guide to hexagonal architecture — ports/adapters structure, package layout for Kotlin/Python, dependency direction, and module boundaries. Use when: structuring a new service, organizing packages by ports and adapters, enforcing dependency direction, defining module boundaries.
 ---
 
 # 헥사고날 아키텍처 가이드

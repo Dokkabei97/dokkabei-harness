@@ -1,6 +1,8 @@
 ---
 name: graphql-design-guide
-description: "GraphQL 스키마 설계 & 성능 & 보안 가이드 — 네이밍, 페이지네이션, 에러 처리, DataLoader, 쿼리 복잡도, 보안 체크리스트"
+description: |
+  GraphQL 스키마 설계 & 성능 & 보안 가이드 — 네이밍, 페이지네이션, 에러 처리, DataLoader, 쿼리 복잡도, 보안 체크리스트
+  Guide to GraphQL schema design, performance, and security — naming, pagination, error handling, DataLoader, query complexity, and a security checklist. Use when: designing a GraphQL schema, adding pagination or error conventions, preventing N+1 with DataLoader, securing a GraphQL API.
 ---
 
 # GraphQL 스키마 설계 & 성능 & 보안 가이드

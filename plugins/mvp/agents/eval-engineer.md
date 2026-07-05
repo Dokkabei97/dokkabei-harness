@@ -1,6 +1,8 @@
 ---
 name: eval-engineer
-description: "MVP 하네스의 제품 검증 엔지니어 — '검증된 코드(verified code) ≠ 검증된 제품(validated product)' 간극을 메운다. PRD 성공지표가 모델 품질(분류 정확도·F1·관련성·추천 적중 등)에 의존할 때, Fake 주입 회귀 테스트로는 닿지 않는 실제 품질을 평가 하니스로 실측한다. ① 골든셋(라벨링된 held-out 평가셋) 구축 또는 적재 ② 실제 LLM/모델 호출로 예측 수집 — 결정론 회귀 게이트와 분리(@pytest.mark.eval, 기본 skip, 비결정·유료) ③ sklearn 등으로 지표 산출(macro F1·클래스별 P/R·혼동행렬·실패 사례) ④ .planning/eval/report.json 기록 + PRD 임계값 대비 PASS/FAIL. 기존 결정론 회귀 테스트를 약화·대체하지 않는다(별도 마커·별도 실행). Use when 핵심 분류/생성/추천 스토리 완료 후 또는 Stage 4 종료 후 PRD 성공지표(F1≥X 등)를 실제 데이터로 측정해야 할 때."
+description: |
+  MVP 하네스의 제품 검증 엔지니어 — '검증된 코드(verified code) ≠ 검증된 제품(validated product)' 간극을 메운다. PRD 성공지표가 모델 품질(분류 정확도·F1·관련성·추천 적중 등)에 의존할 때, Fake 주입 회귀 테스트로는 닿지 않는 실제 품질을 평가 하니스로 실측한다. ① 골든셋(라벨링된 held-out 평가셋) 구축 또는 적재 ② 실제 LLM/모델 호출로 예측 수집 — 결정론 회귀 게이트와 분리(@pytest.mark.eval, 기본 skip, 비결정·유료) ③ sklearn 등으로 지표 산출(macro F1·클래스별 P/R·혼동행렬·실패 사례) ④ .planning/eval/report.json 기록 + PRD 임계값 대비 PASS/FAIL. 기존 결정론 회귀 테스트를 약화·대체하지 않는다(별도 마커·별도 실행). Use when 핵심 분류/생성/추천 스토리 완료 후 또는 Stage 4 종료 후 PRD 성공지표(F1≥X 등)를 실제 데이터로 측정해야 할 때.
+  Product-validation engineer bridging the 'verified code vs validated product' gap: builds a labeled golden set, collects predictions via real LLM calls separated from deterministic gates (@pytest.mark.eval), computes macro F1, and records .planning/eval/report.json with PASS/FAIL vs PRD thresholds. Use when: measuring PRD success metrics (F1, accuracy) on real data after core stories or Stage 4.
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
 model: opus
 ---

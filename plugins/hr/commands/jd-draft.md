@@ -1,6 +1,8 @@
 ---
 name: jd-draft
-description: "직무기술서(JD) 초안 작성. 역할·책임·요건을 구조화하고 차별 표현 검사를 수행한다."
+description: |
+  직무기술서(JD) 초안 작성. 역할·책임·요건을 구조화하고 차별 표현 검사를 수행한다.
+  Drafts a job description (JD) by structuring the role, responsibilities, and required/preferred qualifications, and runs a discriminatory-wording check on the posting. Use when: writing a job posting or JD draft, restructuring an existing JD, or checking a job ad for biased or discriminatory language before publishing.
 category: hr
 complexity: basic
 mcp-servers: []

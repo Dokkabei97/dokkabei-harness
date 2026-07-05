@@ -1,6 +1,8 @@
 ---
 name: floop-gate
-description: "현 Stage 게이트 수동 (재)실행 — 마스터 파일에서 Stage를 판별해 해당 결정론 게이트 스크립트(gates/*.sh)를 Bash로 실행하고 baseline 회귀를 점검한 뒤, feature-verifier를 디스패치해 ✅ 통과/⚠️ 실패/❓ 모호로 보고"
+description: |
+  현 Stage 게이트 수동 (재)실행 — 마스터 파일에서 Stage를 판별해 해당 결정론 게이트 스크립트(gates/*.sh)를 Bash로 실행하고 baseline 회귀를 점검한 뒤, feature-verifier를 디스패치해 ✅ 통과/⚠️ 실패/❓ 모호로 보고
+  Manually (re)runs the current Stage gate: determines the Stage from the master file, executes the matching deterministic gate script (gates/*.sh) via Bash, checks for baseline regressions, then dispatches feature-verifier and reports pass/fail/ambiguous. Use when: re-running a failed feature-loop gate, or re-checking gate status after manual fixes.
 category: utility
 complexity: basic
 mcp-servers: []

@@ -1,6 +1,8 @@
 ---
 name: release-notes
-description: "GitLab 릴리즈 노트·체인지로그 자동 생성. 직전 릴리즈 태그 이후 머지된 MR을 glab으로 수집하고, conventional commit/MR 제목으로 변경 유형을 분류해 한국어 체인지로그 초안을 만든다. semver 다음 버전을 제안하고, 태그·GitLab Release 생성 명령을 안내한다(원격 반영은 사용자 승인 후)."
+description: |
+  GitLab 릴리즈 노트·체인지로그 자동 생성. 직전 릴리즈 태그 이후 머지된 MR을 glab으로 수집하고, conventional commit/MR 제목으로 변경 유형을 분류해 한국어 체인지로그 초안을 만든다. semver 다음 버전을 제안하고, 태그·GitLab Release 생성 명령을 안내한다(원격 반영은 사용자 승인 후).
+  Generates GitLab release notes and changelogs: collects MRs merged since the last release tag via glab, classifies change types from conventional commit/MR titles into a changelog draft, proposes the next semver version, and guides tag/GitLab Release creation (remote push only after user approval). Use when: writing release notes, generating a changelog, cutting a release, bumping the version.
 category: workflow
 complexity: standard
 mcp-servers: []

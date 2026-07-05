@@ -1,6 +1,8 @@
 ---
 name: contract-review
-description: "계약서 독소조항 검토. 조항별 리스크 등급과 수정 문구(redline)를 제시하고 누락 조항을 식별한다."
+description: |
+  계약서 독소조항 검토. 조항별 리스크 등급과 수정 문구(redline)를 제시하고 누락 조항을 식별한다.
+  Reviews a contract for toxic clauses under Korean law, grading risk per clause, proposing redline wording, and identifying missing clauses. Use when: contract review, checking an NDA or service agreement for unfair terms, spotting missing protective clauses before signing.
 category: legal
 complexity: standard
 ---

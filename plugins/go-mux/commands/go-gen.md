@@ -1,6 +1,8 @@
 ---
 name: go-gen
-description: "Go stdlib mux CRUD 계층 코드 생성. 도메인명을 입력하면 Model, Repository, Service, Handler, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다."
+description: |
+  Go stdlib mux CRUD 계층 코드 생성. 도메인명을 입력하면 Model, Repository, Service, Handler, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
+  Generates CRUD layer code for Go stdlib net/http mux projects: given a domain name, scaffolds Model, Repository, Service, Handler, DTO, and Test to match project conventions. Use when: "create an Order handler", "generate Product CRUD", adding a new domain layer to an existing Go project, or scaffolding the standard layer structure in a Go stdlib mux codebase.
 category: development
 complexity: advanced
 mcp-servers: []

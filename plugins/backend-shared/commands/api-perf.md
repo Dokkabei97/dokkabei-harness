@@ -1,6 +1,8 @@
 ---
 name: api-perf
-description: "API 성능 분석 — N+1 쿼리(JPA/SQLAlchemy), 커넥션 풀 설정, 쿼리 실행계획 힌트"
+description: |
+  API 성능 분석 — N+1 쿼리(JPA/SQLAlchemy), 커넥션 풀 설정, 쿼리 실행계획 힌트
+  Analyzes API performance — N+1 queries (JPA/SQLAlchemy), connection pool configuration, and query execution plan hints. Use when: an API endpoint is slow, hunting N+1 query problems, tuning connection pools, reviewing query execution plans.
 category: validation
 complexity: intermediate
 mcp-servers: []

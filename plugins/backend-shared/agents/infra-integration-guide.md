@@ -1,6 +1,8 @@
 ---
 name: infra-integration-guide
-description: PG/Valkey/Kafka 인프라 연동 전문가 — 커넥션 관리, 직렬화, 에러 처리, 테스트 패턴 (Kotlin/Spring Boot, Python/FastAPI)
+description: |
+  PG/Valkey/Kafka 인프라 연동 전문가 — 커넥션 관리, 직렬화, 에러 처리, 테스트 패턴 (Kotlin/Spring Boot, Python/FastAPI)
+  Guides integration with PG/Valkey/Kafka infrastructure — connection management, serialization, error handling, and test patterns for Kotlin/Spring Boot and Python/FastAPI. Use when: connecting a service to PostgreSQL, Valkey, or Kafka, tuning connection pools, choosing serialization strategies, testing infra integrations.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

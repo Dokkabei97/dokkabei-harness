@@ -5,6 +5,7 @@ description: |
   성 관련 범죄 개관, 협박·스토킹, 증거 보전과 피해자/피의자 대응 절차를 제공한다.
   형사 사안은 변호사 선임을 전제로 한다.
   Use when: 명예훼손·모욕·성범죄·협박 등 형사 리스크 평가, 대응 설계 시
+  Korean criminal and dispute risk guide: elements of defamation, insult, and cyber defamation, an overview of sex-related offenses, intimidation and stalking, evidence preservation, and victim/accused response procedures — premised on retaining a lawyer for criminal matters. Use when: assessing defamation, insult, sex-crime, or intimidation risk and designing a response.
 metadata:
   version: 1.0.0
   category: legal

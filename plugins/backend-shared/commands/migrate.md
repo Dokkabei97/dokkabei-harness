@@ -1,6 +1,8 @@
 ---
 name: migrate
-description: "안전한 DB 마이그레이션 생성 — Flyway/Alembic, 무중단 호환성 검증, expand-contract 패턴, 롤백 스크립트"
+description: |
+  안전한 DB 마이그레이션 생성 — Flyway/Alembic, 무중단 호환성 검증, expand-contract 패턴, 롤백 스크립트
+  Generates safe database migrations — Flyway/Alembic, zero-downtime compatibility verification, the expand-contract pattern, and rollback scripts. Use when: writing a schema migration, renaming or dropping columns safely, planning zero-downtime DB changes, preparing rollback scripts.
 category: database
 complexity: intermediate
 mcp-servers: []

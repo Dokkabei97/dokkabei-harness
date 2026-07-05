@@ -1,6 +1,8 @@
 ---
 name: mvp-run
-description: "MVP 개발 루프(Stage 4) 시작/재개 — 마스터 파일 status 기반 재개 프로토콜 수행 후 loop-active 플래그와 loop-state.json을 초기화하고 Stop훅 루프 엔진에 진입. 정지조건(결정론 게이트 그린+all-passes+verified 마커+E2E 게이트(선택)+completion promise)은 훅이 판정"
+description: |
+  MVP 개발 루프(Stage 4) 시작/재개 — 마스터 파일 status 기반 재개 프로토콜 수행 후 loop-active 플래그와 loop-state.json을 초기화하고 Stop훅 루프 엔진에 진입. 정지조건(결정론 게이트 그린+all-passes+verified 마커+E2E 게이트(선택)+completion promise)은 훅이 판정
+  Starts or resumes the MVP dev loop (Stage 4): runs the status-based resume protocol from the master file, initializes the loop-active flag and loop-state.json, and enters the Stop-hook loop engine; the hook judges stop conditions (gates green, all-passes, verified markers, completion promise). Use when: starting or resuming the autonomous story-implementation loop after scaffolding.
 category: workflow
 complexity: advanced
 mcp-servers: []

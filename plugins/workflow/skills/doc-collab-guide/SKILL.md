@@ -1,6 +1,8 @@
 ---
 name: doc-collab-guide
-description: 기획서·제안서·보고서 등 긴 문서를 사용자와 공동 작성할 때 사용. 공식 doc-coauthoring 스킬(anthropics/skills) 의존 설치 안내, 아웃라인 승인 게이트(mvp G1 차용), base 훅(block-md-creation) 충돌 우회 경로를 정의한다. Use when: "문서 같이 쓰자", "제안서/기획서/보고서 초안", "공동 작성", co-authoring documents, proposals, long-form docs. 위임 경계 — 법률 문서는 /draft-legal-doc, 피치덱은 /pitch-deck, PRD는 mvp prd-authoring 우선. 이 스킬은 그 외 일반 장문 문서 전용.
+description: |
+  기획서·제안서·보고서 등 긴 문서를 사용자와 공동 작성할 때 사용. 공식 doc-coauthoring 스킬(anthropics/skills) 의존 설치 안내, 아웃라인 승인 게이트(mvp G1 차용), base 훅(block-md-creation) 충돌 우회 경로를 정의한다. Use when: "문서 같이 쓰자", "제안서/기획서/보고서 초안", "공동 작성", co-authoring documents, proposals, long-form docs. 위임 경계 — 법률 문서는 /draft-legal-doc, 피치덱은 /pitch-deck, PRD는 mvp prd-authoring 우선. 이 스킬은 그 외 일반 장문 문서 전용.
+  Defines the co-authoring protocol for long-form documents (plans, proposals, reports) — install guidance for the official doc-coauthoring skill (anthropics/skills), an outline approval gate (mvp G1), and a bypass for the base block-md-creation hook. Use when: co-writing or drafting proposals, planning docs, reports, long documents; legal docs, pitch decks, and PRDs are delegated elsewhere.
 ---
 
 # Doc Collab Guide — 긴 문서 공동 작성 규약

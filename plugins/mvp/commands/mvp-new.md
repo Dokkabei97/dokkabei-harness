@@ -1,6 +1,8 @@
 ---
 name: mvp-new
-description: "MVP 하네스 진입점 — 아이디어 한 줄을 받아 Stage 0~3(인테이크→기획 PRD→디자인 스펙→스택 선택·스캐폴딩)을 게이트 기반으로 실행하고 개발 루프 가동 여부를 확인. 그린필드 전용"
+description: |
+  MVP 하네스 진입점 — 아이디어 한 줄을 받아 Stage 0~3(인테이크→기획 PRD→디자인 스펙→스택 선택·스캐폴딩)을 게이트 기반으로 실행하고 개발 루프 가동 여부를 확인. 그린필드 전용
+  Entry point of the MVP harness: takes a one-line idea and runs Stage 0-3 (intake → PRD → design spec → stack selection/scaffolding) as a gated pipeline, then confirms whether to start the dev loop. Use when: starting a brand-new greenfield service/MVP from an idea, scaffolding a new product from scratch.
 category: workflow
 complexity: advanced
 mcp-servers: []

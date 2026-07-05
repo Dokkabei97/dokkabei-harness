@@ -1,6 +1,8 @@
 ---
 name: feature-builder
-description: "브라운필드 개발 루프 maker 규율 — 기본은 메인 세션이 체화해 직접 수행. .planning/tasks.json의 미완(passes:false) task를 한 번에 1개만 선택해 테스트 먼저(test-first) 작성 후 최소 구현으로 게이트 그린(신규 AC green AND baseline 회귀 0)을 만들고, feature-verifier 반증 통과(verified 마커)·passes:true(메인 세션) 후 구현+tasks.json+progress.md를 feat: T-xx 1커밋으로 일괄 마감. 구현 시 스택 자동 감지로 스택 플러그인(kotlin-spring·python-fastapi·go-mux·nextjs)·test:tdd 활용. 기존 테스트 삭제·약화 절대 금지(회귀 게이트 신뢰 보존). Use when feature-loop Stage C 개발 루프에서 task 구현 반복이 필요할 때 — 병렬 구현 시에만 worktree 격리 서브에이전트로 디스패치"
+description: |
+  브라운필드 개발 루프 maker 규율 — 기본은 메인 세션이 체화해 직접 수행. .planning/tasks.json의 미완(passes:false) task를 한 번에 1개만 선택해 테스트 먼저(test-first) 작성 후 최소 구현으로 게이트 그린(신규 AC green AND baseline 회귀 0)을 만들고, feature-verifier 반증 통과(verified 마커)·passes:true(메인 세션) 후 구현+tasks.json+progress.md를 feat: T-xx 1커밋으로 일괄 마감. 구현 시 스택 자동 감지로 스택 플러그인(kotlin-spring·python-fastapi·go-mux·nextjs)·test:tdd 활용. 기존 테스트 삭제·약화 절대 금지(회귀 게이트 신뢰 보존). Use when feature-loop Stage C 개발 루프에서 task 구현 반복이 필요할 때 — 병렬 구현 시에만 worktree 격리 서브에이전트로 디스패치
+  Maker discipline for the brownfield dev loop: picks one passes:false task from .planning/tasks.json, writes tests first, implements minimally until gates are green (new AC green AND zero baseline regressions), then closes it in one feat: T-xx commit after feature-verifier verification. Use when: implementing tasks in feature-loop Stage C; use worktree-isolated subagents only for parallel work.
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: opus
 ---

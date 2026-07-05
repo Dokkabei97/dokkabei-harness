@@ -1,6 +1,8 @@
 ---
 name: naming-conventions
-description: "Kotlin 네이밍 관용구 — 목적 중심 네이밍(is_expired vs expired_at), Enum value/name 통일, 변환 함수 동사형(convertTo~), const 대문자, 파라미터/도메인 용어 일관성, Map 파라미터 지양, 확장함수 vs 일반함수. Kotlin 작성/리팩토링/코드 리뷰 시 참조."
+description: |
+  Kotlin 네이밍 관용구 — 목적 중심 네이밍(is_expired vs expired_at), Enum value/name 통일, 변환 함수 동사형(convertTo~), const 대문자, 파라미터/도메인 용어 일관성, Map 파라미터 지양, 확장함수 vs 일반함수. Kotlin 작성/리팩토링/코드 리뷰 시 참조.
+  Kotlin naming idiom reference — purpose-driven naming (is_expired vs expired_at), consistent Enum value/name, verb-form conversion functions (convertTo~), uppercase const, consistent parameter/domain terminology, avoiding Map parameters, extension vs regular functions. Use when: writing or refactoring Kotlin code, doing Kotlin code review, or settling naming debates.
 ---
 
 # Kotlin 네이밍 관용구

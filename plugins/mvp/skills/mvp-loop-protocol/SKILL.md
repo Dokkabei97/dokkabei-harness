@@ -7,6 +7,11 @@ description: |
   (LOOP_TEST_CMD·LOOP_PROMISE·LOOP_MAX_ITER·LOOP_MAX_MINUTES), loop-active 플래그 수명주기,
   가드레일 5종, BLOCKED.md 에스컬레이션을 정의한다. /mvp-run으로 루프를 시작·재개할 때,
   중단된 루프를 복구할 때, 가드레일 기본값을 조정할 때, BLOCKED 상태를 처리할 때 참조.
+  Operating protocol for the MVP dev loop (Stage 4): the per-iteration cycle, the /mvp-run
+  resume protocol, stop conditions, env-var tuning (LOOP_TEST_CMD, LOOP_PROMISE,
+  LOOP_MAX_ITER, LOOP_MAX_MINUTES), loop-active flag lifecycle, 5 guardrails, and BLOCKED.md
+  escalation. Use when: starting or resuming via /mvp-run, recovering an interrupted loop,
+  tuning guardrails, or handling BLOCKED state.
 ---
 
 # MVP Loop Protocol

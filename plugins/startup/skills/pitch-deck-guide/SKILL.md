@@ -4,6 +4,9 @@ description: |
   피치덱 작성 가이드. Sequoia/YC 형식 슬라이드 구조, 라운드별 강조점,
   스토리텔링 프레임워크, 흔한 실수와 Q&A 준비를 제공한다.
   Use when: 피치덱 구조 설계, IR 자료 준비, 투자자 발표 준비 시
+  Pitch deck writing guide covering Sequoia/YC-style slide structures, per-round emphasis points,
+  storytelling frameworks, common mistakes, and Q&A preparation.
+  Use when: designing pitch deck structure, preparing IR materials, or getting ready for investor presentations.
 metadata:
   version: 1.0.0
   category: fundraising

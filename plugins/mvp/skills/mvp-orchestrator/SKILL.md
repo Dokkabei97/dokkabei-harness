@@ -1,6 +1,8 @@
 ---
 name: mvp-orchestrator
-description: "신규 사업/서비스 MVP 루프 엔지니어링 하네스 오케스트레이터. 아이디어 한 줄을 기획(PRD)→디자인 스펙→스택 선택·스캐폴딩→PRD-driven 개발 루프의 게이트 기반 상태기계로 자율 완주시킨다. \"MVP 만들어줘\", \"신규 서비스 프로토타입\", \"아이디어를 동작하는 제품으로\" 요청과 그린필드 신규 서비스 구축(빈 레포에서 기획부터 시작)에 자동 트리거. /mvp-new·/mvp-run 커맨드 실행 시에도 적용. 기존 코드베이스의 단일 기능 추가·수정·리뷰에는 발동하지 않음 — 해당 작업은 스택별 플러그인(kotlin-spring/python-fastapi/go-mux/nextjs/search)으로 위임한다."
+description: |
+  신규 사업/서비스 MVP 루프 엔지니어링 하네스 오케스트레이터. 아이디어 한 줄을 기획(PRD)→디자인 스펙→스택 선택·스캐폴딩→PRD-driven 개발 루프의 게이트 기반 상태기계로 자율 완주시킨다. "MVP 만들어줘", "신규 서비스 프로토타입", "아이디어를 동작하는 제품으로" 요청과 그린필드 신규 서비스 구축(빈 레포에서 기획부터 시작)에 자동 트리거. /mvp-new·/mvp-run 커맨드 실행 시에도 적용. 기존 코드베이스의 단일 기능 추가·수정·리뷰에는 발동하지 않음 — 해당 작업은 스택별 플러그인(kotlin-spring/python-fastapi/go-mux/nextjs/search)으로 위임한다.
+  Orchestrator of the MVP loop-engineering harness: drives a one-line idea through PRD → design spec → stack selection/scaffolding → PRD-driven dev loop as a gate-based state machine, auto-triggering on greenfield builds and on /mvp-new, /mvp-run. Use when: "build me an MVP", "prototype a new service", "turn an idea into a working product"; not for single-feature work in existing codebases.
 ---
 
 # MVP Orchestrator

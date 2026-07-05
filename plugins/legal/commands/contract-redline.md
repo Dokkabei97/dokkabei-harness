@@ -1,6 +1,8 @@
 ---
 name: contract-redline
-description: "계약 왕복 협상(레드라인) 분석. 상대방 수정안과 원안을 조항 단위로 diff 정렬하고, 변경별 수용/수정/거부 권고와 3버전 대안 문구, 협상 우선순위를 제시한다."
+description: |
+  계약 왕복 협상(레드라인) 분석. 상대방 수정안과 원안을 조항 단위로 diff 정렬하고, 변경별 수용/수정/거부 권고와 3버전 대안 문구, 협상 우선순위를 제시한다.
+  Analyzes contract negotiation redlines: aligns the counterparty's revision against the original clause-by-clause as a diff, then recommends accept/modify/reject per change with three alternative wordings and negotiation priorities. Use when: comparing contract versions, responding to counterparty edits, redline review, contract negotiation strategy.
 category: legal
 complexity: standard
 mcp-servers: []

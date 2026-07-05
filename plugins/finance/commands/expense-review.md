@@ -1,6 +1,8 @@
 ---
 name: expense-review
-description: "경비·지출 증빙 적격성 검토. 지출 내역을 분석해 적격증빙 공백, 사적 비용 혼입, 계정 분류 이상을 탐지하고 보완 방향을 제시한다."
+description: |
+  경비·지출 증빙 적격성 검토. 지출 내역을 분석해 적격증빙 공백, 사적 비용 혼입, 계정 분류 이상을 탐지하고 보완 방향을 제시한다.
+  Reviews expense records for receipt eligibility under Korean tax rules — detects qualified-receipt gaps, personal expenses mixed into business spending, and account misclassification, then suggests remediation. Use when: reviewing expenses, auditing receipts, checking deductibility of spending, expense report cleanup.
 category: finance
 complexity: standard
 mcp-servers: []

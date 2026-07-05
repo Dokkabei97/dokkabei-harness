@@ -1,6 +1,8 @@
 ---
 name: legal-team-orchestrator
-description: "법무팀 하네스 오케스트레이터. 한국법 기준 법적 사안을 분석하여 전문 에이전트(계약·기업투자·노동IP·컴플라이언스·형사분쟁)를 선택·조합하고, 병렬 분석 결과를 통합하여 리스크 보고서를 산출한다. 형사·중대 사안은 변호사 에스컬레이션을 강제한다. 법무 종합 검토·리스크 스캔에 자동 트리거된다."
+description: |
+  법무팀 하네스 오케스트레이터. 한국법 기준 법적 사안을 분석하여 전문 에이전트(계약·기업투자·노동IP·컴플라이언스·형사분쟁)를 선택·조합하고, 병렬 분석 결과를 통합하여 리스크 보고서를 산출한다. 형사·중대 사안은 변호사 에스컬레이션을 강제한다. 법무 종합 검토·리스크 스캔에 자동 트리거된다.
+  Legal team harness orchestrator: analyzes a legal matter under Korean law, selects and combines specialist counsel agents (contract, corporate/investment, labor/IP, compliance, criminal/dispute), and merges their parallel analyses into a risk report; forces lawyer escalation for criminal or high-stakes matters. Use when: comprehensive legal review, legal risk scan, multi-domain legal questions.
 metadata:
   version: 1.0.0
   category: legal

@@ -1,6 +1,8 @@
 ---
 name: nextjs-gen
-description: "Next.js App Router 컴포넌트·페이지·레이아웃 스캐폴딩. 이름과 타입을 입력하면 Page, Layout, Loading, Error, Component, Form, Hook, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다."
+description: |
+  Next.js App Router 컴포넌트·페이지·레이아웃 스캐폴딩. 이름과 타입을 입력하면 Page, Layout, Loading, Error, Component, Form, Hook, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
+  Scaffolds Next.js App Router components, pages, and layouts — given a name and type, auto-generates Page, Layout, Loading, Error, Component, Form, Hook, and Test files following project conventions. Use when: creating a new Next.js page, route, component, form, or custom hook, scaffolding UI for a new feature in an existing Next.js project.
 category: development
 complexity: advanced
 mcp-servers: []

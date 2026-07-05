@@ -3,6 +3,7 @@ name: kotlin-spring-guide
 description: |
   Kotlin + Spring Boot 개발 원칙/의사결정 가이드. Kotlin First 철학, 레이어 규율, Fail Fast, 아키텍처·스택·테스트 프레임워크 선택 기준을 제공한다.
   구체적 구현 코드 예제(@Transactional, JPA, WebClient, Coroutines 관용구)는 spring-boot-patterns를 참조할 것.
+  Decision guide for Kotlin + Spring Boot development: Kotlin First philosophy, layer discipline, Fail Fast, and selection criteria for architecture, stack, and test frameworks; concrete code idioms (@Transactional, JPA, WebClient, Coroutines) live in spring-boot-patterns. Use when: making Kotlin/Spring architecture or stack decisions, enforcing layer rules, or choosing test frameworks.
 ---
 
 # Kotlin + Spring Boot Development Guide

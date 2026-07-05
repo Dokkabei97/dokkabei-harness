@@ -1,6 +1,8 @@
 ---
 name: search-service-architect
-description: "Kotlin(Spring Boot) + Elasticsearch 검색 서비스 아키텍처 설계 전문 에이전트. ES 클라이언트 설정, 벌크 인덱싱, 비동기 검색, 서킷브레이커, 관찰 가능성을 다룹니다."
+description: |
+  Kotlin(Spring Boot) + Elasticsearch 검색 서비스 아키텍처 설계 전문 에이전트. ES 클라이언트 설정, 벌크 인덱싱, 비동기 검색, 서킷브레이커, 관찰 가능성을 다룹니다.
+  Specialist agent for designing Kotlin (Spring Boot) + Elasticsearch search service architecture — covers ES client configuration, bulk indexing, async search, circuit breakers, and observability. Use when: architecting a search service, configuring the Elasticsearch client in Spring Boot, designing bulk indexing or async search flows, or adding resilience.
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---
