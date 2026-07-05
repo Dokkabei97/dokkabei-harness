@@ -36,6 +36,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 
 ### 훅
 
+- `PreToolUse(Bash)` → `hooks/remind-claude-md-sync.js` — `git commit`/`git push`를 세션당 1회 exit 2로 차단해 `sync-claude-md` 검토(CLAUDE.md 갱신 필요 여부)를 결정론적으로 강제한다. 검토 후 같은 명령을 재시도하면 통과하며, CLAUDE.md 없는 프로젝트에서는 발동하지 않는다. 킬스위치: `CLAUDE_MD_SYNC_REMIND=0`.
 - `PreCompact` / `SessionEnd` → `hooks/session-snapshot.sh` — 컴팩션 직전·세션 종료 시점에 git 상태(브랜치·변경 파일·최근 커밋)와 미완 마커 수를 `HANDOFF.md`의 `<!-- auto-snapshot -->` 마커 섹션에만 결정론적으로 기록한다. 마커 밖의 수동 작성 내용은 어떤 경로에서도 건드리지 않으며, 실패해도 항상 exit 0으로 세션을 방해하지 않는다. `.planning/loop-active`가 있는 루프 세션에서는 즉시 물러난다(앵커는 mvp/floop 소관).
 
 ## 사용법

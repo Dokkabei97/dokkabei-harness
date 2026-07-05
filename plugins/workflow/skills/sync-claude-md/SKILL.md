@@ -1,11 +1,12 @@
 ---
 name: sync-claude-md
 description: |
-  Analyzes code changes before commit/PR to determine whether CLAUDE.md needs to be updated.
-  Detects architecture changes, new integrations, convention changes, environment/tool changes, etc.,
-  and proposes and executes CLAUDE.md updates when necessary.
-  TRIGGER when: user requests commit, push, PR/MR creation — either via direct prompt or any custom command.
-  This skill auto-activates silently: updates CLAUDE.md if needed, skips silently if not.
+  TRIGGER FIRST — when the user requests commit, push, or PR/MR creation (direct prompt or any
+  custom command), invoke this skill BEFORE running any git commit/push/PR action.
+  Analyzes the pending code changes to determine whether CLAUDE.md needs to be updated —
+  architecture changes, new integrations, new top-level directories/infra, convention changes,
+  environment/tool changes, etc. — and proposes and executes CLAUDE.md updates when necessary.
+  Auto-activates silently: updates CLAUDE.md if needed, skips silently if not.
 metadata:
   version: 2.0.0
   category: workflow

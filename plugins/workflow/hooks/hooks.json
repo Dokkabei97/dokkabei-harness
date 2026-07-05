@@ -1,6 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/remind-claude-md-sync.js"], "timeout": 10 }],
+        "description": "커밋/푸시 전 CLAUDE.md 갱신 검토 강제 — git commit/push 를 세션당 1회 exit 2 차단해 sync-claude-md 검토를 결정론 경로로 보장(검토 후 재시도는 통과). 명령 패턴 필터는 스크립트 내부 — matcher 는 툴명 regex 만 유효(표현식 미발화 실측, 2026-07). 킬스위치: CLAUDE_MD_SYNC_REMIND=0" }
+    ],
     "PreCompact": [
       { "matcher": "*",
         "hooks": [{ "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-snapshot.sh\"", "timeout": 30 }],
