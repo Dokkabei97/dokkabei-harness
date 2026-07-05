@@ -107,9 +107,20 @@ export OTEL_LOG_USER_PROMPTS=1   # 프롬프트 원문 전송 (프롬프트↔�
 `skill_activated`, `plugin_loaded`, `hook_registered`, `hook_execution_start/complete`,
 `mcp_server_connection`, `compaction` 등 24종.
 
-**대시보드**: `grafana/claude-code-dashboard.json`이 프로비저닝되어 홈 화면에 뜬다.
-수정하려면 JSON을 고치고 `docker compose restart` (프로비저닝 파일이라 UI 편집은 저장 안 됨 —
-UI에서 "Save as"로 복제 후 편집).
+**대시보드 (영문/한글 분기)**: `grafana/dashboards/`에 두 버전이 프로비저닝된다 —
+`claude-code-dashboard.en.json`(uid `claude-code-en`, 영문 패널 title)과
+`claude-code-dashboard.ko.json`(uid `claude-code-ko`, 한글 패널 title). 둘 다 항상 Grafana의
+**Dashboards** 목록에 떠서 원하는 쪽을 열면 된다. `localhost:3000` 첫 화면은 기본이 영문이며,
+한글을 홈으로 하려면 `GRAFANA_HOME_DASHBOARD` 변수(셸 env 또는 compose 옆 `.env` 파일)를
+지정하고 재생성한다.
+
+```bash
+# .env  (또는: export GRAFANA_HOME_DASHBOARD=...)
+GRAFANA_HOME_DASHBOARD=/otel-lgtm/dashboards/claude-code-dashboard.ko.json
+```
+
+두 버전은 title만 다르고 패널·쿼리·레이아웃은 동일하다. 수정하려면 JSON을 고치고
+`docker compose restart` (프로비저닝 파일이라 UI 편집은 저장 안 됨 — UI에서 "Save as"로 복제 후 편집).
 
 - **요약 stat**: 비용/세션/토큰/활동시간 — 희소 카운터 staleness 때문에 단순 instant sum이 아니라
   `sum(last_over_time(...[$__range]))`을 쓴다 (세션 수가 "No data"로 비는 문제의 해법).

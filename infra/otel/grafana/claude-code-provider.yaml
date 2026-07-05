@@ -4,5 +4,7 @@ providers:
   - name: "Claude Code Telemetry"
     type: file
     options:
-      path: /otel-lgtm/grafana-dashboard-claude-code.json
+      # Load every dashboard JSON in this directory (EN + KO variants).
+      # 이 디렉토리의 모든 대시보드 JSON을 로드 (영문·한글 버전).
+      path: /otel-lgtm/dashboards
       foldersFromFilesStructure: false

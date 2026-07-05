@@ -1,6 +1,6 @@
 {
-  "uid": "claude-code",
-  "title": "Claude Code Telemetry",
+  "uid": "claude-code-ko",
+  "title": "Claude Code Telemetry (한국어)",
   "tags": [
     "claude-code",
     "otel"

@@ -107,9 +107,21 @@ for this local stack (loopback-only), the same decision layer as the observe plu
 `skill_activated`, `plugin_loaded`, `hook_registered`, `hook_execution_start/complete`,
 `mcp_server_connection`, `compaction`, and so on — 24 kinds.
 
-**Dashboard**: `grafana/claude-code-dashboard.json` is provisioned and shows up on the home screen.
-To modify it, edit the JSON and `docker compose restart` (since it is a provisioned file, UI edits are not saved —
-in the UI, clone it with "Save as" and then edit).
+**Dashboard (English / Korean variants)**: `grafana/dashboards/` holds two provisioned dashboards —
+`claude-code-dashboard.en.json` (uid `claude-code-en`, English panel titles) and
+`claude-code-dashboard.ko.json` (uid `claude-code-ko`, Korean panel titles). Both always appear under
+Grafana's **Dashboards** list, so you can open whichever you prefer. The `localhost:3000` landing page
+defaults to the English one; to make Korean the landing page, set the `GRAFANA_HOME_DASHBOARD` variable
+(shell env or an `.env` file next to the compose file) and recreate:
+
+```bash
+# .env  (or: export GRAFANA_HOME_DASHBOARD=...)
+GRAFANA_HOME_DASHBOARD=/otel-lgtm/dashboards/claude-code-dashboard.ko.json
+```
+
+Both variants are identical except for titles — same panels, queries, and layout. To modify them, edit the
+JSON and `docker compose restart` (since they are provisioned files, UI edits are not saved — in the UI,
+clone with "Save as" and then edit).
 
 - **Summary stats**: cost/session/tokens/active time — because of sparse-counter staleness, they use
   `sum(last_over_time(...[$__range]))` rather than a plain instant sum (the fix for the problem where the session count shows "No data").
