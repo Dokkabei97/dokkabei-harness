@@ -1,0 +1,31 @@
+# 로컬 OTel 플랫폼 — Claude Code 내장 텔레메트리(비용/토큰/이벤트) 수신용.
+# observe 플러그인(.claude/skill-trace.jsonl)의 직교 보완재이며, 로컬 전용이다.
+# 상세 사용법: ./README.md
+services:
+  lgtm:
+    # 올인원: OTel Collector + Prometheus + Loki + Tempo + Pyroscope + Grafana
+    image: grafana/otel-lgtm:0.28.0
+    container_name: otel-lgtm
+    # 크래시·Docker 재시작·재부팅(OrbStack 자동 시작) 모두에서 되살아난다
+    restart: always
+    ports:
+      # Grafana는 기본이 익명 Admin이므로 LAN 노출을 막기 위해 전부 루프백에만 바인딩
+      - "127.0.0.1:3000:3000" # Grafana UI
+      - "127.0.0.1:4317:4317" # OTLP gRPC (Claude Code 기본 프로토콜)
+      - "127.0.0.1:4318:4318" # OTLP HTTP
+    volumes:
+      # 5개 컴포넌트 데이터 루트가 전부 /data 하위 — 이 마운트 하나로 재생성 후에도 전부 유지
+      - lgtm-data:/data
+      # Claude Code 대시보드 프로비저닝 (이미지 자체의 RED/JVM 대시보드와 동일한 패턴)
+      - ./grafana/claude-code-provider.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/claude-code.yaml:ro
+      - ./grafana/claude-code-dashboard.json:/otel-lgtm/grafana-dashboard-claude-code.json:ro
+    environment:
+      # Claude Code 메트릭은 delta temporality — 이 플래그 없이는 Prometheus OTLP 수신기가 전량 드롭한다
+      - PROMETHEUS_EXTRA_ARGS=--enable-feature=otlp-deltatocumulative
+      # localhost:3000 첫 화면을 Claude Code 대시보드로
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/otel-lgtm/grafana-dashboard-claude-code.json
+      # 컴포넌트 stdout 로그는 기본 침묵. 파이프라인 디버깅 시에만 켠다
+      # - ENABLE_LOGS_ALL=true
+
+volumes:
+  lgtm-data:
