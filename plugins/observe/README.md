@@ -6,6 +6,13 @@
 
 `observe`는 "어떤 프롬프트에서 어떤 스킬/에이전트를 **왜** 호출했고, 그 호출이 **완주**했는가"를 훅으로 상관 로깅해 하네스 자체의 건강을 진단한다. 6종의 훅이 세션 시작·프롬프트·스킬 호출·에이전트 호출·호출 결과·세션 종료를 각각 `.claude/skill-trace.jsonl`에 append하고, `session_id`·`prompt_id`·`tool_use_id`를 join 키로 삼아 프롬프트↔스킬↔에이전트↔결과↔세션 경계를 사후 결합한다. 축적된 트레이스는 `/observe-report`가 "결정론 집계(스크립트) → 해석(LLM) → 개선 제안서" 순으로 풀어내되, **파일은 일절 수정하지 않고 제안까지만** 산출한다.
 
+observe의 존재 이유는 hermes agent와의 대비로 명확해진다. hermes agent가 사용자 행동에
+기반해 스킬/하네스를 **자율적으로 생성하며** 발전해 나가는 생성형 진화라면, observe는 그 반대편에서
+**이미 구축된 하네스**가 실사용에서 잘 호출되고 있는지를 계측하고, 그 계측 데이터를 근거로 하네스를
+스스로 개선하는 **계측 기반 개선 루프**다. 새로운 자산을 만들어 늘리는 쪽이 아니라, 있는 자산이
+설계 의도대로 발화·완주하는지 실측하고 description 튜닝·사장 자산 정리·계측 공백 보완으로
+되먹임하는 쪽이 이 플러그인의 몫이다.
+
 설계 의도는 명확한 경계에 있다. 이 플러그인은 **실사용 텔레메트리의 사후 진단** 전용이다. 비용/토큰/tool_decision 계측은 Claude Code 내장 OTel(`CLAUDE_CODE_ENABLE_TELEMETRY`)에 위임하고, description 발화율의 사전 벤치마크는 `skill-creator` eval 소관으로 넘긴다 — 서로 겹치지 않는 직교 보완재다. 또한 프롬프트 원문을 기록하는 특성상 `OBSERVE_TRACE=1` opt-in일 때만 동작하므로, `mvp`·`feature-loop` 같은 다른 루프형 플러그인에는 기본적으로 아무 영향을 주지 않는다.
 
 ## 구성요소
@@ -57,4 +64,5 @@ OBSERVE_TRACE=1
 - **opt-in 전제**: `OBSERVE_TRACE=1`일 때만 모든 훅이 동작한다. 이 커맨드/훅은 `OBSERVE_TRACE`를 자동 활성화하지 않는다 — 프롬프트 원문이 기록되는 결정은 사용자 몫이다.
 - **프라이버시·저장**: 트레이스는 프로젝트 루트의 `.claude/skill-trace.jsonl`에 쌓이며, 최초 기록 시 `.gitignore`에 `.claude/skill-trace.jsonl*`을 idempotent하게 추가해 커밋을 막는다. 10MB 초과 시 `.1`로 1세대 로테이션한다. 호출 결과 본문은 용량·민감정보 우려로 기록하지 않고 `response_bytes`만 남긴다.
 - **직교 경계**: 비용/토큰/tool_decision 계측은 내장 OTel(`CLAUDE_CODE_ENABLE_TELEMETRY`)에, 발화율 사전 벤치마크(트리거/비트리거 쿼리 eval)는 `skill-creator` eval에 위임한다 — 이 플러그인은 이를 재구현하지 않는다.
+- **계측 경계 (실측 확인, 2026-07)**: 헤드리스(`claude -p "/커맨드"`) 실행의 user-slash 커맨드는 Skill 툴을 경유하지 않아 `skill` 레코드가 남지 않는다 — 이 경우 `prompt` 레코드의 `is_command` 플래그가 호출 근거다(인터랙티브 세션의 user-slash는 모델이 Skill 툴을 호출하므로 정상 추적). 내장 OTel의 `skill_activated` 이벤트(`invocation_trigger: user-slash|claude-proactive`)는 두 경로를 모두 잡으므로, 로컬 OTel 스택(`infra/otel`)과 `prompt_id`로 맞대면 훅 발화 여부를 교차 검증할 수 있다.
 - **제안 전용**: `/observe-report`는 SKILL.md·커맨드·훅 등 어떤 파일도 수정하지 않는다. 훅 로직 버그도 직접 고치지 않고 플래그만 남긴다(무단 수정 금지 원칙).

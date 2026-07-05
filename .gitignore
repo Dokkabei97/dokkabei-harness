@@ -6,3 +6,4 @@
 *.iml
 out
 gen
+.claude/skill-trace.jsonl*
