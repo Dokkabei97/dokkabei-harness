@@ -85,6 +85,38 @@ write_event() { printf '{"tool":"Write","tool_input":{"file_path":"%s"}}' "$1"; 
   [ "$status" -eq 0 ]
 }
 
+# ── 허용 대상 (신규: 하네스 관리 영역 — 프로젝트 외부) ─────────────────────────
+
+# Claude Code 자동 메모리 — 시스템 프롬프트가 Write 를 지시하는 per-fact .md 저장소
+@test "block-md: auto-memory dir .md -> allowed (exit 0)" {
+  local ev; ev="$(write_event "/Users/u/.claude/projects/-Users-u-proj/memory/some-fact.md")"
+  run invoke_node_hook "$BLOCK_HOOK" "$ev"
+  [ "$status" -eq 0 ]
+  [ "$output" = "$ev" ]
+}
+
+@test "block-md: auto-memory MEMORY.md index -> allowed (exit 0)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/Users/u/.claude/projects/-Users-u-proj/memory/MEMORY.md")"
+  [ "$status" -eq 0 ]
+}
+
+# 세션 스크래치패드 — Artifact 렌더링용 .md 산출 경로 (macOS /private/tmp, Linux /tmp)
+@test "block-md: scratchpad .md (private tmp) -> allowed (exit 0)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/private/tmp/claude-501/-proj/sess-id/scratchpad/report.md")"
+  [ "$status" -eq 0 ]
+}
+
+@test "block-md: scratchpad .md (plain tmp) -> allowed (exit 0)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/tmp/claude-501/-proj/sess-id/scratchpad/report.md")"
+  [ "$status" -eq 0 ]
+}
+
+# memory/ 밖의 .claude/projects/ 하위는 여전히 차단 — 예외가 과확장되지 않았는지 가드
+@test "block-md: .claude/projects non-memory .md -> blocked (exit 2)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/Users/u/.claude/projects/-Users-u-proj/notes.md")"
+  [ "$status" -eq 2 ]
+}
+
 # ── 비대상 ──────────────────────────────────────────────────────────────────
 
 # .md/.txt 가 아닌 파일 — 관여하지 않고 passthrough
