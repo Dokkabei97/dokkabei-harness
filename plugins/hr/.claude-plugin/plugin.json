@@ -1,9 +1,9 @@
 {
   "name": "hr",
-  "description": "채용·온보딩 실무 문서화, 노동법은 legal 위임",
+  "description": "Recruiting & onboarding documentation; labor law delegated to legal",
   "version": "1.0.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

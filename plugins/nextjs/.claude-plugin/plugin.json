@@ -1,9 +1,9 @@
 {
   "name": "nextjs",
-  "description": "Next.js App Router 프론트엔드 설계·코드 생성",
+  "description": "Next.js App Router frontend design and code generation",
   "version": "1.0.1",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

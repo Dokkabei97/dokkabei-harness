@@ -1,9 +1,9 @@
 {
   "name": "feature-loop",
-  "description": "브라운필드 코드베이스용 회귀 안전 기능 개발 루프",
+  "description": "Regression-safe feature-development loop for brownfield codebases",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
   "license": "MIT",

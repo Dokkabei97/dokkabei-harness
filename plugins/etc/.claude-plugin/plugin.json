@@ -1,9 +1,9 @@
 {
   "name": "etc",
-  "description": "외부 AI CLI 연동 범용 유틸리티 스킬 모음",
+  "description": "General-purpose utility skills for external AI CLI integration",
   "version": "1.0.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

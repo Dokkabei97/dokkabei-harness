@@ -1,9 +1,9 @@
 {
   "name": "kotlin-spring",
-  "description": "Kotlin+Spring CRUD 생성·진단·패턴 특화",
+  "description": "Kotlin + Spring CRUD generation, diagnosis, and pattern specialization",
   "version": "1.0.1",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
   "dependencies": [

@@ -1,9 +1,9 @@
 {
   "name": "finance",
-  "description": "운영 재무·세무 1차 리스크 진단 하네스",
+  "description": "Harness for first-pass operational finance & tax risk diagnosis",
   "version": "1.0.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

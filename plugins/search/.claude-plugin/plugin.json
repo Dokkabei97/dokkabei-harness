@@ -1,9 +1,9 @@
 {
   "name": "search",
-  "description": "Elasticsearch 검색 엔지니어링 전문 에이전트 팀 하네스",
+  "description": "Elasticsearch search-engineering specialist agent-team harness",
   "version": "1.0.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

@@ -1,9 +1,9 @@
 {
   "name": "startup",
-  "description": "린 스타트업 검증·전략 하네스 (maker/checker)",
+  "description": "Lean-startup validation & strategy harness (maker/checker)",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

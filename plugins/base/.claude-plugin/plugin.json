@@ -1,9 +1,9 @@
 {
   "name": "base",
-  "description": "루프 하네스의 기반 가드 훅·LSP 계층",
+  "description": "Foundational guard-hook & LSP layer for the loop harness",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

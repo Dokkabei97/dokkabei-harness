@@ -1,9 +1,9 @@
 {
   "name": "test",
-  "description": "TDD 루프와 E2E(Playwright·Chrome) 테스트 자동화",
+  "description": "TDD loop and E2E (Playwright/Chrome) test automation",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

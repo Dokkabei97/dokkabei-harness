@@ -1,9 +1,9 @@
 {
   "name": "legal",
-  "description": "한국법 법무 리스크 1차 진단 멀티에이전트 하네스",
+  "description": "Multi-agent harness for first-pass Korean-law legal risk diagnosis",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

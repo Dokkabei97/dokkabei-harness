@@ -1,9 +1,9 @@
 {
   "name": "go-mux",
-  "description": "Go 표준 net/http mux 코드 생성·API 설계·가이드",
+  "description": "Go stdlib net/http mux code generation, API design, and guide",
   "version": "1.0.1",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
   "dependencies": [

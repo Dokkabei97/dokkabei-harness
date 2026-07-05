@@ -1,9 +1,9 @@
 {
   "name": "backend-shared",
-  "description": "스택 무관 백엔드 공통 설계·운영 패턴 계층",
+  "description": "Stack-agnostic backend common design & operations pattern layer",
   "version": "1.1.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

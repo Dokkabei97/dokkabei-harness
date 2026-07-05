@@ -1,9 +1,9 @@
 {
   "name": "harness",
-  "description": "하네스 설계·생성·검증과 경량 루프 메타 플러그인",
+  "description": "Meta-plugin for harness design, generation, validation, and lightweight loops",
   "version": "1.3.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }

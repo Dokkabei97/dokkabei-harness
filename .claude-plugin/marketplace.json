@@ -1,18 +1,18 @@
 {
   "name": "dokkabei-harness",
   "owner": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
   "metadata": {
-    "description": "장민규 하네스 플러그인 마켓플레이스",
+    "description": "Dokkabei97's harness plugin marketplace",
     "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "base",
       "source": "./plugins/base",
-      "description": "루프 하네스의 기반 가드 훅·LSP 계층",
+      "description": "Foundational guard-hook & LSP layer for the loop harness",
       "version": "1.1.0",
       "category": "develop",
       "keywords": [
@@ -25,7 +25,7 @@
     {
       "name": "etc",
       "source": "./plugins/etc",
-      "description": "외부 AI CLI 연동 범용 유틸리티 스킬 모음",
+      "description": "General-purpose utility skills for external AI CLI integration",
       "version": "1.0.0",
       "category": "productivity",
       "keywords": [
@@ -35,7 +35,7 @@
     {
       "name": "analyze",
       "source": "./plugins/analyze",
-      "description": "코드 품질·성능·아키텍처·SQL 종합 정적 분석",
+      "description": "Comprehensive static analysis of code quality, performance, architecture, and SQL",
       "version": "1.1.0",
       "category": "productivity",
       "keywords": [
@@ -55,8 +55,8 @@
     {
       "name": "test",
       "source": "./plugins/test",
-      "description": "TDD 루프와 E2E(Playwright·Chrome) 테스트 자동화",
-      "version": "1.0.0",
+      "description": "TDD loop and E2E (Playwright/Chrome) test automation",
+      "version": "1.1.0",
       "category": "productivity",
       "keywords": [
         "test",
@@ -70,7 +70,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "개발 라이프사이클 전반을 자동화하는 워크플로우 하네스",
+      "description": "Workflow harness automating the full development lifecycle",
       "version": "1.3.0",
       "category": "productivity",
       "keywords": [
@@ -86,7 +86,7 @@
     {
       "name": "harness",
       "source": "./plugins/harness",
-      "description": "하네스 설계·생성·검증과 경량 루프 메타 플러그인",
+      "description": "Meta-plugin for harness design, generation, validation, and lightweight loops",
       "version": "1.3.0",
       "category": "harness",
       "keywords": [
@@ -99,8 +99,8 @@
     {
       "name": "observe",
       "source": "./plugins/observe",
-      "description": "하네스 사용을 훅으로 상관 로깅해 개선점을 진단",
-      "version": "1.1.0",
+      "description": "Correlation-logs harness usage via hooks to diagnose improvements",
+      "version": "1.2.0",
       "category": "harness",
       "keywords": [
         "observe",
@@ -120,7 +120,7 @@
     {
       "name": "backend-shared",
       "source": "./plugins/backend-shared",
-      "description": "스택 무관 백엔드 공통 설계·운영 패턴 계층",
+      "description": "Stack-agnostic backend common design & operations pattern layer",
       "version": "1.1.0",
       "category": "develop",
       "keywords": [
@@ -142,7 +142,7 @@
     {
       "name": "kotlin-spring",
       "source": "./plugins/kotlin-spring",
-      "description": "Kotlin+Spring CRUD 생성·진단·패턴 특화",
+      "description": "Kotlin + Spring CRUD generation, diagnosis, and pattern specialization",
       "version": "1.0.1",
       "category": "develop",
       "keywords": [
@@ -161,7 +161,7 @@
     {
       "name": "python-fastapi",
       "source": "./plugins/python-fastapi",
-      "description": "Python+FastAPI 코드 생성·API 설계·패턴 가이드 번들",
+      "description": "Python + FastAPI code generation, API design, and pattern guide bundle",
       "version": "1.0.1",
       "category": "develop",
       "keywords": [
@@ -180,7 +180,7 @@
     {
       "name": "go-mux",
       "source": "./plugins/go-mux",
-      "description": "Go 표준 net/http mux 코드 생성·API 설계·가이드",
+      "description": "Go stdlib net/http mux code generation, API design, and guide",
       "version": "1.0.1",
       "category": "develop",
       "keywords": [
@@ -197,7 +197,7 @@
     {
       "name": "nextjs",
       "source": "./plugins/nextjs",
-      "description": "Next.js App Router 프론트엔드 설계·코드 생성",
+      "description": "Next.js App Router frontend design and code generation",
       "version": "1.0.1",
       "category": "develop",
       "keywords": [
@@ -213,7 +213,7 @@
     {
       "name": "search",
       "source": "./plugins/search",
-      "description": "Elasticsearch 검색 엔지니어링 전문 에이전트 팀 하네스",
+      "description": "Elasticsearch search-engineering specialist agent-team harness",
       "version": "1.0.0",
       "category": "develop",
       "keywords": [
@@ -232,7 +232,7 @@
     {
       "name": "startup",
       "source": "./plugins/startup",
-      "description": "린 스타트업 검증·전략 하네스 (maker/checker)",
+      "description": "Lean-startup validation & strategy harness (maker/checker)",
       "version": "1.1.0",
       "category": "startup",
       "keywords": [
@@ -243,7 +243,7 @@
     {
       "name": "mvp",
       "source": "./plugins/mvp",
-      "description": "아이디어 한 줄을 게이트 루프로 MVP까지 완주",
+      "description": "Drives a one-line idea to an MVP through a gated loop",
       "version": "1.1.0",
       "category": "develop",
       "keywords": [
@@ -263,7 +263,7 @@
     {
       "name": "feature-loop",
       "source": "./plugins/feature-loop",
-      "description": "브라운필드 코드베이스용 회귀 안전 기능 개발 루프",
+      "description": "Regression-safe feature-development loop for brownfield codebases",
       "version": "1.1.0",
       "category": "develop",
       "keywords": [
@@ -284,7 +284,7 @@
     {
       "name": "legal",
       "source": "./plugins/legal",
-      "description": "한국법 법무 리스크 1차 진단 멀티에이전트 하네스",
+      "description": "Multi-agent harness for first-pass Korean-law legal risk diagnosis",
       "version": "1.1.0",
       "category": "legal",
       "keywords": [
@@ -306,7 +306,7 @@
     {
       "name": "finance",
       "source": "./plugins/finance",
-      "description": "운영 재무·세무 1차 리스크 진단 하네스",
+      "description": "Harness for first-pass operational finance & tax risk diagnosis",
       "version": "1.0.0",
       "category": "finance",
       "keywords": [
@@ -323,7 +323,7 @@
     {
       "name": "hr",
       "source": "./plugins/hr",
-      "description": "채용·온보딩 실무 문서화, 노동법은 legal 위임",
+      "description": "Recruiting & onboarding documentation; labor law delegated to legal",
       "version": "1.0.0",
       "category": "hr",
       "keywords": [

@@ -1,9 +1,9 @@
 {
   "name": "workflow",
-  "description": "개발 라이프사이클 전반을 자동화하는 워크플로우 하네스",
+  "description": "Workflow harness automating the full development lifecycle",
   "version": "1.3.0",
   "author": {
-    "name": "장민규",
+    "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   }
 }
