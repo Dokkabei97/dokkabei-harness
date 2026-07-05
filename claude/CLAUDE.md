@@ -63,24 +63,3 @@ Capture Lessons: Update tasks/lessons.md after corrections
 Simplicity First: Make every change as simple as possible. Impact minimal code.
 No Laziness: Find root causes. No temporary fixes. Senior developer standards.
 Minimal Impact: Changes should only touch what's necessary. Avoid introducing bugs.
-
----
-
-Installed Harnesses (dokkabei-harness marketplace)
-
-This repository is the `dokkabei-harness` plugin marketplace. Plugins live under `plugins/<name>/`
-and are registered in `.claude-plugin/marketplace.json`. Install with
-`/plugin install <name>@dokkabei-harness`.
-
-- Base & meta: base (guard hooks + LSP), harness (create-flow/verify-flow/team-harness, /loop-run), observe (skill-usage tracing)
-- Dev workflow: analyze, test, workflow
-- Loop engineering: mvp (greenfield), feature-loop (brownfield) — Stop-hook loop engines with gate state machines
-- Backend: backend-shared + kotlin-spring / python-fastapi / go-mux / nextjs, search (Elasticsearch)
-- Domain: legal, finance, hr, startup, etc
-- Local observability: `infra/otel/` — grafana/otel-lgtm docker-compose receiving Claude Code
-  built-in OTel (cost/tokens/events; Grafana at localhost:3000). Complements observe's
-  `.claude/skill-trace.jsonl` (OBSERVE_TRACE=1); cross-check via shared session_id/prompt_id.
-
-Conventions: component rules and validation live in `plugins/harness/skills/flow-validation/`;
-scaffolding templates in `plugins/harness/skills/flow-scaffolding/`. Hook regression tests are
-in `tests/hooks/*.bats`. Register new teams/orchestrators here per the Team Required Structure rule.

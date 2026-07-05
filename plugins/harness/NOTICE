@@ -1,0 +1,25 @@
+This plugin (plugins/harness/) is a Derivative Work of "harness" by robin
+(https://github.com/revfactory/harness).
+
+  Original work: Copyright 2025 robin
+  License:       Apache License, Version 2.0
+  Full text:     see /LICENSE at the repository root
+
+CHANGES MADE (Apache-2.0 §4(b) modification notice)
+---------------------------------------------------
+The original repository contained a single `harness` skill
+(skills/harness/{SKILL.md, references/}). This plugin modifies and
+extends it as follows:
+
+  - Split into three skills:
+      * team-harness     — domain analysis, 6 team-architecture patterns,
+                           orchestrator design
+      * flow-scaffolding — agent/command/skill/hook templates and generation
+      * flow-validation  — 9 validation rulesets
+  - Added commands: create-flow, verify-flow
+  - Added docs/ARCHITECTURE.md
+  - Korean localization and adaptation throughout
+
+All original copyright, license, and attribution notices are retained
+per Apache-2.0 §4(c). Modifications: Copyright 2026 Dokkabei97 (Minkyu Jang),
+distributed under the same Apache License, Version 2.0.

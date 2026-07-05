@@ -1,0 +1,25 @@
+dokkabei-harness
+Copyright 2026 Dokkabei97
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+--------------------------------------------------------------------------------
+Third-party attributions
+--------------------------------------------------------------------------------
+
+This product includes software derived from "harness" by robin
+(https://github.com/revfactory/harness), licensed under the
+Apache License, Version 2.0.
+
+  Original work: Copyright 2025 robin
+  Used in:       plugins/harness/
+
+  Modifications by Dokkabei97 (2026):
+    - Restructured the original single `harness` skill into three skills:
+      team-harness (team design), flow-scaffolding (component generation),
+      and flow-validation (component validation).
+    - Added the create-flow and verify-flow commands.
+    - Added 9 validation rulesets under flow-validation/references/.
+    - Localized and adapted documentation to Korean.
+
+  See plugins/harness/NOTICE for the directory-local attribution.
