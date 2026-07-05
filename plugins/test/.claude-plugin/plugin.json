@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "description": "테스트 자동화 — TDD 워크플로우, E2E 테스트 생성/실행, Chrome 기반 시각적 검증",
+  "description": "TDD 루프와 E2E(Playwright·Chrome) 테스트 자동화",
   "version": "1.1.0",
   "author": {
     "name": "장민규",

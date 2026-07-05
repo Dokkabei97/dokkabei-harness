@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "description": "개발 워크플로우 자동화 — MR 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리 + 회고 컴파운딩(/retro: 교훈→lessons.md/CLAUDE.md/가드 훅 후보 라우팅), MR 리뷰 confidence 필터·analyze 선택 디스패치, 문서 공동작성 가이드(doc-collab-guide), 세션 자동 스냅샷 훅(PreCompact/SessionEnd → HANDOFF.md 마커 섹션)",
+  "description": "개발 라이프사이클 전반을 자동화하는 워크플로우 하네스",
   "version": "1.3.0",
   "author": {
     "name": "장민규",

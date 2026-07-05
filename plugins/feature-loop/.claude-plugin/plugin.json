@@ -1,6 +1,6 @@
 {
   "name": "feature-loop",
-  "description": "기존(브라운필드) 코드베이스용 루프 엔지니어링 하네스 — feature-loop-orchestrator가 자연어 요청 한 줄을 코드베이스 분석 기반 작업 분해(tasks.json)→baseline 캡처→회귀 안전 개발 루프로 완주. MVP 하네스의 검증된 루프 인프라 재사용(Stop훅 루프 엔진+maker/checker 반증 검증+가드레일 5종+.planning 메모리), 단 입력은 PRD 생성이 아닌 작업 분해, 게이트는 생성 검증이 아닌 baseline 회귀 방지(정지조건 4결합: 결정론 게이트+baseline 회귀 0+verified 마커+completion promise). 루프 안에서 스택 플러그인(kotlin-spring·python-fastapi·go-mux·nextjs)·analyze(checker 렌즈)·test(tdd/e2e)·workflow(spec/ship)를 호출하는 오케스트레이터. 사용자 게이트 1개(작업 목록 승인). 에이전트 3: task-planner·feature-builder·feature-verifier 전원 opus (agents 3, commands 5, skills 3, hooks 6 + bin 러너 1) headless 러너(bin/floop-headless.sh, ②ᴿ baseline 회귀 게이트 포함), --worktree 격리(stage① — 병렬 레인·Agent Teams는 worktree-lanes.md 로드맵), PreCompact/SubagentStop 훅, --cross-check, engine 스코프.",
+  "description": "브라운필드 코드베이스용 회귀 안전 기능 개발 루프",
   "version": "1.1.0",
   "author": {
     "name": "장민규",

@@ -1,6 +1,6 @@
 {
   "name": "observe",
-  "description": "하네스 사용 관측·개선 하네스 — 어떤 프롬프트에서 어떤 스킬/에이전트를 왜 호출했고 완주했는지를 hook으로 상관 로깅하고, 계측 결과를 개선 제안으로 되돌린다. 훅 6종(SessionStart/UserPromptSubmit/PreToolUse Skill·Agent|Task/PostToolUse/SessionEnd)이 session_id·prompt_id·tool_use_id 키로 .claude/skill-trace.jsonl 에 append (프롬프트↔스킬↔에이전트↔결과↔세션 경계 사후 결합, .gitignore 안전망·10MB 로테이션). why=현재 턴 preamble(턴 경계로 반복 호출 오귀속 차단), trigger 분류(user vs model 자율 선택), turn_command 연쇄 provenance. /observe-report 가 결정론 집계(bin/observe-report.js: 호출·완주·미사용 자산·미발화 후보)→LLM 해석(놓친 발화 판정·user-only 진단)→개선 제안서(description 튜닝·사장 자산·계측 개선, 파일 수정 없음)를 산출. OBSERVE_TRACE=1 opt-in으로 mvp/feature-loop 루프에 무영향. 비용/토큰 계측은 내장 OTel 위임, 발화율 사전 벤치마크는 skill-creator eval 소관 — 실사용 텔레메트리의 사후 진단 전용 (hooks 6, commands 1)",
+  "description": "하네스 사용을 훅으로 상관 로깅해 개선점을 진단",
   "version": "1.1.0",
   "author": { "name": "장민규", "email": "wkdrn970@gmail.com" },
   "license": "Apache-2.0",

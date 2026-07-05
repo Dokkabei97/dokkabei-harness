@@ -1,6 +1,6 @@
 {
   "name": "etc",
-  "description": "기타 플러그인",
+  "description": "외부 AI CLI 연동 범용 유틸리티 스킬 모음",
   "version": "1.0.0",
   "author": {
     "name": "장민규",

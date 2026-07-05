@@ -1,6 +1,6 @@
 {
   "name": "go-mux",
-  "description": "Go + stdlib net/http mux 특화 — 코드 생성(go-mux-developer), CRUD/API 설계 스캐폴딩(go-gen, go-api-design), 개발 종합 가이드(go-mux-guide). 백엔드 공통 패턴은 backend-shared 플러그인과 함께 사용.",
+  "description": "Go 표준 net/http mux 코드 생성·API 설계·가이드",
   "version": "1.0.1",
   "author": {
     "name": "장민규",

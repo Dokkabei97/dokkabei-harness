@@ -1,6 +1,6 @@
 {
   "name": "search",
-  "description": "Elasticsearch 검색 엔지니어링 — ES 쿼리 최적화, 검색 관련성 튜닝, 벡터/하이브리드 검색(kNN, RRF), 데이터 파이프라인 연동(Kafka/Spark), 인덱스 수명주기, 한국어 분석, 증상 기반 진단(profile/explain/termvectors). Agents: es-query-optimizer, search-relevance-engineer, hybrid-search-architect, search-pipeline-engineer, search-service-architect, search-code-reviewer. Expert Pool + Fan-out/Fan-in 팀 오케스트레이션 포함.",
+  "description": "Elasticsearch 검색 엔지니어링 전문 에이전트 팀 하네스",
   "version": "1.0.0",
   "author": {
     "name": "장민규",

@@ -1,6 +1,6 @@
 {
   "name": "backend-shared",
-  "description": "백엔드 언어 공통 — API 설계(REST/GraphQL) + DB 마이그레이션 + 헥사고날 아키텍처 + 관측성/캐싱/이벤트/회복탄력성/보안/DTO 패턴 + 백엔드 테스트. Kotlin/Spring, Python/FastAPI, Go 어느 스택에도 적용되는 공통 계층. 언어별 특화는 kotlin-spring, python-fastapi, go-mux 플러그인 참조. + Context7 최신 문서 조회 공통 규약(context7-docs-guide — 버전 민감 API 환각 차단, 스택 4종 코드젠이 참조).",
+  "description": "스택 무관 백엔드 공통 설계·운영 패턴 계층",
   "version": "1.1.0",
   "author": {
     "name": "장민규",
