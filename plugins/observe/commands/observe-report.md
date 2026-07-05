@@ -36,7 +36,11 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
    `${CLAUDE_PLUGIN_ROOT}` 미치환 환경이면 저장소의 `plugins/observe/bin/observe-report.js` 폴백
 2. **가용성 판정**: `meta.trace_missing`이면 계측이 꺼진 상태 — OBSERVE_TRACE=1 활성화 방법
    (셸 프로필 또는 settings.json `env`)과 재수집 후 재실행 안내를 출력하고 **종료**
-3. **표본 적정성**: 레코드 수·세션 수·기간을 보고하고, 표본이 작으면(세션 < 5) 이후 해석에
+3. **분모 검증**: `meta.plugins_dir`이 마켓플레이스 루트인지 확인. 특정 플러그인 하나의 설치
+   루트(예: `.../cache/<마켓>/observe/1.1.0`)로 잡혀 `inventory.plugins`가 1로 붕괴하면 커버리지
+   분석이 "unused 없음"이라는 잘못된 안심을 준다(실측 2026-07) — 집계기가 버전 레이아웃을 상향
+   인식하지만, 의심스러우면 `--plugins-dir <마켓 캐시 루트 또는 레포 plugins/>`로 명시 오버라이드
+4. **표본 적정성**: 레코드 수·세션 수·기간을 보고하고, 표본이 작으면(세션 < 5) 이후 해석에
    "표본 부족 — 경향 참고용" 경고를 달아 과잉 일반화를 방지
 
 ### Phase 2: 결정론 집계 보고
@@ -54,8 +58,14 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
    description 발견가능성 문제의 신호. why 코퍼스와 대조해 원인 가설 제시
 3. **미사용 자산 분류**: 신생(추가된 지 얼마 안 됨 — git log 참조) / 중복(유사 스킬이 흡수) /
    사장(용도 소멸) 3분류. 분류 근거로 해당 SKILL.md description을 직접 읽어 인용
-4. **오귀속·품질 이슈**: unknown_called(네임스페이스 드리프트·개명 흔적), trigger null 급증,
-   완주율 낮은 스킬(호출 후 result 부재) 등 계측 자체의 개선점
+4. **오귀속·품질 이슈**: unknown_called, trigger null 급증, 완주율 낮은 스킬(호출 후 result
+   부재) 등 계측 자체의 개선점. 단 unknown_called는 **인벤토리 밖 호출**의 총칭이다 —
+   번들 스킬(claude-in-chrome, update-config 등)·타 마켓플레이스 스킬이 정상적으로 여기 잡히므로,
+   네임스페이스 드리프트·개명 흔적으로 판정하려면 이름이 인벤토리의 기존 자산과 유사한지 먼저 대조하라
+5. **교차 검증(선택)**: 로컬 OTel 스택(`infra/otel`)이 떠 있으면 내장 OTel의 `skill_activated`
+   이벤트와 맞대본다 — observe와 `session_id`/`prompt_id`가 동일 값이라 그대로 join된다.
+   observe에 없는데 Loki에 있는 호출은 헤드리스 user-slash(계측 경계, README 참고)거나 훅 미발화
+   신호다. 조회: `{service_name="claude-code"} | event_name="skill_activated"`
 
 ### Phase 4: 개선 제안 라우팅
 판정 결과를 유형별 제안서로 산출한다 — **파일은 일절 수정하지 않는다** (retro (c)형 계약).
@@ -69,7 +79,9 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 
 ### Phase 5: 보고
 하네스 건강 요약(호출 집중도·커버리지·발화 정확도·계측 품질)과 제안 목록을 표로 제시하고,
-제안 적용은 사용자 승인 후 별도 작업임을 명시한다.
+제안 적용은 사용자 승인 후 별도 작업임을 명시한다. 표본이 부족했다면 재실행 주기를 함께
+안내한다 — 통상 2주 뒤 `/observe-report --window 14`가 적절하며, 정기 실행은 전용 하네스를
+만들지 말고 기존 `/loop`·`/schedule`을 재사용한다(하네스 신설은 반복이 입증된 뒤에).
 
 ## Tool Coordination
 - **Bash**: `node ${CLAUDE_PLUGIN_ROOT}/bin/observe-report.js --json [--window N]` — 결정론 집계 (유일한 실행)

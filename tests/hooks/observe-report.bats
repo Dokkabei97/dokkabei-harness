@@ -288,6 +288,37 @@ EOF
   [ "$(jget 'r.meta.plugins_dir')" = "$REPO_ROOT/plugins" ]
 }
 
+@test "report: version-indirect cache layout climbs to marketplace root" {
+  # 설치 캐시 레이아웃 cache/<마켓플레이스>/<플러그인>/<버전>/ 재현 —
+  # plugin_root 가 버전 디렉토리를 가리켜도 분모는 마켓플레이스 전체여야 한다 (분모 붕괴 회귀)
+  MP="$TEST_PROJ/mp"
+  mkdir -p "$MP/pluginA/1.0.0/.claude-plugin" "$MP/pluginA/1.0.0/skills/x" "$MP/pluginA/1.0.0/commands"
+  printf '{"name":"pluginA","description":"d","version":"1.0.0"}\n' > "$MP/pluginA/1.0.0/.claude-plugin/plugin.json"
+  printf -- '---\nname: x\ndescription: skill x\n---\nbody\n' > "$MP/pluginA/1.0.0/skills/x/SKILL.md"
+  printf -- '---\nname: y\ndescription: command y\n---\nbody\n' > "$MP/pluginA/1.0.0/commands/y.md"
+  # 구버전 잔존 디렉토리 — 최신(1.0.0)만 분모로 선택돼야 한다 (이중 계상 금지)
+  mkdir -p "$MP/pluginA/0.9.0/.claude-plugin" "$MP/pluginA/0.9.0/skills/old"
+  printf '{"name":"pluginA","description":"d","version":"0.9.0"}\n' > "$MP/pluginA/0.9.0/.claude-plugin/plugin.json"
+  printf -- '---\nname: old\ndescription: old skill\n---\nbody\n' > "$MP/pluginA/0.9.0/skills/old/SKILL.md"
+  # 두 번째 플러그인 — plugin_root 소유자 외 플러그인도 열거되는지 확인
+  mkdir -p "$MP/pluginB/2.1.0/.claude-plugin" "$MP/pluginB/2.1.0/skills/z"
+  printf '{"name":"pluginB","description":"d","version":"2.1.0"}\n' > "$MP/pluginB/2.1.0/.claude-plugin/plugin.json"
+  printf -- '---\nname: z\ndescription: skill z\n---\nbody\n' > "$MP/pluginB/2.1.0/skills/z/SKILL.md"
+  cat > "$TRACE" <<EOF
+{"ts":"2026-07-01T09:00:00Z","session_id":"S1","type":"session_start","source":"startup","plugin_root":"$MP/pluginA/1.0.0"}
+{"ts":"2026-07-01T09:01:00Z","session_id":"S1","type":"skill","skill":"pluginA:x","trigger":"model"}
+EOF
+  run node "$REPORT" --trace "$TRACE" --json
+  [ "$status" -eq 0 ]
+  [ "$(jget 'r.meta.plugins_dir_source')" = "trace" ]
+  [ "$(jget 'r.meta.plugins_dir')" = "$MP" ]
+  [ "$(jget 'r.inventory.plugins')" = "2" ]
+  [ "$(jget 'r.inventory.skills')" = "2" ]
+  [ "$(jget 'r.inventory.commands')" = "1" ]
+  [ "$(jget 'r.inventory.unused_skills.map(u=>u.id).sort().join(",")')" = "pluginB:z" ]
+  [ "$(jget 'r.inventory.unknown_called.length')" = "0" ]
+}
+
 @test "report: crlf frontmatter and broken plugin.json tolerated" {
   make_fake_plugins
   # pb 의 plugin.json 을 깨뜨려도 디렉터리명 폴백으로 계속 열거돼야 한다

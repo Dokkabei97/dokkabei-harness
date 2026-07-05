@@ -36,15 +36,54 @@ observe의 존재 이유는 hermes agent와의 대비로 명확해진다. hermes
 
 - `bin/observe-report.js` — 의존성 없는 결정론 집계기이자 `/observe-report`의 산출 엔진. tolerant reader로 트레이스를 읽어 호출·완주·미사용 자산·미발화 후보·세션 경계 요약을 JSON(`--json`) 또는 한국어 텍스트로 출력한다. LLM 판단(미발화 확정, description 진단)은 하지 않는 것이 이 파일의 계약이다. 인벤토리 분모는 `--plugins-dir` > 트레이스의 `session_start.plugin_root` > 파일 자신의 위치 역산 순으로 결정한다.
 
+## 세팅
+
+트레이스 수집은 opt-in이다 — `OBSERVE_TRACE=1`을 켜야 6종 훅이 동작한다. **전역**(모든 프로젝트)이냐 **프로젝트별**이냐에 따라 설정 파일이 다르며, 설정은 언제나 **다음에 새로 시작하는 세션부터** 적용된다(이미 열린 세션엔 소급 안 됨). 셸 프로필의 `export OBSERVE_TRACE=1`도 동작하지만, 아래 `settings.json` 방식이 세션 스코프가 명확해 권장된다.
+
+### 1. 전역 — 모든 프로젝트에서 추적
+
+`~/.claude/settings.json`의 `env` 블록에 넣는다. 이후 시작하는 모든 세션이 상속한다.
+
+```json
+{
+  "env": {
+    "OBSERVE_TRACE": "1"
+  }
+}
+```
+
+### 2. 프로젝트별 — 이 레포에서만
+
+`<프로젝트>/.claude/settings.local.json`(개인용, `.gitignore`됨) 또는 `.claude/settings.json`(팀 공유, 커밋됨)의 `env`에 같은 키를 넣는다. **로컬이 전역을 이기므로**, 전역으로 켠 뒤 특정 민감 프로젝트만 끄려면 그 프로젝트에서 `"OBSERVE_TRACE": "0"`으로 오버라이드하면 된다.
+
+### 3. 내장 OTel 스택과 함께 — 권장 (교차 검증)
+
+observe는 "**왜**·완주"를, Claude Code 내장 OTel은 "비용·토큰·이벤트·**무엇이 언제**"를 담당하는 직교 보완재다. 둘을 같이 켜면 `session_id`·`prompt_id`가 동일 값이라 그대로 join되어 훅 발화 여부를 교차 검증할 수 있다(→ 이 레포 `infra/otel`에 로컬 수신 스택 `docker-compose`와 Grafana 대시보드 제공). 전역 `env`에 함께 설정:
+
+```json
+{
+  "env": {
+    "OBSERVE_TRACE": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
+    "OTEL_LOG_TOOL_DETAILS": "1",
+    "OTEL_LOG_USER_PROMPTS": "1"
+  }
+}
+```
+
+- `OTEL_LOG_TOOL_DETAILS`는 서드파티(마켓플레이스) 스킬 이름의 마스킹을 푼다 — 없으면 `skill_name`이 `custom_skill`로만 찍혀 하네스별 집계가 불가능하다(실측 2026-07).
+- `OTEL_LOG_USER_PROMPTS`는 프롬프트 원문을 전송해 대시보드의 프롬프트↔스킬 상관 뷰를 채운다 — 없으면 `<REDACTED>`.
+- 스택이 꺼져 있어도 세션은 정상 동작한다(OTLP export 실패는 조용히 무시). `CLAUDE_CODE_ENABLE_TELEMETRY`만으로는 observe 훅이 켜지지 않으니 `OBSERVE_TRACE`는 별도로 둔다 — 둘은 직교한다.
+
+> ⚠️ **프라이버시**: `OBSERVE_TRACE`·`OTEL_LOG_USER_PROMPTS`는 프롬프트 **원문**을 기록한다. 전역으로 켜면 민감 프로젝트를 포함한 모든 프롬프트가 로컬(`.claude/skill-trace.jsonl` + 로컬 Loki)에 남는다 — 로컬 loopback이라 머신 밖 유출은 없지만, 원문 기록은 명시적 결정이다. 특정 프로젝트만 빼려면 그 프로젝트 `.claude/settings.local.json`의 `env`에서 `"0"`으로 끈다.
+
 ## 사용법
 
-트레이스 수집은 opt-in이므로 먼저 켜야 한다. 셸 프로필 또는 `settings.json`의 `env`에 다음을 설정한다.
-
-```
-OBSERVE_TRACE=1
-```
-
-이후 평소처럼 세션을 진행하면 6종 훅이 자동으로 `.claude/skill-trace.jsonl`에 레코드를 append한다(별도 호출 불필요). 일정 기간 트레이스가 쌓이면 리포트를 실행한다.
+세팅을 마치면 평소처럼 세션을 진행하는 것만으로 6종 훅이 자동으로 `.claude/skill-trace.jsonl`에 레코드를 append한다(별도 호출 불필요). 일정 기간 트레이스가 쌓이면 리포트를 실행한다.
 
 ```
 /observe-report                    # 집계 → 해석 → 개선 제안까지 전체 흐름

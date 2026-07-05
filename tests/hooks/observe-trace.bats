@@ -395,3 +395,99 @@ skill_event() { # $1 skill, $2 args, $3 transcript path("" 허용)
   [ -f "$TRACE" ]
   [ "$(last_field text)" = "cwd fallback" ]
 }
+
+# ── v2.1.201 실전 transcript 포맷 회귀 (2026-07 실측) ────────────────────────
+# 픽스처는 실세션(3d98ba5e) transcript 라인 787·793~795 를 축약한 것 — 엔벨로프
+# (type/uuid/parentUuid/isSidechain/version), message.content 블록 배열, thinking 블록
+# 개입, 블록별 분리 기록 구조를 보존하고 usage/서명 등 비구조 필드만 제거했다.
+# 실측 핵심: v2.1.201 은 현재 라운드 assistant 레코드(thinking/text/tool_use)를
+# PreToolUse 훅 종료 후(툴 시작 시점)에야 flush 한다 → 훅 시점 EOF 스캔은 preamble 을
+# 못 본다. 훅은 anchor(tool_use_id) 미발견 시 detached 자식에 기록을 위임한다.
+
+V2_TUID="toolu_015U9PdE6beTGmTez16ZYFfg"
+V2_WHY_HEAD="확인해야 할 게 두 갈래네요"
+
+write_v2_user_boundary() { # $1 transcript — PreToolUse 훅 시점의 실측 상태(assistant 미flush)
+  printf '%s\n' '{"parentUuid":"07ecbbfc-9fa9-40bc-ab68-6bd28ec68176","isSidechain":false,"promptId":"7f66a472-65aa-4138-a943-45fef1ac2dde","type":"user","message":{"role":"user","content":"grafana 대쉬보드 보니 어떤 스킬/하네스가 호출이 누적되었는지 볼수 있는 대쉬보드는 업슨거 같은데 크롬으로 직접 확인 해볼래?"},"uuid":"306ad205-df4c-4b43-8fed-09a2ae3fcea9","timestamp":"2026-07-05T03:14:24.818Z","userType":"external","entrypoint":"cli","sessionId":"3d98ba5e","version":"2.1.201","gitBranch":"main"}' > "$1"
+}
+
+append_v2_assistant_flush() { # $1 transcript — 툴 시작 시점 flush 재현 (블록별 분리 기록)
+  {
+    printf '%s\n' '{"parentUuid":"d0a17fec","isSidechain":false,"message":{"model":"claude-fable-5","id":"msg_01BfM3Abpp8s8vye7ciXaM7L","type":"message","role":"assistant","content":[{"type":"thinking","thinking":"","signature":"sig"}],"stop_reason":"tool_use"},"type":"assistant","uuid":"b527c9f1","timestamp":"2026-07-05T03:16:20.627Z","sessionId":"3d98ba5e","version":"2.1.201"}'
+    printf '%s\n' '{"parentUuid":"b527c9f1","isSidechain":false,"message":{"model":"claude-fable-5","id":"msg_01BfM3Abpp8s8vye7ciXaM7L","type":"message","role":"assistant","content":[{"type":"text","text":"확인해야 할 게 두 갈래네요: ① Grafana 대시보드를 크롬으로 직접 열어 확인하고 보강, ② observe README 재검토. 먼저 브라우저부터 엽니다."}],"stop_reason":"tool_use"},"type":"assistant","uuid":"1022aa23","timestamp":"2026-07-05T03:16:22.562Z","sessionId":"3d98ba5e","version":"2.1.201"}'
+    printf '%s\n' '{"parentUuid":"1022aa23","isSidechain":false,"message":{"model":"claude-fable-5","id":"msg_01BfM3Abpp8s8vye7ciXaM7L","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_015U9PdE6beTGmTez16ZYFfg","name":"Skill","input":{"skill":"claude-in-chrome"},"caller":{"type":"direct"}}],"stop_reason":"tool_use"},"type":"assistant","uuid":"a1df6314","timestamp":"2026-07-05T03:16:22.719Z","sessionId":"3d98ba5e","version":"2.1.201"}'
+  } >> "$1"
+}
+
+v2_skill_event() { # $1 transcript
+  printf '{"tool_name":"Skill","tool_input":{"skill":"claude-in-chrome"},"session_id":"3d98ba5e","transcript_path":"%s","cwd":"%s","prompt_id":"7f66a472","tool_use_id":"%s"}' \
+    "$1" "$TEST_PROJ" "$V2_TUID"
+}
+
+@test "trace-skill: v2 real format anchor flushed -> why from same-turn preamble" {
+  export OBSERVE_TRACE=1
+  local tr="$TEST_PROJ/transcript.jsonl"
+  write_v2_user_boundary "$tr"
+  append_v2_assistant_flush "$tr"
+  run invoke_node_hook "$SKILL_HOOK" "$(v2_skill_event "$tr")"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ "$(trace_lines)" = "1" ]
+  [ "$(last_field trigger)" = "model" ]
+  [ "$(last_field why_source)" = "preamble" ]
+  [[ "$(last_field why)" == "$V2_WHY_HEAD"* ]]
+  [ "$(last_field tool_use_id)" = "$V2_TUID" ]
+}
+
+@test "trace-skill: v2 anchor bounds scan - later turn text not attributed" {
+  # 사후 재추출(파이프 재현) 상태: anchor 뒤에 다음 턴이 이미 flush 되어 있어도
+  # EOF 가 아니라 anchor 기준으로 스캔해 현재 턴 preamble 에 귀속해야 한다.
+  export OBSERVE_TRACE=1
+  local tr="$TEST_PROJ/transcript.jsonl"
+  write_v2_user_boundary "$tr"
+  append_v2_assistant_flush "$tr"
+  {
+    printf '%s\n' '{"parentUuid":"a1df6314","isSidechain":false,"type":"user","message":{"role":"user","content":"later unrelated request"},"uuid":"u-later","version":"2.1.201"}'
+    printf '%s\n' '{"parentUuid":"u-later","isSidechain":false,"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"stale later-turn text"}]},"uuid":"a-later","version":"2.1.201"}'
+  } >> "$tr"
+  run invoke_node_hook "$SKILL_HOOK" "$(v2_skill_event "$tr")"
+  [ "$status" -eq 0 ]
+  [[ "$(last_field why)" == "$V2_WHY_HEAD"* ]]
+  [ "$(last_field trigger)" = "model" ]
+}
+
+@test "trace-skill: v2 preflush state -> deferred child resolves why after flush" {
+  # 실전 타이밍 재현: 훅 시점엔 user 경계만 flush → 훅은 즉시 종료(비차단)하고
+  # 기록을 detached 자식에 위임 → flush 도착 후 why 가 non-null 로 기록된다.
+  export OBSERVE_TRACE=1
+  local tr="$TEST_PROJ/transcript.jsonl"
+  write_v2_user_boundary "$tr"
+  run invoke_node_hook "$SKILL_HOOK" "$(v2_skill_event "$tr")"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ ! -e "$TRACE" ]                # 훅 종료 직후엔 미기록 — 자식이 anchor flush 대기 중
+  append_v2_assistant_flush "$tr"  # 툴 시작 시점의 flush 재현
+  local i=0
+  until [ -e "$TRACE" ] || [ "$i" -ge 50 ]; do sleep 0.1; i=$((i + 1)); done
+  [ "$(trace_lines)" = "1" ]
+  [ "$(last_field skill)" = "claude-in-chrome" ]
+  [ "$(last_field trigger)" = "model" ]
+  [ "$(last_field why_source)" = "preamble" ]
+  [[ "$(last_field why)" == "$V2_WHY_HEAD"* ]]
+}
+
+@test "trace-agent: v2 real format anchored -> why from same-turn preamble" {
+  export OBSERVE_TRACE=1
+  local tr="$TEST_PROJ/transcript.jsonl"
+  write_v2_user_boundary "$tr"
+  append_v2_assistant_flush "$tr"
+  printf '%s\n' '{"parentUuid":"a1df6314","isSidechain":false,"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","id":"toolu_agent01","name":"Task","input":{"subagent_type":"Explore","prompt":"scan repo"}}]},"uuid":"ag-1","version":"2.1.201"}' >> "$tr"
+  local ev
+  ev="$(printf '{"tool_name":"Task","tool_input":{"subagent_type":"Explore","prompt":"scan repo"},"session_id":"s","transcript_path":"%s","cwd":"%s","tool_use_id":"toolu_agent01"}' "$tr" "$TEST_PROJ")"
+  run invoke_node_hook "$AGENT_HOOK" "$ev"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ "$(last_field type)" = "agent" ]
+  [ "$(last_field why_source)" = "preamble" ]
+  [[ "$(last_field why)" == "$V2_WHY_HEAD"* ]]
+}
