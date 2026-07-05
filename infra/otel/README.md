@@ -66,15 +66,26 @@ export OTEL_METRICS_EXPORTER=otlp
 export OTEL_LOGS_EXPORTER=otlp
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+export OTEL_LOG_TOOL_DETAILS=1   # 서드파티 스킬 이름 마스킹 해제 (아래 참고)
+export OTEL_LOG_USER_PROMPTS=1   # 프롬프트 원문 전송 (프롬프트↔스킬 상관 뷰용)
 ```
 
 스택이 꺼져 있어도 Claude Code는 정상 동작한다(export 실패는 조용히 무시됨).
 
+### 마스킹 게이트 (실측, 2026-07)
+
+- `OTEL_LOG_TOOL_DETAILS` 미설정 시 마켓플레이스 플러그인 스킬은 `skill_name="custom_skill"`로
+  **마스킹**되고 `plugin_name`/`marketplace_name`도 빠진다 — 하네스 계측이 목적이면 필수.
+  설정 시 `skill_name="feature-loop:floop-status"`, `plugin_name="feature-loop"`,
+  `marketplace_name="dokkabei-harness"`처럼 전체 귀속이 나온다 (번들 스킬은 게이트 없이도 실명).
+- `OTEL_LOG_USER_PROMPTS` 미설정 시 `user_prompt` 이벤트의 `prompt`가 `<REDACTED>`
+  (단, `command_name`·`prompt_length`는 항상 보임).
+
 ### 프라이버시 기본값
 
-프롬프트 원문·응답·툴 입력은 기본 **미전송**(redacted). 필요 시에만 opt-in:
-`OTEL_LOG_USER_PROMPTS=1`, `OTEL_LOG_ASSISTANT_RESPONSES=1`, `OTEL_LOG_TOOL_DETAILS=1`.
-로컬 수신기라도 원문 기록은 명시적 결정으로 남겨둔다 (observe 플러그인의 opt-in 철학과 동일).
+프롬프트 원문·응답·툴 입력은 기본 **미전송**(redacted). 위 두 게이트는 이 로컬 스택(루프백 전용)
+한정으로 켠 opt-in이며, observe 플러그인이 `OBSERVE_TRACE=1`로 프롬프트를 로컬 기록하는 것과
+같은 결정 층위다. 외부 수집기로 보낼 때는 다시 검토할 것.
 
 ## 수집 데이터 (실측 검증됨)
 
@@ -94,10 +105,41 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 `skill_activated`, `plugin_loaded`, `hook_registered`, `hook_execution_start/complete`,
 `mcp_server_connection`, `compaction` 등 24종.
 
-**대시보드**: `grafana/claude-code-dashboard.json`이 프로비저닝되어 홈 화면에 뜬다
-(비용/세션/토큰/활동시간 stat + 모델별 비용·타입별 토큰 시계열 + event_name별 빈도 + 로그 스트림).
+**대시보드**: `grafana/claude-code-dashboard.json`이 프로비저닝되어 홈 화면에 뜬다.
 수정하려면 JSON을 고치고 `docker compose restart` (프로비저닝 파일이라 UI 편집은 저장 안 됨 —
 UI에서 "Save as"로 복제 후 편집).
+
+- **요약 stat**: 비용/세션/토큰/활동시간 — 희소 카운터 staleness 때문에 단순 instant sum이 아니라
+  `sum(last_over_time(...[$__range]))`을 쓴다 (세션 수가 "No data"로 비는 문제의 해법).
+- **스킬/하네스 호출 누적**: `skill_activated` 이벤트 기반 — 스킬별·플러그인(하네스)별 bargauge,
+  user-slash vs claude-proactive 트리거 파이, Agent/Task 호출 수. Loki 집계 패널은 instant가 아니라
+  **range 쿼리 + lastNotNull** 감산이어야 시리즈 레이블이 산다 (instant는 "Value #A"로 뭉개짐).
+- **프롬프트 ↔ 스킬 연쇄 타임라인**: `user_prompt`와 `skill_activated`를 시간순으로 섞어
+  `[prompt_id 앞 8자]`로 결합 표시 — "어떤 프롬프트에서 어떤 스킬이 연달아 호출됐는지"를 그대로 읽는다.
+
+### 상관 조회 레시피 (Grafana Explore → Loki)
+
+`event_name`은 인덱스 레이블이 아니라 **구조화 메타데이터**다 — 셀렉터(`{event_name="..."}`)가 아닌
+파이프라인 필터(`| event_name="..."`)로 걸러야 한다.
+
+```logql
+# 특정 프롬프트가 유발한 모든 이벤트 (타임라인 패널에서 prompt_id를 얻은 뒤)
+{service_name="claude-code"} | prompt_id="7f66a472-65aa-4138-a943-45fef1ac2dde"
+
+# 스킬 호출만, 이름/트리거/플러그인 포함
+{service_name="claude-code"} | event_name="skill_activated"
+  | line_format "{{.skill_name}} ({{.invocation_trigger}}) plugin={{.plugin_name}}"
+
+# 세션 하나의 전체 흐름 재구성
+{service_name="claude-code"} | session_id="<session_id>"
+
+# 하네스별 호출 수 (지난 7일)
+sum by (plugin_name) (count_over_time({service_name="claude-code"}
+  | event_name="skill_activated" | plugin_name!="" [7d]))
+```
+
+observe 플러그인의 `.claude/skill-trace.jsonl`과는 `session_id`/`prompt_id`가 동일 값이므로
+그대로 join된다 — observe가 "왜(why)·완주"를, 이 스택이 "무엇이·언제·얼마나"를 담당한다.
 
 ## 운영
 

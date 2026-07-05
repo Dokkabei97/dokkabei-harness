@@ -1,98 +1,506 @@
 {
   "uid": "claude-code",
   "title": "Claude Code Telemetry",
-  "tags": ["claude-code", "otel"],
+  "tags": [
+    "claude-code",
+    "otel"
+  ],
   "timezone": "browser",
   "schemaVersion": 39,
   "refresh": "30s",
-  "time": { "from": "now-24h", "to": "now" },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
   "panels": [
     {
       "id": 1,
       "type": "stat",
       "title": "총 비용 (USD)",
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 3 }, "overrides": [] },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 3
+        },
+        "overrides": []
+      },
       "targets": [
-        { "refId": "A", "expr": "sum(claude_code_cost_usage_USD_total)", "instant": true }
+        {
+          "refId": "A",
+          "expr": "sum(last_over_time(claude_code_cost_usage_USD_total[$__range]))",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
       ]
     },
     {
       "id": 2,
       "type": "stat",
       "title": "세션 수",
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "targets": [
-        { "refId": "A", "expr": "sum(claude_code_session_count_total)", "instant": true }
+        {
+          "refId": "A",
+          "expr": "sum(last_over_time(claude_code_session_count_total[$__range]))",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
       ]
     },
     {
       "id": 3,
       "type": "stat",
       "title": "총 토큰",
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "targets": [
-        { "refId": "A", "expr": "sum(claude_code_token_usage_tokens_total)", "instant": true }
+        {
+          "refId": "A",
+          "expr": "sum(last_over_time(claude_code_token_usage_tokens_total[$__range]))",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
       ]
     },
     {
       "id": 4,
       "type": "stat",
       "title": "활동 시간",
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
       "targets": [
-        { "refId": "A", "expr": "sum(claude_code_active_time_seconds_total)", "instant": true }
+        {
+          "refId": "A",
+          "expr": "sum(last_over_time(claude_code_active_time_seconds_total[$__range]))",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
       ]
     },
     {
       "id": 5,
-      "type": "timeseries",
-      "title": "모델별 누적 비용 (USD)",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "currencyUSD" }, "overrides": [] },
+      "type": "bargauge",
+      "title": "스킬별 호출 누적",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
       "targets": [
-        { "refId": "A", "expr": "sum by (model) (claude_code_cost_usage_USD_total)", "legendFormat": "{{model}}" }
+        {
+          "refId": "A",
+          "expr": "sum by (skill_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__range]))",
+          "legendFormat": "{{skill_name}}",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
       ]
     },
     {
       "id": 6,
-      "type": "timeseries",
-      "title": "타입별 누적 토큰",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "type": "bargauge",
+      "title": "하네스(플러그인)별 호출 누적",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
       "targets": [
-        { "refId": "A", "expr": "sum by (type) (claude_code_token_usage_tokens_total)", "legendFormat": "{{type}}" }
+        {
+          "refId": "A",
+          "expr": "sum by (plugin_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" | plugin_name!=\"\" [$__range]))",
+          "legendFormat": "{{plugin_name}}",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
       ]
     },
     {
       "id": 7,
-      "type": "timeseries",
-      "title": "이벤트 발생 빈도 (event_name별)",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
-      "datasource": { "type": "loki", "uid": "loki" },
-      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "stacking": { "mode": "normal" } } }, "overrides": [] },
+      "type": "piechart",
+      "title": "트리거: 사용자 slash vs 모델 자율",
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 16,
+        "y": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
       "targets": [
-        { "refId": "A", "expr": "sum by (event_name) (count_over_time({service_name=\"claude-code\"} [$__auto]))", "legendFormat": "{{event_name}}" }
+        {
+          "refId": "A",
+          "expr": "sum by (invocation_trigger) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__range]))",
+          "legendFormat": "{{invocation_trigger}}",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
       ]
     },
     {
       "id": 8,
-      "type": "logs",
-      "title": "이벤트 로그 스트림",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
-      "datasource": { "type": "loki", "uid": "loki" },
-      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending" },
+      "type": "bargauge",
+      "title": "에이전트 호출 (tool 기준)",
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 20,
+        "y": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
       "targets": [
-        { "refId": "A", "expr": "{service_name=\"claude-code\"}" }
+        {
+          "refId": "A",
+          "expr": "sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" | tool_name=~\"Agent|Task\" [$__range]))",
+          "legendFormat": "{{tool_name}}",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "logs",
+      "title": "프롬프트 ↔ 스킬 연쇄 타임라인 (prompt_id로 결합)",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none",
+        "enableLogDetails": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{service_name=\"claude-code\"} | event_name=~\"user_prompt|skill_activated\" | line_format \"{{if eq .event_name \\\"user_prompt\\\"}}🧑 [{{printf \\\"%.8s\\\" .prompt_id}}] PROMPT{{if .command_name}} /{{.command_name}}{{end}}: {{.prompt}}{{else}}   ⚡ [{{printf \\\"%.8s\\\" .prompt_id}}] SKILL {{.skill_name}} ({{.invocation_trigger}}){{end}}\""
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "모델별 누적 비용 (USD)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "custom": {
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (model) (claude_code_cost_usage_USD_total)",
+          "legendFormat": "{{model}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "타입별 누적 토큰",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (type) (claude_code_token_usage_tokens_total)",
+          "legendFormat": "{{type}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "이벤트 발생 빈도 (event_name별)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "bars",
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 80
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (event_name) (count_over_time({service_name=\"claude-code\"} [$__auto]))",
+          "legendFormat": "{{event_name}}",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "logs",
+      "title": "이벤트 로그 스트림 (원본)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{service_name=\"claude-code\"}",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          }
+        }
       ]
     }
   ]
