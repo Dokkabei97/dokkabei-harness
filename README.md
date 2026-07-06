@@ -3,7 +3,7 @@
 # dokkabei-harness
 
 Claude Code plugin marketplace. It started as a collection of sub agents, but now
-it bundles agents, commands, skills, and hooks together into **19 plugins** under `plugins/`,
+it bundles agents, commands, skills, and hooks together into **20 plugins** under `plugins/`,
 installed and distributed via `.claude-plugin/marketplace.json`.
 
 ## Installation
@@ -18,7 +18,7 @@ Example: `/plugin install base@dokkabei-harness`, `/plugin install search@dokkab
 ## Structure
 
 ```text
-├── .claude-plugin/marketplace.json   # Marketplace registration surface (19 plugins)
+├── .claude-plugin/marketplace.json   # Marketplace registration surface (20 plugins)
 ├── plugins/<name>/                    # Each plugin
 │   ├── .claude-plugin/plugin.json     #   Manifest (name/description/version)
 │   ├── agents/                        #   Sub agents

@@ -335,6 +335,27 @@
         "people-ops",
         "labor"
       ]
+    },
+    {
+      "name": "wiki-ops",
+      "source": "./plugins/wiki-ops",
+      "description": "Operates a cited llm-wiki knowledge vault through gated feed, audit, curation-loop, and Q&A",
+      "version": "1.0.0",
+      "category": "productivity",
+      "keywords": [
+        "wiki",
+        "knowledge",
+        "vault",
+        "ingest",
+        "citation",
+        "lint",
+        "curation",
+        "llmwiki",
+        "knowledge-ops"
+      ],
+      "requires": [
+        "harness"
+      ]
     }
   ]
 }

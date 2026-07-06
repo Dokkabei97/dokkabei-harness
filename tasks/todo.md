@@ -168,3 +168,23 @@
 ## 원칙(유지)
 - 커밋은 사용자 요청 시에만. 훅 로직 버그 발견 시 플래그 후 별도 결정.
 - 트레이스 스키마는 type 판별자 additive 확장만 — 기존 필드(trigger 의미, why null 규약) 재정의 금지, 소비자는 tolerant reader.
+
+---
+
+# wiki-ops 플러그인 신설 — llm-wiki 지식 운영 하네스 (2026-07-06)
+
+방향: llm-wiki(../llm-wiki)를 **개발하는** 하네스가 아니라 llmwiki CLI를 **도구로 구동해**
+지식 vault를 운영하는 하네스 (사용자 선택 확정). team-harness 7 Phase 준수.
+
+## Plan
+- [x] Phase 0~1: llm-wiki 실태 감사 + 3축 병렬 도메인 분석 (플러그인 컨벤션 / llmwiki 도구 표면 실측 / 루프엔진 재사용성·verify 룰)
+- [x] Phase 2: 설계 — Pipeline+Producer-Reviewer, harness generic 루프 재사용(자체 훅 0줄·bats 의무 없음), 게이트 = lint 3종(LLM-0) 사슬, semantic은 감사 전용
+- [x] Phase 3: 생성 — skills 6종(orchestrator+얇은 진입점 5) + references 2종 + agents 3종(curator maker / auditor checker Edit 미보유 / librarian) + README 쌍 + plugin.json. block-md-creation 훅은 doc-collab-guide 규약(.planning/docs 스테이징→mv)으로 우회
+- [x] Phase 4: marketplace.json 등록 (20번째, requires:["harness"], 버전 2곳 1.0.0 동기 + XRF-016 3소스 일치 검증)
+- [x] Phase 5: 검증 — (a) 실측 스모크: fake provider 임시 vault에서 게이트 red(exit 1)→큐레이터 규율 편집(quote 무접촉)→그린(exit 0) 수렴 증명 (b) 4렌즈 반증 워크플로우(SKL·ORC/AGT/XRF·SEC·QUA/정합성): critical 0·high 3·medium 4·low 14 → 20건 수정(28 edits), 회귀 재검증 그린
+
+## Review
+- 핵심 반증 수확: ① 디스패치 계약 드리프트(에이전트 3요소 hard-fail vs 오케스트레이터 부분 명시 → 헛루프 경로) ② auditor/librarian description의 "도구 수준 차단" 과장(Write+Bash 우회 실재 → 정직 서술로 교정) ③ ORC-003/004 Stage I/O 사슬 미폐합
+- 실측 확보 함정(참조 문서에 물화): vault 내 .planning/ 미추적 파일이 ingest dirty 가드 exit 3 유발(Stage 0 .gitignore 선등록으로 예방), query 히트 0도 exit 0(citations로 판정), 단일 작성자 락(병렬 ingest 무의미), LLMWIKI_AIRGAP env는 MCP 전용(CLI는 --airgap 플래그만)
+- 보류·플래그: ORC-008(claude/CLAUDE.md 팀 등록)은 레포 전체 사문화 룰 — 어떤 팀도 미등록, 룰 개정 or 일괄 등록은 별도 결정 / flow-validation Quick Reference의 "## How to Use" 필수 표기는 번호 룰(SKL-001~021)과 불일치 — 룰 원문 간 정합화 별도 결정
+- 미커밋 — 커밋은 사용자 요청 시에만 원칙 준수. 전파는 커밋 → /plugin update (다음 세션부터 유효)

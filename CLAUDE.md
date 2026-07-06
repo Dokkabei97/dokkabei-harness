@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Identity
 
-A Claude Code plugin marketplace (`dokkabei-harness`). 19 plugins live in `plugins/<name>/` and
+A Claude Code plugin marketplace (`dokkabei-harness`). 20 plugins live in `plugins/<name>/` and
 are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <name>@dokkabei-harness`.
 
 ## Commands

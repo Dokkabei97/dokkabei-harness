@@ -3,7 +3,7 @@
 # dokkabei-harness
 
 Claude Code 플러그인 마켓플레이스. 처음에는 sub agent 모음에서 시작했으나, 지금은
-에이전트·커맨드·스킬·훅을 하나로 묶은 **플러그인 19종**을 `plugins/` 아래에 담고,
+에이전트·커맨드·스킬·훅을 하나로 묶은 **플러그인 20종**을 `plugins/` 아래에 담고,
 `.claude-plugin/marketplace.json` 으로 설치·배포한다.
 
 ## 설치
@@ -18,7 +18,7 @@ Claude Code 플러그인 마켓플레이스. 처음에는 sub agent 모음에서
 ## 구조
 
 ```text
-├── .claude-plugin/marketplace.json   # 마켓플레이스 등록면(플러그인 19종)
+├── .claude-plugin/marketplace.json   # 마켓플레이스 등록면(플러그인 20종)
 ├── plugins/<name>/                    # 각 플러그인
 │   ├── .claude-plugin/plugin.json     #   매니페스트(name/description/version)
 │   ├── agents/                        #   서브 에이전트
