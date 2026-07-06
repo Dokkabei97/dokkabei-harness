@@ -6,6 +6,10 @@
 //   ② 미사용 자산 — 설치 인벤토리(스킬·커맨드·에이전트) 대비 한 번도 호출 안 된 것
 //   ③ 미발화 후보 — 스킬/에이전트 무동작으로 끝난 사용자 턴 (LLM judge 의 입력)
 //   ④ 세션 경계 요약
+//   ⑤ 라이프사이클 — 사용된 자산의 최종 관측 사용 시점 기반 stale/archive 후보
+//      (hermes-agent curator 의 30/90일 결정론 전이 이식 — 판정 기준 시각은 --now 로 주입 가능)
+//   ⑥ 교정 후보 쌍(followups) — 스킬/에이전트 호출 직후의 평문 사용자 프롬프트
+//      (교정 여부 판정은 LLM 몫 — candidates 와 같은 "결정론 수집, 해석 분리" 계약)
 // 을 JSON(--json) 또는 한국어 텍스트로 출력한다. LLM 판단(미발화 확정, description 진단)은
 // 여기서 하지 않는다 — 결정론 집계와 해석의 경계가 이 파일의 계약이다.
 //
@@ -27,6 +31,10 @@ function parseArgs(argv) {
     json: false,
     window: 0,
     candidates: 30,
+    followups: 30,
+    staleDays: 30,
+    archiveDays: 90,
+    now: null, // 라이프사이클 판정 기준 시각(ISO) — 미지정 시 실행 시각. 테스트 결정론 주입용
     trace: null,
     pluginsDir: null,
   };
@@ -38,6 +46,12 @@ function parseArgs(argv) {
     else if (a === "--window") opts.window = parseInt(argv[++i], 10) || 0;
     else if (a === "--candidates")
       opts.candidates = parseInt(argv[++i], 10) || 0;
+    else if (a === "--followups") opts.followups = parseInt(argv[++i], 10) || 0;
+    else if (a === "--stale-days")
+      opts.staleDays = parseInt(argv[++i], 10) || 0;
+    else if (a === "--archive-days")
+      opts.archiveDays = parseInt(argv[++i], 10) || 0;
+    else if (a === "--now") opts.now = argv[++i];
   }
   return opts;
 }
@@ -199,11 +213,28 @@ function aggregate(records, opts) {
   // 접두어 없는 bare 이름만 tail 일치를 허용한다(usedTail). 동명 자산 오폭 방지.
   const usedFull = new Set();
   const usedTail = new Set();
-  const addUsed = (name) => {
-    const n = String(name).toLowerCase();
-    if (n.includes(":")) usedFull.add(n);
-    else usedTail.add(n);
+  // 최종 관측 사용 시각 — usedFull/usedTail 과 같은 이름 규율로 별도 유지 (라이프사이클 입력)
+  const lastUsedFull = new Map();
+  const lastUsedTail = new Map();
+  const laterTs = (a, b) => {
+    if (!a) return b;
+    if (!b) return a;
+    return Date.parse(b) > Date.parse(a) ? b : a;
   };
+  const addUsed = (name, ts) => {
+    const n = String(name).toLowerCase();
+    if (n.includes(":")) {
+      usedFull.add(n);
+      if (ts) lastUsedFull.set(n, laterTs(lastUsedFull.get(n), ts));
+    } else {
+      usedTail.add(n);
+      if (ts) lastUsedTail.set(n, laterTs(lastUsedTail.get(n), ts));
+    }
+  };
+  // 교정 후보 쌍 — 호출(스킬/에이전트) 직후의 평문 프롬프트. 커맨드 프롬프트는
+  // 직접 호출이라 쌍 없이 액션만 소거한다 (신호 순도 우선).
+  const followups = [];
+  const lastAction = new Map(); // session_id → {kind, target, ts}
 
   const bump = (map, key) => {
     if (!map.has(key))
@@ -245,6 +276,19 @@ function aggregate(records, opts) {
       prompts.total++;
       flushPending(sid); // 다음 사용자 입력 도착 = 직전 턴 종료 → 무동작이었다면 후보 확정
       const isCmd = r.is_command === true || CMD_TOKEN.test(r.text || "");
+      const act = lastAction.get(sid);
+      if (act) {
+        lastAction.delete(sid);
+        if (!isCmd)
+          followups.push({
+            ts: r.ts || null,
+            session_id: sid,
+            kind: act.kind,
+            target: act.target,
+            action_ts: act.ts,
+            next_prompt: String(r.text || "").slice(0, 200),
+          });
+      }
       if (isCmd) {
         prompts.commands++; // 커맨드 턴은 미발화 분모에서 제외 (직접 호출)
         // 커맨드 사용 크레딧 — 프롬프트 확장 전용 커맨드(Skill 툴 호출 없음)도 미사용에서 구제
@@ -253,7 +297,7 @@ function aggregate(records, opts) {
         );
         const tok = CMD_TOKEN.exec(r.text || "");
         const name = (wrap && wrap[1]) || (tok && tok[1]);
-        if (name) addUsed(name);
+        if (name) addUsed(name, r.ts);
       } else {
         pending.set(sid, {
           ts: r.ts || null,
@@ -271,8 +315,9 @@ function aggregate(records, opts) {
       if (r.why) e.why++;
       if (r.turn_command) e.turn_command++;
       e.last_ts = r.ts || e.last_ts;
-      if (r.skill) addUsed(r.skill);
-      if (r.turn_command) addUsed(r.turn_command);
+      if (r.skill) addUsed(r.skill, r.ts);
+      if (r.turn_command) addUsed(r.turn_command, r.ts);
+      lastAction.set(sid, { kind: "skill", target: key, ts: r.ts || null });
       pushPre(sid, key, e, r);
     } else if (r.type === "agent") {
       pending.delete(sid);
@@ -280,7 +325,8 @@ function aggregate(records, opts) {
       const e = bump(agents, key);
       if (r.why) e.why++;
       e.last_ts = r.ts || e.last_ts;
-      if (r.agent) addUsed(r.agent);
+      if (r.agent) addUsed(r.agent, r.ts);
+      lastAction.set(sid, { kind: "agent", target: key, ts: r.ts || null });
       pushPre(sid, key, e, r);
     } else if (r.type === "result") {
       // 정밀 join(tool_use_id) 우선, 부재 시 같은 세션·같은 target 의 최근 미조인 pre 로 근사 join
@@ -312,6 +358,7 @@ function aggregate(records, opts) {
       sessions.get(sid).end = r.ts;
       sessions.get(sid).reason = r.reason || null;
       flushPending(sid); // 세션이 닫혔으므로 마지막 무동작 턴도 확정
+      lastAction.delete(sid); // 후속 프롬프트 없이 닫힘 — 교정 쌍 미성립
     }
     if (r.session_id && !sessions.has(r.session_id))
       sessions.set(r.session_id, {});
@@ -343,8 +390,12 @@ function aggregate(records, opts) {
     sessions,
     usedFull,
     usedTail,
+    lastUsedFull,
+    lastUsedTail,
     candidates:
       opts.candidates > 0 ? candidates.slice(-opts.candidates).reverse() : [],
+    followups:
+      opts.followups > 0 ? followups.slice(-opts.followups).reverse() : [],
   };
 }
 
@@ -403,6 +454,59 @@ function main() {
     ),
   ];
 
+  // 라이프사이클 판정 기준 시각 — --now(ISO) 주입 시 그 시각, 아니면 실행 시각.
+  // hermes-agent curator 의 결정론 전이(stale 30d → archive 90d)를 "제안 생성"으로만 이식 —
+  // 상태 전이 실행은 이 스크립트 밖(사용자 승인)이다.
+  const nowParsed = opts.now ? Date.parse(opts.now) : NaN;
+  const nowMs = Number.isFinite(nowParsed) ? nowParsed : Date.now();
+
+  // 관측 커버리지 — 라이프사이클 판정의 신뢰 한계 표기용 (관측 기간 < 임계면 참고용)
+  let covFirst = null;
+  let covLast = null;
+  for (const r of records) {
+    const t = r && r.ts ? Date.parse(r.ts) : NaN;
+    if (!Number.isFinite(t)) continue;
+    if (covFirst === null || t < covFirst) covFirst = t;
+    if (covLast === null || t > covLast) covLast = t;
+  }
+  const coverageDays =
+    covFirst !== null ? +((covLast - covFirst) / 86400000).toFixed(1) : 0;
+
+  // 사용된 자산의 최종 관측 사용 시각 — isUsed 와 동일한 이름 규율(정확 일치 우선, bare tail 허용)
+  const lastUsedOf = (item) => {
+    const a = agg.lastUsedFull.get(item.id.toLowerCase()) || null;
+    const b = agg.lastUsedTail.get(tail(item.id)) || null;
+    if (a && b) return Date.parse(b) > Date.parse(a) ? b : a;
+    return a || b;
+  };
+  const lifecycle = {
+    stale_days: opts.staleDays,
+    archive_days: opts.archiveDays,
+    stale: [],
+    archive_candidates: [],
+  };
+  if (opts.staleDays > 0) {
+    for (const item of inv.items) {
+      // 미사용-전체는 unused_* 버킷 소관 — 관측 개시 전 이력 부재와 구분 불가하므로 여기 안 섞는다
+      if (!isUsed(item)) continue;
+      const lu = lastUsedOf(item);
+      const t = lu ? Date.parse(lu) : NaN;
+      if (!Number.isFinite(t)) continue;
+      const idle = Math.floor((nowMs - t) / 86400000);
+      const entry = {
+        id: item.id,
+        kind: item.kind,
+        last_used: lu,
+        idle_days: idle,
+      };
+      if (opts.archiveDays > 0 && idle >= opts.archiveDays)
+        lifecycle.archive_candidates.push(entry);
+      else if (idle >= opts.staleDays) lifecycle.stale.push(entry);
+    }
+    lifecycle.stale.sort((a, b) => b.idle_days - a.idle_days);
+    lifecycle.archive_candidates.sort((a, b) => b.idle_days - a.idle_days);
+  }
+
   const sessionsArr = [...agg.sessions.values()];
   const report = {
     meta: {
@@ -412,6 +516,12 @@ function main() {
       records: records.length,
       parse_errors: parseErrors,
       window_days: opts.window,
+      now: new Date(nowMs).toISOString(),
+      coverage: {
+        first_ts: covFirst !== null ? new Date(covFirst).toISOString() : null,
+        last_ts: covLast !== null ? new Date(covLast).toISOString() : null,
+        days: coverageDays,
+      },
       plugins_dir: pluginsDir,
       plugins_dir_source: pluginsDirSource,
     },
@@ -435,8 +545,10 @@ function main() {
       unused_commands: unused("command"),
       unused_agents: unused("agent"),
       unknown_called: unknownCalled,
+      lifecycle,
     },
     candidates: agg.candidates,
+    followups: agg.followups,
   };
 
   if (opts.json) {
@@ -474,9 +586,16 @@ function main() {
     L.push(
       `- 인벤토리 밖 호출 ${unknownCalled.length}종 (번들·타 마켓플레이스 자산 포함 가능 — 네임스페이스 드리프트만 의심하지 말 것): ${unknownCalled.slice(0, 10).join(", ")}`,
     );
+  if (lifecycle.stale.length || lifecycle.archive_candidates.length)
+    L.push(
+      `- 라이프사이클(마지막 관측 사용 기준): stale ${lifecycle.stale.length}종(≥${lifecycle.stale_days}일) / archive 후보 ${lifecycle.archive_candidates.length}종(≥${lifecycle.archive_days}일)${coverageDays < lifecycle.stale_days ? " — 관측 기간이 임계보다 짧아 참고용" : ""} (상세는 --json)`,
+    );
   L.push("");
   L.push(
     `## 미발화 후보 턴 ${agg.candidates.length}건 (스킬/에이전트 무동작 — LLM 판정 대상, 상세는 --json)`,
+  );
+  L.push(
+    `## 교정 후보 쌍 ${report.followups.length}건 (호출 직후 평문 프롬프트 — 교정 여부는 LLM 판정, 상세는 --json)`,
   );
   process.stdout.write(L.join("\n") + "\n");
 }

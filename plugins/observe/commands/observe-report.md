@@ -1,6 +1,6 @@
 ---
 name: observe-report
-description: "Harness health report from skill-trace telemetry — aggregates real usage (skill/agent calls, user vs model triggers, completion, unused assets, no-activation candidate turns), then interprets results into improvement proposals: description tuning drafts, deprecation candidates, and measurement-quality fixes. Proposals only — never edits files."
+description: "Harness health report from skill-trace telemetry — aggregates real usage (skill/agent calls, user vs model triggers, completion, unused assets, usage-lifecycle stale/archive candidates, no-activation candidate turns, correction-candidate pairs), then interprets results into improvement proposals: description tuning drafts, deprecation/lifecycle candidates, and measurement-quality fixes. Proposals only — never edits files."
 category: utility
 complexity: intermediate
 mcp-servers: []
@@ -23,6 +23,9 @@ Options:
   --raw               결정론 집계 JSON만 출력하고 해석(Phase 3~4)은 생략
   --window <days>     최근 N일 레코드만 집계 (기본 전체)
   --focus <area>      해석 초점: skills | agents | prompts (기본 전체)
+  --stale-days <n>    라이프사이클 stale 임계 (집계기 전달, 기본 30 — 0이면 비활성)
+  --archive-days <n>  라이프사이클 archive 후보 임계 (집계기 전달, 기본 90)
+  --followups <n>     교정 후보 쌍 수집 상한 (집계기 전달, 기본 30 — 0이면 비활성)
 ```
 
 ## Behavioral Flow
@@ -47,7 +50,9 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 집계 JSON을 요약 표로 제시한다 (`--raw`면 여기서 JSON 출력 후 종료).
 1. **호출 현황**: 스킬/커맨드/에이전트별 호출수·user/model 트리거 비율·완주율·평균 소요시간
 2. **커버리지**: 인벤토리(트레이스와 동일 설치 루트에서 열거) 대비 미사용 스킬/커맨드/에이전트 수
-3. **계측 품질**: parse_errors, trigger null 비율, why 커버리지, 인벤토리 밖 호출(unknown_called)
+3. **라이프사이클**: 사용된 자산의 stale(기본 ≥30일)·archive 후보(기본 ≥90일) — `inventory.lifecycle`.
+   `meta.coverage.days`가 임계보다 짧으면 "관측 기간 부족 — 참고용"을 반드시 병기
+4. **계측 품질**: parse_errors, trigger null 비율, why 커버리지, 인벤토리 밖 호출(unknown_called)
 
 ### Phase 3: 해석 (LLM 판정)
 집계가 제공한 후보를 판정한다 — 집계 스크립트는 후보 추출까지, 판정은 여기서만.
@@ -62,7 +67,12 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
    부재) 등 계측 자체의 개선점. 단 unknown_called는 **인벤토리 밖 호출**의 총칭이다 —
    번들 스킬(claude-in-chrome, update-config 등)·타 마켓플레이스 스킬이 정상적으로 여기 잡히므로,
    네임스페이스 드리프트·개명 흔적으로 판정하려면 이름이 인벤토리의 기존 자산과 유사한지 먼저 대조하라
-5. **교차 검증(선택)**: 로컬 OTel 스택(`infra/otel`)이 떠 있으면 내장 OTel의 `skill_activated`
+5. **교정 신호 판정**: `followups`(스킬/에이전트 호출 직후의 평문 프롬프트 쌍)를 교정("그게
+   아니라"·재작업 지시·불만·번복) vs 정상 후속 질문으로 분류. 교정으로 판정되면 그 자산은
+   발화는 됐으나 **수행이 기대와 어긋난** 1급 개선 신호다 — description(발견가능성)이 아니라
+   스킬 본문(절차·함정)의 결함 가능성을 우선 검토한다 (hermes-agent의 "frustration =
+   first-class skill signal" 이식)
+6. **교차 검증(선택)**: 로컬 OTel 스택(`infra/otel`)이 떠 있으면 내장 OTel의 `skill_activated`
    이벤트와 맞대본다 — observe와 `session_id`/`prompt_id`가 동일 값이라 그대로 join된다.
    observe에 없는데 Loki에 있는 호출은 헤드리스 user-slash(계측 경계, README 참고)거나 훅 미발화
    신호다. 조회: `{service_name="claude-code"} | event_name="skill_activated"`
@@ -73,9 +83,18 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 | 유형 | 신호 | 제안 형식 |
 |------|------|----------|
 | **(a) description 튜닝** | 놓친 발화 반복, user-only 스킬 | 대상 SKILL.md 경로 + 현재 description + 수정안 + 근거 턴 인용. 적용 후 검증은 skill-creator eval 권고 |
-| **(b) 사장 자산 정리** | 미사용 + 사장 분류 | `workflow:deprecation-guide` 절차로 넘길 후보 목록 |
+| **(b) 사장 자산 정리** | 미사용 + 사장 분류, lifecycle stale/archive 후보 | `workflow:deprecation-guide` 절차로 넘길 후보 목록 + idle_days 근거 (전이 실행은 사용자 승인 후) |
 | **(c) 하네스 구조** | 미발화가 스킬 부재 때문(기존 스킬로 커버 불가) | 신규 스킬/훅 후보 메모 — 스캐폴딩은 `harness:create-flow` 소관, 여기서는 후보 식별까지 |
 | **(d) 계측 개선** | trigger null·조인 실패·표본 편향 | observe 플러그인 자체 개선 항목 (훅 버그는 플래그만 — 무단 수정 금지 원칙) |
+
+제안 공통 규율 (hermes-agent 학습 루프 이식 — .planning/hermes-research.md):
+1. **read-before-write**: (a) description 수정안·(c) 스킬 후보 메모는 **대상 파일을 Read한 후에만**
+   작성한다 — 트레이스 요약·인벤토리 id만 보고 초안을 쓰지 않는다
+2. **update-over-create 4단 강등**: (c) 신규 스킬 후보는 ①기존 스킬 patch로 해소 가능한가 →
+   ②기존 스킬 references/ 추가로 충분한가 → ③둘 다 불가한 class-level 공백인가를 순서대로
+   기각한 뒤에만 제안한다. ④이름이 이번 관측 기간에만 유효하면(세션 아티팩트명) 후보 자체를 기각
+3. **부정 주장 금지**: "X 스킬은 작동 안 함" 류 판정은 제안서에 쓰지 않는다 — 계측된 사실
+   (완주율·조인 실패율)과 개선 가설만 기록한다 (부정 주장은 환경이 고쳐진 뒤에도 남는 부채)
 
 ### Phase 5: 보고
 하네스 건강 요약(호출 집중도·커버리지·발화 정확도·계측 품질)과 제안 목록을 표로 제시하고,

@@ -187,4 +187,29 @@
 - 핵심 반증 수확: ① 디스패치 계약 드리프트(에이전트 3요소 hard-fail vs 오케스트레이터 부분 명시 → 헛루프 경로) ② auditor/librarian description의 "도구 수준 차단" 과장(Write+Bash 우회 실재 → 정직 서술로 교정) ③ ORC-003/004 Stage I/O 사슬 미폐합
 - 실측 확보 함정(참조 문서에 물화): vault 내 .planning/ 미추적 파일이 ingest dirty 가드 exit 3 유발(Stage 0 .gitignore 선등록으로 예방), query 히트 0도 exit 0(citations로 판정), 단일 작성자 락(병렬 ingest 무의미), LLMWIKI_AIRGAP env는 MCP 전용(CLI는 --airgap 플래그만)
 - 보류·플래그: ORC-008(claude/CLAUDE.md 팀 등록)은 레포 전체 사문화 룰 — 어떤 팀도 미등록, 룰 개정 or 일괄 등록은 별도 결정 / flow-validation Quick Reference의 "## How to Use" 필수 표기는 번호 룰(SKL-001~021)과 불일치 — 룰 원문 간 정합화 별도 결정
-- 미커밋 — 커밋은 사용자 요청 시에만 원칙 준수. 전파는 커밋 → /plugin update (다음 세션부터 유효)
+- 커밋 33a7557 푸시 완료 (sync-claude-md로 CLAUDE/README 쌍 19→20 동기 포함). 전파는 /plugin update (다음 세션부터 유효)
+
+---
+
+# hermes 학습 루프 리서치 — observe 고도화 사전 조사 (2026-07-06)
+
+- [x] 정체 확정: NousResearch/hermes-agent (소스 clone 실측). Claude Code #57830 NOT_PLANNED → 플러그인 레이어 구현이 정답(observe 전제 확인)
+- [x] 메커니즘 실측: 3중 액터(포그라운드 지시+nudge 10iter / 매턴 배경 리뷰 포크 / 유휴 curator 7d·30/90d 전이·삭제 금지) + 품질 게이트 4종(update-over-create 4단·provenance·read-before-write·do-NOT-capture)
+- [x] 산출물: .planning/hermes-research.md — observe 이식안 7건(라이프사이클 제안 승격, 4단 강등 규칙, 가드 4종, 교정 신호 분류 등) + 결합 수위 권고(평가형 유지, 생성형은 3단 옵트인)
+- 비고: deep-research 검증 단계는 세션 한도로 중단 → 1차 소스 실측으로 대체 (미검증 주장 5건 중 4건 소스로 확인)
+
+---
+
+# observe 고도화 — hermes 이식안 구현 (2026-07-06)
+
+리서치(.planning/hermes-research.md) 이식안 7건 중 6건 구현, 1건(매턴 LLM 포크) 비권장 판정대로 제외.
+
+## Plan → Review
+- [x] 이식안 1 (라이프사이클): observe-report.js에 사용 자산의 stale(≥30d)/archive(≥90d) 후보 집계 추가 — `inventory.lifecycle`, `--stale-days/--archive-days`, 판정 시각 `--now` 주입(테스트 결정론), `meta.coverage`로 관측 기간 부족 캐비앳. 미사용-전체는 unused_* 버킷과 분리(관측 개시 전 이력과 구분 불가)
+- [x] 이식안 5 (교정 신호): `followups` 수집 — 스킬/에이전트 호출 직후 평문 프롬프트 쌍(커맨드 프롬프트는 쌍 없이 소거, session_end 소거). candidates와 동일한 "결정론 수집 → LLM 판정" 분리. 커맨드 Phase 3에 교정 판정 절 신설
+- [x] 이식안 2+4 (4단 강등·read-before-write): observe-report.md Phase 4에 "제안 공통 규율" 3종 명문화 (read-before-write / update-over-create 4단+세션 아티팩트명 기각 / 부정 주장 금지)
+- [x] 이식안 3 (do-NOT-capture): workflow retro-compound §5에 6번 원칙 추가 — 환경 의존 실패·부정 주장·해소된 일시 오류·"고치는 방법으로만 기록" 4종 가드
+- [x] 이식안 7 (생성형 결합 전제): observe README 쌍에 v1.3.0 문단 — agent-created 격리 + 삭제 금지 + read-before-write 전까지 평가형 유지
+- [x] 검증: bats 264/264 그린(신규 6케이스 — lifecycle 3·coverage 1·followups 2), node --check, jq, llm-wiki 실트레이스 스모크(20플러그인 인벤토리 정합·빈 lifecycle/followups 정상)
+- [x] 버전: observe 1.2.0→1.3.0, workflow 1.3.0→1.4.0 (plugin.json ↔ marketplace 2곳 동기)
+- 미커밋 — 커밋은 사용자 요청 시에만

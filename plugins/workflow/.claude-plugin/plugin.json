@@ -1,7 +1,7 @@
 {
   "name": "workflow",
   "description": "Workflow harness automating the full development lifecycle",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

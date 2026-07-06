@@ -12,11 +12,13 @@ The reason observe exists becomes clear in contrast with the hermes agent. Where
 
 The design intent lies in clear boundaries. This plugin is dedicated to **post-hoc diagnosis of real-usage telemetry**. It delegates cost/token/tool_decision instrumentation to Claude Code's built-in OTel (`CLAUDE_CODE_ENABLE_TELEMETRY`), and delegates the a-priori benchmarking of description activation rates to `skill-creator` eval — mutually non-overlapping orthogonal complements. Also, because it records prompt originals by nature, it only operates when `OBSERVE_TRACE=1` is opted in, so it has no effect by default on other loop-type plugins like `mvp`·`feature-loop`.
 
+v1.3.0 ports the **deterministic half** of hermes-agent's curator into the aggregator: usage-lifecycle candidates (stale ≥30d / archive ≥90d since last observed use, thresholds configurable, `--now` injectable for tests) and correction-candidate pairs (`followups` — the plain user prompt immediately after a skill/agent invocation; whether it is a correction is judged only in the LLM phase). State transitions are still proposals only. If generative coupling (auto-creating/patching skills) is ever added, the preconditions come from hermes itself: agent-created assets isolated in their own namespace/marking, archive-only (never delete), and read-before-write — until all three exist, observe stays evaluative.
+
 ## Components
 
 ### Command
 
-- `/observe-report` — A harness health report based on skill-trace telemetry. It runs deterministic aggregation (per-skill/agent invocation counts·user/model trigger ratios·completion rate·elapsed time, unused assets, missed-activation candidate turns), then compares those candidates against the skill description to judge "missed activation" vs "skill not needed," and produces a proposal of description tuning drafts·dead-asset candidates·new-skill candidates·instrumentation improvement items. Options: `--raw` (aggregation JSON only), `--window <days>` (last N days), `--focus skills|agents|prompts`.
+- `/observe-report` — A harness health report based on skill-trace telemetry. It runs deterministic aggregation (per-skill/agent invocation counts·user/model trigger ratios·completion rate·elapsed time, unused assets, missed-activation candidate turns), then compares those candidates against the skill description to judge "missed activation" vs "skill not needed," and produces a proposal of description tuning drafts·dead-asset candidates·new-skill candidates·instrumentation improvement items. Options: `--raw` (aggregation JSON only), `--window <days>` (last N days), `--focus skills|agents|prompts`, `--stale-days/--archive-days` (lifecycle thresholds), `--followups <n>` (correction-pair cap).
 
 ### Hooks
 

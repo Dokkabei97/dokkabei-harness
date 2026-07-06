@@ -71,7 +71,7 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "Workflow harness automating the full development lifecycle",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "category": "productivity",
       "keywords": [
         "workflow",
@@ -100,7 +100,7 @@
       "name": "observe",
       "source": "./plugins/observe",
       "description": "Correlation-logs harness usage via hooks to diagnose improvements",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "category": "harness",
       "keywords": [
         "observe",

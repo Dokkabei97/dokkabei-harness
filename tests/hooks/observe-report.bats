@@ -332,3 +332,65 @@ EOF
   [[ "$(jget 'r.inventory.unused_skills.map(u=>u.id).sort().join(",")')" == *"pa:s3"* ]]
   [[ "$(jget 'r.inventory.unused_skills.map(u=>u.id).sort().join(",")')" == *"pb:s2"* ]]
 }
+
+@test "report: lifecycle stale classification with injected now" {
+  make_fake_plugins; write_fixture_trace
+  # 픽스처 ts = 2026-07-01, now = 45일 후 → 사용 자산 3종(s1/c1/a1) 전부 stale (30 <= 45 < 90)
+  run_report --now 2026-08-15T00:00:00Z
+  [ "$status" -eq 0 ]
+  [ "$(jget 'r.meta.now')" = "2026-08-15T00:00:00.000Z" ]
+  [ "$(jget 'r.inventory.lifecycle.stale_days')" = "30" ]
+  [ "$(jget 'r.inventory.lifecycle.stale.map(x=>x.id).sort().join(",")')" = "pa:a1,pa:c1,pa:s1" ]
+  [ "$(jget 'r.inventory.lifecycle.archive_candidates.length')" = "0" ]
+  [ "$(jget 'r.inventory.lifecycle.stale[0].idle_days')" = "44" ]
+  # 미사용-전체(s2)는 라이프사이클에 섞이지 않는다 — unused_* 버킷 소관
+  [[ "$(jget 'r.inventory.lifecycle.stale.map(x=>x.id).join(",")')" != *"pb:s2"* ]]
+  [ "$(jget 'r.inventory.unused_skills.map(u=>u.id).join(",")')" = "pb:s2" ]
+}
+
+@test "report: lifecycle archive candidates past archive threshold" {
+  make_fake_plugins; write_fixture_trace
+  # now = 106일 후 → 전부 archive 후보, stale 은 비어야 한다 (구간 배타)
+  run_report --now 2026-10-15T00:00:00Z
+  [ "$status" -eq 0 ]
+  [ "$(jget 'r.inventory.lifecycle.archive_candidates.map(x=>x.id).sort().join(",")')" = "pa:a1,pa:c1,pa:s1" ]
+  [ "$(jget 'r.inventory.lifecycle.stale.length')" = "0" ]
+}
+
+@test "report: lifecycle disabled with stale-days zero" {
+  make_fake_plugins; write_fixture_trace
+  run_report --now 2026-10-15T00:00:00Z --stale-days 0
+  [ "$status" -eq 0 ]
+  [ "$(jget 'r.inventory.lifecycle.stale.length')" = "0" ]
+  [ "$(jget 'r.inventory.lifecycle.archive_candidates.length')" = "0" ]
+}
+
+@test "report: coverage span reported from windowed records" {
+  make_fake_plugins; write_fixture_trace
+  run_report --now 2026-08-15T00:00:00Z
+  [ "$status" -eq 0 ]
+  # 픽스처 관측 구간 09:00~09:08 (8분) → 0.0일 반올림, 임계(30일)보다 짧다
+  [ "$(jget 'r.meta.coverage.first_ts')" = "2026-07-01T09:00:00.000Z" ]
+  [ "$(jget 'r.meta.coverage.last_ts')" = "2026-07-01T09:08:00.000Z" ]
+  [ "$(jget 'r.meta.coverage.days')" = "0" ]
+}
+
+@test "report: followup pairs action with next plain prompt only" {
+  make_fake_plugins; write_fixture_trace
+  run_report
+  [ "$status" -eq 0 ]
+  # 픽스처 시퀀스: skill s1 → 커맨드 프롬프트(/c1, 쌍 없이 소거) → skill c1 → 평문 프롬프트(쌍 성립)
+  # → 평문 프롬프트(액션 없음) → agent a1 → skill ghost(교체) → session_end(소거)
+  [ "$(jget 'r.followups.length')" = "1" ]
+  [ "$(jget 'r.followups[0].kind')" = "skill" ]
+  [ "$(jget 'r.followups[0].target')" = "pa:c1" ]
+  [ "$(jget 'r.followups[0].next_prompt')" = "what is the meaning of life" ]
+  [ "$(jget 'r.followups[0].action_ts')" = "2026-07-01T09:02:10Z" ]
+}
+
+@test "report: followups cap zero returns none" {
+  make_fake_plugins; write_fixture_trace
+  run_report --followups 0
+  [ "$status" -eq 0 ]
+  [ "$(jget 'r.followups.length')" = "0" ]
+}

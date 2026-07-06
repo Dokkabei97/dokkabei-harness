@@ -17,11 +17,13 @@ observe의 존재 이유는 hermes agent와의 대비로 명확해진다. hermes
 
 설계 의도는 명확한 경계에 있다. 이 플러그인은 **실사용 텔레메트리의 사후 진단** 전용이다. 비용/토큰/tool_decision 계측은 Claude Code 내장 OTel(`CLAUDE_CODE_ENABLE_TELEMETRY`)에 위임하고, description 발화율의 사전 벤치마크는 `skill-creator` eval 소관으로 넘긴다 — 서로 겹치지 않는 직교 보완재다. 또한 프롬프트 원문을 기록하는 특성상 `OBSERVE_TRACE=1` opt-in일 때만 동작하므로, `mvp`·`feature-loop` 같은 다른 루프형 플러그인에는 기본적으로 아무 영향을 주지 않는다.
 
+v1.3.0은 hermes-agent curator의 **결정론 절반만** 집계기에 이식했다: 사용 라이프사이클 후보(마지막 관측 사용 기준 stale ≥30일 / archive ≥90일, 임계 조정 가능, 테스트용 `--now` 주입)와 교정 후보 쌍(`followups` — 스킬/에이전트 호출 직후의 평문 프롬프트, 교정 여부 판정은 LLM 단계에서만). 상태 전이는 여전히 제안-온리다. 생성형 결합(스킬 자동 생성·수정)을 도입한다면 전제 조건도 hermes에서 온다: agent-created 자산의 별도 네임스페이스/마킹 격리, 삭제 금지(아카이브만), read-before-write — 셋이 갖춰지기 전까지 observe는 평가형에 머문다.
+
 ## 구성요소
 
 ### 커맨드
 
-- `/observe-report` — skill-trace 텔레메트리 기반 하네스 건강 리포트. 결정론 집계(스킬/에이전트별 호출수·user/model 트리거 비율·완주율·소요시간, 미사용 자산, 미발화 후보 턴)를 실행한 뒤, 그 후보를 스킬 description과 대조해 "놓친 발화" vs "스킬 불필요"로 판정하고, description 튜닝안·사장 자산 후보·신규 스킬 후보·계측 개선 항목을 제안서로 산출한다. 옵션: `--raw`(집계 JSON만), `--window <days>`(최근 N일), `--focus skills|agents|prompts`.
+- `/observe-report` — skill-trace 텔레메트리 기반 하네스 건강 리포트. 결정론 집계(스킬/에이전트별 호출수·user/model 트리거 비율·완주율·소요시간, 미사용 자산, 미발화 후보 턴)를 실행한 뒤, 그 후보를 스킬 description과 대조해 "놓친 발화" vs "스킬 불필요"로 판정하고, description 튜닝안·사장 자산 후보·신규 스킬 후보·계측 개선 항목을 제안서로 산출한다. 옵션: `--raw`(집계 JSON만), `--window <days>`(최근 N일), `--focus skills|agents|prompts`, `--stale-days/--archive-days`(라이프사이클 임계), `--followups <n>`(교정 쌍 상한).
 
 ### 훅
 
