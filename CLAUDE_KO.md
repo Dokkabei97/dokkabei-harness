@@ -49,3 +49,5 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 20
   플러그인(harness/mvp/feature-loop)은 bash Stop훅(`hooks/*-stop-hook.sh`).
 - `infra/otel/` = 로컬 관측 스택(Claude Code 내장 OTel 수신, Grafana localhost:3000) —
   observe 플러그인의 `.claude/skill-trace.jsonl`과 직교 보완재.
+- `docs/` = GitHub Pages 랜딩 사이트(`index.html`, self-contained, EN/KO 토글) — 특정 플러그인과 무관하며
+  공개 홈페이지(`dokkabei97.github.io/dokkabei-harness`)다. 플러그인의 `references/` 문서와 혼동 금지.

@@ -1,0 +1,88 @@
+name: "🐛 Bug report"
+description: "Report a plugin, hook, skill, command, or agent that misbehaves"
+title: "[bug] <short summary>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please fill in the fields below so it can be reproduced deterministically.
+        For hook/loop-engine issues, the output of `bats tests/hooks` is especially helpful.
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Affected plugin(s)
+      description: Which plugin does this concern? (choose the closest — pick "unsure" if the report spans several)
+      multiple: true
+      options:
+        - base
+        - etc
+        - analyze
+        - test
+        - workflow
+        - harness
+        - observe
+        - backend-shared
+        - kotlin-spring
+        - python-fastapi
+        - go-mux
+        - nextjs
+        - search
+        - startup
+        - mvp
+        - feature-loop
+        - legal
+        - finance
+        - hr
+        - wiki-ops
+        - marketplace / cross-cutting
+        - unsure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you observe? Paste exact error text / hook output rather than paraphrasing.
+      placeholder: "e.g. PreToolUse hook exited 2 and blocked a legitimate Write to docs/…"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact prompt, command, or sequence. A failing `bats` case is ideal.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      placeholder: "Expected: … / Actual: …"
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Claude Code version, OS, and how the plugin was installed.
+      value: |
+        - Claude Code version:
+        - OS (e.g. macOS 15 / Ubuntu 24.04):
+        - Install path (marketplace `/plugin install …` vs local checkout):
+        - bats-core version (if hook-related):
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: This is a single bug (not multiple unrelated reports)
+          required: true

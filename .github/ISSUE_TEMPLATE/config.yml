@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "📖 Documentation & landing page"
+    url: https://dokkabei97.github.io/dokkabei-harness/
+    about: "Project overview, plugin catalog, and install guide (EN / 한국어)."
+  - name: "💬 Questions & discussion"
+    url: https://github.com/Dokkabei97/dokkabei-harness/discussions
+    about: "Usage questions and open-ended ideas — please use Discussions rather than an issue."

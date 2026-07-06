@@ -49,3 +49,5 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
   plugins (harness/mvp/feature-loop) are bash Stop hooks (`hooks/*-stop-hook.sh`).
 - `infra/otel/` = the local observability stack (Claude Code built-in OTel receiver, Grafana localhost:3000) —
   an orthogonal complement to the observe plugin's `.claude/skill-trace.jsonl`.
+- `docs/` = the GitHub Pages landing site (`index.html`, self-contained, EN/KO toggle) — unrelated to any plugin;
+  it is the public homepage (`dokkabei97.github.io/dokkabei-harness`). Not to be confused with a plugin's `references/` docs.

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dokkabei-harness — Claude Code plugin marketplace</title>
+<meta name="description" content="A Claude Code plugin marketplace: 20 plugins bundling loop-engineering harnesses, multi-agent teams, and gated dev workflows.">
+<style>
+  :root{
+    --bg:#0b0d12; --bg2:#12151d; --card:#161a24; --line:#242a38;
+    --fg:#e7ebf3; --mut:#9aa4b8; --acc:#7c9cff; --acc2:#5cd0b3;
+    --code:#0e1117; --max:1080px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f7f8fb; --bg2:#eef1f7; --card:#ffffff; --line:#e2e6ef;
+           --fg:#161a24; --mut:#5a6478; --acc:#3a5bd9; --acc2:#0e9c82; --code:#f0f2f7; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+  code,kbd{font-family:"SF Mono",ui-monospace,"Cascadia Code",Menlo,Consolas,monospace}
+
+  /* header */
+  header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:58px}
+  .brand{font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+  .nav-r{display:flex;align-items:center;gap:14px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .lang button{all:unset;cursor:pointer;padding:5px 11px;font-size:13px;font-weight:600;color:var(--mut)}
+  .lang button.on{background:var(--acc);color:#fff}
+  .ghlink{font-size:14px;font-weight:600;color:var(--fg)}
+
+  /* hero */
+  .hero{text-align:center;padding:76px 0 54px}
+  .hero h1{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.08;letter-spacing:-.03em;margin:.2em 0}
+  .hero h1 .g{background:linear-gradient(120deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .tag{color:var(--mut);font-size:clamp(1rem,2.2vw,1.24rem);max-width:640px;margin:16px auto 0}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .btn{display:inline-block;padding:11px 20px;border-radius:10px;font-weight:600;font-size:15px;border:1px solid var(--line)}
+  .btn.p{background:var(--acc);color:#fff;border-color:transparent}
+  .btn.p:hover{filter:brightness(1.08);text-decoration:none}
+  .btn.s{background:var(--card);color:var(--fg)}
+  .btn.s:hover{border-color:var(--acc);text-decoration:none}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 10px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center}
+  .stat b{display:block;font-size:1.9rem;letter-spacing:-.02em;background:linear-gradient(120deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .stat span{color:var(--mut);font-size:13px}
+
+  section{padding:52px 0;border-top:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2rem);letter-spacing:-.02em;margin:0 0 6px}
+  section .sub{color:var(--mut);margin:0 0 28px}
+
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .feat .ic{font-size:22px;margin-bottom:8px}
+  .feat h3{margin:.2em 0 .3em;font-size:1.12rem}
+  .feat p{margin:0;color:var(--mut);font-size:14.5px}
+
+  /* catalog */
+  .cat{margin-bottom:22px}
+  .cat-h{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+  .cat-h .k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--acc2);
+    border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .cat-h .n{color:var(--mut);font-size:13px}
+  .plugs{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px}
+  .plug{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 15px}
+  .plug h4{margin:0 0 4px;font-size:15px;font-family:"SF Mono",ui-monospace,Menlo,monospace;color:var(--fg)}
+  .plug p{margin:0;color:var(--mut);font-size:13px;line-height:1.5}
+
+  /* install */
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:18px 20px;overflow-x:auto;font-size:14px;line-height:1.7}
+  pre .c{color:var(--mut)}
+  .steps{counter-reset:s;display:grid;gap:14px;margin-top:6px}
+  .step{display:flex;gap:14px}
+  .step .num{counter-increment:s;flex:none;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;
+    display:grid;place-items:center;font-weight:700;font-size:14px}
+  .step .num::before{content:counter(s)}
+  .step .b{flex:1}
+  .step .b p{margin:.1em 0 .5em;color:var(--mut);font-size:14px}
+  .step pre{margin:0}
+
+  /* principle */
+  .quote{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 12%,var(--card)),var(--card));
+    border:1px solid var(--line);border-radius:16px;padding:30px;text-align:center}
+  .quote p{font-size:clamp(1.1rem,2.6vw,1.4rem);font-weight:600;letter-spacing:-.01em;margin:0}
+  .quote .m{color:var(--mut);font-weight:400;font-size:15px;margin-top:12px}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mut);font-size:14px;text-align:center}
+  footer a{color:var(--mut)}
+
+  [data-ko]{display:none}
+  html[lang="ko"] [data-en]{display:none}
+  html[lang="ko"] [data-ko]{display:initial}
+  html[lang="ko"] .plugs [data-ko]{display:block}
+
+  @media(max-width:720px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand"><span class="dot"></span> dokkabei-harness</div>
+    <div class="nav-r">
+      <div class="lang" role="group" aria-label="language">
+        <button id="en" onclick="setLang('en')">EN</button>
+        <button id="ko" onclick="setLang('ko')">KO</button>
+      </div>
+      <a class="ghlink" href="https://github.com/Dokkabei97/dokkabei-harness">GitHub ↗</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <h1>
+      <span data-en>Loop-engineering harnesses<br>for <span class="g">Claude Code</span></span>
+      <span data-ko><span class="g">Claude Code</span>를 위한<br>루프 엔지니어링 하네스</span>
+    </h1>
+    <p class="tag">
+      <span data-en>A plugin marketplace of <b>20 plugins</b> — gated dev loops, multi-agent teams, and hook-driven verification. Completion is judged by the harness, not by the model.</span>
+      <span data-ko><b>플러그인 20종</b>의 마켓플레이스 — 게이트 기반 개발 루프, 멀티 에이전트 팀, 훅 기반 검증. 완료 판정은 모델이 아니라 하네스가 합니다.</span>
+    </p>
+    <div class="cta">
+      <a class="btn p" href="#install"><span data-en>Get started</span><span data-ko>시작하기</span></a>
+      <a class="btn s" href="https://github.com/Dokkabei97/dokkabei-harness">GitHub</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>20</b><span data-en>plugins</span><span data-ko>플러그인</span></div>
+    <div class="stat"><b>78</b><span data-en>skills</span><span data-ko>스킬</span></div>
+    <div class="stat"><b>45</b><span data-en>agents</span><span data-ko>에이전트</span></div>
+    <div class="stat"><b>264</b><span data-en>regression tests</span><span data-ko>회귀 테스트</span></div>
+  </div>
+
+  <section id="features">
+    <h2><span data-en>What's inside</span><span data-ko>무엇이 담겼나</span></h2>
+    <p class="sub"><span data-en>Four capabilities the plugins compose from.</span><span data-ko>플러그인이 조합하는 네 가지 역량.</span></p>
+    <div class="grid2">
+      <div class="feat"><div class="ic">🔁</div>
+        <h3><span data-en>Loop-engineering harnesses</span><span data-ko>루프 엔지니어링 하네스</span></h3>
+        <p><span data-en>MVP, feature-loop, and generic loops that iterate until a deterministic gate passes — a Stop-hook engine judges completion, with max-iteration / no-progress / time guardrails.</span><span data-ko>결정론 게이트가 통과할 때까지 반복하는 MVP·feature-loop·generic 루프 — Stop훅 엔진이 완료를 판정하고, 최대 반복·no-progress·시간 가드레일이 폭주를 막습니다.</span></p>
+      </div>
+      <div class="feat"><div class="ic">🤝</div>
+        <h3><span data-en>Multi-agent teams</span><span data-ko>멀티 에이전트 팀</span></h3>
+        <p><span data-en>Maker/checker separation with adversarial verification — the checker has no Edit tool by design, so it can't quietly fix what it's meant to falsify. Six team patterns to compose from.</span><span data-ko>적대적 검증을 갖춘 maker/checker 분리 — checker는 설계상 Edit 도구가 없어 반증 대상을 조용히 고칠 수 없습니다. 6가지 팀 패턴을 조합합니다.</span></p>
+      </div>
+      <div class="feat"><div class="ic">🚦</div>
+        <h3><span data-en>Gated workflows</span><span data-ko>게이트 워크플로우</span></h3>
+        <p><span data-en>Spec-driven development, TDD loops, code review, retrospectives, and release flows — each gated so scope drift and unverified work can't slip through.</span><span data-ko>스펙 주도 개발, TDD 루프, 코드 리뷰, 회고, 릴리스 흐름 — 각각 게이트로 묶여 스코프 드리프트와 미검증 작업이 빠져나가지 못합니다.</span></p>
+      </div>
+      <div class="feat"><div class="ic">🪝</div>
+        <h3><span data-en>Hook-driven verification</span><span data-ko>훅 기반 검증</span></h3>
+        <p><span data-en>PreToolUse/Stop/SessionEnd hooks enforce the rules — guard against test deletion, unverified "passes", and silent hook mis-activation. Tested on an ubuntu + macOS bats matrix.</span><span data-ko>PreToolUse/Stop/SessionEnd 훅이 규칙을 집행합니다 — 테스트 삭제, 미검증 "통과", 훅 조용한 미발화를 방어. ubuntu + macOS bats 매트릭스로 검증됩니다.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="plugins">
+    <h2><span data-en>Plugin catalog</span><span data-ko>플러그인 카탈로그</span></h2>
+    <p class="sub"><span data-en>20 plugins across 6 categories. Install any with <code>/plugin install &lt;name&gt;@dokkabei-harness</code>.</span><span data-ko>6개 카테고리에 20개 플러그인. <code>/plugin install &lt;name&gt;@dokkabei-harness</code>로 설치합니다.</span></p>
+
+    <div class="cat">
+      <div class="cat-h"><span class="k">develop</span><span class="n">9</span></div>
+      <div class="plugs">
+        <div class="plug"><h4>base</h4><p><span data-en>Foundational guard-hook &amp; LSP layer for the loop harness.</span><span data-ko>루프 하네스의 기반 가드-훅·LSP 계층.</span></p></div>
+        <div class="plug"><h4>backend-shared</h4><p><span data-en>Stack-agnostic backend design &amp; ops pattern layer.</span><span data-ko>스택 불문 백엔드 설계·운영 패턴 계층.</span></p></div>
+        <div class="plug"><h4>kotlin-spring</h4><p><span data-en>Kotlin + Spring CRUD generation, diagnosis, patterns.</span><span data-ko>Kotlin + Spring CRUD 생성·진단·패턴.</span></p></div>
+        <div class="plug"><h4>python-fastapi</h4><p><span data-en>Python + FastAPI codegen, API design, patterns.</span><span data-ko>Python + FastAPI 코드 생성·API 설계·패턴.</span></p></div>
+        <div class="plug"><h4>go-mux</h4><p><span data-en>Go stdlib net/http mux codegen &amp; API design.</span><span data-ko>Go stdlib net/http mux 코드 생성·API 설계.</span></p></div>
+        <div class="plug"><h4>nextjs</h4><p><span data-en>Next.js App Router frontend design &amp; codegen.</span><span data-ko>Next.js App Router 프론트엔드 설계·코드 생성.</span></p></div>
+        <div class="plug"><h4>search</h4><p><span data-en>Elasticsearch search-engineering agent team.</span><span data-ko>Elasticsearch 검색 엔지니어링 에이전트 팀.</span></p></div>
+        <div class="plug"><h4>mvp</h4><p><span data-en>Drives a one-line idea to an MVP through a gated loop.</span><span data-ko>한 줄 아이디어를 게이트 루프로 MVP까지.</span></p></div>
+        <div class="plug"><h4>feature-loop</h4><p><span data-en>Regression-safe feature loop for brownfield code.</span><span data-ko>브라운필드용 회귀 안전 기능 루프.</span></p></div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-h"><span class="k">productivity</span><span class="n">5</span></div>
+      <div class="plugs">
+        <div class="plug"><h4>workflow</h4><p><span data-en>Automates the full development lifecycle.</span><span data-ko>개발 라이프사이클 전반 자동화.</span></p></div>
+        <div class="plug"><h4>analyze</h4><p><span data-en>Static analysis: quality, perf, architecture, SQL.</span><span data-ko>정적 분석: 품질·성능·아키텍처·SQL.</span></p></div>
+        <div class="plug"><h4>test</h4><p><span data-en>TDD loop and E2E (Playwright/Chrome) automation.</span><span data-ko>TDD 루프와 E2E(Playwright/Chrome) 자동화.</span></p></div>
+        <div class="plug"><h4>wiki-ops</h4><p><span data-en>Operates a cited llm-wiki knowledge vault.</span><span data-ko>인용 기반 llm-wiki 지식 vault 운영.</span></p></div>
+        <div class="plug"><h4>etc</h4><p><span data-en>Utility skills for external AI CLI integration.</span><span data-ko>외부 AI CLI 연동 유틸리티 스킬.</span></p></div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-h"><span class="k">harness</span><span class="n">2</span></div>
+      <div class="plugs">
+        <div class="plug"><h4>harness</h4><p><span data-en>Meta-plugin: design, generate, validate harnesses; lightweight loops.</span><span data-ko>메타 플러그인: 하네스 설계·생성·검증, 경량 루프.</span></p></div>
+        <div class="plug"><h4>observe</h4><p><span data-en>Correlation-logs harness usage via hooks to propose improvements.</span><span data-ko>훅으로 하네스 사용을 상관 로깅해 개선 제안.</span></p></div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-h"><span class="k">startup</span><span class="n">1</span></div>
+      <div class="plugs">
+        <div class="plug"><h4>startup</h4><p><span data-en>Lean-startup validation &amp; strategy harness (maker/checker).</span><span data-ko>린 스타트업 검증·전략 하네스(maker/checker).</span></p></div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-h"><span class="k">legal · finance · hr</span><span class="n">3</span></div>
+      <div class="plugs">
+        <div class="plug"><h4>legal</h4><p><span data-en>Multi-agent first-pass Korean-law risk diagnosis.</span><span data-ko>멀티 에이전트 한국법 1차 리스크 진단.</span></p></div>
+        <div class="plug"><h4>finance</h4><p><span data-en>First-pass operational finance &amp; tax risk diagnosis.</span><span data-ko>운영 재무·세무 리스크 1차 진단.</span></p></div>
+        <div class="plug"><h4>hr</h4><p><span data-en>Recruiting &amp; onboarding docs; labor law → legal.</span><span data-ko>채용·온보딩 문서, 노동법은 legal 위임.</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2><span data-en>Install</span><span data-ko>설치</span></h2>
+    <p class="sub"><span data-en>Add the marketplace, then install any plugin.</span><span data-ko>마켓플레이스를 추가한 뒤 원하는 플러그인을 설치하세요.</span></p>
+    <div class="steps">
+      <div class="step"><div class="num"></div><div class="b">
+        <p><span data-en>Add this marketplace in Claude Code:</span><span data-ko>Claude Code에서 이 마켓플레이스를 추가:</span></p>
+        <pre>/plugin marketplace add Dokkabei97/dokkabei-harness</pre>
+      </div></div>
+      <div class="step"><div class="num"></div><div class="b">
+        <p><span data-en>Install the plugins you want:</span><span data-ko>원하는 플러그인을 설치:</span></p>
+        <pre>/plugin install mvp@dokkabei-harness
+/plugin install workflow@dokkabei-harness
+/plugin install harness@dokkabei-harness   <span class="c"># the meta-plugin</span></pre>
+      </div></div>
+      <div class="step"><div class="num"></div><div class="b">
+        <p><span data-en>Reload and go — e.g. spin up a new harness team:</span><span data-ko>리로드 후 시작 — 예: 새 하네스 팀 구성:</span></p>
+        <pre><span class="c"># in Claude Code</span>
+/reload-plugins
+<span class="c"># then just ask, e.g.</span>
+"<span data-en>build a harness for …</span><span data-ko>…를 위한 하네스를 구성해줘</span>"</pre>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="principle">
+    <div class="quote">
+      <p><span data-en>"Completion is judged by the harness, not by the model."</span><span data-ko>"완료 판정은 모델이 아니라 하네스가 한다."</span></p>
+      <div class="m"><span data-en>Deterministic gates — tests, linters, exit codes, marker files — decide when a loop stops. The model does the work; the harness certifies it's done. Every plugin here is built on that line.</span><span data-ko>결정론 게이트 — 테스트·린터·종료코드·마커 파일 — 이 루프의 종료를 결정합니다. 모델은 작업을 하고, 하네스는 완료를 인증합니다. 여기 모든 플러그인이 이 원칙 위에 세워졌습니다.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <a href="https://github.com/Dokkabei97/dokkabei-harness">GitHub</a> ·
+      <a href="https://github.com/Dokkabei97/dokkabei-harness/blob/main/CONTRIBUTING.md"><span data-en>Contributing</span><span data-ko>기여 가이드</span></a> ·
+      <a href="https://github.com/Dokkabei97/dokkabei-harness/blob/main/LICENSE">Apache-2.0</a>
+    </p>
+    <p>dokkabei-harness · <span data-en>a Claude Code plugin marketplace</span><span data-ko>Claude Code 플러그인 마켓플레이스</span></p>
+  </div>
+</footer>
+
+<script>
+  function setLang(l){
+    document.documentElement.lang = l;
+    document.getElementById('en').classList.toggle('on', l==='en');
+    document.getElementById('ko').classList.toggle('on', l==='ko');
+    if(l==='ko'){ if(location.hash!=='#ko') history.replaceState(null,'','#ko'); }
+    else { if(location.hash==='#ko') history.replaceState(null,'','#'); }
+  }
+  // initial: #ko anchor or browser preference
+  var initial = (location.hash==='#ko' || (!location.hash && (navigator.language||'').toLowerCase().startsWith('ko'))) ? 'ko' : 'en';
+  setLang(initial);
+</script>
+</body>
+</html>

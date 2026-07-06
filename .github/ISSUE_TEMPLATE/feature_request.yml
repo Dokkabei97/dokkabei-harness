@@ -1,0 +1,55 @@
+name: "✨ Feature request"
+description: "Propose a new plugin/skill/command/agent, or an improvement to an existing one"
+title: "[feat] <short summary>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. This marketplace favors **distinct-domain additions** — before proposing a new
+        component, please check whether an existing plugin already covers it (a new component that overlaps an
+        existing one creates trigger conflicts and maintenance debt).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options:
+        - New plugin (distinct domain not covered by the 20 existing plugins)
+        - New skill / command / agent inside an existing plugin
+        - Improvement to an existing component (description, workflow, gate)
+        - New hook / loop-engine capability
+        - Documentation / landing page / tooling
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What can't you do today? What breaks or is missing? Concrete over abstract.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        Sketch the component. If it's a new plugin, name the distinct domain it owns and why an existing
+        plugin can't absorb it. If it's a loop harness, note the gate (how completion is judged deterministically).
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing plugins/skills you tried, and why they fall short.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I checked the plugin catalog and no existing plugin covers this domain
+          required: true
+        - label: I searched existing issues and this is not a duplicate
+          required: true
