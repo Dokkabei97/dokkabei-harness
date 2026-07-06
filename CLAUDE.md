@@ -22,7 +22,7 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
   filter in the matcher causes it to **silently miss activation** (measured 2026-07) — command/argument filtering must
   be done inside the hook script.
 - Plugins are **edited only in the repo source**. Directly modifying the `~/.claude/plugins/cache` / marketplaces clone is
-  forbidden (cache-drift incident history — tasks/todo.md). The official propagation path is commit then `/plugin update`, and
+  forbidden (measured cache-drift incident history). The official propagation path is commit then `/plugin update`, and
   hook/config changes take effect from the next session onward.
 - Plugin versions **must be manually synced in two places**: `plugins/<name>/.claude-plugin/plugin.json` ↔
   the corresponding plugin entry in `.claude-plugin/marketplace.json`.

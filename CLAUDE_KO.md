@@ -22,7 +22,7 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 20
   내용 필터를 matcher에 넣으면 **조용히 미발화**한다(실측 2026-07) — 명령/인자 필터링은 반드시
   훅 스크립트 내부에서 한다.
 - 플러그인은 **레포 소스에서만 편집**한다. `~/.claude/plugins/cache`·marketplaces 클론 직접 수정
-  금지(캐시 드리프트 사고 이력 — tasks/todo.md). 공식 반영 경로는 커밋 후 `/plugin update`이며,
+  금지(실측된 캐시 드리프트 사고 이력). 공식 반영 경로는 커밋 후 `/plugin update`이며,
   훅·설정 변경은 다음 세션부터 유효하다.
 - 플러그인 버전은 **두 곳 수동 동기화 필수**: `plugins/<name>/.claude-plugin/plugin.json` ↔
   `.claude-plugin/marketplace.json`의 해당 플러그인 엔트리.
