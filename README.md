@@ -15,6 +15,48 @@ installed and distributed via `.claude-plugin/marketplace.json`.
 
 Example: `/plugin install base@dokkabei-harness`, `/plugin install search@dokkabei-harness`.
 
+## ★ Featured: `observe` — the self-measuring harness
+
+Most plugins do work. **`observe` watches the harness itself** — which skills and agents actually
+fire, *why*, and whether they complete — and turns that into concrete improvements.
+
+Inspired by Nous Research's **Hermes Agent**: where Hermes grows by autonomously *creating* skills
+from experience, observe takes the **evaluation-first** path — it *measures and proposes*. It ports the
+**deterministic half** of Hermes's curator (usage lifecycle: stale / archive candidates; correction
+signals) and surfaces dead/stale assets, missed activations, and uncorrected skill runs — then drafts
+the fix. **You approve; it never edits a file silently.**
+
+Use it in three steps:
+
+```sh
+# 1. Turn on tracing (opt-in — records prompt text locally, so it's off by default)
+export OBSERVE_TRACE=1
+
+# 2. Work normally — 6 hooks correlation-log prompt → skill → agent → result → session
+#    into .claude/skill-trace.jsonl (joined by session_id / prompt_id)
+
+# 3. Ask for the report: deterministic aggregation → LLM interpretation → proposals
+/observe-report   # unused & stale/archive candidates · missed activations
+                  # correction signals · description-tuning drafts
+```
+
+### Local observability — no SaaS
+
+There is no hosted service; everything runs on your machine. observe's traces are a local `.jsonl`.
+For the cost/token side, the optional Grafana stack under `infra/otel` is a **docker-compose you bring
+up yourself** — it receives Claude Code's built-in OpenTelemetry (cost·tokens·events) and renders it
+next to your skill traces. Everything binds to **loopback only**; your prompts and metrics never leave
+your laptop.
+
+```sh
+cd infra/otel && docker compose up -d
+# Grafana → http://localhost:3000  (Claude Code cost/token dashboards, EN/KO)
+```
+
+**Why docker-compose and not a SaaS?** Trust in a harness comes from running it yourself, not from a
+dashboard you rent. The stack is here so you can **verify locally** — spin it up, watch the numbers,
+tear it down. Nothing is uploaded, nothing is sold. (Details: [`infra/otel/README.md`](infra/otel/README.md).)
+
 ## Structure
 
 ```text

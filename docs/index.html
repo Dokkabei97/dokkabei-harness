@@ -94,6 +94,22 @@
   .quote p{font-size:clamp(1.1rem,2.6vw,1.4rem);font-weight:600;letter-spacing:-.01em;margin:0}
   .quote .m{color:var(--mut);font-weight:400;font-size:15px;margin-top:12px}
 
+  /* observe spotlight */
+  .spot{background:linear-gradient(150deg,color-mix(in srgb,var(--acc2) 16%,var(--card)),color-mix(in srgb,var(--acc) 10%,var(--card)));
+    border:1px solid var(--line);border-radius:20px;padding:clamp(24px,4vw,40px)}
+  .badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:#fff;background:linear-gradient(120deg,var(--acc),var(--acc2));padding:4px 11px;border-radius:20px}
+  .spot h2{margin:14px 0 4px}
+  .spot .lead{font-size:clamp(1.05rem,2.3vw,1.24rem);color:var(--fg);max-width:720px;margin:6px 0 0}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
+  .vs .col{background:color-mix(in srgb,var(--bg) 55%,var(--card));border:1px solid var(--line);border-radius:13px;padding:18px}
+  .vs .col h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:7px}
+  .vs .col p{margin:0;color:var(--mut);font-size:14px}
+  .use-h{font-weight:700;margin:6px 0 12px;font-size:15px}
+  .whyline{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:14.5px;font-style:italic}
+  .callout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc2);border-radius:10px;padding:16px 18px;margin-top:14px;color:var(--mut);font-size:14.5px}
+  .callout b{color:var(--fg)}
+
   footer{border-top:1px solid var(--line);padding:34px 0;color:var(--mut);font-size:14px;text-align:center}
   footer a{color:var(--mut)}
 
@@ -113,6 +129,7 @@
   <div class="wrap nav">
     <div class="brand"><span class="dot"></span> dokkabei-harness</div>
     <div class="nav-r">
+      <a class="ghlink" href="#observe" style="color:var(--acc2)">★ observe</a>
       <div class="lang" role="group" aria-label="language">
         <button id="en" onclick="setLang('en')">EN</button>
         <button id="ko" onclick="setLang('ko')">KO</button>
@@ -135,6 +152,7 @@
     </p>
     <div class="cta">
       <a class="btn p" href="#install"><span data-en>Get started</span><span data-ko>시작하기</span></a>
+      <a class="btn s" href="#observe">★ <span data-en>Meet observe</span><span data-ko>observe 보기</span></a>
       <a class="btn s" href="https://github.com/Dokkabei97/dokkabei-harness">GitHub</a>
     </div>
   </div>
@@ -166,6 +184,48 @@
         <h3><span data-en>Hook-driven verification</span><span data-ko>훅 기반 검증</span></h3>
         <p><span data-en>PreToolUse/Stop/SessionEnd hooks enforce the rules — guard against test deletion, unverified "passes", and silent hook mis-activation. Tested on an ubuntu + macOS bats matrix.</span><span data-ko>PreToolUse/Stop/SessionEnd 훅이 규칙을 집행합니다 — 테스트 삭제, 미검증 "통과", 훅 조용한 미발화를 방어. ubuntu + macOS bats 매트릭스로 검증됩니다.</span></p>
       </div>
+    </div>
+  </section>
+
+  <section id="observe">
+    <div class="spot">
+      <span class="badge">★ <span data-en>Featured</span><span data-ko>대표 플러그인</span></span>
+      <h2><span data-en><code>observe</code> — the self-measuring harness</span><span data-ko><code>observe</code> — 스스로를 계측하는 하네스</span></h2>
+      <p class="lead">
+        <span data-en>Every other plugin does work. <b>observe watches the harness itself</b> — which skills and agents actually fire, <i>why</i>, and whether they complete — and turns that into concrete improvements.</span>
+        <span data-ko>다른 플러그인이 일을 한다면, <b>observe는 하네스 그 자체를 지켜봅니다</b> — 어떤 스킬·에이전트가 실제로, <i>왜</i> 발화하고, 완주하는지 — 그리고 그것을 구체적 개선으로 바꿉니다.</span>
+      </p>
+
+      <div class="vs">
+        <div class="col">
+          <h4>🧬 <span data-en>Inspired by Hermes</span><span data-ko>Hermes에서 영감</span></h4>
+          <p><span data-en>Nous Research's Hermes Agent grows by autonomously creating skills from experience. observe borrows that self-improvement spirit — and ports the <b>deterministic half</b> of its curator: usage lifecycle (stale / archive candidates) and correction signals.</span><span data-ko>Nous Research의 Hermes Agent는 경험에서 스킬을 자율 생성하며 성장합니다. observe는 그 자기개선 정신을 빌려오되, curator의 <b>결정론 절반</b>을 이식했습니다: 사용 라이프사이클(stale / archive 후보)과 교정 신호.</span></p>
+        </div>
+        <div class="col">
+          <h4>🔎 <span data-en>Evaluation-first</span><span data-ko>평가 우선</span></h4>
+          <p><span data-en>Where Hermes <i>generates</i>, observe <i>measures and proposes</i>. It surfaces dead / stale assets, missed activations, and skills whose runs go uncorrected — then drafts the fix. <b>You approve; it never edits a file silently.</b></span><span data-ko>Hermes가 <i>생성</i>한다면, observe는 <i>계측하고 제안</i>합니다. 사장·정체 자산, 놓친 발화, 교정 없이 끝난 스킬 실행을 드러내고 수정안을 초안까지 만듭니다. <b>승인은 당신이 하며, 어떤 파일도 조용히 고치지 않습니다.</b></span></p>
+        </div>
+      </div>
+
+      <div class="use-h"><span data-en>How to use it — three steps</span><span data-ko>사용법 — 세 단계</span></div>
+      <div class="steps">
+        <div class="step"><div class="num"></div><div class="b">
+          <p><span data-en>Turn on tracing (opt-in — it records prompt text locally, so it's off by default):</span><span data-ko>계측을 켭니다 (opt-in — 프롬프트 원문이 로컬에 기록되므로 기본은 꺼짐):</span></p>
+          <pre><span class="c"># shell profile, or settings.json "env"</span>
+export OBSERVE_TRACE=1</pre>
+        </div></div>
+        <div class="step"><div class="num"></div><div class="b">
+          <p><span data-en>Work normally. Six hooks log every prompt → skill → agent → result → session boundary:</span><span data-ko>평소대로 작업합니다. 6종 훅이 프롬프트 → 스킬 → 에이전트 → 결과 → 세션 경계를 기록합니다:</span></p>
+          <pre>.claude/skill-trace.jsonl   <span class="c"># append-only, joined by session_id / prompt_id</span></pre>
+        </div></div>
+        <div class="step"><div class="num"></div><div class="b">
+          <p><span data-en>Ask for the report — deterministic aggregation → LLM interpretation → proposals:</span><span data-ko>리포트를 요청합니다 — 결정론 집계 → LLM 해석 → 개선 제안:</span></p>
+          <pre>/observe-report
+<span class="c"># unused &amp; stale/archive candidates · missed activations</span>
+<span class="c"># correction signals · description-tuning drafts</span></pre>
+        </div></div>
+      </div>
+      <p class="whyline"><span data-en>"Completion is judged by the harness, not the model" — observe extends that to the harness's own health: measured, not assumed.</span><span data-ko>"완료 판정은 모델이 아니라 하네스가 한다" — observe는 그 원칙을 하네스 자신의 건강으로 확장합니다: 짐작이 아니라 계측으로.</span></p>
     </div>
   </section>
 
@@ -245,6 +305,23 @@
 <span class="c"># then just ask, e.g.</span>
 "<span data-en>build a harness for …</span><span data-ko>…를 위한 하네스를 구성해줘</span>"</pre>
       </div></div>
+    </div>
+  </section>
+
+  <section id="local">
+    <h2><span data-en>Local observability — no SaaS</span><span data-ko>로컬 관측 — SaaS 없음</span></h2>
+    <p class="sub"><span data-en>There is no hosted service. Everything runs on your machine.</span><span data-ko>호스팅 서비스는 없습니다. 전부 당신의 기기에서 돕니다.</span></p>
+    <p style="color:var(--mut);max-width:760px;margin:0 0 16px">
+      <span data-en>observe's traces live in a local <code>.jsonl</code> file. For the cost/token side, the optional Grafana stack under <code>infra/otel</code> is a <b>docker-compose you bring up yourself</b> — it receives Claude Code's built-in OpenTelemetry (cost, tokens, events) and renders it next to your skill traces. Everything binds to <b>loopback only</b>; your prompts and metrics never leave your laptop.</span>
+      <span data-ko>observe의 트레이스는 로컬 <code>.jsonl</code> 파일에 있습니다. 비용/토큰 쪽은 <code>infra/otel</code>의 Grafana 스택 — <b>직접 띄우는 docker-compose</b> — 가 담당합니다. Claude Code 내장 OpenTelemetry(비용·토큰·이벤트)를 수신해 스킬 트레이스 옆에서 보여줍니다. 전부 <b>루프백에만</b> 바인딩되며, 프롬프트도 메트릭도 노트북을 떠나지 않습니다.</span>
+    </p>
+    <pre><span class="c"># bring the local observability stack up</span>
+cd infra/otel
+docker compose up -d
+<span class="c"># Grafana → http://localhost:3000  (Claude Code cost/token dashboards, EN/KO)</span></pre>
+    <div class="callout">
+      <span data-en><b>Why docker-compose and not a SaaS?</b> Trust in a harness comes from running it yourself, not from a dashboard you rent. The stack is here so you can <b>verify locally</b> — spin it up, watch the numbers, tear it down. Nothing is uploaded, nothing is sold.</span>
+      <span data-ko><b>왜 SaaS가 아니라 docker-compose인가?</b> 하네스에 대한 신뢰는 빌린 대시보드가 아니라 직접 돌려보는 데서 옵니다. 이 스택은 <b>로컬에서 직접 확인</b>하라고 있는 것입니다 — 띄워서 숫자를 보고, 내리면 끝. 아무것도 업로드되지 않고, 아무것도 팔지 않습니다.</span>
     </div>
   </section>
 

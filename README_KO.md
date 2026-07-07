@@ -15,6 +15,47 @@ Claude Code 플러그인 마켓플레이스. 처음에는 sub agent 모음에서
 
 예: `/plugin install base@dokkabei-harness`, `/plugin install search@dokkabei-harness`.
 
+## ★ 대표 플러그인: `observe` — 스스로를 계측하는 하네스
+
+대부분의 플러그인이 일을 한다면, **`observe`는 하네스 그 자체를 지켜본다** — 어떤 스킬·에이전트가
+실제로, *왜* 발화하고, 완주하는지 — 그리고 그것을 구체적 개선으로 바꾼다.
+
+Nous Research의 **Hermes Agent**에서 영감을 받았다: Hermes가 경험에서 스킬을 자율 *생성*하며
+성장한다면, observe는 **평가 우선** 경로를 택한다 — *계측하고 제안*한다. Hermes curator의
+**결정론 절반**(사용 라이프사이클: stale / archive 후보, 교정 신호)을 이식했고, 사장·정체 자산,
+놓친 발화, 교정 없이 끝난 스킬 실행을 드러낸 뒤 수정안을 초안까지 만든다.
+**승인은 당신이 하며, 어떤 파일도 조용히 고치지 않는다.**
+
+세 단계로 사용한다:
+
+```sh
+# 1. 계측을 켠다 (opt-in — 프롬프트 원문이 로컬에 기록되므로 기본은 꺼짐)
+export OBSERVE_TRACE=1
+
+# 2. 평소대로 작업한다 — 6종 훅이 프롬프트 → 스킬 → 에이전트 → 결과 → 세션을
+#    .claude/skill-trace.jsonl 에 상관 로깅 (session_id / prompt_id 로 조인)
+
+# 3. 리포트를 요청한다: 결정론 집계 → LLM 해석 → 개선 제안
+/observe-report   # 미사용 & stale/archive 후보 · 놓친 발화
+                  # 교정 신호 · description 튜닝 초안
+```
+
+### 로컬 관측 — SaaS 없음
+
+호스팅 서비스는 없다; 전부 당신의 기기에서 돈다. observe의 트레이스는 로컬 `.jsonl` 이다.
+비용/토큰 쪽은 `infra/otel`의 Grafana 스택 — **직접 띄우는 docker-compose** — 가 담당한다.
+Claude Code 내장 OpenTelemetry(비용·토큰·이벤트)를 수신해 스킬 트레이스 옆에서 보여주며,
+전부 **루프백에만** 바인딩된다. 프롬프트도 메트릭도 노트북을 떠나지 않는다.
+
+```sh
+cd infra/otel && docker compose up -d
+# Grafana → http://localhost:3000  (Claude Code 비용/토큰 대시보드, EN/KO)
+```
+
+**왜 SaaS가 아니라 docker-compose인가?** 하네스에 대한 신뢰는 빌린 대시보드가 아니라 직접
+돌려보는 데서 온다. 이 스택은 **로컬에서 직접 확인**하라고 있는 것이다 — 띄워서 숫자를 보고,
+내리면 끝. 아무것도 업로드되지 않고, 아무것도 팔지 않는다. (상세: [`infra/otel/README_KO.md`](infra/otel/README_KO.md).)
+
 ## 구조
 
 ```text
