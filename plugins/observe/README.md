@@ -12,6 +12,8 @@ The reason observe exists becomes clear in contrast with the hermes agent. Where
 
 The design intent lies in clear boundaries. This plugin is dedicated to **post-hoc diagnosis of real-usage telemetry**. It delegates cost/token/tool_decision instrumentation to Claude Code's built-in OTel (`CLAUDE_CODE_ENABLE_TELEMETRY`), and delegates the a-priori benchmarking of description activation rates to `skill-creator` eval — mutually non-overlapping orthogonal complements. Also, because it records prompt originals by nature, it only operates when `OBSERVE_TRACE=1` is opted in, so it has no effect by default on other loop-type plugins like `mvp`·`feature-loop`.
 
+Claude Code's native `/usage` breaks down recent usage by skill / subagent / MCP — observe overlaps there but goes deeper: it adds *why* each fired, whether it *completed*, missed activations, usage lifecycle (stale / archive candidates), and correction signals, and persists the trace so it compounds across sessions rather than showing a point-in-time snapshot.
+
 v1.3.0 ports the **deterministic half** of hermes-agent's curator into the aggregator: usage-lifecycle candidates (stale ≥30d / archive ≥90d since last observed use, thresholds configurable, `--now` injectable for tests) and correction-candidate pairs (`followups` — the plain user prompt immediately after a skill/agent invocation; whether it is a correction is judged only in the LLM phase). State transitions are still proposals only. If generative coupling (auto-creating/patching skills) is ever added, the preconditions come from hermes itself: agent-created assets isolated in their own namespace/marking, archive-only (never delete), and read-before-write — until all three exist, observe stays evaluative.
 
 ## Components

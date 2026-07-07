@@ -17,6 +17,23 @@
 
 > **Automations가 "한 번 실행"을 "루프"로 만든다.** 스케줄 없이는 루프가 아니라 일회성 실행이다.
 
+### 트리거 축과의 교차 — Anthropic 공식 loops 분류 매핑
+
+위 표는 **"어떻게 반복하나"(실행 메커니즘)** 축이다. Anthropic이 공식 분류한 loops
+([Getting started with loops](https://claude.com/blog/getting-started-with-loops))는
+**"언제 시작·정지하나"(트리거)** 축 — 둘은 직교하며 서로를 완성한다. 우리 엔진이 각 유형을 어떻게 구현하는지:
+
+| Anthropic 유형 (트리거) | 정지 기준 | 본 하네스 구현 (메커니즘) |
+|------|--------|------|
+| **Turn-based** | Claude가 완료 판단 | 의도적으로 하네스 **밖**(순수 대화) — 게이트 불필요한 단발 작업 |
+| **Goal-based** (`/goal`) | 목표 달성 OR max turns | **Stop훅 재주입** — gate-cmd 결정론 게이트 + promise + max_iter (`/loop-run`·mvp·feature-loop) |
+| **Time-based** (`/loop`·`/schedule`) | 사용자 취소 OR 완료 | **스케줄(Automations)** — `/loop`·Routines·Cron |
+| **Proactive** | 태스크별 목표 달성(무인) | **headless `claude -p` 셸 루프** + Workflow 도구(무인 fan-out) |
+
+> 핵심 차이: Anthropic이 **원칙**(정량 검증·회의적 evaluator·turn cap)으로 제시한 것을, 본 하네스는
+> **강제 장치**로 못 박는다 — 게이트를 Stop훅 exit code가 집행하고(§2-1), checker는 Edit 미보유로
+> 도구 수준 분리하며(§2-2), 가드레일 3종을 필수화한다(§4). "완료 판정은 모델이 아니라 하네스가 한다."
+
 ---
 
 ## 2. 정지 조건 — 모델 밖에서 판정
@@ -118,6 +135,7 @@ Planner(스프린트 계약 협상) → Generator(구현) → Evaluator(회의�
 
 ## 출처
 - Addy Osmani — Loop Engineering: https://addyosmani.com/blog/loop-engineering/
+- Anthropic — Getting started with loops (loops 공식 4분류: turn/goal/time/proactive): https://claude.com/blog/getting-started-with-loops
 - Anthropic — Effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
 - Anthropic — Building effective agents: https://www.anthropic.com/research/building-effective-agents
 - Claude Code Hooks 레퍼런스: https://code.claude.com/docs/en/hooks

@@ -20,6 +20,10 @@ Example: `/plugin install base@dokkabei-harness`, `/plugin install search@dokkab
 Most plugins do work. **`observe` watches the harness itself** — which skills and agents actually
 fire, *why*, and whether they complete — and turns that into concrete improvements.
 
+> Claude Code's native `/usage` shows **cost and tokens**. observe shows the layer above it — **which
+> skills and agents fire, why, whether they complete, and which go stale or uncorrected** — the
+> harness-health view that cost metrics can't give you.
+
 Inspired by Nous Research's **Hermes Agent**: where Hermes grows by autonomously *creating* skills
 from experience, observe takes the **evaluation-first** path — it *measures and proposes*. It ports the
 **deterministic half** of Hermes's curator (usage lifecycle: stale / archive candidates; correction
