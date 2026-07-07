@@ -38,6 +38,7 @@ Stage 4 개발 루프의 **보조 엔진**. 기본 엔진(Stop훅 재주입)은 
 | 진행 확인 | 다른 터미널/세션에서 `/mvp-status` 또는 `jq '.stories[] | {id, passes}' .planning/prd.json` |
 | 중단 | 셸 프로세스 종료(Ctrl-C/kill). `loop-active`를 쓰지 않으므로 잔존 플래그 정리 불필요 — `headless-active` 락은 EXIT trap이 정리하고, 강제 종료로 남아도 다음 실행이 스테일(죽은 PID) 락으로 판정해 자동 제거한다 |
 | 크론 등록 | `MVP_PROJECT_DIR`(프로젝트 루트)·`MVP_RUNNER`(러너 경로) 환경변수를 지정해 crontab에 `cd "$MVP_PROJECT_DIR" && bash "$MVP_RUNNER"` 형태로 등록(절대경로 하드코딩 대신 env 사용) |
+| 네이티브 스케줄 감싸기 | 위 크론 명령을 네이티브 `/schedule`(Routines)·Cron 도구로 등록해도 된다 — "언제"는 네이티브, "무엇을+판정"은 러너 몫. 스케줄 겹침은 `headless-active` 락이 거부하므로 안전 |
 
 ## 가드레일 대응표 (Stop훅 엔진과의 등가성)
 

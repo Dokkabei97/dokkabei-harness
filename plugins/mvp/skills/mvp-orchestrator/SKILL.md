@@ -139,6 +139,17 @@ Stage 4 진입은 직접 트리거 경로를 포함해 항상 `/mvp-run` 절차(
 - **반증 실패 시 통과**: 기본값은 통과. 반증에는 구체적 근거를 요구해 과잉 강등을 방지한다.
 - **max 2라운드**: 같은 산출물에 대한 maker 수정→checker 재검은 2라운드 상한. 미해결 이슈는 잔여 리스크로 사용자 게이트/보고에 첨부한다. (Stage 4는 루프 자체가 반복이므로 라운드 상한 대신 circuit breaker가 상한.)
 
+## 협업 호출 규약 (루프 안에서 기존 하네스 활용)
+
+| 시점 | 호출 대상 | 용도 |
+|------|----------|------|
+| Stage 0 인테이크 | `mvp-from-startup` 브릿지 (`.planning/business/` 존재 시) | startup 린 캔버스·검증 가설 승계로 질문 선채움 |
+| Stage 1 PRD | `workflow:planning-guide` | 스토리 수직 슬라이싱·사이징 |
+| Stage 4 구현(MB) | 스택 플러그인 `*-gen`/`*-guide`(kotlin-spring·python-fastapi·go-mux·nextjs), `test:tdd` | 선택 스택의 관용 구현·테스트 먼저 |
+| Stage 4 검증(MV) | `analyze:arch-reviewer`·`perf-reviewer`, `backend-shared:security-check` | 테스트가 못 잡는 구조·성능·보안 렌즈 |
+| 병렬 탐색·검증 | 네이티브 Workflow 도구 (fan-out + judge) | 후보 병렬 비교가 필요할 때만 — 순차 루프 소유권은 Stop훅 유지 |
+| 완료 후 | `workflow:shipping-guide`, `workflow:review-mr` 또는 네이티브 `/code-review` | 배포 전 체크·품질 리뷰 (루프 밖 — 정지 판정에는 불사용) |
+
 ## Agent Dispatch
 
 각 에이전트는 `Agent` 도구로 호출한다. 서브에이전트는 **이전 대화를 모른다.**

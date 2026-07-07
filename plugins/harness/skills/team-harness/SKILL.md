@@ -69,6 +69,20 @@ metadata:
 
 > 적용 예: search 오케스트레이터(Expert Pool + Adversarial Verify + Loop-until-dry), legacy 오케스트레이터(Pipeline + Verification Gate + Guardrails).
 
+## Cross-Harness Orchestration (하네스 간 협업)
+
+하네스는 단독 특화로 끝나지 않는다 — 필요할 때 **기존 하네스를 유동적으로 호출**하는 것이 최종 형태다.
+오케스트레이터 설계 시 다음 4가지를 포함한다:
+
+1. **협업 호출 규약 표** (표준 표기 `| 시점 | 호출 대상 | 용도 |`): 루프/Stage 안에서 언제 어떤 타 하네스
+   스킬·에이전트를 부르는지 명시. 정본 예: feature-loop-orchestrator·mvp-orchestrator
+2. **위임 경계**: 발동하지 않는 도메인과 그 소관 하네스를 description·When to Apply에 명시
+   (예: hr→legal 강제 에스컬레이션, finance→legal 형사 신호 위임, wiki-ops→deep-research)
+3. **재사용 vs 복제 구분**: 루프 엔진은 **재사용이 기본**(wiki-ops→harness generic, `requires` 선언 + XRF-016
+   3소스 일치). 정지조건이 도메인 고유(verified 마커·baseline)일 때만 패턴 복제(자체 훅 + bats 의무)
+4. **네이티브 프리미티브 경계**: 같은 층 이중 소유 금지 — 판정은 Stop훅 하나, 트리거(`/loop`·`/schedule`)는
+   감싸기 허용. 상세 라우팅 규약: [loop-harness-guide](references/loop-harness-guide.md)
+
 ## Loop Harness Design (루프 하네스 설계)
 
 대부분의 팀은 **단일 패스**(fan-out/pipeline 1회)다. 그러나 "조건이 충족될 때까지 반복"이 필요하면 **루프 하네스**로 설계한다 — 이것이 루프 엔지니어링의 본체다.

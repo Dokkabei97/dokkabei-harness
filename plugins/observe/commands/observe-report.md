@@ -148,4 +148,4 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 - `workflow:deprecation-guide` — (b) 사장 자산 후보의 폐기 절차 소관
 - `harness:create-flow` — (c) 신규 스킬/훅 후보의 스캐폴딩 소관
 - `workflow:retro` — 세션 일화 기반 교훈 라우팅 (본 커맨드의 데이터 기반 보완재)
-- `skill-creator:skill-creator` eval — description 수정안의 사전 발화율 검증 경로
+- 공식 `skill-creator` eval — description 수정안의 사전 발화율 검증 경로 (외부: anthropic-agent-skills 마켓 소속, 이 마켓플레이스에 없음 — 미설치 시 이 검증 단계는 생략)

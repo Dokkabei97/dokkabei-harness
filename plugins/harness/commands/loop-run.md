@@ -98,9 +98,12 @@ Options:
 | 그린필드 신규 제품 — 아이디어→PRD→스토리 파이프라인 완주 | `/mvp-run` (mvp 플러그인) | prd.json·verified 마커·E2E 게이트 | 게이트+all-passes+마커+E2E+promise |
 | 브라운필드 기존 코드베이스 — 기능 요청의 작업 분해·회귀 방지 | `/floop-run` (feature-loop 플러그인) | tasks.json·baseline.json·verified 마커 | 게이트+회귀 0+all-passes+마커+E2E+promise |
 | 단발 반복 작업 — 'lint 0까지'·'테스트 그린까지' 단일 목표 | `/loop-run` (본 커맨드) | 없음 (gate-cmd·loop-goal 만) | 게이트+promise |
+| 게이트조차 불필요한 단발 목표 — 검증 명령 없음 | 네이티브 `/goal` (Claude Code 내장) | 없음 | 목표 달성 판단 OR max turns |
 
-판단 기준: **스토리/작업 목록이 필요하면** mvp·floop, **검증 명령 1개로 완료가 정의되면** loop-run.
-loop-run 도중 작업이 다건 분해가 필요할 만큼 커지면 `/loop-stop` 후 `/floop-new`로 승격한다.
+판단 기준: **스토리/작업 목록이 필요하면** mvp·floop, **검증 명령 1개로 완료가 정의되면** loop-run,
+**게이트조차 불필요하면** 네이티브 `/goal`. loop-run 도중 작업이 다건 분해가 필요할 만큼 커지면
+`/loop-stop` 후 `/floop-new`로 승격한다. 단 `.planning/loop-active` 활성 중에는 네이티브
+`/goal`·`/loop`를 병행 가동하지 않는다 — 재주입·판정 주체가 둘이 된다.
 
 **Will:**
 - 목표 프롬프트·`--gate-cmd` 필수 검증과 게이트 시운전 후에만 루프 가동
