@@ -13,7 +13,7 @@
       "name": "base",
       "source": "./plugins/base",
       "description": "Foundational guard-hook & LSP layer for the loop harness",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "develop",
       "keywords": [
         "hooks",

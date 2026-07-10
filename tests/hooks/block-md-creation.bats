@@ -117,6 +117,25 @@ write_event() { printf '{"tool":"Write","tool_input":{"file_path":"%s"}}' "$1"; 
   [ "$status" -eq 2 ]
 }
 
+# 플랜 모드 플랜 파일 — ExitPlanMode 가 읽는 하네스 관리 영역 (실측 차단 사고, 2026-07)
+@test "block-md: plan-mode plan file .md -> allowed (exit 0)" {
+  local ev; ev="$(write_event "/Users/u/.claude/plans/lovely-popping-quail.md")"
+  run invoke_node_hook "$BLOCK_HOOK" "$ev"
+  [ "$status" -eq 0 ]
+  [ "$output" = "$ev" ]
+}
+
+@test "block-md: plan-mode plan file .txt -> allowed (exit 0)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/Users/u/.claude/plans/some-plan.txt")"
+  [ "$status" -eq 0 ]
+}
+
+# plans/ 밖의 ~/.claude 직하 .md 는 여전히 차단 — 예외 과확장 가드
+@test "block-md: .claude non-plans .md -> blocked (exit 2)" {
+  run invoke_node_hook "$BLOCK_HOOK" "$(write_event "/Users/u/.claude/notes.md")"
+  [ "$status" -eq 2 ]
+}
+
 # ── 비대상 ──────────────────────────────────────────────────────────────────
 
 # .md/.txt 가 아닌 파일 — 관여하지 않고 passthrough

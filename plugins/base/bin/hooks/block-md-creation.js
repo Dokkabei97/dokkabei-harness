@@ -15,6 +15,9 @@ const TASKS = /(^|\/)tasks\//;
 const MEMORY = /\/\.claude\/projects\/[^/]+\/memory\//;
 // 세션 스크래치패드(/tmp/claude-<uid>/…)도 하네스 관리 영역 — Artifact 렌더링용 .md 가 여기 쓰인다.
 const SCRATCHPAD = /^(?:\/private)?\/tmp\/claude-[^/]+\//;
+// 플랜 모드 플랜 파일(~/.claude/plans/<슬러그>.md)도 하네스 관리 영역 —
+// ExitPlanMode 가 이 파일을 읽으므로 차단하면 플랜 모드 자체가 죽는다 (MEMORY/SCRATCHPAD 와 동일 클래스).
+const PLANS = /\/\.claude\/plans\//;
 
 (async () => {
   const { raw, json } = await readEvent();
@@ -25,7 +28,8 @@ const SCRATCHPAD = /^(?:\/private)?\/tmp\/claude-[^/]+\//;
     !PLANNING.test(path) &&
     !TASKS.test(path) &&
     !MEMORY.test(path) &&
-    !SCRATCHPAD.test(path)
+    !SCRATCHPAD.test(path) &&
+    !PLANS.test(path)
   ) {
     console.error("[Hook] BLOCKED: Unnecessary documentation file creation");
     console.error("[Hook] File: " + path);
