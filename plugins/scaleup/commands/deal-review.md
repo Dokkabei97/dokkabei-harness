@@ -5,6 +5,8 @@ description: |
   Creates/updates the per-deal MEDDPICC scorecard (8 elements) and dispatches deal-qualifier to refute 'verified' overclaims: the main session drafts, deal-qualifier records COMMIT/DOWNGRADE/DISQUALIFY, and gate-meddpicc --require-verdict validates. Use when: reviewing or qualifying an enterprise deal, updating a MEDDPICC scorecard. Contract/legal judgments to legal.
 category: scaleup
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /deal-review — 엔터프라이즈 딜 리뷰

@@ -5,6 +5,8 @@ description: |
   Audits a CRM export (CSV/JSON): the main session normalizes it with jq into a pipeline audit JSON, and gate-pipeline-hygiene deterministically checks stage/forecast_category enums, amount>0, open-deal close_date futurity, and stale age (the showcase gate). Use when: auditing pipeline hygiene, rolling up forecast categories, cleaning CRM data. Export input only, no SaaS CRM API integration.
 category: scaleup
 complexity: intermediate
+mcp-servers: []
+personas: []
 ---
 
 # /pipeline-audit — 파이프라인 위생 감사

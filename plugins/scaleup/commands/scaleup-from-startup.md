@@ -5,6 +5,8 @@ description: |
   Bridge that carries startup outputs (.planning/business/) into the scaleup OS: reads lean canvas, unit economics, market research, validated hypotheses, and growth plan to pre-fill /okr-plan objective/north-star candidates, initial scorecard metrics, and deal ICP. Use when: continuing from startup business planning into scale-up execution. Falls back to interview if business is absent; KR outcome rewrite stays with okr-checker.
 category: workflow
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /scaleup-from-startup — 비즈니스 가설 → 스케일업 브릿지

@@ -5,6 +5,8 @@ description: |
   Authors the quarterly board deck (fixed section structure) and standard KPI pack: board-reporter writes it to Sequoia/Sacks and board-governance deck-standard headings, and gate-board-deck verifies required headings, cross-quarter structural consistency, and Asks owner/date. Use when: preparing a board deck or KPI pack. Financial figures to finance, legal judgments to legal.
 category: scaleup
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /board-deck — 분기 보드덱

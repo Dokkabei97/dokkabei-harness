@@ -5,6 +5,8 @@ description: |
   Authors a forward-looking org chart and headcount plan, linking each hire to a milestone and aligning to the AOP personnel budget; org-planner writes it and gate-headcount verifies the contract. Use when: building a headcount plan, planning org scaling, or aligning hiring to budget. JD/onboarding to hr, financials to finance.
 category: scaleup
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /org-plan — 조직·헤드카운트 플래닝

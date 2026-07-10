@@ -5,6 +5,8 @@ description: |
   Authors the monthly investor update (Wins/Misses/Asks plus cash/runway), doubling as the Korean RCPS/SHA periodic-reporting obligation document; board-reporter writes it and there is no gate. Use when: writing an investor update or fulfilling periodic reporting to investors. SHA consent rights and legal judgments delegated to legal.
 category: scaleup
 complexity: intermediate
+mcp-servers: []
+personas: []
 ---
 
 # /investor-update — 투자자 업데이트

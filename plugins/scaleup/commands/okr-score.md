@@ -5,6 +5,8 @@ description: |
   End-of-quarter OKR scoring (0.0-1.0, 0.6-0.7 healthy) plus a retro that assigns every KR a score and captures what worked, feeding the next /okr-plan. Use when: closing out a quarter, scoring OKRs, or writing an OKR retrospective.
 category: scaleup
 complexity: intermediate
+mcp-servers: []
+personas: []
 ---
 
 # /okr-score — 분기말 스코어링·회고

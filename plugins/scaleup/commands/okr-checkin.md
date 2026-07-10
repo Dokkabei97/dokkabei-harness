@@ -5,6 +5,8 @@ description: |
   Weekly OKR check-in that records per-KR confidence (0-1), blockers, and next-week commitments, refreshes a 5-15 metric scorecard, and converts drifting metrics into issues — unifying EOS Scorecard and 4DX. Use when: running a weekly check-in, updating KR confidence, or refreshing the metrics scorecard.
 category: scaleup
 complexity: intermediate
+mcp-servers: []
+personas: []
 ---
 
 # /okr-checkin — 주간 체크인

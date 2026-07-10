@@ -5,6 +5,8 @@ description: |
   Authors the quarterly OKR tree (1-5 objectives, 1-4 KRs each) with owner/baseline/target/due plus a dependency log and open issues, always followed by okr-checker falsification and human approval. Use when: planning quarterly OKRs, starting a new OKR cycle, or rewriting objectives and key results.
 category: scaleup
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /okr-plan — 분기 OKR 플래닝

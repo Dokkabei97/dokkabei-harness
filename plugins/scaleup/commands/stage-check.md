@@ -5,6 +5,8 @@ description: |
   Blitzscaling 5-stage diagnosis plus Korean headcount-threshold (10/30/50) arithmetic flags: the main session pre-computes the arithmetic and scale-checker refutes premature transitions (early divisionalization, founder-direct overload). Use when: diagnosing scale stage, checking readiness to advance, or flagging labor-law thresholds. Labor-law response delegated to legal/hr.
 category: scaleup
 complexity: advanced
+mcp-servers: []
+personas: []
 ---
 
 # /stage-check — 스케일 단계 진단
