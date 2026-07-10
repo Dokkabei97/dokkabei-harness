@@ -1,8 +1,8 @@
 ---
 name: biz-screen
 description: |
-  헌트존→롱리스트→5카테고리 스코어카드→딜 시시스(stop_rule·disqualifier 필수) → strategy-analyst maker → plan-challenger 반증 → 게이트. 기업결합 임계 산술 플래그만, 법 판단 legal 위임.
-  Screens M&A targets via hunt zone → long list → 5-category scorecard with mandatory stop rule and disqualifiers (strategy-analyst maker, plan-challenger falsification, screen gate); merger-threshold flags are arithmetic-only, legal judgment delegated. Use when: screening acquisition/partnership targets.
+  헌트존→롱리스트→5카테고리 스코어카드→딜 시시스(stop_rule·disqualifier 필수) → strategy-analyst maker → plan-challenger 반증 → 게이트. merger-control 규제 검토는 서술 안내로만, 법 판단 legal 위임.
+  Screens M&A targets via hunt zone → long list → 5-category scorecard with mandatory stop rule and disqualifiers (strategy-analyst maker, plan-challenger falsification, screen gate); merger-control review is descriptive-only, legal judgment delegated. Use when: screening acquisition/partnership targets.
 category: strategy
 complexity: advanced
 mcp-servers: []
@@ -13,8 +13,9 @@ personas: []
 
 헌트존 정의 → 롱리스트 → 5카테고리 스코어카드로 딜을 스크리닝한다. `strategy-analyst`(maker) →
 `plan-challenger`(checker, Edit 미보유) → `gate-screen.sh --require-verdict`. **disqualifier ≥1 +
-stop_rule 필수**(무한 딜 추진 방지), synergy substitution 경계. 기업결합 임계는 산술 플래그(경고)만 —
-성립·신고 절차의 **법 판단은 legal 위임**. 프레임워크·임계표는 `strategy-frameworks`.
+stop_rule 필수**(무한 딜 추진 방지), synergy substitution 경계. merger-control(경쟁당국 신고) 검토는
+**서술 안내로만** 다루고 게이트가 산술 플래그하지 않는다 — 성립·관할·절차의 **법 판단은 legal 위임**.
+프레임워크·merger-control 참조는 `strategy-frameworks`.
 
 ## Triggers
 - "M&A 스크리닝", "인수 후보 평가", "사업 스크리닝", "딜 스코어카드" 요청
@@ -35,7 +36,7 @@ Options:
 
 ### Phase 1: strategy-analyst 디스패치 (maker)
 - 5카테고리(전략적합·시장매력·재무·실행가능·리스크) 스코어카드: weight(Σ=1.0±0.001)×score(1~5).
-- **disqualifiers ≥1 + stop_rule** 작성. annual_revenue_krw 등 기업결합 임계 플래그(산술).
+- **disqualifiers ≥1 + stop_rule** 작성. annual_revenue 등 규모는 참고로만 기록(merger-control 검토 태그).
 - → `.planning/enterprise/screen/<target>.json`.
 
 ### Phase 2: plan-challenger 디스패치 (checker)
@@ -45,15 +46,15 @@ Options:
 ### Phase 3: 결정론 게이트
 - `bash "${CLAUDE_PLUGIN_ROOT}/hooks/gates/gate-screen.sh" --require-verdict`
 - categories(5)·Σweight·score·disqualifier·stop_rule + verdict enum·non-APPROVE 를 검증.
-  annual_revenue_krw 가 기업결합 임계 교차 시 경고(legal 위임).
+  merger-control 규제 검토는 게이트가 산술 판정하지 않는다(legal 위임).
 
 ## Boundaries
 
 **Will:**
-- 5카테고리 스크리닝(maker), synergy substitution 반증(checker), 게이트 판정, 기업결합 임계 산술 플래그
+- 5카테고리 스크리닝(maker), synergy substitution 반증(checker), 게이트 판정, merger-control 규제 검토 태그
 
 **Will Not:**
-- 기업결합신고 요건 성립·절차의 **법적 판단** → legal 위임 (플래그·경고만)
+- merger-control(경쟁당국 신고) 요건 성립·관할·절차의 **법적 판단** → legal 위임 (서술 안내만)
 - 실적·세무·밸류에이션 확정 수치 → finance 위임
 - PMI 실행 계획(인수 확정 후 영역 — v2 백로그)
 - 스크리닝 결과를 checker 가 수정 (plan-challenger Edit 미보유)

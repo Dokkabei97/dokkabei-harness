@@ -4,7 +4,7 @@
 # 대상: .planning/enterprise/budget-*.json (최신)
 # 정본 참조: fpna-planning references/clap-keys.json (CLAP 5키) — 하드코딩 금지
 # 검사:
-#   ① |Σdepartments.total_krw − org_total_krw| / org_total_krw > 0.005 → 실패
+#   ① |Σdepartments.total − org_total| / org_total > 0.005 → 실패
 #   ② scenarios base/best/worst number && worst ≤ base ≤ best
 #   ③ clap 키 집합 == 정본 5키, 각 값 비공백
 #   ④ assumptions ≥ 3
@@ -40,15 +40,15 @@ if ! jq -e '.' "$BUDGET" >/dev/null 2>&1; then
 fi
 
 # ① 부서 합 == 전사 (±0.5%)
-org="$(jq -r '.org_total_krw // "null"' "$BUDGET")"
-if [ "$org" = "null" ] || ! jq -e '(.org_total_krw|type=="number") and (.org_total_krw>0)' "$BUDGET" >/dev/null 2>&1; then
-  echo "[gate-budget] 실패: org_total_krw 가 양수 number 가 아님" >&2
+org="$(jq -r '.org_total // "null"' "$BUDGET")"
+if [ "$org" = "null" ] || ! jq -e '(.org_total|type=="number") and (.org_total>0)' "$BUDGET" >/dev/null 2>&1; then
+  echo "[gate-budget] 실패: org_total 가 양수 number 가 아님" >&2
   fail=1
 else
-  sumdept="$(jq '[.departments[]?.total_krw // 0] | add // 0' "$BUDGET")"
+  sumdept="$(jq '[.departments[]?.total // 0] | add // 0' "$BUDGET")"
   verdict="$(awk -v o="$org" -v s="$sumdept" 'BEGIN{ d=s-o; if(d<0)d=-d; print (d/o>0.005)?"FAIL":"OK" }')"
   if [ "$verdict" = "FAIL" ]; then
-    echo "[gate-budget] 실패: Σ부서 total_krw($sumdept) ≠ org_total_krw($org) — 허용오차 ±0.5% 초과" >&2
+    echo "[gate-budget] 실패: Σ부서 total($sumdept) ≠ org_total($org) — 허용오차 ±0.5% 초과" >&2
     fail=1
   fi
 fi

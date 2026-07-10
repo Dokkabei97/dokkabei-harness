@@ -47,7 +47,7 @@ Options:
 - PtW/3H/7S 캐스케이드 작성(maker), 논리 단절·편중 반증(checker)
 
 **Will Not:**
-- 실적·세무·중견기업 세제 수치 → finance 위임
+- 실적·세무·세제 수치 → finance 위임
 - 시장조사·유닛이코노믹스 재생성 → startup 위임
 - 캐스케이드를 checker 가 수정 (plan-challenger Edit 미보유)
 - 산술 게이트 강제 (서사형 — 반증이 관문)

@@ -1,8 +1,8 @@
 ---
 name: annual-plan
 description: |
-  한국 4Q 경영계획 재현 — CEO 대원칙·수립지침 → 부서안 → budget.json(CLAP 5요소·시나리오·Σ부서=전사) → plan-challenger 반증 → 게이트.
-  Reproduces the Korean 4Q annual-planning season — CEO principles/guidelines → department plans → budget.json (CLAP, scenarios, dept sum = org total) — with plan-challenger falsification and the budget gate. Use when: building the corporate annual plan/budget.
+  연간 경영계획 — CEO 대원칙·수립지침 → 부서안 → budget.json(CLAP 5요소·시나리오·Σ부서=전사) → plan-challenger 반증 → 게이트.
+  Runs the annual planning cycle — CEO principles/guidelines → department plans → budget.json (CLAP, scenarios, dept sum = org total) — with plan-challenger falsification and the budget gate. Use when: building the corporate annual plan/budget.
 category: strategy
 complexity: advanced
 mcp-servers: []
@@ -11,12 +11,12 @@ personas: []
 
 # /annual-plan - 경영계획 · 전사 예산
 
-한국형 4Q 경영계획 시즌을 재현한다. CEO 대원칙·수립지침을 CLAP 5요소로 구조화하고 부서안을 전사로
+연간 경영계획 사이클을 수행한다. CEO 대원칙·수립지침을 CLAP 5요소로 구조화하고 부서안을 전사로
 합산해 `budget-*.json` 을 만든다. `fpna-planner`(maker) → `plan-challenger`(checker) → `gate-budget.sh`
 (최강 산술 게이트: Σ부서=전사±0.5%·시나리오·CLAP·assumptions). 정본은 `fpna-planning`(clap-keys.json).
 
 ## Triggers
-- "경영계획", "연간 예산", "4Q 계획 시즌", "수립지침", "CLAP" 요청
+- "경영계획", "연간 예산", "계획 사이클", "수립지침", "CLAP" 요청
 - `/strategy-cascade` 대원칙을 예산으로 전환할 때
 
 ## Usage
@@ -34,7 +34,7 @@ Options:
 
 ### Phase 1: fpna-planner 디스패치 (maker)
 - CLAP 5요소(challenge/levers/allocation/assumptions/plan — clap-keys.json 정본)로 수립지침 구조화.
-- 부서안 합산: **Σ부서 total_krw = org_total_krw (±0.5%)**, scenarios{base,best,worst} (worst≤base≤best),
+- 부서안 합산: **Σ부서 total = org_total (±0.5%)**, scenarios{base,best,worst} (worst≤base≤best),
   assumptions≥3(드라이버 연결). → `.planning/enterprise/budget-<fy>.json`.
 
 ### Phase 2: plan-challenger 디스패치 (checker)
@@ -47,7 +47,7 @@ Options:
 ## Boundaries
 
 **Will:**
-- 4Q 경영계획·CLAP 예산·부서 합산·시나리오 작성, 반증, 산술 게이트 판정
+- 연간 경영계획·CLAP 예산·부서 합산·시나리오 작성, 반증, 산술 게이트 판정
 
 **Will Not:**
 - 유닛 이코노믹스(CAC/LTV/번레이트) → startup:financial-modeler 위임 (본 커맨드는 전사 레벨)

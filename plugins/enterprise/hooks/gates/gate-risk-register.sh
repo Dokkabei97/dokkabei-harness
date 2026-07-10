@@ -118,7 +118,7 @@ if [ "$REQUIRE_VERDICT" = true ]; then
     fi
     escalate="$(jq -r '.items[]? | select(.verdict=="ESCALATE") | (.id // "?")' "$VERDICT" 2>/dev/null || true)"
     if [ -n "$escalate" ]; then
-      echo "[gate-risk-register] 경고: ESCALATE 항목은 legal 위임(상법·중대재해·기업결합신고 등 법적 판단) — $(echo "$escalate" | tr '\n' ' ')" >&2
+      echo "[gate-risk-register] 경고: ESCALATE 항목은 legal 위임(corporate law·M&A/규제 신고·privacy 등 법적 판단) — $(echo "$escalate" | tr '\n' ' ')" >&2
     fi
   fi
 fi

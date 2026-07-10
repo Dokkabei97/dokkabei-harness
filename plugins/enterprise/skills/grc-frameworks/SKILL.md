@@ -1,7 +1,7 @@
 ---
 name: grc-frameworks
 description: |
-  GRC 프레임워크 정의 가이드 — COSO ERM 5요소·ISO 31000 리스크 프로세스·IIA Three Lines(2020) 방어선 모델·5x5 리스크 매트릭스 정의표를 제공한다. 리스크 레지스터·통제 매트릭스 산출물의 필드 의미(likelihood/impact/score/level, type preventive·detective, line 1·2·3)와 판정 기준을 규정하며, 5x5 level 매핑의 정본 수치는 references/risk-matrix.json(gate-risk-register.sh 가 재계산 참조)에 있다. 법적 의무·한국 특수맥락은 k-grc-context, 판정·스키마는 enterprise-orchestrator references/gate-policy.md.
+  GRC 프레임워크 정의 가이드 — COSO ERM 5요소·ISO 31000 리스크 프로세스·IIA Three Lines(2020) 방어선 모델·5x5 리스크 매트릭스 정의표를 제공한다. 리스크 레지스터·통제 매트릭스 산출물의 필드 의미(likelihood/impact/score/level, type preventive·detective, line 1·2·3)와 판정 기준을 규정하며, 5x5 level 매핑의 정본 수치는 references/risk-matrix.json(gate-risk-register.sh 가 재계산 참조)에 있다. 법적 의무·컴플라이언스 맥락은 compliance-context, 판정·스키마는 enterprise-orchestrator references/gate-policy.md.
   GRC frameworks guide covering COSO ERM's 5 components, the ISO 31000 risk process, the IIA Three Lines (2020) model, and a 5x5 risk-matrix definition table; the authoritative 5x5 level mapping lives in references/risk-matrix.json (recalculated by gate-risk-register.sh). Use when: building a risk register or control matrix, defining likelihood/impact/level, or applying COSO/ISO 31000/Three Lines.
 metadata:
   version: 1.0.0

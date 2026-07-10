@@ -1,8 +1,8 @@
 ---
 name: control-matrix
 description: |
-  리스크별 통제 매핑(예방/적발·1/2/3선·증적 경로) + K-SOX RCM 골격 → 결정론 게이트.
-  Maps controls to risks (preventive/detective, three lines, evidence paths) with a K-SOX RCM skeleton, then enforces the gate. Use when: building the control matrix / RCM after a risk register exists.
+  리스크별 통제 매핑(예방/적발·1/2/3선·증적 경로) + ICFR(SOX-style) RCM 골격 → 결정론 게이트.
+  Maps controls to risks (preventive/detective, three lines, evidence paths) with an ICFR (SOX-style) RCM skeleton, then enforces the gate. Use when: building the control matrix / RCM after a risk register exists.
 category: governance
 complexity: advanced
 mcp-servers: []
@@ -12,12 +12,12 @@ personas: []
 # /control-matrix - 리스크 통제 매트릭스 (RCM)
 
 리스크 레지스터의 리스크별로 통제를 매핑한다. `risk-assessor`(maker)가 예방/적발·1/2/3선 방어선·
-증적 경로를 작성하고, K-SOX 대상이면 RCM 골격(설계→운영→평가)을 포함한다. `gate-control-matrix.sh`
-가 크로스파일 정합을 결정론 검증한다. 스키마·기준은 `enterprise-orchestrator/references/gate-policy.md`,
-방어선 모델은 `grc-frameworks`(IIA Three Lines 2020).
+증적 경로를 작성하고, 재무보고 통제가 필요하면 ICFR(SOX-style) RCM 골격(설계→운영→평가)을 포함한다.
+`gate-control-matrix.sh` 가 크로스파일 정합을 결정론 검증한다. 스키마·기준은 `enterprise-orchestrator/
+references/gate-policy.md`, 방어선 모델은 `grc-frameworks`(IIA Three Lines 2020).
 
 ## Triggers
-- "통제 매트릭스", "RCM", "리스크별 통제 매핑", "K-SOX 통제" 요청
+- "통제 매트릭스", "RCM", "리스크별 통제 매핑", "ICFR 통제" 요청
 - `/risk-register` 후 high·critical 리스크에 통제를 붙일 때
 
 ## Usage
@@ -25,7 +25,7 @@ personas: []
 /control-matrix [옵션]
 
 Options:
-  --ksox   K-SOX RCM 골격(자금·재무보고 통제) 우선 생성
+  --icfr   ICFR(SOX-style) RCM 골격(재무보고 통제) 우선 생성
 ```
 
 ## Behavioral Flow
@@ -45,9 +45,9 @@ Options:
 ## Boundaries
 
 **Will:**
-- 리스크별 통제 매핑(maker), RCM 골격, 방어선 배치, 게이트 정합 검증
+- 리스크별 통제 매핑(maker), ICFR(SOX-style) RCM 골격, 방어선 배치, 게이트 정합 검증
 
 **Will Not:**
-- K-SOX **숫자·재무보고 정확성 검증** → finance 위임 (여기선 통제 구조만)
-- 법적 의무 성립 판단 → legal 위임
+- 재무보고 **숫자·정확성 검증**(ICFR 수치) → finance 위임 (여기선 통제 구조만)
+- 규제 의무 성립·적용 판단 → legal 위임
 - risk-register 부재 시 크로스 검증 강행 (경고+skip)

@@ -1,0 +1,565 @@
+{
+  "framework": "ISO27001",
+  "revision": "2022",
+  "_stamp": "갱신 필요 — ISO/IEC 27001:2022 Annex A 93개 통제 임시본. 공식 표준 원문으로 타이틀 재확인 후 사용.",
+  "items": [
+    {
+      "id": "A.5.1",
+      "part": "Organizational",
+      "title": "Policies for information security",
+      "core": true
+    },
+    {
+      "id": "A.5.2",
+      "part": "Organizational",
+      "title": "Information security roles and responsibilities",
+      "core": false
+    },
+    {
+      "id": "A.5.3",
+      "part": "Organizational",
+      "title": "Segregation of duties",
+      "core": false
+    },
+    {
+      "id": "A.5.4",
+      "part": "Organizational",
+      "title": "Management responsibilities",
+      "core": false
+    },
+    {
+      "id": "A.5.5",
+      "part": "Organizational",
+      "title": "Contact with authorities",
+      "core": false
+    },
+    {
+      "id": "A.5.6",
+      "part": "Organizational",
+      "title": "Contact with special interest groups",
+      "core": false
+    },
+    {
+      "id": "A.5.7",
+      "part": "Organizational",
+      "title": "Threat intelligence",
+      "core": false
+    },
+    {
+      "id": "A.5.8",
+      "part": "Organizational",
+      "title": "Information security in project management",
+      "core": false
+    },
+    {
+      "id": "A.5.9",
+      "part": "Organizational",
+      "title": "Inventory of information and other associated assets",
+      "core": true
+    },
+    {
+      "id": "A.5.10",
+      "part": "Organizational",
+      "title": "Acceptable use of information and other associated assets",
+      "core": false
+    },
+    {
+      "id": "A.5.11",
+      "part": "Organizational",
+      "title": "Return of assets",
+      "core": false
+    },
+    {
+      "id": "A.5.12",
+      "part": "Organizational",
+      "title": "Classification of information",
+      "core": true
+    },
+    {
+      "id": "A.5.13",
+      "part": "Organizational",
+      "title": "Labelling of information",
+      "core": false
+    },
+    {
+      "id": "A.5.14",
+      "part": "Organizational",
+      "title": "Information transfer",
+      "core": false
+    },
+    {
+      "id": "A.5.15",
+      "part": "Organizational",
+      "title": "Access control",
+      "core": true
+    },
+    {
+      "id": "A.5.16",
+      "part": "Organizational",
+      "title": "Identity management",
+      "core": false
+    },
+    {
+      "id": "A.5.17",
+      "part": "Organizational",
+      "title": "Authentication information",
+      "core": false
+    },
+    {
+      "id": "A.5.18",
+      "part": "Organizational",
+      "title": "Access rights",
+      "core": false
+    },
+    {
+      "id": "A.5.19",
+      "part": "Organizational",
+      "title": "Information security in supplier relationships",
+      "core": false
+    },
+    {
+      "id": "A.5.20",
+      "part": "Organizational",
+      "title": "Addressing information security within supplier agreements",
+      "core": false
+    },
+    {
+      "id": "A.5.21",
+      "part": "Organizational",
+      "title": "Managing information security in the ICT supply chain",
+      "core": false
+    },
+    {
+      "id": "A.5.22",
+      "part": "Organizational",
+      "title": "Monitoring, review and change management of supplier services",
+      "core": false
+    },
+    {
+      "id": "A.5.23",
+      "part": "Organizational",
+      "title": "Information security for use of cloud services",
+      "core": false
+    },
+    {
+      "id": "A.5.24",
+      "part": "Organizational",
+      "title": "Information security incident management planning and preparation",
+      "core": true
+    },
+    {
+      "id": "A.5.25",
+      "part": "Organizational",
+      "title": "Assessment and decision on information security events",
+      "core": false
+    },
+    {
+      "id": "A.5.26",
+      "part": "Organizational",
+      "title": "Response to information security incidents",
+      "core": false
+    },
+    {
+      "id": "A.5.27",
+      "part": "Organizational",
+      "title": "Learning from information security incidents",
+      "core": false
+    },
+    {
+      "id": "A.5.28",
+      "part": "Organizational",
+      "title": "Collection of evidence",
+      "core": false
+    },
+    {
+      "id": "A.5.29",
+      "part": "Organizational",
+      "title": "Information security during disruption",
+      "core": false
+    },
+    {
+      "id": "A.5.30",
+      "part": "Organizational",
+      "title": "ICT readiness for business continuity",
+      "core": false
+    },
+    {
+      "id": "A.5.31",
+      "part": "Organizational",
+      "title": "Legal, statutory, regulatory and contractual requirements",
+      "core": false
+    },
+    {
+      "id": "A.5.32",
+      "part": "Organizational",
+      "title": "Intellectual property rights",
+      "core": false
+    },
+    {
+      "id": "A.5.33",
+      "part": "Organizational",
+      "title": "Protection of records",
+      "core": false
+    },
+    {
+      "id": "A.5.34",
+      "part": "Organizational",
+      "title": "Privacy and protection of personal identifiable information (PII)",
+      "core": false
+    },
+    {
+      "id": "A.5.35",
+      "part": "Organizational",
+      "title": "Independent review of information security",
+      "core": false
+    },
+    {
+      "id": "A.5.36",
+      "part": "Organizational",
+      "title": "Compliance with policies, rules and standards for information security",
+      "core": false
+    },
+    {
+      "id": "A.5.37",
+      "part": "Organizational",
+      "title": "Documented operating procedures",
+      "core": false
+    },
+    {
+      "id": "A.6.1",
+      "part": "People",
+      "title": "Screening",
+      "core": false
+    },
+    {
+      "id": "A.6.2",
+      "part": "People",
+      "title": "Terms and conditions of employment",
+      "core": false
+    },
+    {
+      "id": "A.6.3",
+      "part": "People",
+      "title": "Information security awareness, education and training",
+      "core": true
+    },
+    {
+      "id": "A.6.4",
+      "part": "People",
+      "title": "Disciplinary process",
+      "core": false
+    },
+    {
+      "id": "A.6.5",
+      "part": "People",
+      "title": "Responsibilities after termination or change of employment",
+      "core": false
+    },
+    {
+      "id": "A.6.6",
+      "part": "People",
+      "title": "Confidentiality or non-disclosure agreements",
+      "core": false
+    },
+    {
+      "id": "A.6.7",
+      "part": "People",
+      "title": "Remote working",
+      "core": false
+    },
+    {
+      "id": "A.6.8",
+      "part": "People",
+      "title": "Information security event reporting",
+      "core": false
+    },
+    {
+      "id": "A.7.1",
+      "part": "Physical",
+      "title": "Physical security perimeters",
+      "core": false
+    },
+    {
+      "id": "A.7.2",
+      "part": "Physical",
+      "title": "Physical entry",
+      "core": false
+    },
+    {
+      "id": "A.7.3",
+      "part": "Physical",
+      "title": "Securing offices, rooms and facilities",
+      "core": false
+    },
+    {
+      "id": "A.7.4",
+      "part": "Physical",
+      "title": "Physical security monitoring",
+      "core": false
+    },
+    {
+      "id": "A.7.5",
+      "part": "Physical",
+      "title": "Protecting against physical and environmental threats",
+      "core": false
+    },
+    {
+      "id": "A.7.6",
+      "part": "Physical",
+      "title": "Working in secure areas",
+      "core": false
+    },
+    {
+      "id": "A.7.7",
+      "part": "Physical",
+      "title": "Clear desk and clear screen",
+      "core": false
+    },
+    {
+      "id": "A.7.8",
+      "part": "Physical",
+      "title": "Equipment siting and protection",
+      "core": false
+    },
+    {
+      "id": "A.7.9",
+      "part": "Physical",
+      "title": "Security of assets off-premises",
+      "core": false
+    },
+    {
+      "id": "A.7.10",
+      "part": "Physical",
+      "title": "Storage media",
+      "core": false
+    },
+    {
+      "id": "A.7.11",
+      "part": "Physical",
+      "title": "Supporting utilities",
+      "core": false
+    },
+    {
+      "id": "A.7.12",
+      "part": "Physical",
+      "title": "Cabling security",
+      "core": false
+    },
+    {
+      "id": "A.7.13",
+      "part": "Physical",
+      "title": "Equipment maintenance",
+      "core": false
+    },
+    {
+      "id": "A.7.14",
+      "part": "Physical",
+      "title": "Secure disposal or re-use of equipment",
+      "core": false
+    },
+    {
+      "id": "A.8.1",
+      "part": "Technological",
+      "title": "User endpoint devices",
+      "core": false
+    },
+    {
+      "id": "A.8.2",
+      "part": "Technological",
+      "title": "Privileged access rights",
+      "core": true
+    },
+    {
+      "id": "A.8.3",
+      "part": "Technological",
+      "title": "Information access restriction",
+      "core": false
+    },
+    {
+      "id": "A.8.4",
+      "part": "Technological",
+      "title": "Access to source code",
+      "core": false
+    },
+    {
+      "id": "A.8.5",
+      "part": "Technological",
+      "title": "Secure authentication",
+      "core": true
+    },
+    {
+      "id": "A.8.6",
+      "part": "Technological",
+      "title": "Capacity management",
+      "core": false
+    },
+    {
+      "id": "A.8.7",
+      "part": "Technological",
+      "title": "Protection against malware",
+      "core": true
+    },
+    {
+      "id": "A.8.8",
+      "part": "Technological",
+      "title": "Management of technical vulnerabilities",
+      "core": true
+    },
+    {
+      "id": "A.8.9",
+      "part": "Technological",
+      "title": "Configuration management",
+      "core": false
+    },
+    {
+      "id": "A.8.10",
+      "part": "Technological",
+      "title": "Information deletion",
+      "core": false
+    },
+    {
+      "id": "A.8.11",
+      "part": "Technological",
+      "title": "Data masking",
+      "core": false
+    },
+    {
+      "id": "A.8.12",
+      "part": "Technological",
+      "title": "Data leakage prevention",
+      "core": false
+    },
+    {
+      "id": "A.8.13",
+      "part": "Technological",
+      "title": "Information backup",
+      "core": true
+    },
+    {
+      "id": "A.8.14",
+      "part": "Technological",
+      "title": "Redundancy of information processing facilities",
+      "core": false
+    },
+    {
+      "id": "A.8.15",
+      "part": "Technological",
+      "title": "Logging",
+      "core": true
+    },
+    {
+      "id": "A.8.16",
+      "part": "Technological",
+      "title": "Monitoring activities",
+      "core": false
+    },
+    {
+      "id": "A.8.17",
+      "part": "Technological",
+      "title": "Clock synchronization",
+      "core": false
+    },
+    {
+      "id": "A.8.18",
+      "part": "Technological",
+      "title": "Use of privileged utility programs",
+      "core": false
+    },
+    {
+      "id": "A.8.19",
+      "part": "Technological",
+      "title": "Installation of software on operational systems",
+      "core": false
+    },
+    {
+      "id": "A.8.20",
+      "part": "Technological",
+      "title": "Networks security",
+      "core": false
+    },
+    {
+      "id": "A.8.21",
+      "part": "Technological",
+      "title": "Security of network services",
+      "core": false
+    },
+    {
+      "id": "A.8.22",
+      "part": "Technological",
+      "title": "Segregation of networks",
+      "core": false
+    },
+    {
+      "id": "A.8.23",
+      "part": "Technological",
+      "title": "Web filtering",
+      "core": false
+    },
+    {
+      "id": "A.8.24",
+      "part": "Technological",
+      "title": "Use of cryptography",
+      "core": true
+    },
+    {
+      "id": "A.8.25",
+      "part": "Technological",
+      "title": "Secure development life cycle",
+      "core": false
+    },
+    {
+      "id": "A.8.26",
+      "part": "Technological",
+      "title": "Application security requirements",
+      "core": false
+    },
+    {
+      "id": "A.8.27",
+      "part": "Technological",
+      "title": "Secure system architecture and engineering principles",
+      "core": false
+    },
+    {
+      "id": "A.8.28",
+      "part": "Technological",
+      "title": "Secure coding",
+      "core": false
+    },
+    {
+      "id": "A.8.29",
+      "part": "Technological",
+      "title": "Security testing in development and acceptance",
+      "core": false
+    },
+    {
+      "id": "A.8.30",
+      "part": "Technological",
+      "title": "Outsourced development",
+      "core": false
+    },
+    {
+      "id": "A.8.31",
+      "part": "Technological",
+      "title": "Separation of development, test and production environments",
+      "core": false
+    },
+    {
+      "id": "A.8.32",
+      "part": "Technological",
+      "title": "Change management",
+      "core": true
+    },
+    {
+      "id": "A.8.33",
+      "part": "Technological",
+      "title": "Test information",
+      "core": false
+    },
+    {
+      "id": "A.8.34",
+      "part": "Technological",
+      "title": "Protection of information systems during audit testing",
+      "core": false
+    }
+  ]
+}

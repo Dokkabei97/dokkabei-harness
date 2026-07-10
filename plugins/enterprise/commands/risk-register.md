@@ -54,6 +54,6 @@ Options:
 
 **Will Not:**
 - 산출물을 checker 가 수정 (grc-challenger Edit 미보유)
-- 상법·중대재해·기업결합·개인정보 등 **법적 판단** → legal 위임
+- corporate law·M&A/규제·whistleblowing·data privacy 등 **법적 판단** → legal 위임
 - 재무제표·세무 수치 검증 → finance 위임
 - score·level 을 매트릭스 무시하고 임의 부여

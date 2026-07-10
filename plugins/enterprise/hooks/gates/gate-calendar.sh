@@ -46,7 +46,7 @@ if [ -n "$bad_status" ]; then
   fail=1
 fi
 
-# ③ done → evidence_path 비공백 (중대재해법 등 실질 운영 증적)
+# ③ done → evidence_path 비공백 (감사·인증 대비 실질 운영 증적)
 no_ev="$(jq -r '.duties[]? | select(.status=="done") | select((.evidence_path // "") == "") | (.id // "?")' "$CAL" 2>/dev/null || true)"
 if [ -n "$no_ev" ]; then
   echo "[gate-calendar] 실패: done 이행인데 evidence_path 공백 — $(echo "$no_ev" | tr '\n' ' ')" >&2

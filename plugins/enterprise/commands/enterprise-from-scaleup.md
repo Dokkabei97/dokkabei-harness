@@ -39,7 +39,7 @@ Options:
 ### Phase 1: 승계 매핑
 | scaleup 산출물 | → enterprise 인테이크/초안 |
 |----------------|----------------------------|
-| `org/headcount.json` | `/grc-intake` 상시근로자 → 자산구간·중대재해·산안위 의무 플래그 |
+| `org/headcount.json` | `/grc-intake` 조직 규모 → 프로파일·채택 프레임워크 스코프 프리필 |
 | OKR 이력 + `board/kpi-pack.json` | `/strategy-cascade` 초안 시드(대원칙·지표) |
 | `org/org-chart.*` | risk/control owner **실재성 후보** |
 | `board/`·`investor/` | `/annual-plan` CEO 대원칙·톤 참조 |

@@ -10,23 +10,23 @@
 
 The core characteristic is **maker/checker separation plus deterministic evidence gates**. Makers (`risk-assessor`, `strategy-analyst`, `fpna-planner`) draft deliverables; checkers (`grc-challenger`, `plan-challenger`), deliberately without the Edit tool, refute them and materialize a verdict to `verdict.json`; then a local bash gate (exit 0/1) recomputes the arithmetic and enum invariants. What determinism can catch (numbers, enums, sums, deadlines) the gate handles; the checker only judges the semantic remainder.
 
-The boundaries are explicit. Legal judgment (Commercial Act, serious-accidents, merger filing, whistleblowing, personal data) is delegated to `legal`; financial-statement/tax/actuals verification to `finance`; JD/onboarding/discipline to `hr`; market research, unit economics, and unit-level finance to `startup`.
+The boundaries are explicit. Legal judgment (corporate/company law, M&A and regulatory filings, whistleblowing, data privacy) is delegated to `legal`; financial-statement/tax/actuals verification to `finance`; JD/onboarding/discipline to `hr`; market research, unit economics, and unit-level finance to `startup`.
 
 ## Components
 
 ### Commands — GRC pipeline
 
-- `/grc-intake` — Interview the company profile and map statutory duties by asset tier and headcount (audit committee, K-SOX, ISMS-P, serious-accidents).
+- `/grc-intake` — Interview the company profile and declare which compliance frameworks/regulations apply (ISO 27001, SOC 2, GDPR, other), recorded in `grc-profile.json`.
 - `/risk-register` — Declare risk appetite and build a COSO/ISO31000 5x5 register → grc-challenger → `gate-risk-register.sh --require-verdict`.
-- `/control-matrix` — Map controls to risks (preventive/detective, three lines, evidence) with a K-SOX RCM skeleton → `gate-control-matrix.sh`.
+- `/control-matrix` — Map controls to risks (preventive/detective, three lines, evidence) with an ICFR (SOX-style) RCM skeleton → `gate-control-matrix.sh`.
 - `/policy-suite` — Scaffold the code-of-conduct → policy → standard → procedure hierarchy plus a whistleblowing policy → `gate-policy-suite.sh`.
-- `/cert-gap` — ISMS-P 101-item gap analysis with evidence paths and ISO27001/SOC2 crossmap → `gate-cert-readiness.sh`.
-- `/comp-calendar` — Recurring statutory-duty calendar with deadline/D-14 gating and serious-accidents evidence cycles → `gate-calendar.sh`.
+- `/cert-gap` — ISO/IEC 27001:2022 Annex A 93-control gap analysis with evidence paths and a SOC 2 crossmap → `gate-cert-readiness.sh`.
+- `/comp-calendar` — Recurring compliance-duty calendar (annual filings, ISO surveillance audits, SOC 2 audit periods, training, access reviews) with deadline/D-14 gating → `gate-calendar.sh`.
 
 ### Commands — corporate planning pipeline
 
 - `/strategy-cascade` — Playing to Win 5-choice one-pager + Three Horizons tags + 7S → plan-challenger (no gate).
-- `/annual-plan` — Korean 4Q plan → budget.json (CLAP, scenarios, dept sum = org total) → plan-challenger → `gate-budget.sh`.
+- `/annual-plan` — Annual planning cycle → budget.json (CLAP, scenarios, dept sum = org total) → plan-challenger → `gate-budget.sh`.
 - `/rolling-forecast` — Driver-based rolling forecast with variance/DERP commentary → `gate-variance.sh`.
 - `/biz-screen` — M&A 5-category scorecard with stop rule and disqualifiers → plan-challenger → `gate-screen.sh --require-verdict`.
 - `/enterprise-from-scaleup` — Bridge that carries `.planning/scaleup/` outputs into GRC/planning intake (falls back to a full interview).
@@ -36,16 +36,16 @@ The boundaries are explicit. Legal judgment (Commercial Act, serious-accidents, 
 - `risk-assessor` (maker) — COSO/ISO31000 risk identification/assessment and control mapping.
 - `strategy-analyst` (maker) — Playing to Win / 3H / 9-box / 7S cascade and M&A screening scorecards.
 - `fpna-planner` (maker) — Enterprise-level annual plan, budget allocation, company P&L, and rolling forecast (unit-level finance is `startup:financial-modeler`).
-- `grc-challenger` (checker, no Edit) — Refutes risk under-scoring, missing duty categories, owner reality, and policy gaps → `grc/verdict.json` (ACCEPT/REMEDIATE/ESCALATE).
+- `grc-challenger` (checker, no Edit) — Refutes risk under-scoring, missing framework/regulation categories, owner reality, and policy gaps → `grc/verdict.json` (ACCEPT/REMEDIATE/ESCALATE).
 - `plan-challenger` (checker, no Edit) — Refutes cascade logic gaps, hockey-stick budgets, sandbagging, and synergy substitution → `verdict.json` (APPROVE/REBASELINE/REJECT).
 
 ### Skills
 
 - `enterprise-orchestrator` — Master routing the two pipelines; judgment criteria, schemas, and the decision table are canonical in `references/gate-policy.md`.
 - `grc-frameworks` — COSO ERM, ISO 31000, IIA Three Lines (2020), and the 5x5 matrix (`references/risk-matrix.json` is the gate's source of truth).
-- `k-grc-context` — Korean statutory context (asset-tier duties, K-SOX, ISMS-P 101 items, serious-accidents evidence) with `references/obligation-triggers.json` and `isms-p-items.json`.
-- `strategy-frameworks` — Playing to Win, 3H, 9-box, 7S, M&A 5 categories, and a merger-filing threshold reference table.
-- `fpna-planning` — 4Q calendar, CLAP 5 elements (`references/clap-keys.json`), driver trees, and DERP (`references/derp-template.md`).
+- `compliance-context` — International framework selection (ISO 27001:2022 Annex A, SOC 2 TSC, GDPR pointers), ISO-vs-SOC 2 sequencing, and evidence discipline with `references/iso27001-annex-a.json`.
+- `strategy-frameworks` — Playing to Win, 3H, 9-box, 7S, M&A 5 categories, and a merger-control (competition-authority filing) review reference.
+- `fpna-planning` — Annual planning calendar, CLAP 5 elements (`references/clap-keys.json`), driver trees, and DERP (`references/derp-template.md`).
 
 ## Usage
 
@@ -62,12 +62,12 @@ Gates are plain local bash (`plugins/enterprise/hooks/gates/*.sh`), invoked by c
 No hard dependencies; the following keep the flow connected.
 
 - `scaleup` — `/enterprise-from-scaleup` carries OKR/org/board outputs into governance intake.
-- `legal` — Commercial Act, serious-accidents, merger filing, whistleblowing, and personal-data judgments.
-- `finance` — Financial-statement, tax, K-SOX figures, and actuals verification.
+- `legal` — Corporate/company law, M&A and regulatory filings, whistleblowing, and data-privacy judgments.
+- `finance` — Financial-statement, tax, ICFR figures, and actuals verification.
 - `startup` — Market research, unit economics, and unit-level financial modeling.
 
 ## Notes
 
-- Regulatory/enum data is single-sourced in skill `references/*.json` (ISMS-P 101 items, obligation triggers, 5x5 matrix, CLAP keys); gates reference these files and never hardcode.
-- The ISMS-P set and KSSB ESG roadmap carry an "unconfirmed, needs update" stamp — refresh the JSON before relying on the numbers.
+- Enum/control data is single-sourced in skill `references/*.json` (ISO 27001 Annex A 93 controls, 5x5 matrix, CLAP keys); gates reference these files and never hardcode.
+- The ISO 27001 Annex A control set carries a "needs update" stamp — reconfirm titles against the official standard before relying on them.
 - This plugin is a first-pass governance tool and does not replace the advice of lawyers, accountants, or auditors. All external deliverables assume a human approval gate.

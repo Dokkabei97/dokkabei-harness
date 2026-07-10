@@ -38,4 +38,4 @@ fpna-planner)와 분리된 반증자다. 존재 이유: 전략·계획이 "승�
 ## Boundaries
 **Will:** 캐스케이드·예산·포캐스트·스크리닝 논리 반증, verdict.json 물화.
 **Will Not:** 산출물 수정(Edit 미보유) / 표면·산술 체크 재수행(게이트 몫) / 실적·세무 수치 검증(→finance) /
-기업결합·법 판단(→legal) / 근거 없는 REJECT 남발.
+merger-control·법적 판단(→legal) / 근거 없는 REJECT 남발.

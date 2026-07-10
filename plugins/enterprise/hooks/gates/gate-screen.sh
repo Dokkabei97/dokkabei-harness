@@ -6,9 +6,9 @@
 #   ① categories 길이 == 5, 각 weight number, Σweight ∈ [0.999,1.001]
 #   ② 각 score ∈ 1..5 정수
 #   ③ disqualifiers ≥ 1, stop_rule 비공백
-#   ④ annual_revenue_krw ≥ 기업결합 임계(기본 300억) → 경고(법 판단 legal 위임)
 # --require-verdict: verdict.json items(APPROVE/REBASELINE/REJECT)·coverage 비공백,
-#   non-APPROVE ≥1 → 실패(항목 나열).  기업결합 임계값 정본표는 strategy-frameworks 스킬.
+#   non-APPROVE ≥1 → 실패(항목 나열).
+# 참고: merger-control(경쟁당국 신고) 검토는 서술 안내로만 다루며 게이트가 산술 플래그하지 않는다(법 판단 legal 위임).
 # 통과 exit 0 / 실패 exit 1.
 # =============================================================================
 set -euo pipefail
@@ -16,7 +16,6 @@ set -euo pipefail
 PROJ="${CLAUDE_PROJECT_DIR:-.}"
 SDIR="$PROJ/.planning/enterprise/screen"
 VERDICT="$SDIR/verdict.json"
-MERGER_KRW="${GATE_MERGER_KRW:-30000000000}"   # 300억 (기업결합신고 매출 임계 근사, legal 위임)
 fail=0
 
 REQUIRE_VERDICT=false
@@ -75,13 +74,6 @@ fi
 if ! jq -e '(.stop_rule // "") | type=="string" and (length>0)' "$SCR" >/dev/null 2>&1; then
   echo "[gate-screen] 실패: stop_rule 공백" >&2
   fail=1
-fi
-
-# ④ 기업결합 임계 교차 경고 (legal 위임)
-rev="$(jq -r '.annual_revenue_krw // 0' "$SCR" 2>/dev/null || echo 0)"
-cross="$(awk -v r="$rev" -v t="$MERGER_KRW" 'BEGIN{ print (r+0>=t+0)?"1":"0" }')"
-if [ "$cross" = "1" ]; then
-  echo "[gate-screen] 경고: annual_revenue_krw=$rev 가 기업결합 임계($MERGER_KRW) 교차 — 기업결합신고 요건은 legal 위임(정본표: strategy-frameworks)" >&2
 fi
 
 # --require-verdict

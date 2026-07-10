@@ -1,5 +1,5 @@
 {
-  "_note": "CLAP — 한국형 경영계획 수립지침 형식주의 처방을 실질 필수요소로 재정의한 5키 정본. gate-budget.sh 가 이 파일을 단일 진실 원천으로 참조하여 budget-*.json 의 .clap 오브젝트 키 집합·값 비공백을 검증한다. 하드코딩 금지.",
+  "_note": "CLAP — 연간 경영계획 수립지침의 필수 5요소 정본. gate-budget.sh 가 이 파일을 단일 진실 원천으로 참조하여 budget-*.json 의 .clap 오브젝트 키 집합·값 비공백을 검증한다. 하드코딩 금지.",
   "acronym": "CLAP",
   "keys": ["challenge", "levers", "allocation", "assumptions", "plan"],
   "labels": {

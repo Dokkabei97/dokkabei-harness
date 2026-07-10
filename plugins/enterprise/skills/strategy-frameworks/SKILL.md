@@ -1,7 +1,7 @@
 ---
 name: strategy-frameworks
 description: |
-  전사 전략·포트폴리오 프레임워크 가이드 — Lafley/Martin Playing to Win 5선택, McKinsey Three Horizons(3H) 포트폴리오, 9-box(GE/McKinsey) 매트릭스, 7S 진단, M&A 스크리닝 5카테고리(전략적합·시장매력·재무·실행가능·리스크)와 기업결합신고 임계값 참조표를 제공한다. strategy-cascade.md·biz-screen 산출물의 구조와 실패 패턴(one-box/three-box truncation·synergy substitution·hockey-stick)을 규정한다. 기업결합신고 요건의 법적 판단은 legal, 실적·세무 수치는 finance, 중견기업 세제 영향도 finance 위임.
+  전사 전략·포트폴리오 프레임워크 가이드 — Lafley/Martin Playing to Win 5선택, McKinsey Three Horizons(3H) 포트폴리오, 9-box(GE/McKinsey) 매트릭스, 7S 진단, M&A 스크리닝 5카테고리(전략적합·시장매력·재무·실행가능·리스크)와 merger-control(경쟁당국 신고) 검토 안내를 제공한다. strategy-cascade.md·biz-screen 산출물의 구조와 실패 패턴(one-box/three-box truncation·synergy substitution·hockey-stick)을 규정한다. merger-control 요건의 법적 판단은 legal, 실적·세무 수치·세제 영향은 finance 위임.
   Corporate strategy & portfolio guide: Playing to Win's 5 choices, McKinsey Three Horizons, the 9-box matrix, 7S diagnosis, and an M&A screening 5-category scorecard with a merger-filing threshold reference table; defines the structure of strategy-cascade and biz-screen outputs and their failure patterns. Use when: writing a strategy cascade, screening M&A targets, tagging a 3H portfolio — merger-filing legal judgment delegated to legal.
 metadata:
   version: 1.0.0
@@ -41,13 +41,11 @@ Strategy·Structure·Systems·Shared Values·Style·Staff·Skills — 전략 실
 - 각 category: weight(Σ=1.0±0.001) × score(1~5). **disqualifier ≥1 + stop_rule 필수**(무한 딜 추진 방지).
 - **synergy substitution 경계**: 시너지 수치를 근거로 약한 카테고리를 덮는 논리 — plan-challenger 반증 대상.
 
-## 기업결합신고 임계값 참조표 (법 판단 legal 위임)
-| 트리거 | 임계 |
-|--------|------|
-| 자산·매출 기준 | 신고회사 3천억 & 상대회사 300억 이상 |
-| 사전신고 | 대규모회사(자산·매출 2조 이상) 관련 |
-| 거래금액 기준 | 거래금액 6천억 이상 & 국내 상당활동 |
-> gate-screen 은 annual_revenue_krw≥300억 교차 시 **경고만** 낸다. 신고 요건 성립·절차는 **legal** 위임.
+## Merger-control(경쟁당국 신고) 검토 — 서술 안내 (법 판단 legal 위임)
+- 국가별 경쟁당국은 거래 규모(자산·매출·거래금액)·시장점유율 기준으로 사전/사후 **merger-control 신고**를 요구할 수 있다.
+- 관할(EU EUMR, 미국 HSR, 각국 경쟁법)마다 임계·절차가 다르므로 **정량 임계는 산출물에 하드코딩하지 않는다.**
+- biz-screen 산출물의 `annual_revenue` 등은 규모 참고용일 뿐이며, gate-screen 은 이를 **산술 플래그하지 않는다.**
+- 신고 요건 성립·관할·절차 판단은 전부 **legal** 위임 — 스크리닝 단계에서는 "규제 검토 필요" 태그만 남긴다.
 
 ## 실패 패턴 카탈로그 (plan-challenger 반증 관점)
 - 캐스케이드 논리 단절(one-box/three-box) · hockey-stick 예산(산술은 gate 선행) · sandbagging · synergy substitution.

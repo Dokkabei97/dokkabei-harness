@@ -19,10 +19,10 @@ metadata:
 - `/grc-intake`·`/risk-register`·`/control-matrix`·`/policy-suite`·`/cert-gap`·`/comp-calendar` (GRC)
 - `/strategy-cascade`·`/annual-plan`·`/rolling-forecast`·`/biz-screen` (전략·계획)
 - `/enterprise-from-scaleup` (scaleup 승계 브릿지)
-- "GRC 구축", "경영계획 수립", "리스크 레지스터", "ISMS-P 갭", "M&A 스크리닝" 요청
+- "GRC 구축", "경영계획 수립", "리스크 레지스터", "ISO 27001 갭", "M&A 스크리닝" 요청
 
 **미발동 (위임 경계):** 유닛 레벨 재무·시장조사(startup) / 재무제표·세무·실적 수치(finance) /
-상법·중대재해·기업결합신고·공익신고·개인정보 법 판단(legal) / JD·온보딩·징계(hr).
+corporate law·M&A 및 규제 신고·whistleblowing·data privacy 법적 판단(legal) / JD·온보딩·징계(hr).
 
 ## Architecture
 
@@ -46,7 +46,7 @@ metadata:
 ### GRC 파이프라인 (①→⑥ 순차 후 분기 갱신)
 `/grc-intake`(프로파일+의무 트리거) → `/risk-register`(RA→GC→gate-risk-register --require-verdict)
 → `/control-matrix`(RA→gate-control-matrix) → `/policy-suite`(메인→GC→gate-policy-suite)
-→ `/cert-gap`(메인+isms-p-items→gate-cert-readiness) → `/comp-calendar`(메인→gate-calendar).
+→ `/cert-gap`(메인+iso27001-annex-a→gate-cert-readiness) → `/comp-calendar`(메인→gate-calendar).
 
 ### 전략·계획 파이프라인 (⑦→⑧→⑨ 반복, ⑩ 수시)
 `/strategy-cascade`(SA→PC, 게이트 없음) → `/annual-plan`(FP→PC→gate-budget)
@@ -63,12 +63,12 @@ metadata:
 
 | 신호 | 위임 |
 |------|------|
-| 상법(감사위·상근감사·준법지원인)·중대재해·기업결합신고·공익신고·개인정보 법 판단 | **legal** |
-| 재무제표·세무·K-SOX 숫자·실적 수치 검증 | **finance** |
+| corporate/company law·M&A 및 규제 신고·whistleblowing·data privacy 법적 판단 | **legal** |
+| 재무제표·세무·ICFR 숫자·실적 수치 검증 | **finance** |
 | JD·온보딩·징계 조항 | **hr** |
 | 시장조사·유닛이코노믹스·콘텐츠·브랜드보이스 | **startup** |
 
-- verdict 가 ESCALATE(GRC) 인 항목, gate 의 기업결합 임계 경고는 legal 로 라우팅한다.
+- verdict 가 ESCALATE(GRC) 인 항목과 merger-control 등 규제 검토는 legal 로 라우팅한다.
 - 모든 대외 산출물은 사람 승인 게이트 전제 — 자율 확정 금지.
 
 ## Skill References
@@ -77,8 +77,8 @@ metadata:
 |------|------|
 | 판정 기준·스키마·결선표 정본 | enterprise-orchestrator/references/gate-policy.md |
 | COSO·ISO31000·Three Lines·5x5 | grc-frameworks (+risk-matrix.json) |
-| 자산구간 의무·K-SOX·ISMS-P 101·중대재해 증적 | k-grc-context (+obligation-triggers.json, isms-p-items.json) |
-| Playing to Win·3H·9box·M&A 5카테고리·기업결합 임계 | strategy-frameworks |
+| 프레임워크 선택·ISO 27001 Annex A 93·SOC 2·증적 규율 | compliance-context (+iso27001-annex-a.json) |
+| Playing to Win·3H·9box·M&A 5카테고리·merger-control 참조 | strategy-frameworks |
 | 4Q 캘린더·CLAP·드라이버 트리·DERP | fpna-planning (+clap-keys.json, derp-template.md) |
 
 ## Boundaries

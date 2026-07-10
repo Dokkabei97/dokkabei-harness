@@ -3,7 +3,7 @@
 # gate-policy-suite.sh — GRC 결정론 게이트 (/policy-suite 커맨드가 Bash 호출)
 # 대상: .planning/grc/policies/ + .planning/grc/policy-index.json
 # 검사:
-#   ① 필수 문서 존재 — code-of-conduct.md(행동강령) + whistleblowing-policy.md(내부·공익신고 규정)
+#   ① 필수 문서 존재 — code-of-conduct.md(행동강령) + whistleblowing-policy.md(내부신고 규정)
 #   ② 각 정책(.md) frontmatter 에 owner:·review_date: 존재, review_date < TODAY → 실패
 #   ③ policy-index.json 의 정책 목록(basename) ↔ policies/ 실제 *.md diff ≠ 0 → 실패
 # 통과 exit 0 / 실패 exit 1.

@@ -241,16 +241,16 @@ EOF
 }
 
 # ── gate-cert-readiness ───────────────────────────────────────────────────────
-# REF(101항목)에서 cert-gap 생성: core->implemented, non-core->n/a
+# REF(93개 통제)에서 cert-gap 생성: core->implemented, non-core->n/a
 
 write_cert_gap() {
   grc_dir
-  local ref="$REPO_ROOT/plugins/enterprise/skills/k-grc-context/references/isms-p-items.json"
-  jq '{framework:"ISMS-P",revision:"2026",items:[.items[] | {id, part, title, status:(if .core then "implemented" else "n/a" end), evidence_path:"", owner:"보안팀"}]}' \
+  local ref="$REPO_ROOT/plugins/enterprise/skills/compliance-context/references/iso27001-annex-a.json"
+  jq '{framework:"ISO27001",revision:"2022",items:[.items[] | {id, part, title, status:(if .core then "implemented" else "n/a" end), evidence_path:"", owner:"보안팀"}]}' \
     "$ref" > "$TEST_PROJ/.planning/grc/cert-gap.json"
 }
 
-@test "gate-cert-readiness: valid full 101-item gap -> exit 0" {
+@test "gate-cert-readiness: valid full 93-control gap -> exit 0" {
   write_cert_gap
   run invoke_gate "$ENTERPRISE_GATES/gate-cert-readiness.sh"
   [ "$status" -eq 0 ]
@@ -263,13 +263,13 @@ write_cert_gap() {
   jq '.items |= .[1:]' "$TEST_PROJ/.planning/grc/cert-gap.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/grc/cert-gap.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-cert-readiness.sh"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"101"* ]]
+  [[ "$output" == *"93"* ]]
 }
 
 # core item planned -> exit 1
 @test "gate-cert-readiness: core item planned -> exit 1" {
   write_cert_gap
-  jq '(.items[] | select(.id=="1.1.1") | .status) |= "planned"' "$TEST_PROJ/.planning/grc/cert-gap.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/grc/cert-gap.json"
+  jq '(.items[] | select(.id=="A.5.1") | .status) |= "planned"' "$TEST_PROJ/.planning/grc/cert-gap.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/grc/cert-gap.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-cert-readiness.sh"
   [ "$status" -eq 1 ]
   [[ "$output" == *"core"* ]]
@@ -278,7 +278,7 @@ write_cert_gap() {
 # evidenced without evidence file -> exit 1
 @test "gate-cert-readiness: evidenced missing evidence file -> exit 1" {
   write_cert_gap
-  jq '(.items[] | select(.id=="1.1.1") | .status) |= "evidenced" | (.items[] | select(.id=="1.1.1") | .evidence_path) |= "evidence/nope.md"' \
+  jq '(.items[] | select(.id=="A.5.1") | .status) |= "evidenced" | (.items[] | select(.id=="A.5.1") | .evidence_path) |= "evidence/nope.md"' \
     "$TEST_PROJ/.planning/grc/cert-gap.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/grc/cert-gap.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-cert-readiness.sh"
   [ "$status" -eq 1 ]
@@ -291,8 +291,8 @@ write_calendar() {
   grc_dir
   cat > "$TEST_PROJ/.planning/grc/compliance-calendar.json" <<'EOF'
 {"duties":[
- {"id":"D-001","title":"사업보고서","basis":"자본시장법","due":"2026-12-31","owner":"IR","recurrence":"annual","status":"open","evidence_path":""},
- {"id":"D-002","title":"중대재해 교육","basis":"중대재해법","due":"2026-06-30","owner":"안전팀","recurrence":"quarterly","status":"done","evidence_path":"evidence/edu.pdf"}
+ {"id":"D-001","title":"Annual regulatory filing","basis":"regulatory","due":"2026-12-31","owner":"IR","recurrence":"annual","status":"open","evidence_path":""},
+ {"id":"D-002","title":"Security awareness training","basis":"ISO 27001 A.6.3","due":"2026-06-30","owner":"보안팀","recurrence":"quarterly","status":"done","evidence_path":"evidence/edu.pdf"}
 ]}
 EOF
 }
@@ -326,7 +326,7 @@ EOF
   grc_dir
   cat > "$TEST_PROJ/.planning/grc/compliance-calendar.json" <<'EOF'
 {"duties":[
- {"id":"D-001","title":"임박의무","basis":"자본시장법","due":"2026-07-20","owner":"IR","recurrence":"annual","status":"open","evidence_path":""}
+ {"id":"D-001","title":"임박의무","basis":"regulatory","due":"2026-07-20","owner":"IR","recurrence":"annual","status":"open","evidence_path":""}
 ]}
 EOF
   run bash -c 'CLAUDE_PROJECT_DIR="$1" GATE_TODAY=2026-07-10 bash "$2"' _ "$TEST_PROJ" "$ENTERPRISE_GATES/gate-calendar.sh"
@@ -339,10 +339,10 @@ EOF
 write_budget() {
   ent_dir
   cat > "$TEST_PROJ/.planning/enterprise/budget-2027.json" <<'EOF'
-{"fiscal_year":2027,"org_total_krw":1000,"personnel_total_krw":600,
+{"fiscal_year":2027,"org_total":1000,"personnel_total":600,
  "scenarios":{"base":1000,"best":1200,"worst":800},
  "clap":{"challenge":"매출2배","levers":"엔터프라이즈세일즈","allocation":"R&D40%","assumptions":"환율1300","plan":"분기QBR"},
- "departments":[{"name":"R&D","total_krw":600,"personnel_krw":400,"owner":"CTO"},{"name":"Sales","total_krw":400,"personnel_krw":200,"owner":"CRO"}],
+ "departments":[{"name":"R&D","total":600,"personnel":400,"owner":"CTO"},{"name":"Sales","total":400,"personnel":200,"owner":"CRO"}],
  "assumptions":["환율1300","성장30%","이탈5%"]}
 EOF
 }
@@ -357,7 +357,7 @@ EOF
 # sum(dept) != org beyond 0.5% (ARITHMETIC)
 @test "gate-budget: dept sum != org_total -> exit 1" {
   write_budget
-  sed 's/"total_krw":400,"personnel_krw":200/"total_krw":600,"personnel_krw":200/' "$TEST_PROJ/.planning/enterprise/budget-2027.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/budget-2027.json"
+  sed 's/"total":400,"personnel":200/"total":600,"personnel":200/' "$TEST_PROJ/.planning/enterprise/budget-2027.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/budget-2027.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-budget.sh"
   [ "$status" -eq 1 ]
   [[ "$output" == *"±0.5%"* ]]
@@ -366,7 +366,7 @@ EOF
 # within 0.5% tolerance still passes
 @test "gate-budget: dept sum within 0.5% -> exit 0" {
   write_budget
-  sed 's/"total_krw":400,"personnel_krw":200/"total_krw":404,"personnel_krw":200/' "$TEST_PROJ/.planning/enterprise/budget-2027.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/budget-2027.json"
+  sed 's/"total":400,"personnel":200/"total":404,"personnel":200/' "$TEST_PROJ/.planning/enterprise/budget-2027.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/budget-2027.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-budget.sh"
   [ "$status" -eq 0 ]
 }
@@ -446,7 +446,7 @@ write_screen() {
  {"name":"finance","weight":0.2,"score":3},
  {"name":"execution","weight":0.15,"score":4},
  {"name":"risk","weight":0.15,"score":2}],
- "disqualifiers":["부채비율 300% 초과"],"stop_rule":"score<2.5 중단","annual_revenue_krw":10000000000}
+ "disqualifiers":["부채비율 300% 초과"],"stop_rule":"score<2.5 중단","annual_revenue":10000000000}
 EOF
 }
 write_screen_verdict() {
@@ -481,13 +481,13 @@ EOF
   [[ "$output" == *"길이"* ]]
 }
 
-# merger threshold warning still passes
-@test "gate-screen: merger threshold cross warns but passes -> exit 0" {
+# large annual_revenue is NOT arithmetically flagged (merger-control is descriptive-only)
+@test "gate-screen: large annual_revenue passes without arithmetic flag -> exit 0" {
   write_screen
-  sed 's/"annual_revenue_krw":10000000000/"annual_revenue_krw":40000000000/' "$TEST_PROJ/.planning/enterprise/screen/acme.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/screen/acme.json"
+  sed 's/"annual_revenue":10000000000/"annual_revenue":40000000000/' "$TEST_PROJ/.planning/enterprise/screen/acme.json" > "$TEST_PROJ/x" && mv "$TEST_PROJ/x" "$TEST_PROJ/.planning/enterprise/screen/acme.json"
   run invoke_gate "$ENTERPRISE_GATES/gate-screen.sh"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"기업결합"* ]]
+  [[ "$output" == *"통과"* ]]
 }
 
 # --require-verdict APPROVE -> exit 0
