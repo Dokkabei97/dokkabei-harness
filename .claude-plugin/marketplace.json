@@ -257,6 +257,23 @@
       ]
     },
     {
+      "name": "enterprise",
+      "source": "./plugins/enterprise",
+      "description": "Enterprise governance OS — GRC pipelines and corporate planning with deterministic evidence gates",
+      "version": "1.0.0",
+      "category": "enterprise",
+      "keywords": [
+        "grc",
+        "risk-register",
+        "k-sox",
+        "isms-p",
+        "compliance",
+        "budget",
+        "strategy",
+        "fpna"
+      ]
+    },
+    {
       "name": "mvp",
       "source": "./plugins/mvp",
       "description": "Drives a one-line idea to an MVP through a gated loop",
