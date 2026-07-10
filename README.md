@@ -88,7 +88,7 @@ tear it down. Nothing is uploaded, nothing is sold. (Details: [`infra/otel/READM
 - **analyze** — Comprehensive code quality/security/performance/architecture/SQL analysis.
 - **test** — TDD workflow, E2E (Playwright/Chrome) test generation·execution.
 - **workflow** — PE/MR review, session handoff, CLAUDE.md sync, documentation, issue tracking, post-merge processing, spec/planning/shipping/deprecation management, retro compounding.
-- **eng-gov** — Engineering governance: ADR, change evidence, threat model, supply-chain and SLO gates as local `exit 0/1` scripts (composable with the mvp/feature-loop/generic loop `gate-cmd` contract), plus Korean-language audit evidence via `/gov-audit`.
+- **eng-gov** — Engineering governance: ADR, change evidence, threat model, supply-chain and SLO gates as local `exit 0/1` scripts (composable with the mvp/feature-loop/generic loop `gate-cmd` contract), plus audit evidence bundles via `/gov-audit`.
 
 ### Loop engineering
 - **mvp** — New service MVP loop. Completes idea→PRD→design→stack selection·scaffolding→PRD-driven development via a Stop-hook loop engine + gate state machine.
@@ -106,7 +106,7 @@ tear it down. Nothing is uploaded, nothing is sold. (Details: [`infra/otel/READM
 - **hr** — Recruiting·people ops (JD drafting, interview kits, onboarding). Labor law judgments are delegated to legal.
 - **startup** — Lean canvas, idea validation, market research, unit economics, growth plan, pitch deck.
 - **scaleup** — Post-PMF execution OS: OKR cadence (plan→check-in→score), org scaling·headcount plan, board deck·investor update, MEDDPICC deal qualification, RevOps pipeline hygiene.
-- **enterprise** — Enterprise governance OS: GRC pipeline (risk register→control matrix→policy suite→ISMS-P gap→compliance calendar) + corporate planning (strategy cascade, annual plan, rolling forecast, M&A screening).
+- **enterprise** — Enterprise governance OS: GRC pipeline (risk register→control matrix→policy suite→ISO 27001 gap→compliance calendar) + corporate planning (strategy cascade, annual plan, rolling forecast, M&A screening).
 - **etc** — Utilities (web fetch, cross-model CLI routing).
 
 > **Business lifecycle**: validate the hypothesis with **startup**, hand it to code via `/mvp-from-startup`, run the post-PMF stage with **scaleup** (`/scaleup-from-startup`), then formalize governance with **enterprise** (`/enterprise-from-scaleup`) — while **eng-gov** hardens the delivery side with evidence gates. Each stage is independently installable; the bridges activate only when the upstream `.planning/` artifacts exist.

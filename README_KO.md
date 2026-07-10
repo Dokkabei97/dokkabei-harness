@@ -87,7 +87,7 @@ cd infra/otel && docker compose up -d
 - **analyze** — 코드 품질/보안/성능/아키텍처/SQL 종합 분석.
 - **test** — TDD 워크플로우, E2E(Playwright/Chrome) 테스트 생성·실행.
 - **workflow** — PE/MR 리뷰, 세션 핸드오프, CLAUDE.md 동기화, 문서화, 이슈 추적, 머지 후처리, 스펙/계획/배포/폐기 관리, 회고 컴파운드.
-- **eng-gov** — 개발 거버넌스: ADR·변경 증적·위협모델·공급망·SLO 게이트를 로컬 `exit 0/1` 스크립트로 물화(mvp/feature-loop/generic 루프의 `gate-cmd` 계약과 결합 가능), `/gov-audit`로 한국어 심사 증적 생성.
+- **eng-gov** — 개발 거버넌스: ADR·변경 증적·위협모델·공급망·SLO 게이트를 로컬 `exit 0/1` 스크립트로 물화(mvp/feature-loop/generic 루프의 `gate-cmd` 계약과 결합 가능), `/gov-audit`로 심사 증적 번들 생성.
 
 ### 루프 엔지니어링
 - **mvp** — 신규 서비스 MVP 루프. 아이디어→PRD→디자인→스택 선택·스캐폴딩→PRD-driven 개발을 Stop훅 루프 엔진 + 게이트 상태기계로 완주.
@@ -105,7 +105,7 @@ cd infra/otel && docker compose up -d
 - **hr** — 채용·피플옵스(JD 초안, 면접 킷, 온보딩). 노동법 판단은 legal로 위임.
 - **startup** — 린 캔버스, 아이디어 검증, 시장 조사, 유닛 이코노믹스, 성장 계획, 피치덱.
 - **scaleup** — PMF 이후 실행 OS: OKR 케이던스(플랜→체크인→스코어), 조직 스케일링·헤드카운트 플랜, 보드덱·투자자 업데이트, MEDDPICC 딜 검증, RevOps 파이프라인 위생.
-- **enterprise** — 중견·대기업 거버넌스 OS: GRC 파이프라인(리스크 레지스터→통제 매트릭스→정책 체계→ISMS-P 갭→의무 캘린더) + 전사 계획(전략 캐스케이드, 경영계획, 롤링 포캐스트, M&A 스크리닝).
+- **enterprise** — 중견·대기업 거버넌스 OS: GRC 파이프라인(리스크 레지스터→통제 매트릭스→정책 체계→ISO 27001 갭→의무 캘린더) + 전사 계획(전략 캐스케이드, 경영계획, 롤링 포캐스트, M&A 스크리닝).
 - **etc** — 유틸(웹 페치, 교차 모델 CLI 라우팅).
 
 > **비즈니스 수명주기**: **startup**으로 가설을 검증하고, `/mvp-from-startup`으로 코드에 넘기고, PMF 이후는 **scaleup**(`/scaleup-from-startup`)으로 실행하고, 거버넌스가 필요해지면 **enterprise**(`/enterprise-from-scaleup`)로 정식화한다 — 딜리버리 쪽은 **eng-gov**가 증적 게이트로 경화한다. 각 단계는 독립 설치 가능하며, 브릿지는 상류 `.planning/` 산출물이 있을 때만 활성화된다.
