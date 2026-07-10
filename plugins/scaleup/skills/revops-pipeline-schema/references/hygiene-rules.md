@@ -8,7 +8,7 @@ gate-pipeline-hygiene.sh 가 결정론 판정하는 위생 룰의 서술적 정�
 |---|-----|------|------|
 | 1 | stage ∈ enum | 위반 딜 id 나열 후 실패 | 비표준 단계 = CRM 오염 |
 | 2 | forecast_category ∈ enum | 위반 딜 id 나열 후 실패 | 롤업 신뢰성 |
-| 3 | amount_krw > 0 (number) | 위반 딜 id 나열 후 실패 | 0원/누락 딜은 포캐스트 왜곡 |
+| 3 | amount > 0 (number) | 위반 딜 id 나열 후 실패 | 0원/누락 딜은 포캐스트 왜곡 |
 | 4 | open 딜 close_date ≥ TODAY | 위반 딜 id 나열 후 실패 | 마감일 지난 미종결 딜 = slippage 은폐 |
 | 5 | open 딜 last_activity 경과 ≤ stale_max_days | 초과 딜 id·경과일 나열 후 실패 | 방치 딜 = 파이프라인 인플레이션 |
 

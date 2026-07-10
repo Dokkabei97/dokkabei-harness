@@ -22,14 +22,14 @@ scaleup 결정론 게이트 6종의 판정 기준과 산출물 스키마를 정�
 - `okr/verdict.json`: `{"items":[{"id":"<KR id>","verdict":"ADOPT|REWRITE|DROP","reason"}],"coverage":["…"],"riskiest"}` — coverage 비공백
 - `checkins/YYYY-Www.md`: frontmatter `date: YYYY-MM-DD` + `## 스코어카드` 섹션(지표 5~15)
 - `score/YYYYQn-retro.md`, `scaleup-master.json`({status,현재 분기,완료 단계})
-- `org/headcount.json`: `{"fiscal_year","current_fte","rows":[{"role","dept","level","start_quarter":"YYYYQn","fte":num,"annual_cost_krw":num,"milestone"}]}`
+- `org/headcount.json`: `{"fiscal_year","current_fte","rows":[{"role","dept","level","start_quarter":"YYYYQn","fte":num,"annual_cost":num,"milestone"}]}`
 - `org/stage-verdict.json`: verdict ∈ {ADVANCE,HOLD,NOT-YET}
 - `board/YYYYQn-deck.md`(§덱 표준 헤딩) + `board/kpi-pack.json`, `investor/YYYY-MM.md`
-- `gtm/deals/<id>/meddpicc.json`: `{"deal_id","amount_krw":num,"close_date":"YYYY-MM-DD","forecast_category","elements":{8키: metrics,economic_buyer,decision_criteria,decision_process,paper_process,identify_pain,champion,competition — 각 {"status":"unknown|identified|verified","evidence"}}}`
+- `gtm/deals/<id>/meddpicc.json`: `{"deal_id","amount":num,"close_date":"YYYY-MM-DD","forecast_category","elements":{8키: metrics,economic_buyer,decision_criteria,decision_process,paper_process,identify_pain,champion,competition — 각 {"status":"unknown|identified|verified","evidence"}}}`
 - `gtm/deals/<id>/verdict.json`: verdict ∈ {COMMIT,DOWNGRADE,DISQUALIFY}
-- `gtm/pipeline/YYYY-MM-DD-audit.json`: `{"audited_at","stale_max_days":num,"deals":[{"id","stage","amount_krw":num,"close_date","forecast_category","last_activity"}]}`
+- `gtm/pipeline/YYYY-MM-DD-audit.json`: `{"audited_at","stale_max_days":num,"deals":[{"id","stage","amount":num,"close_date","forecast_category","last_activity"}]}`
 
-크로스파일: `.planning/enterprise/budget-*.json`(enterprise 소유)의 `personnel_total_krw` — 존재 시에만 gate-headcount 가 참조.
+크로스파일: `.planning/enterprise/budget-*.json`(enterprise 소유)의 `personnel_total` — 존재 시에만 gate-headcount 가 참조.
 
 ## gate-okr.sh [--scored] [--require-verdict]
 
@@ -52,10 +52,9 @@ scaleup 결정론 게이트 6종의 판정 기준과 산출물 스키마를 정�
 ## gate-headcount.sh
 
 `org/headcount.json` 대상. 통과 조건:
-1. rows 각 항목 필수 6필드(role,dept,level,start_quarter,fte,annual_cost_krw)
-2. fte>0, annual_cost_krw>0(number), start_quarter `^[0-9]{4}Q[1-4]$`
-3. 크로스파일: `enterprise/budget-*.json` + `personnel_total_krw` 존재 시 `|Σannual_cost − pt| / pt > 0.05 → 실패`
-- 분기 누적 FTE(current_fte 기반)가 10/30/50인 교차 → 경고(취업규칙/노사협의회/산안위 — 대응 legal/hr 위임)
+1. rows 각 항목 필수 6필드(role,dept,level,start_quarter,fte,annual_cost)
+2. fte>0, annual_cost>0(number), start_quarter `^[0-9]{4}Q[1-4]$`
+3. 크로스파일: `enterprise/budget-*.json` + `personnel_total` 존재 시 `|Σannual_cost − pt| / pt > 0.05 → 실패`
 
 ## gate-board-deck.sh
 
@@ -78,7 +77,7 @@ scaleup 결정론 게이트 6종의 판정 기준과 산출물 스키마를 정�
 
 최신 `gtm/pipeline/*-audit.json` 대상. enum 정본: `../../skills/revops-pipeline-schema/references/pipeline-enums.json`. 통과 조건:
 1. 전 딜 stage ∈ enum, forecast_category ∈ enum
-2. amount_krw > 0 전건
+2. amount > 0 전건
 3. open 딜(forecast_category ∉ {closed_won,closed_lost}) close_date ≥ TODAY
 4. open 딜 last_activity 경과 ≤ stale_max_days(기본 30) — 위반 딜 id 나열
 

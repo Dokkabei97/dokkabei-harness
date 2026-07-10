@@ -4,7 +4,7 @@
 # 대상: .planning/scaleup/gtm/pipeline/*-audit.json 중 파일명 사전식 최신
 # 검사(정본: skills/revops-pipeline-schema/references/pipeline-enums.json + hygiene-rules.md):
 #   ① stage ∈ enum, forecast_category ∈ enum (enum 파일이 단일 진실 원천 — 하드코딩 금지)
-#   ② amount_krw > 0 전건
+#   ② amount > 0 전건
 #   ③ open 딜(forecast_category ∉ {closed_won,closed_lost}) close_date ≥ TODAY
 #   ④ open 딜 last_activity 경과 > stale_max_days → 실패(딜 id 나열)
 # 날짜: TODAY="${GATE_TODAY:-$(date +%F)}", BSD/GNU date 이중 관용구. jq 부재=사유 exit 1.
@@ -65,10 +65,10 @@ bad_fc="$(jq -r --argjson e "$fcats" '.deals[] | select(.forecast_category as $c
 if [ -n "$bad_fc" ]; then
   echo "[gate-pipeline-hygiene] 실패: forecast_category enum 위반 딜 — $(printf '%s' "$bad_fc" | tr '\n' ' ')" >&2; fail=1
 fi
-# ② amount_krw > 0 전건
-bad_amt="$(jq -r '.deals[] | select((.amount_krw | type != "number") or (.amount_krw <= 0)) | .id' "$latest" 2>/dev/null || true)"
+# ② amount > 0 전건
+bad_amt="$(jq -r '.deals[] | select((.amount | type != "number") or (.amount <= 0)) | .id' "$latest" 2>/dev/null || true)"
 if [ -n "$bad_amt" ]; then
-  echo "[gate-pipeline-hygiene] 실패: amount_krw ≤ 0 또는 비수치 딜 — $(printf '%s' "$bad_amt" | tr '\n' ' ')" >&2; fail=1
+  echo "[gate-pipeline-hygiene] 실패: amount ≤ 0 또는 비수치 딜 — $(printf '%s' "$bad_amt" | tr '\n' ' ')" >&2; fail=1
 fi
 # ③ open 딜 close_date ≥ TODAY
 past_open="$(jq -r --arg today "$TODAY" '.deals[] | select((.forecast_category | . != "closed_won" and . != "closed_lost")) | select(.close_date < $today) | .id' "$latest" 2>/dev/null || true)"

@@ -24,7 +24,7 @@ metadata:
 | `economic_buyer` | Economic Buyer | 예산 서명권·거부권을 가진 실권자가 식별·접촉됐는가 |
 | `decision_criteria` | Decision Criteria | 기술/상업 선정 기준을 알고 그에 맞췄는가 |
 | `decision_process` | Decision Process | 결재 단계·일정·관여자를 아는가 |
-| `paper_process` | Paper Process | 법무·조달·보안심사(한국 CSAP/BMT) 경로를 아는가 |
+| `paper_process` | Paper Process | 법무·조달·보안심사·인증 경로를 아는가 |
 | `identify_pain` | Identify Pain | 정량화된 고통과 미해결 시 비용이 검증됐는가 |
 | `champion` | Champion | 내부에서 나를 위해 싸우는 영향력자가 있는가(coach ≠ champion) |
 | `competition` | Competition | 경쟁(타사 + **do-nothing/현상유지**)을 파악했는가 |
@@ -49,7 +49,7 @@ deal-qualifier(checker, Edit 미보유)가 반증하는 흔한 과대평가:
 
 ## deal_id·금액·마감
 
-`meddpicc.json` 상위 필드: `deal_id`, `amount_krw`(number), `close_date`(YYYY-MM-DD), `forecast_category`(revops-pipeline-schema enum 과 동일 어휘).
+`meddpicc.json` 상위 필드: `deal_id`, `amount`(number), `close_date`(YYYY-MM-DD), `forecast_category`(revops-pipeline-schema enum 과 동일 어휘).
 
 ## Boundaries
 

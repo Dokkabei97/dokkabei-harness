@@ -31,12 +31,12 @@ Options:
 - export 파일 존재 확인. revops-pipeline-schema 스킬의 stage/forecast_category enum(references/pipeline-enums.json)을 정본으로 로드.
 
 ### Phase 1: 정규화 (메인 세션, jq)
-- export 를 `{audited_at, stale_max_days, deals:[{id, stage, amount_krw, close_date, forecast_category, last_activity}]}` 스키마로 jq 정규화.
+- export 를 `{audited_at, stale_max_days, deals:[{id, stage, amount, close_date, forecast_category, last_activity}]}` 스키마로 jq 정규화.
 - stage/forecast_category 는 enum 값으로 매핑(비표준 값은 정규화 단계에서 교정, 불명은 그대로 두어 게이트가 잡게 함).
 
 ### Phase 2: 결정론 게이트
 - `bash "${CLAUDE_PLUGIN_ROOT}/hooks/gates/gate-pipeline-hygiene.sh"`:
-  - stage·forecast_category ∈ enum, amount_krw>0 전건
+  - stage·forecast_category ∈ enum, amount>0 전건
   - open 딜 close_date ≥ TODAY, last_activity 경과 ≤ stale_max_days
   - 위반 딜 id 나열. 정본: scaleup-orchestrator/references/gate-policy.md.
 

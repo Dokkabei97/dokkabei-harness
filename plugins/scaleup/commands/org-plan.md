@@ -33,12 +33,12 @@ Options:
 
 ### Phase 1: org-planner 디스패치 (maker)
 - `org-planner` 를 호출해 `org/org-chart.md`(span-of-control·리더십 갭)와 `org/headcount.json` 을 작성.
-- 각 row 는 `role/dept/level/start_quarter(YYYYQn)/fte/annual_cost_krw`(+milestone). 각 채용을 트리거 마일스톤에 연결.
-- 인건비 총액을 budget 의 `personnel_total_krw`(존재 시) ±5% 이내로 정합.
+- 각 row 는 `role/dept/level/start_quarter(YYYYQn)/fte/annual_cost`(+milestone). 각 채용을 트리거 마일스톤에 연결.
+- 인건비 총액을 budget 의 `personnel_total`(존재 시) ±5% 이내로 정합.
 
 ### Phase 2: 결정론 게이트
 - `bash "${CLAUDE_PLUGIN_ROOT}/hooks/gates/gate-headcount.sh"`:
-  - rows 필수 6필드·fte>0·annual_cost_krw>0·start_quarter 형식
+  - rows 필수 6필드·fte>0·annual_cost>0·start_quarter 형식
   - 인건비-예산 정합(둘 다 존재 시), 10/30/50인 교차 경고
   - 정본: scaleup-orchestrator/references/gate-policy.md.
 

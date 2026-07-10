@@ -32,8 +32,8 @@ Options:
 
 ### Phase 1: 초안 작성 (메인 세션)
 - 8요소(metrics, economic_buyer, decision_criteria, decision_process, paper_process, identify_pain, champion, competition)를 각 `{status: unknown|identified|verified, evidence}` 로 작성.
-- `status ≠ unknown` 이면 evidence 비공백. amount_krw·close_date(YYYY-MM-DD)·forecast_category 기록.
-- 공공 딜이면 CSAP/BMT 마일스톤을 map 에 표기(korea-b2b-procurement 참조).
+- `status ≠ unknown` 이면 evidence 비공백. amount·close_date(YYYY-MM-DD)·forecast_category 기록.
+- 조달·보안심사·인증 등 규제 관문이 있는 딜이면 관문 마일스톤을 map(decision_process·paper_process)에 표기.
 
 ### Phase 2: deal-qualifier 반증
 - `deal-qualifier` 디스패치 → COMMIT/DOWNGRADE/DISQUALIFY 판정을 `gtm/deals/<deal-id>/verdict.json` 으로 물화(EB 실권·coach vs champion·do-nothing 경쟁 반증).

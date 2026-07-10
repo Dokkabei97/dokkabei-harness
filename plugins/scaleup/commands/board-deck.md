@@ -49,6 +49,6 @@ Sequoia 5블록 / Sacks 6섹션 표준의 보드덱을 `.planning/scaleup/board/
 **Will:** 보드덱·KPI 팩 작성, 표준 헤딩·Asks 규율, gate-board-deck 판정.
 **Will Not:**
 - 재무제표·실적 수치 정본 검증 → **finance 위임**
-- SHA 사전동의·상법 등 법 판단 → **legal 위임**
+- 주주계약 동의권·회사법 등 법 판단 → **legal 위임**
 - 투자자 업데이트(→ `/investor-update`)
 - 대외 배포(사람 승인 전제)

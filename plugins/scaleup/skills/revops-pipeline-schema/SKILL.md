@@ -31,7 +31,7 @@ metadata:
   "audited_at": "YYYY-MM-DD",
   "stale_max_days": 30,
   "deals": [
-    {"id","stage","amount_krw":<num>,"close_date":"YYYY-MM-DD","forecast_category","last_activity":"YYYY-MM-DD"}
+    {"id","stage","amount":<num>,"close_date":"YYYY-MM-DD","forecast_category","last_activity":"YYYY-MM-DD"}
   ]
 }
 ```
@@ -40,7 +40,7 @@ metadata:
 
 상세는 [references/hygiene-rules.md](references/hygiene-rules.md). 요약(gate-pipeline-hygiene 계약):
 1. stage·forecast_category ∈ enum
-2. amount_krw > 0 전건
+2. amount > 0 전건
 3. open 딜 close_date ≥ TODAY (마감일 도과 미갱신 = 위생 위반)
 4. open 딜 last_activity 경과 ≤ stale_max_days(기본 30)
 

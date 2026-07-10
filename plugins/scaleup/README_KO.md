@@ -10,7 +10,7 @@
 
 핵심은 **maker/checker 분리 + 결정론 게이트**다. maker 가 초안을 만들고(OKR 트리·조직 플랜·보드덱·MEDDPICC), checker 는 **의도적으로 Edit 를 보유하지 않은 채** 반증해 verdict.json 으로 판정을 물화하며, 결정론 게이트(`exit 0/1`)가 계약을 재검한다. "통과 판정은 모델이 아니라 하네스가 한다." 대외 산출물(OKR·보드덱·딜 커밋)은 항상 사람 승인 전제.
 
-경계는 명시적이다: 재무제표·세무 → `finance`, 법 판단(상법·SHA 사전동의·기업결합·공익신고) → `legal`, JD·온보딩 → `hr`, 시장조사·유닛이코노믹스·콘텐츠 → `startup`, GRC·전사 경영계획·M&A 스크리닝 → `enterprise`.
+경계는 명시적이다: 재무제표·세무 → `finance`, 법 판단(회사법·주주계약 동의권·merger control·내부신고) → `legal`, JD·온보딩 → `hr`, 시장조사·유닛이코노믹스·콘텐츠 → `startup`, GRC·전사 경영계획·M&A 스크리닝 → `enterprise`.
 
 ## 컴포넌트
 
@@ -19,10 +19,10 @@
 - `/okr-plan` — 분기 OKR 트리(objectives 1~5·KR 1~4, owner·baseline·target·기한). 초안 → okr-checker 반증 → 사람 승인 3단.
 - `/okr-checkin` — 주간 체크인: KR별 confidence·블로커·차주 커밋 + 5~15 지표 스코어카드.
 - `/okr-score` — 분기말 스코어링(0.0~1.0) + 회고 → 차기 `/okr-plan` 입력.
-- `/stage-check` — Blitzscaling 5단계 진단 + 한국 인원 임계값(10/30/50인) 산술 플래그, scale-checker 반증.
+- `/stage-check` — Blitzscaling 5단계 진단 + 조직 스케일 준비도 플래그(span-of-control·리더십 갭), scale-checker 반증.
 - `/org-plan` — forward-looking 조직도 + 헤드카운트 플랜(AOP 정합), org-planner.
 - `/board-deck` — 분기 보드덱(섹션 고정) + 표준 KPI 팩, board-reporter.
-- `/investor-update` — 월간 Wins/Misses/Asks + 현금·런웨이. RCPS/SHA 정기보고 문서 겸용.
+- `/investor-update` — 월간 Wins/Misses/Asks + 현금·런웨이. 주주간계약(SHA) 정보권 이행 문서 겸용.
 - `/deal-review` — 딜별 MEDDPICC 스코어카드, deal-qualifier 반증.
 - `/pipeline-audit` — CRM export 위생 감사 + 포캐스트 롤업(대표 결정론 게이트).
 - `/scaleup-from-startup` — `.planning/business/` 산출물을 사이클로 승계하는 브릿지.
@@ -35,14 +35,13 @@
 - `deal-qualifier`(checker, Edit 미보유) — MEDDPICC verified 과대평가 반증, COMMIT/DOWNGRADE/DISQUALIFY.
 - `scale-checker`(checker, Edit 미보유) — 조기 단계 전환 반증, ADVANCE/HOLD/NOT-YET.
 
-### 스킬 (6)
+### 스킬 (5)
 
 - `scaleup-orchestrator` — 3계열 마스터 라우터(+ `references/gate-policy.md` 게이트 판정·스키마 정본).
 - `operating-cadence` — OKR/EOS/4DX 비교·미팅 리듬·'주간 세션 생략 시 2사이클 내 붕괴' 경고.
-- `board-governance` — 덱 표준 헤딩(gate-board-deck 동일 문자열 정본) + 한국 거버넌스 전환점.
+- `board-governance` — 덱 표준 헤딩(gate-board-deck 동일 문자열 정본) + 일반 거버넌스 전환점(이사회 구성·감사 준비·이사회 위원회).
 - `meddpicc-qualification` — 8요소 정의·status 규격(= gate-meddpicc 계약).
 - `revops-pipeline-schema` — stage/forecast_category enum(+ 게이트가 읽는 `references/pipeline-enums.json`, `references/hygiene-rules.md`).
-- `korea-b2b-procurement` — CSAP/BMT/나라장터·협상계약(기술 90:가격 10)·85% 컷.
 
 ### 게이트 (6, 결정론 `exit 0/1`)
 
@@ -72,7 +71,7 @@ gtm/pipeline/YYYY-MM-DD-audit.json
 ## 위임 경계
 
 - **finance** — 재무제표·세무·실적/수치 검증(보드 재무·인건비).
-- **legal** — 상법·SHA 사전동의·기업결합신고·공익신고·개인정보 판단.
+- **legal** — 회사법·주주계약 동의권·merger control·내부신고·개인정보 판단.
 - **hr** — JD·온보딩·징계 조항.
 - **startup** — 시장조사·유닛이코노믹스·콘텐츠·브랜드보이스(브릿지로 읽기 승계만).
 - **enterprise** — GRC·전사 경영계획·M&A 스크리닝(`budget-*.json` 은 enterprise 소유, scaleup 은 존재 시 읽기만).

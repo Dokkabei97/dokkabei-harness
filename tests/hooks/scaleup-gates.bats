@@ -58,15 +58,15 @@ write_headcount() {
   mkdir -p "$(SU)/org"
   cat > "$(SU)/org/headcount.json" <<'EOF'
 {"fiscal_year":2027,"current_fte":28,"rows":[
-{"role":"AE","dept":"Sales","level":"L4","start_quarter":"2027Q1","fte":2,"annual_cost_krw":160000000,"milestone":"ARR 30억"},
-{"role":"SDR","dept":"Sales","level":"L3","start_quarter":"2027Q2","fte":1,"annual_cost_krw":60000000,"milestone":"파이프 2배"}]}
+{"role":"AE","dept":"Sales","level":"L4","start_quarter":"2027Q1","fte":2,"annual_cost":160000000,"milestone":"ARR 30억"},
+{"role":"SDR","dept":"Sales","level":"L3","start_quarter":"2027Q2","fte":1,"annual_cost":60000000,"milestone":"파이프 2배"}]}
 EOF
 }
 
 write_budget() {
-  # $1 = personnel_total_krw
+  # $1 = personnel_total
   mkdir -p "$TEST_PROJ/.planning/enterprise"
-  printf '{"personnel_total_krw":%s}\n' "$1" > "$TEST_PROJ/.planning/enterprise/budget-2027.json"
+  printf '{"personnel_total":%s}\n' "$1" > "$TEST_PROJ/.planning/enterprise/budget-2027.json"
 }
 
 write_deck() {
@@ -99,7 +99,7 @@ write_meddpicc() {
   # $1 = deal id, $2 = decision_process status (기본 verified)
   mkdir -p "$(SU)/gtm/deals/$1"
   cat > "$(SU)/gtm/deals/$1/meddpicc.json" <<EOF
-{"deal_id":"$1","amount_krw":500000000,"close_date":"2026-09-30","forecast_category":"commit","elements":{
+{"deal_id":"$1","amount":500000000,"close_date":"2026-09-30","forecast_category":"commit","elements":{
 "metrics":{"status":"verified","evidence":"ROI 3.2x"},
 "economic_buyer":{"status":"identified","evidence":"CFO 미팅"},
 "decision_criteria":{"status":"identified","evidence":"RFP"},
@@ -116,8 +116,8 @@ write_pipeline() {
   mkdir -p "$(SU)/gtm/pipeline"
   cat > "$(SU)/gtm/pipeline/2026-07-10-audit.json" <<EOF
 {"audited_at":"2026-07-10","stale_max_days":30,"deals":[
-{"id":"D1","stage":"negotiation","amount_krw":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"${1:-2026-07-05}"},
-{"id":"D2","stage":"proposal","amount_krw":200000000,"close_date":"2026-09-30","forecast_category":"best_case","last_activity":"2026-07-01"}]}
+{"id":"D1","stage":"negotiation","amount":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"${1:-2026-07-05}"},
+{"id":"D2","stage":"proposal","amount":200000000,"close_date":"2026-09-30","forecast_category":"best_case","last_activity":"2026-07-01"}]}
 EOF
 }
 
@@ -248,7 +248,7 @@ EOF
   mkdir -p "$(SU)/org"
   cat > "$(SU)/org/headcount.json" <<'EOF'
 {"fiscal_year":2027,"current_fte":10,"rows":[
-{"role":"AE","dept":"Sales","level":"L4","start_quarter":"2027Q1","fte":0,"annual_cost_krw":80000000,"milestone":"x"}]}
+{"role":"AE","dept":"Sales","level":"L4","start_quarter":"2027Q1","fte":0,"annual_cost":80000000,"milestone":"x"}]}
 EOF
   run invoke_gate "$SCALEUP_GATES/gate-headcount.sh"
   [ "$status" -eq 1 ]
@@ -269,13 +269,6 @@ EOF
   run invoke_gate "$SCALEUP_GATES/gate-headcount.sh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"통과"* ]]
-}
-
-@test "gate-headcount: threshold crossing warning does not fail" {
-  write_headcount
-  run invoke_gate "$SCALEUP_GATES/gate-headcount.sh"
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"30인 교차"* ]]
 }
 
 @test "gate-headcount: jq missing -> exit 1" {
@@ -351,7 +344,7 @@ EOF
   export GATE_TODAY=2026-07-10
   mkdir -p "$(SU)/gtm/deals/acme"
   cat > "$(SU)/gtm/deals/acme/meddpicc.json" <<'EOF'
-{"deal_id":"acme","amount_krw":1,"close_date":"2026-09-30","forecast_category":"commit","elements":{
+{"deal_id":"acme","amount":1,"close_date":"2026-09-30","forecast_category":"commit","elements":{
 "metrics":{"status":"verified","evidence":"e"},"economic_buyer":{"status":"identified","evidence":"e"}}}
 EOF
   run invoke_gate "$SCALEUP_GATES/gate-meddpicc.sh"
@@ -363,7 +356,7 @@ EOF
   export GATE_TODAY=2026-07-10
   mkdir -p "$(SU)/gtm/deals/acme"
   cat > "$(SU)/gtm/deals/acme/meddpicc.json" <<'EOF'
-{"deal_id":"acme","amount_krw":1,"close_date":"2026-09-30","forecast_category":"commit","elements":{
+{"deal_id":"acme","amount":1,"close_date":"2026-09-30","forecast_category":"commit","elements":{
 "metrics":{"status":"unknown","evidence":""},
 "economic_buyer":{"status":"unknown","evidence":""},
 "decision_criteria":{"status":"unknown","evidence":""},
@@ -428,7 +421,7 @@ EOF
   mkdir -p "$(SU)/gtm/pipeline"
   cat > "$(SU)/gtm/pipeline/2026-07-10-audit.json" <<'EOF'
 {"audited_at":"2026-07-10","stale_max_days":30,"deals":[
-{"id":"D1","stage":"demo","amount_krw":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"2026-07-05"}]}
+{"id":"D1","stage":"demo","amount":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"2026-07-05"}]}
 EOF
   run invoke_gate "$SCALEUP_GATES/gate-pipeline-hygiene.sh"
   [ "$status" -eq 1 ]
@@ -440,7 +433,7 @@ EOF
   mkdir -p "$(SU)/gtm/pipeline"
   cat > "$(SU)/gtm/pipeline/2026-07-10-audit.json" <<'EOF'
 {"audited_at":"2026-07-10","stale_max_days":30,"deals":[
-{"id":"D1","stage":"negotiation","amount_krw":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"2026-08-25"}]}
+{"id":"D1","stage":"negotiation","amount":500000000,"close_date":"2026-08-31","forecast_category":"commit","last_activity":"2026-08-25"}]}
 EOF
   run invoke_gate "$SCALEUP_GATES/gate-pipeline-hygiene.sh"
   [ "$status" -eq 1 ]

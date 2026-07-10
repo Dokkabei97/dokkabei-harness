@@ -19,10 +19,10 @@ Boundaries are explicit: financials/tax → `finance`, legal judgments (commerci
 - `/okr-plan` — Author the quarterly OKR tree (1–5 objectives, 1–4 KRs) with owner/baseline/target/due; drafted, then refuted by okr-checker, then human-approved.
 - `/okr-checkin` — Weekly check-in: per-KR confidence, blockers, next-week commitments + a 5–15 metric scorecard.
 - `/okr-score` — End-of-quarter scoring (0.0–1.0) + retro feeding the next `/okr-plan`.
-- `/stage-check` — Blitzscaling 5-stage diagnosis + Korean headcount-threshold (10/30/50) flags; refuted by scale-checker.
+- `/stage-check` — Blitzscaling 5-stage diagnosis + org-scale readiness flags (span-of-control, leadership gaps); refuted by scale-checker.
 - `/org-plan` — Forward-looking org chart + headcount plan aligned to the AOP budget (org-planner).
 - `/board-deck` — Quarterly board deck (fixed sections) + standard KPI pack (board-reporter).
-- `/investor-update` — Monthly Wins/Misses/Asks + cash/runway; doubles as the RCPS/SHA periodic-reporting document.
+- `/investor-update` — Monthly Wins/Misses/Asks + cash/runway; doubles as the shareholder-agreement information-rights document.
 - `/deal-review` — Per-deal MEDDPICC scorecard; refuted by deal-qualifier.
 - `/pipeline-audit` — CRM-export hygiene audit + forecast rollup (the showcase deterministic gate).
 - `/scaleup-from-startup` — Bridge that carries `.planning/business/` outputs into the scaleup cycle.
@@ -35,14 +35,13 @@ Boundaries are explicit: financials/tax → `finance`, legal judgments (commerci
 - `deal-qualifier` (checker, no Edit) — refutes MEDDPICC 'verified' overclaims; COMMIT/DOWNGRADE/DISQUALIFY.
 - `scale-checker` (checker, no Edit) — refutes premature stage transitions; ADVANCE/HOLD/NOT-YET.
 
-### Skills (6)
+### Skills (5)
 
 - `scaleup-orchestrator` — master router for the three pipelines (+ `references/gate-policy.md`, the gate-criteria & schema source of truth).
 - `operating-cadence` — OKR/EOS/4DX comparison, meeting rhythm, and the "skip a weekly session → collapse within 2 cycles" warning.
-- `board-governance` — board-deck standard headings (canonical strings for gate-board-deck) + Korean governance turning points.
+- `board-governance` — board-deck standard headings (canonical strings for gate-board-deck) + general governance turning points (board formation, audit readiness, board committees).
 - `meddpicc-qualification` — the 8-element definitions and status spec (= gate-meddpicc contract).
 - `revops-pipeline-schema` — sales stage/forecast_category enums (+ `references/pipeline-enums.json` the gate reads, and `references/hygiene-rules.md`).
-- `korea-b2b-procurement` — CSAP/BMT/나라장터, negotiated-contract scoring (tech 90:price 10), the 85% cut.
 
 ### Gates (6, deterministic `exit 0/1`)
 
