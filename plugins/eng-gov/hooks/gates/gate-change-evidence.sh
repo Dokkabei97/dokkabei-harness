@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# gate-change-evidence.sh — 변경 증적 게이트 (SOC2 CC8.1 / ISMS-P 2.9.1 결정론 반쪽)
+# gate-change-evidence.sh — 변경 증적 게이트 (SOC 2 CC8.1 / ISO 27001:2022 A.8.32 결정론 반쪽)
 # 정본: governance-templates 스킬 references/change-policy-template.md + control-map.md.
 # 검사 (jq — 부재 시 exit 1):
 #   ① git HEAD SHA 확보 → .planning/gov/change/<sha>/evidence.json 실재

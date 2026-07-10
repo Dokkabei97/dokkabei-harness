@@ -3,7 +3,7 @@
 # gate-supply-chain.sh — 공급망 게이트 (syft SBOM → grype 취약점 → 라이선스 denylist)
 # 정본: supply-chain-guide 스킬 references/license-denylist.json.
 # 정책: 등록된 게이트의 도구 부재는 fail-closed(exit 1) — SBOM/CVE skip green 은
-#       SOC2/ISMS-P 허위 증적. skip 은 /gov-init gates.json enabled:false 로 이동.
+#       SOC 2/ISO 27001 허위 증적. skip 은 /gov-init gates.json enabled:false 로 이동.
 # 검사:
 #   ① syft·grype(기본 syft/grype, SYFT_BIN·GRYPE_BIN 오버라이드) 존재 — 부재 fail-closed
 #   ② syft scan dir:$PROJ -o syft-json → SBOM 생성

@@ -1,6 +1,6 @@
 # 변경 증적 정책 · evidence.json 스키마
 
-DORA "변경 승인 간소화"(무거운 CAB 대신 위험 비례 통제) + SOC2 CC8.1 / ISMS-P 2.9.1 증적. `/gov-change`가 `change-risk-classifier`로 등급을 매기고 이 스키마로 `evidence.json`을 물화하면 `gate-change-evidence.sh`가 결정론 판정한다.
+DORA "변경 승인 간소화"(무거운 CAB 대신 위험 비례 통제) + SOC 2 CC8.1 / ISO 27001:2022 A.8.32 증적. `/gov-change`가 `change-risk-classifier`로 등급을 매기고 이 스키마로 `evidence.json`을 물화하면 `gate-change-evidence.sh`가 결정론 판정한다.
 
 ## evidence.json — `.planning/gov/change/<sha>/evidence.json`
 

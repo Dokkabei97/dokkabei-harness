@@ -1,7 +1,7 @@
 ---
 name: supply-chain-guide
 description: |
-  eng-gov 하네스의 공급망 보안 가이드 — gitleaks baseline 운영(신규 시크릿만 차단), syft SBOM 생성·grype 취약점 스캔(--fail-on high), 라이선스 denylist 정책(references/license-denylist.json 기본값)의 레시피를 제공한다. gate-secrets·gate-supply-chain·gate-policy가 이 스킬의 규약대로 도구를 실행하며, 등록된 게이트의 도구 부재는 fail-closed(skip green은 SOC2/ISMS-P 허위 증적이라 금지)다. baseline 재생성·오탐 처리·프로젝트별 denylist 오버라이드(.planning/gov/license-denylist.json) 방법을 담는다. CVE DB만 네트워크 의존, 나머지는 로컬. Use when 시크릿·SBOM·취약점·라이선스·IaC 정책 게이트를 설정·운영하거나 baseline/denylist를 조정할 때.
+  eng-gov 하네스의 공급망 보안 가이드 — gitleaks baseline 운영(신규 시크릿만 차단), syft SBOM 생성·grype 취약점 스캔(--fail-on high), 라이선스 denylist 정책(references/license-denylist.json 기본값)의 레시피를 제공한다. gate-secrets·gate-supply-chain·gate-policy가 이 스킬의 규약대로 도구를 실행하며, 등록된 게이트의 도구 부재는 fail-closed(skip green은 SOC 2/ISO 27001 허위 증적이라 금지)다. baseline 재생성·오탐 처리·프로젝트별 denylist 오버라이드(.planning/gov/license-denylist.json) 방법을 담는다. CVE DB만 네트워크 의존, 나머지는 로컬. Use when 시크릿·SBOM·취약점·라이선스·IaC 정책 게이트를 설정·운영하거나 baseline/denylist를 조정할 때.
   Supply-chain security guide for eng-gov: recipes for gitleaks baseline operation (block only new secrets), syft SBOM + grype scanning (--fail-on high), and license denylist policy (default in references/license-denylist.json). gate-secrets/supply-chain/policy run tools per this skill; a registered gate's missing tool is fail-closed (skip-green would be false audit evidence). Only the CVE DB needs network. Use when: configuring or operating secret/SBOM/vuln/license/IaC gates, or tuning baseline/denylist.
 metadata:
   version: 1.0.0
@@ -14,7 +14,7 @@ metadata:
 
 ## 핵심 정책: 등록 시 skip, 런타임 fail-closed
 
-- **게이트 그린 = "검사했고 통과했다"** 의미론을 보존한다. 도구 미설치를 skip green으로 통과시키면 SOC2/ISMS-P 심사에서 **허위 증적**이 된다.
+- **게이트 그린 = "검사했고 통과했다"** 의미론을 보존한다. 도구 미설치를 skip green으로 통과시키면 SOC 2/ISO 27001 감사에서 **허위 증적**이 된다.
 - 따라서 등록된 게이트의 도구 부재는 **fail-closed(exit 1 + 설치 안내)**. "이 게이트를 안 돌리겠다"는 판단은 `/gov-init`의 `gates.json` 등록 시점(`enabled:false` + `reason`)으로 명시적으로 옮긴다.
 - 도구 경로는 `GITLEAKS_BIN`·`SYFT_BIN`·`GRYPE_BIN`·`CONFTEST_BIN` env로 오버라이드(기본값 = 도구명).
 

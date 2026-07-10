@@ -2,13 +2,13 @@
 
 # eng-gov
 
-> ADR·변경 증적·위협 모델·공급망 통제를 로컬 `exit 0/1` 게이트로 물화하는 개발 거버넌스 하네스 — SOC2/ISMS-P 심사 증적을 git 네이티브로 생성한다.
+> ADR·변경 증적·위협 모델·공급망 통제를 로컬 `exit 0/1` 게이트로 물화하는 개발 거버넌스 하네스 — SOC 2 / ISO 27001 감사 증적을 git 네이티브로 생성한다.
 
 ## 개요
 
 `eng-gov`는 무거운 변경심의위(CAB) 대신 엔지니어링 거버넌스를 **결정론 로컬 게이트**로 바꾼다. 모든 통제는 `exit 0 = 검사했고 통과했다` 계약을 가진 bash 스크립트라, 서버 없이 기존 루프 엔진(mvp·feature-loop·generic)과 CI에 그대로 꽂힌다. 설계 철학은 다른 하네스와 동일하다: **단일 패스 커맨드 파이프라인 + maker/checker(checker는 Edit 미보유) + 결정론 게이트 + ".planning/ 파일이 상태를 보장한다"**.
 
-차별화 지점은 한국 심사 증적이다: `/gov-audit`가 git 네이티브 증적(변경 번들·게이트 결과)을 SOC2 CC8.1 · ISMS-P 2.9.1/2.8 통제에 매핑한 **한국어 심사 증적 문서**로 변환해 ISMS-P·금융권 심사에 대응한다.
+차별화 지점은 git 히스토리를 감사 증적으로 바꾸는 것이다: `/gov-audit`가 git 네이티브 증적(변경 번들·게이트 결과)을 SOC 2 CC8.1 · ISO 27001:2022 Annex A 통제에 매핑한 **감사 증적 문서**로 변환해 SOC 2 Type II·ISO 27001 심사에 대응한다.
 
 **도구 부재 정책 — "등록 시점 skip, 런타임 fail-closed"**: 등록된 게이트의 도구 부재는 fail-closed(`exit 1` + 설치 안내)다. skip green은 심사 허위 증적이 되기 때문이다. "이 게이트를 안 돌린다"는 판단은 `/gov-init` 시점(`gates.json` `enabled:false` + `reason`)으로 명시적으로 옮긴다. 유일한 degraded 예외는 `gate-threat-model`(결정론 반쪽은 항상 판정, threagile 재생성만 경고와 함께 skip).
 
@@ -24,7 +24,7 @@
 | `/gov-slo` | SLO 문서 + 에러버짓 정책 + `thresholds.yaml` 분리 → gate-error-budget 시운전 |
 | `/gov-postmortem` | 블레임리스 포스트모템(타임라인·5-why·owner/due 액션) → postmortem-checker (게이트 없음) |
 | `/gov-change` | diff 통계 bash 선계산 → change-risk-classifier → `evidence.json` → gate-change-evidence |
-| `/gov-audit` | run-registered.sh로 등록 게이트 일괄 실행 → `audit-log.jsonl` append → 한국어 증적 문서 |
+| `/gov-audit` | run-registered.sh로 등록 게이트 일괄 실행 → `audit-log.jsonl` append → 감사 증적 문서 |
 | `/gov-dora` | DORA 4 Keys(git로 DF/LT, 포스트모템 원장으로 CFR/MTTR) — 읽기 전용 |
 
 ### 에이전트 (4, 전부 opus)
@@ -38,7 +38,7 @@
 
 ### 스킬 (3)
 
-- `governance-templates` — 형식 단일 진실 원천. MADR·SLO·포스트모템·변경정책 템플릿 + SOC2/ISMS-P 통제 매핑표(references/). 각 템플릿은 대응 게이트 계약에 정렬돼 있다.
+- `governance-templates` — 형식 단일 진실 원천. MADR·SLO·포스트모템·변경정책 템플릿 + SOC 2 / ISO 27001 통제 매핑표(references/). 각 템플릿은 대응 게이트 계약에 정렬돼 있다.
 - `fitness-function-guide` — 스택별 도구 선택(dependency-cruiser/import-linter/ArchUnit) + ADR→강제 가능 검사 변환 패턴집.
 - `supply-chain-guide` — gitleaks baseline 운영·syft/grype·라이선스 denylist 정책(references/license-denylist.json 기본값).
 

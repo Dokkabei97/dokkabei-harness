@@ -2,13 +2,13 @@
 
 # eng-gov
 
-> A development-governance harness that materializes ADR, change evidence, threat model, and supply-chain controls as local `exit 0/1` gates — generating SOC2/ISMS-P audit evidence git-natively.
+> A development-governance harness that materializes ADR, change evidence, threat model, and supply-chain controls as local `exit 0/1` gates — generating SOC 2 / ISO 27001 audit evidence git-natively.
 
 ## Overview
 
 `eng-gov` turns engineering governance into **deterministic local gates** instead of a heavyweight review board. Every control is a bash script with the `exit 0 = checked and passed` contract, so it plugs directly into the existing loop engines (mvp·feature-loop·generic) and into CI without a server. The design philosophy is inherited unchanged from the other harnesses: **single-pass command pipeline + maker/checker (checkers have no Edit) + deterministic gates + ".planning/ files guarantee state"**.
 
-Its differentiator is the Korean audit-evidence angle: `/gov-audit` converts git-native evidence (change bundles, gate results) into a **Korean audit document** mapped to SOC2 CC8.1 · ISMS-P 2.9.1/2.8 controls, for ISMS-P and financial-sector reviews.
+Its differentiator is turning git history into audit evidence: `/gov-audit` converts git-native evidence (change bundles, gate results) into an **audit-evidence document** mapped to SOC 2 CC8.1 · ISO 27001:2022 Annex A controls, for SOC 2 Type II and ISO 27001 reviews.
 
 **Tool-absence policy — "skip at registration, fail-closed at runtime"**: a registered gate whose tool is missing fails closed (`exit 1` + install guidance), because a skip-green would be false audit evidence. The decision to *not* run a gate is made explicit at `/gov-init` time (`gates.json` `enabled:false` + `reason`). The only degraded exception is `gate-threat-model` (the deterministic half always judges; only threagile regeneration is skipped with a warning).
 
@@ -38,7 +38,7 @@ Its differentiator is the Korean audit-evidence angle: `/gov-audit` converts git
 
 ### Skills (3)
 
-- `governance-templates` — the format single-source-of-truth. MADR·SLO·postmortem·change-policy templates + SOC2/ISMS-P control map (references/). Each template is aligned to its gate's contract.
+- `governance-templates` — the format single-source-of-truth. MADR·SLO·postmortem·change-policy templates + SOC 2 / ISO 27001 control map (references/). Each template is aligned to its gate's contract.
 - `fitness-function-guide` — stack tool selection (dependency-cruiser/import-linter/ArchUnit) + an ADR→enforceable-check conversion catalog.
 - `supply-chain-guide` — gitleaks baseline operation·syft/grype·license denylist policy (references/license-denylist.json default).
 

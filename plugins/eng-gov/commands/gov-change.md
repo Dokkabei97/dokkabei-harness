@@ -14,7 +14,7 @@ personas: []
 변경을 위험 등급화하고 감사 증적(`evidence.json`)으로 물화한다. 스키마·정책은 `governance-templates`(`references/change-policy-template.md`)가 정본. 등급 분류는 `change-risk-classifier` maker가 수행한다.
 
 ## Triggers
-- 릴리즈·머지 전 SOC2 CC8.1 / ISMS-P 2.9.1 변경 증적이 필요할 때
+- 릴리즈·머지 전 SOC 2 CC8.1 / ISO 27001:2022 A.8.32 변경 증적이 필요할 때
 - floop/mvp 루프 완료 시점에 산출물을 감사 증적으로 남길 때
 - "변경 증적 만들어줘", "이 변경 위험 등급", "릴리즈 증빙" 요청
 

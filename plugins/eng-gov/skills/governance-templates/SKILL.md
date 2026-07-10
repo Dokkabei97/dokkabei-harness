@@ -1,8 +1,8 @@
 ---
 name: governance-templates
 description: |
-  eng-gov 하네스의 거버넌스 문서 템플릿·통제 매핑 스킬 — MADR 형식 ADR, SLO·에러버짓 정책, 블레임리스 포스트모템, 변경정책, 그리고 SOC2 CC8.1·ISMS-P 2.9.1/2.8 통제 매핑표(references/)를 제공한다. 각 템플릿은 대응 결정론 게이트(gate-adr·gate-error-budget·gate-change-evidence)의 계약(status enum·thresholds.yaml 플랫 키·evidence.json 스키마)과 정확히 맞물리는 형식을 규정해, 문서를 쓰면 게이트가 초록이 되도록 한다. /gov-adr·/gov-slo·/gov-postmortem·/gov-change·/gov-audit가 산출물 표준으로 참조한다.
-  Governance document templates and control-mapping skill for eng-gov: MADR ADRs, SLO/error-budget policy, blameless postmortems, change policy, and a SOC2 CC8.1 · ISMS-P 2.9.1/2.8 control map (in references/). Each template's format is aligned to its deterministic gate's contract (status enum, thresholds.yaml flat keys, evidence.json schema) so writing the doc turns the gate green. Use when: authoring an ADR, SLO, postmortem, or change-evidence bundle, or mapping controls for an audit.
+  eng-gov 하네스의 거버넌스 문서 템플릿·통제 매핑 스킬 — MADR 형식 ADR, SLO·에러버짓 정책, 블레임리스 포스트모템, 변경정책, 그리고 SOC 2 CC8.1·ISO 27001:2022 Annex A 통제 매핑표(references/)를 제공한다. 각 템플릿은 대응 결정론 게이트(gate-adr·gate-error-budget·gate-change-evidence)의 계약(status enum·thresholds.yaml 플랫 키·evidence.json 스키마)과 정확히 맞물리는 형식을 규정해, 문서를 쓰면 게이트가 초록이 되도록 한다. /gov-adr·/gov-slo·/gov-postmortem·/gov-change·/gov-audit가 산출물 표준으로 참조한다.
+  Governance document templates and control-mapping skill for eng-gov: MADR ADRs, SLO/error-budget policy, blameless postmortems, change policy, and a SOC 2 CC8.1 · ISO 27001:2022 Annex A control map (in references/). Each template's format is aligned to its deterministic gate's contract (status enum, thresholds.yaml flat keys, evidence.json schema) so writing the doc turns the gate green. Use when: authoring an ADR, SLO, postmortem, or change-evidence bundle, or mapping controls for an audit.
 metadata:
   version: 1.0.0
   category: governance
@@ -39,9 +39,9 @@ eng-gov 산출물의 **형식 단일 진실 원천**. 게이트(`hooks/gates/*.s
 3. **evidence.json은 실측만** — 실행하지 않은 게이트를 gates[]에 넣지 않는다. `author != approver`(4-eyes). risk_tier=high면 gate-secrets·gate-supply-chain 기록 필수.
 4. **audit-log.jsonl는 append-only** — 수기 편집 금지(HANDOFF.md auto-snapshot과 동일 규율). `/gov-audit`만 append한다.
 
-## 통제 매핑 (심사 대응)
+## 통제 매핑 (감사 대응)
 
-한국 ISMS-P·금융권 심사, SOC2 Type II 대응에서 "git 네이티브 증적 → 심사 증적"의 매핑은 `references/control-map.md` 참조. 핵심: `evidence.json`(변경통제) → SOC2 CC8.1 / ISMS-P 2.9.1, `gate-secrets`+`gate-supply-chain`(공급망) → ISMS-P 2.8. `/gov-audit`가 이 매핑을 한국어 증적 문서로 변환한다.
+SOC 2 Type II·ISO 27001:2022 대응에서 "git 네이티브 증적 → 감사 증적"의 매핑은 `references/control-map.md` 참조. 핵심: `evidence.json`(변경통제) → SOC 2 CC8.1 / ISO 27001 A.8.32, `gate-secrets`+`gate-supply-chain`(공급망) → ISO 27001 A.8.8/A.8.24. `/gov-audit`가 이 매핑을 감사 증적 문서로 변환한다.
 
 ## 위임 경계
 
@@ -57,4 +57,4 @@ eng-gov 산출물의 **형식 단일 진실 원천**. 게이트(`hooks/gates/*.s
 | `references/slo-template.md` | SLO 문서 + 에러버짓 정책 + thresholds.yaml·budget.json 형식(observe/infra-otel 연계 지점) |
 | `references/postmortem-template.md` | 블레임리스 포스트모템(타임라인·5-why·owner/due 액션·에러버짓 소모) |
 | `references/change-policy-template.md` | 변경정책 + evidence.json 스키마 + risk_tier 분류표 |
-| `references/control-map.md` | SOC2 CC8.1 · ISMS-P 2.9.1/2.8 통제 매핑표 |
+| `references/control-map.md` | SOC 2 CC8.1 · ISO 27001:2022 Annex A 통제 매핑표 |
