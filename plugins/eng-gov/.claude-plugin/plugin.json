@@ -1,0 +1,11 @@
+{
+  "name": "eng-gov",
+  "description": "Engineering governance harness — ADR, change evidence, threat model, supply-chain gates as local exit 0/1",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dokkabei97",
+    "email": "wkdrn970@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": []
+}

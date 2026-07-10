@@ -282,6 +282,24 @@
       ]
     },
     {
+      "name": "eng-gov",
+      "source": "./plugins/eng-gov",
+      "description": "Engineering governance harness — ADR, change evidence, threat model, supply-chain gates as local exit 0/1",
+      "version": "1.0.0",
+      "category": "develop",
+      "keywords": [
+        "governance",
+        "adr",
+        "soc2",
+        "isms-p",
+        "sbom",
+        "gitleaks",
+        "dora",
+        "evidence"
+      ],
+      "requires": []
+    },
+    {
       "name": "legal",
       "source": "./plugins/legal",
       "description": "Multi-agent harness for first-pass Korean-law legal risk diagnosis",
