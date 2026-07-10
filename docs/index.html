@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>dokkabei-harness — Claude Code plugin marketplace</title>
-<meta name="description" content="A Claude Code plugin marketplace: 20 plugins bundling loop-engineering harnesses, multi-agent teams, and gated dev workflows.">
+<meta name="description" content="A Claude Code plugin marketplace: 23 plugins bundling loop-engineering harnesses, multi-agent teams, and gated dev workflows.">
 <style>
   :root{
     --bg:#0b0d12; --bg2:#12151d; --card:#161a24; --line:#242a38;
@@ -147,8 +147,8 @@
       <span data-ko><span class="g">Claude Code</span>를 위한<br>루프 엔지니어링 하네스</span>
     </h1>
     <p class="tag">
-      <span data-en>A plugin marketplace of <b>20 plugins</b> — gated dev loops, multi-agent teams, and hook-driven verification. Completion is judged by the harness, not by the model.</span>
-      <span data-ko><b>플러그인 20종</b>의 마켓플레이스 — 게이트 기반 개발 루프, 멀티 에이전트 팀, 훅 기반 검증. 완료 판정은 모델이 아니라 하네스가 합니다.</span>
+      <span data-en>A plugin marketplace of <b>23 plugins</b> — gated dev loops, multi-agent teams, and hook-driven verification. Completion is judged by the harness, not by the model.</span>
+      <span data-ko><b>플러그인 23종</b>의 마켓플레이스 — 게이트 기반 개발 루프, 멀티 에이전트 팀, 훅 기반 검증. 완료 판정은 모델이 아니라 하네스가 합니다.</span>
     </p>
     <div class="cta">
       <a class="btn p" href="#install"><span data-en>Get started</span><span data-ko>시작하기</span></a>
@@ -158,10 +158,10 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><b>20</b><span data-en>plugins</span><span data-ko>플러그인</span></div>
-    <div class="stat"><b>78</b><span data-en>skills</span><span data-ko>스킬</span></div>
-    <div class="stat"><b>45</b><span data-en>agents</span><span data-ko>에이전트</span></div>
-    <div class="stat"><b>264</b><span data-en>regression tests</span><span data-ko>회귀 테스트</span></div>
+    <div class="stat"><b>23</b><span data-en>plugins</span><span data-ko>플러그인</span></div>
+    <div class="stat"><b>92</b><span data-en>skills</span><span data-ko>스킬</span></div>
+    <div class="stat"><b>59</b><span data-en>agents</span><span data-ko>에이전트</span></div>
+    <div class="stat"><b>381</b><span data-en>regression tests</span><span data-ko>회귀 테스트</span></div>
   </div>
 
   <section id="features">
@@ -235,10 +235,10 @@ export OBSERVE_TRACE=1</pre>
 
   <section id="plugins">
     <h2><span data-en>Plugin catalog</span><span data-ko>플러그인 카탈로그</span></h2>
-    <p class="sub"><span data-en>20 plugins across 6 categories. Install any with <code>/plugin install &lt;name&gt;@dokkabei-harness</code>.</span><span data-ko>6개 카테고리에 20개 플러그인. <code>/plugin install &lt;name&gt;@dokkabei-harness</code>로 설치합니다.</span></p>
+    <p class="sub"><span data-en>23 plugins across 9 categories. Install any with <code>/plugin install &lt;name&gt;@dokkabei-harness</code>.</span><span data-ko>9개 카테고리에 23개 플러그인. <code>/plugin install &lt;name&gt;@dokkabei-harness</code>로 설치합니다.</span></p>
 
     <div class="cat">
-      <div class="cat-h"><span class="k">develop</span><span class="n">9</span></div>
+      <div class="cat-h"><span class="k">develop</span><span class="n">10</span></div>
       <div class="plugs">
         <div class="plug"><h4>base</h4><p><span data-en>Foundational guard-hook &amp; LSP layer for the loop harness.</span><span data-ko>루프 하네스의 기반 가드-훅·LSP 계층.</span></p></div>
         <div class="plug"><h4>backend-shared</h4><p><span data-en>Stack-agnostic backend design &amp; ops pattern layer.</span><span data-ko>스택 불문 백엔드 설계·운영 패턴 계층.</span></p></div>
@@ -249,6 +249,7 @@ export OBSERVE_TRACE=1</pre>
         <div class="plug"><h4>search</h4><p><span data-en>Elasticsearch search-engineering agent team.</span><span data-ko>Elasticsearch 검색 엔지니어링 에이전트 팀.</span></p></div>
         <div class="plug"><h4>mvp</h4><p><span data-en>Drives a one-line idea to an MVP through a gated loop.</span><span data-ko>한 줄 아이디어를 게이트 루프로 MVP까지.</span></p></div>
         <div class="plug"><h4>feature-loop</h4><p><span data-en>Regression-safe feature loop for brownfield code.</span><span data-ko>브라운필드용 회귀 안전 기능 루프.</span></p></div>
+        <div class="plug"><h4>eng-gov</h4><p><span data-en>Engineering governance: ADR, change evidence, threat-model &amp; supply-chain gates.</span><span data-ko>개발 거버넌스: ADR·변경 증적·위협모델·공급망 게이트.</span></p></div>
       </div>
     </div>
 
@@ -272,9 +273,11 @@ export OBSERVE_TRACE=1</pre>
     </div>
 
     <div class="cat">
-      <div class="cat-h"><span class="k">startup</span><span class="n">1</span></div>
+      <div class="cat-h"><span class="k">startup · scaleup · enterprise</span><span class="n">3</span></div>
       <div class="plugs">
         <div class="plug"><h4>startup</h4><p><span data-en>Lean-startup validation &amp; strategy harness (maker/checker).</span><span data-ko>린 스타트업 검증·전략 하네스(maker/checker).</span></p></div>
+        <div class="plug"><h4>scaleup</h4><p><span data-en>Scale-up execution OS: OKR cadence, org scaling, board reporting, deal qualification.</span><span data-ko>스케일업 실행 OS: OKR 케이던스·조직 스케일링·보드 보고·딜 검증.</span></p></div>
+        <div class="plug"><h4>enterprise</h4><p><span data-en>Enterprise governance OS: GRC pipelines &amp; corporate planning with evidence gates.</span><span data-ko>엔터프라이즈 거버넌스 OS: GRC 파이프라인·전사 계획·증적 게이트.</span></p></div>
       </div>
     </div>
 

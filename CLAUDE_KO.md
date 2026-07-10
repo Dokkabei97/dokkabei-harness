@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 정체
 
-Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 20종이 `plugins/<name>/`에 살고
+Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23종이 `plugins/<name>/`에 살고
 `.claude-plugin/marketplace.json`에 등록된다. 설치: `/plugin install <name>@dokkabei-harness`.
 
 ## 명령
