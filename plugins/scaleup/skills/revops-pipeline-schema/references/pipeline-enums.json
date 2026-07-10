@@ -1,0 +1,25 @@
+{
+  "_note": "파이프라인 stage·forecast_category enum 단일 진실 원천. gate-pipeline-hygiene.sh 가 상대경로로 참조하며 게이트는 이 값을 하드코딩하지 않는다. 값 변경 시 revops-pipeline-schema SKILL.md 본문과 동기화할 것.",
+  "stage": [
+    "prospecting",
+    "qualification",
+    "proposal",
+    "negotiation",
+    "closed_won",
+    "closed_lost"
+  ],
+  "forecast_category": [
+    "pipeline",
+    "best_case",
+    "commit",
+    "closed_won",
+    "closed_lost",
+    "omitted"
+  ],
+  "open_forecast_categories": [
+    "pipeline",
+    "best_case",
+    "commit",
+    "omitted"
+  ]
+}
