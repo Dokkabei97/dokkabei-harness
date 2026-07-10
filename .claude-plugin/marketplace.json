@@ -241,6 +241,22 @@
       ]
     },
     {
+      "name": "scaleup",
+      "source": "./plugins/scaleup",
+      "description": "Scale-up execution OS — OKR cadence, org scaling, board reporting, enterprise deal qualification",
+      "version": "1.0.0",
+      "category": "scaleup",
+      "keywords": [
+        "okr",
+        "scaleup",
+        "board",
+        "meddpicc",
+        "revops",
+        "headcount",
+        "growth"
+      ]
+    },
+    {
       "name": "mvp",
       "source": "./plugins/mvp",
       "description": "Drives a one-line idea to an MVP through a gated loop",
