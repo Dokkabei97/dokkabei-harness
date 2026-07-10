@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "note": "gate-supply-chain.sh 가 syft SBOM 의 라이선스와 대조하는 기본 denylist. 프로젝트별 오버라이드는 .planning/gov/license-denylist.json 에 동일 스키마로 배치(우선 적용). SPDX 식별자를 syft-json .artifacts[].licenses[].value 와 정확 매칭한다. 법적 판단은 legal 위임 — 이 목록은 '독점 배포 소프트웨어 기본 차단' 관례일 뿐이다.",
+  "denied": [
+    "GPL-2.0",
+    "GPL-2.0-only",
+    "GPL-2.0-or-later",
+    "GPL-3.0",
+    "GPL-3.0-only",
+    "GPL-3.0-or-later",
+    "AGPL-3.0",
+    "AGPL-3.0-only",
+    "AGPL-3.0-or-later",
+    "SSPL-1.0",
+    "BUSL-1.1",
+    "CC-BY-NC-4.0",
+    "CC-BY-NC-SA-4.0"
+  ],
+  "review": [
+    "LGPL-2.1",
+    "LGPL-3.0",
+    "MPL-2.0",
+    "EPL-2.0"
+  ]
+}

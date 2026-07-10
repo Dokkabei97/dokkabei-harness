@@ -59,6 +59,10 @@ PRECOMPACT_MVP="$REPO_ROOT/plugins/mvp/hooks/precompact-anchor.sh"
 PRECOMPACT_FLOOP="$REPO_ROOT/plugins/feature-loop/hooks/precompact-anchor.sh"
 SUBAGENT_STOP_MVP="$REPO_ROOT/plugins/mvp/hooks/subagent-stop-verify.sh"
 SUBAGENT_STOP_FLOOP="$REPO_ROOT/plugins/feature-loop/hooks/subagent-stop-verify.sh"
+# 신규 도메인/거버넌스 게이트 디렉토리 — 게이트는 stdin 없이 "인자 exit 0/1" 계약
+GOV_GATES="$REPO_ROOT/plugins/eng-gov/hooks/gates"
+SCALEUP_GATES="$REPO_ROOT/plugins/scaleup/hooks/gates"
+ENTERPRISE_GATES="$REPO_ROOT/plugins/enterprise/hooks/gates"
 
 # ── 프로젝트 생성/정리 ────────────────────────────────────────────────────────
 
@@ -70,6 +74,8 @@ make_project() {
   mkdir -p "$TEST_PROJ/.planning"
   export CLAUDE_PROJECT_DIR="$TEST_PROJ"
   unset LOOP_TEST_CMD LOOP_E2E_CMD LOOP_PROMISE LOOP_MAX_ITER LOOP_MAX_MINUTES LOOP_CLAUDE_BIN 2>/dev/null || true
+  # 게이트 판정 env 누출 차단 — 날짜 오버라이드와 외부 도구 <TOOL>_BIN 오버라이드
+  unset GATE_TODAY GITLEAKS_BIN SYFT_BIN GRYPE_BIN CONFTEST_BIN THREAGILE_BIN DEPCRUISE_BIN LINT_IMPORTS_BIN 2>/dev/null || true
 }
 
 cleanup_project() {
@@ -209,4 +215,24 @@ write_stub_claude() {
   printf '#!/usr/bin/env bash\n%s\n' "${1:-exit 0}" > "$TEST_PROJ/claude-stub.sh"
   chmod +x "$TEST_PROJ/claude-stub.sh"
   export LOOP_CLAUDE_BIN="$TEST_PROJ/claude-stub.sh"
+}
+
+# ── 게이트 실행 (eng-gov/scaleup/enterprise) ─────────────────────────────────
+# 게이트 계약: stdin 없음, exit 0=통과/1=실패(gate-error-budget 만 2=미측정),
+# 위반은 stderr "[gate-X] 실패: …" 1줄씩. 날짜 판정은 GATE_TODAY(YYYY-MM-DD)
+# env 로 결정론화, 외부 도구는 <TOOL>_BIN env 오버라이드(기본값 도구명) —
+# write_stub_claude/LOOP_CLAUDE_BIN 과 동일 규약. 호스트 설치 여부와 무관하게
+# 존재/부재를 테스트에서 주입한다 (부재: <TOOL>_BIN=/nonexistent/tool).
+invoke_gate() {
+  local gate="$1"; shift
+  CLAUDE_PROJECT_DIR="$TEST_PROJ" bash "$gate" "$@"
+}
+
+# 외부 도구 스텁 생성 — $TEST_PROJ/.stubbin/<name> 에 $2 본문 실행 파일을 만들고
+# 경로를 stdout 으로 돌려준다. 사용: export GITLEAKS_BIN="$(stub_tool gitleaks 'exit 0')"
+stub_tool() {
+  mkdir -p "$TEST_PROJ/.stubbin"
+  printf '#!/usr/bin/env bash\n%s\n' "${2:-exit 0}" > "$TEST_PROJ/.stubbin/$1"
+  chmod +x "$TEST_PROJ/.stubbin/$1"
+  printf '%s' "$TEST_PROJ/.stubbin/$1"
 }
