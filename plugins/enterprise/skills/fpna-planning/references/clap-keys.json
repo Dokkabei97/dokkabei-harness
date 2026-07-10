@@ -1,0 +1,12 @@
+{
+  "_note": "CLAP — 한국형 경영계획 수립지침 형식주의 처방을 실질 필수요소로 재정의한 5키 정본. gate-budget.sh 가 이 파일을 단일 진실 원천으로 참조하여 budget-*.json 의 .clap 오브젝트 키 집합·값 비공백을 검증한다. 하드코딩 금지.",
+  "acronym": "CLAP",
+  "keys": ["challenge", "levers", "allocation", "assumptions", "plan"],
+  "labels": {
+    "challenge": "C — 대원칙·도전 목표 (CEO 경영방침에서 내려온 정량 목표)",
+    "levers": "L — 핵심 전략 레버 (목표 달성을 견인하는 드라이버)",
+    "allocation": "A — 자원·부서 배분 원칙 (인력·예산 배분 기준)",
+    "assumptions": "A(2) — 계획 가정 (환율·성장률·시장 등 전제 — assumptions 배열과 정합)",
+    "plan": "P — 실행 로드맵·점검 리듬 (분기 QBR·롤링 포캐스트 연계)"
+  }
+}

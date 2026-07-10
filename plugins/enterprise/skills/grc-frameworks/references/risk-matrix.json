@@ -1,0 +1,15 @@
+{
+  "_note": "5x5 리스크 매트릭스 정본 — likelihood(발생가능도) × impact(영향도) → level. score = likelihood × impact. gate-risk-register.sh 가 이 파일을 단일 진실 원천으로 참조하여 score·level 을 재계산·검증한다. 하드코딩 금지.",
+  "scale": {
+    "likelihood": {"1": "rare", "2": "unlikely", "3": "possible", "4": "likely", "5": "almost_certain"},
+    "impact": {"1": "insignificant", "2": "minor", "3": "moderate", "4": "major", "5": "severe"}
+  },
+  "levels": ["low", "medium", "high", "critical"],
+  "matrix": {
+    "1": {"1": "low",    "2": "low",    "3": "low",      "4": "medium",   "5": "medium"},
+    "2": {"1": "low",    "2": "low",    "3": "medium",   "4": "medium",   "5": "high"},
+    "3": {"1": "low",    "2": "medium", "3": "medium",   "4": "high",     "5": "high"},
+    "4": {"1": "medium", "2": "medium", "3": "high",     "4": "high",     "5": "critical"},
+    "5": {"1": "medium", "2": "high",   "3": "high",     "4": "critical", "5": "critical"}
+  }
+}

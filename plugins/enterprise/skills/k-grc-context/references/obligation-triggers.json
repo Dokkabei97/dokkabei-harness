@@ -1,0 +1,65 @@
+{
+  "_stamp": "2026 기준, 갱신 필요 — 상법·외감법·정보통신망법·중대재해처벌법의 자산·매출·인원 구간별 법정 의무 트리거. 법적 판단은 legal 위임, 재무 수치 검증은 finance 위임.",
+  "triggers": [
+    {
+      "id": "audit-committee",
+      "title": "감사위원회 설치 의무",
+      "basis": "상법 제542조의11",
+      "metric": "asset_total_krw",
+      "threshold_krw": 2000000000000,
+      "threshold_label": "자산총액 2조원 이상 상장사",
+      "delegate": "legal"
+    },
+    {
+      "id": "standing-auditor",
+      "title": "상근감사 선임 의무",
+      "basis": "상법 제542조의10",
+      "metric": "asset_total_krw",
+      "threshold_krw": 100000000000,
+      "threshold_label": "자산총액 1천억원 이상 상장사(감사위 미설치 시)",
+      "delegate": "legal"
+    },
+    {
+      "id": "compliance-officer",
+      "title": "준법지원인 선임 의무",
+      "basis": "상법 제542조의13",
+      "metric": "asset_total_krw",
+      "threshold_krw": 500000000000,
+      "threshold_label": "자산총액 5천억원 이상 상장사",
+      "delegate": "legal"
+    },
+    {
+      "id": "external-audit",
+      "title": "외부감사 대상",
+      "basis": "외부감사법 시행령 제5조",
+      "metric": "multi",
+      "threshold_label": "자산 500억·매출 500억·부채 등 4지표 중 2 이상(감사인 45일 내 선임)",
+      "delegate": "finance"
+    },
+    {
+      "id": "internal-accounting-ksox",
+      "title": "내부회계관리제도(K-SOX)",
+      "basis": "외부감사법 제8조",
+      "metric": "asset_total_krw",
+      "threshold_krw": 100000000000,
+      "threshold_label": "자산총액 1천억원 이상(자산 5천억 이상은 감사인 감사)",
+      "delegate": "finance"
+    },
+    {
+      "id": "isms-mandatory",
+      "title": "ISMS 인증 의무",
+      "basis": "정보통신망법 제47조",
+      "metric": "revenue_or_users",
+      "threshold_label": "정보통신서비스 매출·이용자 수 기준 충족 사업자",
+      "delegate": "self"
+    },
+    {
+      "id": "serious-accidents-act",
+      "title": "중대재해처벌법 적용",
+      "basis": "중대재해처벌법 제3~4조",
+      "metric": "regular_workers",
+      "threshold_label": "상시근로자 5인 이상(50인 미만 유예 종료) — 실질 운영 증적이 유·무죄를 가름",
+      "delegate": "legal"
+    }
+  ]
+}
