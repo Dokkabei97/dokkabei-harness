@@ -34,17 +34,6 @@
           }
         ],
         "description": "Reminder before git push to review changes. 명령 패턴 필터는 스크립트 내부"
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-md-creation.js"]
-          }
-        ],
-        "description": "Block creation of random .md files - keeps docs consolidated. 경로 필터는 스크립트 내부"
       }
     ],
     "PostToolUse": [

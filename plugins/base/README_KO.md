@@ -6,13 +6,13 @@
 
 ## 개요
 
-`base`는 다른 플러그인들이 공통으로 깔고 가는 최하위 기반 계층이다. Claude Code의 `PreToolUse`/`PostToolUse` 훅에 붙어, 별도 호출 없이 셸 명령과 파일 편집 시점마다 자동으로 발화한다. 위험한 동작(예: tmux 밖 dev 서버, 문서 파일 남발)은 차단하고, 나머지는 포맷 정리·컴파일 검사·보안 취약점 경고 등 비차단 피드백을 준다.
+`base`는 다른 플러그인들이 공통으로 깔고 가는 최하위 기반 계층이다. Claude Code의 `PreToolUse`/`PostToolUse` 훅에 붙어, 별도 호출 없이 셸 명령과 파일 편집 시점마다 자동으로 발화한다. 위험한 동작(예: tmux 밖 dev 서버)은 차단하고, 나머지는 포맷 정리·컴파일 검사·보안 취약점 경고 등 비차단 피드백을 준다.
 
 핵심 설계 의도는 두 가지다. 첫째, 실시간 보안 경고(`warn-security`)로 시크릿·인젝션·역직렬화 등 고신호 패턴을 편집 즉시 잡아내되 절대 흐름을 막지 않는 경고 전용으로 동작시킨다. 둘째, `mvp`·`feature-loop` 같은 루프형 하네스가 `requires`로 전제하는 안전망 역할을 한다 — 자율 반복 루프가 돌 때 이 훅 계층이 가드레일이 된다. 이 플러그인 자체는 커맨드·에이전트·스킬을 노출하지 않고, 순수하게 훅과 LSP 설정만으로 구성된다.
 
 ## 구성요소
 
-### 훅 (hooks/hooks.json → bin/hooks/*.js, 총 16종)
+### 훅 (hooks/hooks.json → bin/hooks/*.js, 총 15종)
 
 모든 훅은 Node.js 스크립트로, `hooks.json`의 matcher는 도구 이름(`Bash`/`Edit`/`Write`)만 지정하고 세부 명령·확장자 필터는 각 스크립트 내부에서 수행한다(표현식 matcher 미발화 실측 대응).
 
@@ -21,7 +21,6 @@
 - `block-dev-server.js` (Bash) → dev 서버(`npm/pnpm/yarn/bun dev`, `uvicorn`, `flask run`, `manage.py runserver`, `uv run …`)를 tmux 밖에서 실행하면 로그 접근 보장을 위해 `exit 2`로 차단
 - `warn-tmux.js` (Bash) → 장기 실행 명령(`npm/pnpm/yarn install·test`, `gradlew`, `pip install`, `uv sync`, `pytest`, `docker`, `make` 등)을 tmux 밖에서 실행하면 세션 유지 권고(비차단)
 - `warn-git-push.js` (Bash) → `git push` 직전 변경 검토 리마인더(비차단, 통과)
-- `block-md-creation.js` (Write) → 허용 목록(`README`/`CLAUDE`/`AGENTS`/`CONTRIBUTING`/`HANDOFF`/`CHANGELOG`) 및 `.planning/`·`tasks/` 경로 외의 `.md`/`.txt` 생성을 `exit 2`로 차단(문서 산발 방지)
 
 **PostToolUse — 포맷/컴파일/린트**
 
@@ -58,7 +57,7 @@
 
 설치 후 별도 호출이 필요 없다. 플러그인이 활성화되어 있으면 셸 명령 실행(`Bash`)과 파일 편집(`Edit`/`Write`)마다 관련 훅이 자동으로 발화한다.
 
-- **차단 훅**(`block-dev-server`, `block-md-creation`)은 `exit 2`로 해당 도구 호출을 막는다. dev 서버는 tmux 안에서 실행하고(`tmux new-session -d -s dev "npm run dev"`), 문서는 `README.md`나 허용 경로로 통합하면 통과한다.
+- **차단 훅**(`block-dev-server`)은 `exit 2`로 해당 도구 호출을 막는다. dev 서버는 tmux 안에서 실행하면(`tmux new-session -d -s dev "npm run dev"`) 통과한다.
 - **경고 훅**은 표준 에러로 메시지만 남기고 그대로 진행된다.
 - `warn-security` 경고가 의도된 코드라면 해당 라인에 `security-ok` 주석을 달아 억제한다.
 

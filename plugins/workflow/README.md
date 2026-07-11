@@ -34,7 +34,7 @@ so in a session where a loop harness is running they step back on their own to a
 - `post-merge` — An orchestrator that, after an MR merge, runs `issue-tracker` and `document-latest` in tandem to batch-process Plane issue closing and Outline document updates.
 - `sync-claude-md` — Analyzes code changes before commit/PR to determine whether `CLAUDE.md` needs updating, and if there are architecture, integration, convention, or environment changes, proposes and executes the update. It activates silently and automatically on commit/push/PR/MR requests.
 - `retro-compound` — The retrospective methodology that `/retro` follows. It filters lessons by reproducibility, generalizability, and judgeability criteria, distributes them according to a per-type routing table, and embeds duplicate/conflict checks and principles for preventing the accumulation of low-quality rules. CLAUDE.md reflection is delegated to `sync-claude-md`, and guard-hook scaffolding to `harness:create-flow`.
-- `doc-collab-guide` — A thin protocol for co-authoring long-form documents such as plans, proposals, and reports with the user. It defines only the official `doc-coauthoring` skill installation guidance, the outline approval gate, and the workaround path for the base hook (`block-md-creation`) conflict, delegating the authoring techniques themselves to the official skill.
+- `doc-collab-guide` — A thin protocol for co-authoring long-form documents such as plans, proposals, and reports with the user. It defines only the official `doc-coauthoring` skill installation guidance and the outline approval gate, delegating the authoring techniques themselves to the official skill.
 
 ### Hooks
 
@@ -59,7 +59,6 @@ so in a session where a loop harness is running they step back on their own to a
 
 ## Notes
 
-- The snapshot hook and `doc-collab-guide` are designed not to conflict with the `base` plugin's `block-md-creation` hook (direct shell writes are not tool calls, so they are not subject to blocking; document authoring uses the workaround path).
 - Operations that affect the remote (tag/GitLab Release creation, CLAUDE.md/document updates, lessons/skill reflection) are always executed only after user approval.
 - `sync-claude-md` activates silently and automatically in the commit/push/PR/MR flow, and if no update is needed it does nothing and moves on.
 - External-integration skills (`glab`/Plane/Outline) are an opt-in setup that does not activate without the corresponding tool/authentication.

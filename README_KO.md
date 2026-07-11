@@ -79,7 +79,7 @@ cd infra/otel && docker compose up -d
 ## 플러그인 목록
 
 ### 기반·하네스 구축
-- **base** — 공통 가드 훅 16종(보안 경고 `warn-security`, 포맷/컴파일 체크, tmux 강제 등) + LSP. 루프 하네스의 기반 계층.
+- **base** — 공통 가드 훅 15종(보안 경고 `warn-security`, 포맷/컴파일 체크, tmux 강제 등) + LSP. 루프 하네스의 기반 계층.
 - **harness** — 하네스 구축용 메타 플러그인: `team-harness` 설계, `/create-flow`·`/verify-flow`, 경량 범용 루프(`/loop-run`·`/loop-stop`).
 - **observe** — 하네스 사용 관측·개선. 훅 6종이 스킬/에이전트 호출·완주·세션 경계를 `.claude/skill-trace.jsonl`에 상관 기록(`OBSERVE_TRACE=1` opt-in)하고, `/observe-report`가 집계→미발화 판정→개선 제안서(description 튜닝·사장 자산)를 산출.
 

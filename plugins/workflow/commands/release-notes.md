@@ -73,7 +73,7 @@ Options:
 - **Bash**: `git describe`/`git log`로 태그·머지 이력 수집, `glab mr view`/`glab release create`/`git tag` 실행
 - **Read**: 기존 `CHANGELOG.md`를 읽어 중복 방지·삽입 위치 결정
 - **Grep**: 머지 메시지에서 MR iid(`!\d+`)·conventional 접두어 추출
-- **Write**: `--write` 시 `CHANGELOG.md` 갱신(base block-md-creation 허용목록에 포함됨)
+- **Write**: `--write` 시 `CHANGELOG.md` 갱신
 
 ## Examples
 

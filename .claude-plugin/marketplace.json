@@ -13,7 +13,7 @@
       "name": "base",
       "source": "./plugins/base",
       "description": "Foundational guard-hook & LSP layer for the loop harness",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "category": "develop",
       "keywords": [
         "hooks",
@@ -71,7 +71,7 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "Workflow harness automating the full development lifecycle",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "category": "productivity",
       "keywords": [
         "workflow",

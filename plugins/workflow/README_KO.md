@@ -34,7 +34,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 - `post-merge` — MR 머지 후 `issue-tracker`와 `document-latest`를 연계 실행해 Plane 이슈 종료와 Outline 문서 갱신을 일괄 처리하는 오케스트레이터.
 - `sync-claude-md` — 커밋/PR 전 코드 변경을 분석해 `CLAUDE.md` 갱신 필요 여부를 판단하고, 아키텍처·통합·컨벤션·환경 변화가 있으면 갱신을 제안·실행한다. 커밋/푸시/PR·MR 요청 시 조용히 자동 발화한다.
 - `retro-compound` — `/retro`가 따르는 회고 방법론. 재현·일반화·판정 가능성 기준으로 교훈을 필터링하고 유형별 라우팅 표에 따라 분배하며, 중복·상충 검사와 저품질 규칙 축적 방지 원칙을 담는다. CLAUDE.md 반영은 `sync-claude-md`, 가드 훅 스캐폴딩은 `harness:create-flow`에 위임.
-- `doc-collab-guide` — 기획서·제안서·보고서 등 장문 문서를 사용자와 공동 작성하기 위한 얇은 규약. 공식 `doc-coauthoring` 스킬 설치 안내, 아웃라인 승인 게이트, base 훅(`block-md-creation`) 충돌 우회 경로만 정의하고 작성 기법 자체는 공식 스킬에 위임한다.
+- `doc-collab-guide` — 기획서·제안서·보고서 등 장문 문서를 사용자와 공동 작성하기 위한 얇은 규약. 공식 `doc-coauthoring` 스킬 설치 안내, 아웃라인 승인 게이트만 정의하고 작성 기법 자체는 공식 스킬에 위임한다.
 
 ### 훅
 
@@ -59,7 +59,6 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 
 ## 참고
 
-- 스냅샷 훅과 `doc-collab-guide`는 `base` 플러그인의 `block-md-creation` 훅과 충돌하지 않도록 설계됐다(셸 직접 쓰기는 도구 호출이 아니므로 차단 비대상, 문서 작성은 우회 경로 사용).
 - 원격에 영향을 주는 작업(태그·GitLab Release 생성, CLAUDE.md·문서 갱신, lessons/스킬 반영)은 항상 사용자 승인 후 실행한다.
 - `sync-claude-md`는 커밋/푸시/PR·MR 흐름에서 조용히 자동 발화하며, 갱신이 불필요하면 아무 것도 하지 않고 넘어간다.
 - 외부 연동 스킬(`glab`/Plane/Outline)은 해당 도구·인증이 없으면 활성화되지 않는 opt-in 구성이다.

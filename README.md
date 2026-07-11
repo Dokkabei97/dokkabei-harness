@@ -80,7 +80,7 @@ tear it down. Nothing is uploaded, nothing is sold. (Details: [`infra/otel/READM
 ## Plugin list
 
 ### Foundation·harness building
-- **base** — 16 common guard hooks (security warning `warn-security`, format/compile checks, tmux enforcement, etc.) + LSP. The foundation layer of the loop harness.
+- **base** — 15 common guard hooks (security warning `warn-security`, format/compile checks, tmux enforcement, etc.) + LSP. The foundation layer of the loop harness.
 - **harness** — Meta plugin for harness building: `team-harness` design, `/create-flow`·`/verify-flow`, lightweight generic loop (`/loop-run`·`/loop-stop`).
 - **observe** — Harness usage observation·improvement. 6 hooks correlation-log skill/agent calls·completion·session boundaries into `.claude/skill-trace.jsonl` (`OBSERVE_TRACE=1` opt-in), and `/observe-report` aggregates → judges missed activation → produces an improvement proposal (description tuning·dead assets).
 

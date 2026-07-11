@@ -1,13 +1,13 @@
 ---
 name: doc-collab-guide
 description: |
-  기획서·제안서·보고서 등 긴 문서를 사용자와 공동 작성할 때 사용. 공식 doc-coauthoring 스킬(anthropics/skills) 의존 설치 안내, 아웃라인 승인 게이트(mvp G1 차용), base 훅(block-md-creation) 충돌 우회 경로를 정의한다. Use when: "문서 같이 쓰자", "제안서/기획서/보고서 초안", "공동 작성", co-authoring documents, proposals, long-form docs. 위임 경계 — 법률 문서는 /draft-legal-doc, 피치덱은 /pitch-deck, PRD는 mvp prd-authoring 우선. 이 스킬은 그 외 일반 장문 문서 전용.
-  Defines the co-authoring protocol for long-form documents (plans, proposals, reports) — install guidance for the official doc-coauthoring skill (anthropics/skills), an outline approval gate (mvp G1), and a bypass for the base block-md-creation hook. Use when: co-writing or drafting proposals, planning docs, reports, long documents; legal docs, pitch decks, and PRDs are delegated elsewhere.
+  기획서·제안서·보고서 등 긴 문서를 사용자와 공동 작성할 때 사용. 공식 doc-coauthoring 스킬(anthropics/skills) 의존 설치 안내, 아웃라인 승인 게이트(mvp G1 차용)를 정의한다. Use when: "문서 같이 쓰자", "제안서/기획서/보고서 초안", "공동 작성", co-authoring documents, proposals, long-form docs. 위임 경계 — 법률 문서는 /draft-legal-doc, 피치덱은 /pitch-deck, PRD는 mvp prd-authoring 우선. 이 스킬은 그 외 일반 장문 문서 전용.
+  Defines the co-authoring protocol for long-form documents (plans, proposals, reports) — install guidance for the official doc-coauthoring skill (anthropics/skills) and an outline approval gate (mvp G1). Use when: co-writing or drafting proposals, planning docs, reports, long documents; legal docs, pitch decks, and PRDs are delegated elsewhere.
 ---
 
 # Doc Collab Guide — 긴 문서 공동 작성 규약
 
-공식 `doc-coauthoring` 스킬을 얇게 연계해 기획서·제안서·보고서류 장문 문서를 사용자와 단계적으로 공동 작성하기 위한 규약. 도구 설치·진행 게이트·훅 충돌 우회만 정의하고, 문서 작성 기법 자체는 공식 스킬에 위임한다.
+공식 `doc-coauthoring` 스킬을 얇게 연계해 기획서·제안서·보고서류 장문 문서를 사용자와 단계적으로 공동 작성하기 위한 규약. 도구 설치·진행 게이트만 정의하고, 문서 작성 기법 자체는 공식 스킬에 위임한다.
 
 ## When to Activate
 
@@ -48,7 +48,7 @@ anthropics/skills 저장소 웹 확인 기준(2026-07): `doc-coauthoring`은 `ex
 | 2. 아웃라인 승인 | 섹션 목록 + 섹션별 핵심 주장 1줄 + 분량 추정 제시 | **★사용자 게이트** (mvp G1 차용) |
 | 3. 섹션별 작성 | 승인된 아웃라인 순서대로 한 섹션씩 작성·확인 | 섹션당 사용자 확인 1회 |
 | 4. 리뷰 (반증 관점) | "이 문서가 독자를 설득하지 못한다면 왜?" — 반론·누락 근거·과장 탐지 | 반증에 구체적 근거 요구 |
-| 5. 산출 | 아래 훅 충돌 규약에 따른 경로로 최종본 산출 | 경로 사용자 확인 |
+| 5. 산출 | 사용자와 합의한 경로로 최종본 산출 | 경로 사용자 확인 |
 
 **아웃라인 게이트 (2단계)** — mvp G1 스코프 승인 패턴 차용:
 - 승인 전 본문 작성 금지. 자율 통과 금지. "대충 이렇게 갈게요" 후 진행은 위반이다.
@@ -57,29 +57,12 @@ anthropics/skills 저장소 웹 확인 기준(2026-07): `doc-coauthoring`은 `ex
 
 **리뷰 (4단계)**: 작성자 시점이 아니라 회의적 독자 시점으로 전환한다. 최소 점검 3가지 — ① 핵심 주장에 근거 없는 섹션 ② 독자의 예상 반론 중 미대응 항목 ③ 결론이 1단계에서 합의한 목적과 어긋나는 지점.
 
-## base 훅 충돌 규약 — block-md-creation
-
-base 플러그인 활성 세션에서는 PreToolUse 훅이 **Write 도구의 신규 `.md`/`.txt` 생성을 차단**한다. 예외는 두 가지뿐이다(hooks.json + block-md-creation.js 확인 결과):
-- 파일명이 `README.md`·`CLAUDE.md`·`AGENTS.md`·`CONTRIBUTING.md`
-- 경로에 `.planning/` 포함
-
-**`docs/` 경로는 예외가 아니다.** `docs/proposal.md` 같은 Write는 차단된다.
-
-우회 규약 (위에서부터 순서대로 적용):
-
-1. **작업본은 `.planning/docs/{문서명}.md`에 작성** — 허용 경로이므로 훅과 충돌 없음. 섹션별 작성(3단계)은 전부 여기서 진행한다.
-2. **docx 최종 산출이면 훅 무관** — 훅 대상은 `.md`/`.txt`뿐이므로 document-skills로 `.docx` 산출 시 충돌 없음.
-3. **최종본이 저장소 내 다른 경로의 .md여야 하면** — 사용자에게 훅 차단 사실과 목적 경로를 고지하고, 승인 후 Bash `mv`로 `.planning/docs/`에서 이동한다 (파일 이동은 Write가 아니므로 차단되지 않음).
-4. **기존 .md 수정은 자유** — 훅 매처가 Write 전용이므로 이미 존재하는 문서의 Edit은 차단되지 않는다.
-
-훅을 끄거나 매처를 수정하는 우회는 금지 — 훅은 base 플러그인 소관이다.
-
 ## Verification
 
 - [ ] 목적/독자 합의문이 대화에 기록됨 (1단계)
 - [ ] 아웃라인 사용자 승인이 명시적으로 존재함 — 승인 전 본문 없음 (2단계)
 - [ ] 리뷰에서 반증 3가지 점검 수행 (4단계)
-- [ ] 최종 산출 경로가 훅 충돌 규약을 따름 (`.planning/` 작성 → 승인된 경로 이동 또는 docx)
+- [ ] 최종 산출 경로가 사용자와 합의됨 (5단계)
 
 ## Related
 
