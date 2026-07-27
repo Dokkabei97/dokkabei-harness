@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Session start time tracking file
-SESSION_FILE="${HOME}/.claude/statusline-session.txt"
-USAGE_CACHE_FILE="${HOME}/.claude/statusline-usage-cache.json"
+SESSION_FILE="$HOME/.claude/statusline-session.txt"
+USAGE_CACHE_FILE="$HOME/.claude/statusline-usage-cache.json"
 USAGE_CACHE_TTL=120  # seconds
 
 # Read JSON input from stdin
@@ -17,51 +17,67 @@ total_output=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 remaining_pct=$(echo "$input" | jq -r '.context_window.remaining_percentage // empty')
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // ""')
-# Extract model name, version
-# model_id examples: claude-opus-4-5, claude-sonnet-4-6, claude-haiku-3-5
-model_name="Claude"
-model_version=""
-if echo "$model_display" | grep -qi "opus"; then
-    model_name="Opus"
-    model_color=$'\033[91m'  # Bright Red
-elif echo "$model_display" | grep -qi "sonnet"; then
-    model_name="Sonnet"
-    model_color=$'\033[94m'  # Bright Blue
-elif echo "$model_display" | grep -qi "haiku"; then
-    model_name="Haiku"
-    model_color=$'\033[32m'  # Green
-else
-    model_color=$'\033[37m'  # White
-fi
+# Extract model name and version from model_id — release-agnostic.
+# Observed id layouts:
+#   claude-opus-5[1m]          -> Opus 5     (major only + context-variant suffix)
+#   claude-sonnet-5            -> Sonnet 5
+#   claude-haiku-4-5-20251001  -> Haiku 4.5  (major-minor + date suffix)
+#   claude-opus-4-1-20250805   -> Opus 4.1
+#   claude-3-7-sonnet-20250219 -> Sonnet 3.7 (legacy: version before name)
+# Split on '-' and '[]' and classify segments rather than assuming a fixed
+# layout, so future releases (5, 5.1, 6, ...) need no edit here.
+model_segments=$(printf '%s' "$model_id" | tr '[]' '\n\n' | tr '-' '\n')
+name_seg=$(printf '%s\n' "$model_segments" | grep -xE '[a-z]+' | grep -vxE 'claude|latest|preview' | head -1)
+# Numeric segments = version parts; drop 8-digit date stamps (e.g. 20251001)
+model_version=$(printf '%s\n' "$model_segments" | grep -xE '[0-9]+' | grep -vxE '(19|20)[0-9]{6}' | head -2 | paste -sd. -)
 
-# Extract version from model_id (e.g., claude-sonnet-4-6 -> 4.6, claude-haiku-4-5-20251001 -> 4.5)
-if [ -n "$model_id" ]; then
-    # Strip "claude-{name}-" prefix, then take first two number segments (major-minor)
-    # This correctly handles date suffixes like claude-haiku-4-5-20251001 -> 4.5
-    raw_version=$(echo "$model_id" | sed -E 's/^claude-[a-z]+-//' | grep -oE '^[0-9]+-[0-9]+')
-    if [ -n "$raw_version" ]; then
-        model_version=$(echo "$raw_version" | sed 's/-/./')
-    fi
-fi
+# Fall back to display_name (e.g. "Opus 5 (1M context)") when model_id is absent
+[ -z "$name_seg" ] && name_seg=$(printf '%s' "$model_display" | grep -oE '[A-Za-z]+' | head -1 | tr '[:upper:]' '[:lower:]')
+[ "$name_seg" = "claude" ] && name_seg=$(printf '%s' "$model_display" | grep -oiE 'opus|sonnet|haiku|fable' | head -1 | tr '[:upper:]' '[:lower:]')
+[ -z "$model_version" ] && model_version=$(printf '%s' "$model_display" | grep -oE '[0-9]+(\.[0-9]+)?' | head -1)
 
-# Build model label: "Sonnet 4.6 high" or "Opus 4.5 medium"
+case "$name_seg" in
+    opus)   model_name="Opus";   model_color=$'\033[91m' ;;  # Bright Red
+    sonnet) model_name="Sonnet"; model_color=$'\033[94m' ;;  # Bright Blue
+    haiku)  model_name="Haiku";  model_color=$'\033[32m' ;;  # Green
+    fable)  model_name="Fable";  model_color=$'\033[95m' ;;  # Bright Magenta
+    "")     model_name="Claude"; model_color=$'\033[37m' ;;  # White
+    # Unknown/new family: capitalize whatever the id reports
+    *)      model_name="$(printf '%s' "${name_seg:0:1}" | tr '[:lower:]' '[:upper:]')${name_seg:1}"
+            model_color=$'\033[37m' ;;
+esac
+
+# Build model label: "Sonnet4.6 high" or "Opus5 xhigh" (name+version joined, effort separate)
 model_label="${model_name}"
-[ -n "$model_version" ] && model_label="${model_label} ${model_version}"
+[ -n "$model_version" ] && model_label="${model_label}${model_version}"
 
-# Append effort level only for non-Haiku models
-# Source: settings.local.json → settings.json (persisted enum: low|medium|high|xhigh)
-# Note: `/effort max` is session-only and Claude Code doesn't expose it to statusline.
-if [ "$model_name" != "Haiku" ]; then
-    effort=$(jq -r '.effortLevel // empty' ${HOME}/.claude/settings.local.json 2>/dev/null)
-    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' ${HOME}/.claude/settings.json 2>/dev/null)
-    [ -z "$effort" ] && effort=$([ "$model_name" = "Opus" ] && echo "xhigh" || echo "medium")
-
-    case "$effort" in
-        low|medium|high|xhigh) effort_label="$effort" ;;
-        *)                     effort_label="medium" ;;
-    esac
-    model_label="${model_label} ${effort_label}"
+# Append effort level. Primary source is the statusline payload's own
+# `.effort.level` (Claude Code >= 2.1.x): it reflects session-only `/effort`
+# changes — including `max` — that never reach settings.json, and the payload
+# omits the field entirely for models that don't support effort.
+# settings.* is only a fallback for older CLIs that don't send the field.
+effort=$(echo "$input" | jq -r '.effort.level // empty' 2>/dev/null)
+if [ -z "$effort" ] && [ "$model_name" != "Haiku" ]; then
+    effort=$(jq -r '.effortLevel // empty' "$HOME/.claude/settings.local.json" 2>/dev/null)
+    [ -z "$effort" ] && effort=$(jq -r '.effortLevel // empty' "$HOME/.claude/settings.json" 2>/dev/null)
 fi
+
+# ultracode = xhigh effort + standing workflow orchestration. It is NOT part of
+# the statusline payload, and `/effort ultracode` is normalized to "xhigh"
+# before it gets here, so only the persisted settings flag is detectable.
+ultracode=$(jq -r '.ultracode // empty' "$HOME/.claude/settings.local.json" 2>/dev/null)
+[ -z "$ultracode" ] && ultracode=$(jq -r '.ultracode // empty' "$HOME/.claude/settings.json" 2>/dev/null)
+
+# Show whatever level the payload reports (low|medium|high|xhigh|max today,
+# new tiers later) — validate the shape, not a fixed list, so a future effort
+# level doesn't silently vanish the way a hardcoded whitelist would.
+if printf '%s' "$effort" | grep -qE '^[a-z]{1,8}$'; then
+    effort_label="$effort"
+else
+    effort_label=""
+fi
+[ "$ultracode" = "true" ] && effort_label="ultracode"
+[ -n "$effort_label" ] && model_label="${model_label} ${effort_label}"
 
 reset=$'\033[0m'
 dim_gray=$'\033[90m'
