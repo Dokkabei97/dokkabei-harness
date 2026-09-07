@@ -16,3 +16,7 @@ gen
 
 # 로컬 Grafana 홈 대시보드 선택 (EN/KO) 등 개인 오버라이드
 infra/otel/.env
+
+# Claude Harness
+tasks
+.planning
