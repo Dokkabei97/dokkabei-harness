@@ -37,7 +37,7 @@ eng-gov 산출물의 **형식 단일 진실 원천**. 게이트(`hooks/gates/*.s
 1. **ADR status enum** — `proposed | accepted | superseded | deprecated` 중 하나를 `status:` 줄에 명시. superseded면 `superseded-by: NNNN`이 실재 ADR을 가리켜야 한다.
 2. **thresholds.yaml는 플랫** — 중첩 YAML 금지. `key: value` 한 줄씩(게이트가 grep/sed로 파싱, yq 의존 없음).
 3. **evidence.json은 실측만** — 실행하지 않은 게이트를 gates[]에 넣지 않는다. `author != approver`(4-eyes). risk_tier=high면 gate-secrets·gate-supply-chain 기록 필수.
-4. **audit-log.jsonl는 append-only** — 수기 편집 금지(HANDOFF.md auto-snapshot과 동일 규율). `/gov-audit`만 append한다.
+4. **audit-log.jsonl는 append-only** — 수기 편집 금지. `/gov-audit`만 append한다.
 
 ## 통제 매핑 (감사 대응)
 

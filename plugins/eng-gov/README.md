@@ -58,7 +58,7 @@ docs/decisions/NNNN-<slug>.md          # ADR (industry-standard path)
 ├── slo/thresholds.yaml, budget.json   # SLO thresholds (flat) + budget (observe/otel input)
 ├── postmortems/YYYY-MM-DD-<slug>.md    # blameless postmortems
 ├── <area>/verdict.json                # checker verdicts
-└── audit-log.jsonl                    # append-only (no hand-editing — like HANDOFF auto-snapshot)
+└── audit-log.jsonl                    # append-only (no hand-editing — only /gov-audit appends)
 ```
 
 ## Loop-engine linkage

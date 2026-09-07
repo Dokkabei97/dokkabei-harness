@@ -58,7 +58,7 @@ docs/decisions/NNNN-<slug>.md          # ADR (업계 표준 경로)
 ├── slo/thresholds.yaml, budget.json   # SLO 임계값(플랫) + 버짓(observe/otel 입력)
 ├── postmortems/YYYY-MM-DD-<slug>.md    # 블레임리스 포스트모템
 ├── <영역>/verdict.json                # checker 판정
-└── audit-log.jsonl                    # append-only (수기 편집 금지 — HANDOFF auto-snapshot 동급)
+└── audit-log.jsonl                    # append-only (수기 편집 금지 — /gov-audit만 append)
 ```
 
 ## 루프 엔진 결합

@@ -39,13 +39,12 @@ so in a session where a loop harness is running they step back on their own to a
 ### Hooks
 
 - `PreToolUse(Bash)` → `hooks/remind-claude-md-sync.js` — Blocks `git commit`/`git push` once per session with exit 2 to deterministically enforce the `sync-claude-md` review (whether CLAUDE.md needs updating). Retrying the same command after the review passes, and it does not fire in projects without a CLAUDE.md. Kill switch: `CLAUDE_MD_SYNC_REMIND=0`.
-- `PreCompact` / `SessionEnd` → `hooks/session-snapshot.sh` — Just before compaction and at session end, deterministically records the git status (branch, changed files, recent commits) and the count of incomplete markers only into the `<!-- auto-snapshot -->` marker section of `HANDOFF.md`. It never touches manually written content outside the marker via any path, and always exits 0 even on failure so as not to disrupt the session. In a loop session where `.planning/loop-active` exists, it steps back immediately (the anchor is under mvp/floop's purview).
 
 ## Usage
 
 - Upfront stage: For a new feature, gate the spec with `spec-driven-dev`, and for vague requirements decompose down to tasks with `planning-guide` before starting.
 - During development: When an MR is opened, review it with `/review-mr [number|URL]` (auto-detects the current branch if no argument is given). At commit/PR time, `sync-claude-md` automatically checks whether CLAUDE.md needs updating.
-- Session management: When the context grows long or you hand off work, leave a semantic summary with `/handoff`, while the mechanical git status is automatically preserved into `HANDOFF.md` by the snapshot hook (the two are complementary).
+- Session management: When the context grows long or you hand off work, record the session summary and git status into `HANDOFF.md` with `/handoff` — explicit invocation only; nothing is written automatically.
 - Post-merge: Batch-process Plane issue closing + Outline document updates with `post-merge`, and at release close, organize the changelog and next version with `/release-notes`.
 - Wrap-up: At the end of work/review/loop, extract session lessons with `/retro` and route them to lessons.md, CLAUDE.md, and skills (approval before every application).
 

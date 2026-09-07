@@ -71,7 +71,7 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "Workflow harness automating the full development lifecycle",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "category": "productivity",
       "keywords": [
         "workflow",
@@ -318,7 +318,7 @@
       "name": "eng-gov",
       "source": "./plugins/eng-gov",
       "description": "Engineering governance harness — ADR, change evidence, threat model, supply-chain gates as local exit 0/1",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "develop",
       "keywords": [
         "governance",

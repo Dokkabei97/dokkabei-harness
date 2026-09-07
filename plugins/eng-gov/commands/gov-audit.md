@@ -1,8 +1,8 @@
 ---
 name: gov-audit
 description: |
-  거버넌스 감사 커맨드 — run-registered.sh로 등록 게이트를 일괄 실행하고 결과를 append-only audit-log.jsonl에 기록한 뒤, git 네이티브 증적을 감사 증적 문서(audit/YYYY-MM-DD.md)로 변환한다. 미등록(enabled:false) 게이트는 종수와 사유를 명시해 감사 투명성을 확보한다. SOC 2 CC8.1·ISO 27001:2022 Annex A 통제 매핑은 control-map 참조. audit-log.jsonl은 수기 편집 금지(HANDOFF auto-snapshot 동급). /verify-flow의 거버넌스판. Use when 정기 감사·SOC 2/ISO 27001 심사 대비 증적을 생성하거나 등록 게이트 전체 실행 현황이 필요할 때.
-  Governance audit command: runs all registered gates via run-registered.sh, appends results to the append-only audit-log.jsonl, then converts git-native evidence into an audit-evidence document (audit/YYYY-MM-DD.md) that names disabled gates and their reasons for transparency. Control mapping to SOC 2 CC8.1 · ISO 27001:2022 Annex A lives in control-map. audit-log.jsonl must not be hand-edited (like the HANDOFF auto-snapshot). The governance counterpart of /verify-flow. Use when: producing audit evidence for a SOC 2 / ISO 27001 review or checking overall registered-gate status.
+  거버넌스 감사 커맨드 — run-registered.sh로 등록 게이트를 일괄 실행하고 결과를 append-only audit-log.jsonl에 기록한 뒤, git 네이티브 증적을 감사 증적 문서(audit/YYYY-MM-DD.md)로 변환한다. 미등록(enabled:false) 게이트는 종수와 사유를 명시해 감사 투명성을 확보한다. SOC 2 CC8.1·ISO 27001:2022 Annex A 통제 매핑은 control-map 참조. audit-log.jsonl은 수기 편집 금지(/gov-audit만 append). /verify-flow의 거버넌스판. Use when 정기 감사·SOC 2/ISO 27001 심사 대비 증적을 생성하거나 등록 게이트 전체 실행 현황이 필요할 때.
+  Governance audit command: runs all registered gates via run-registered.sh, appends results to the append-only audit-log.jsonl, then converts git-native evidence into an audit-evidence document (audit/YYYY-MM-DD.md) that names disabled gates and their reasons for transparency. Control mapping to SOC 2 CC8.1 · ISO 27001:2022 Annex A lives in control-map. audit-log.jsonl must not be hand-edited (only /gov-audit appends). The governance counterpart of /verify-flow. Use when: producing audit evidence for a SOC 2 / ISO 27001 review or checking overall registered-gate status.
 category: workflow
 complexity: advanced
 mcp-servers: []
@@ -37,7 +37,7 @@ Options:
 
 ### Phase 2: audit-log.jsonl append (수기 편집 금지)
 1. 실행 결과를 `.planning/gov/audit-log.jsonl`에 **append-only**로 기록: 게이트별 `{"ts","gate","exit","sha"}` 1줄씩.
-2. 이 파일은 HANDOFF auto-snapshot과 동일하게 **수기 편집 금지** — `/gov-audit`만 append한다.
+2. 이 파일은 **수기 편집 금지** — `/gov-audit`만 append한다.
 
 ### Phase 3: 감사 증적 문서 변환
 1. `.planning/gov/audit/YYYY-MM-DD.md` 생성: 실행 게이트·결과·SHA, **미등록(enabled:false) 게이트의 종수와 사유**를 명시(감사 투명성).

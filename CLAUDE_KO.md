@@ -43,8 +43,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
 ## 헷갈리기 쉬운 구조
 
 - `claude/` = 전역 `~/.claude` 배포 템플릿이다 — 이 파일(프로젝트 메모리)과 무관.
-- `HANDOFF.md` 상단 `<!-- auto-snapshot -->` 블록은 PreCompact/SessionEnd 훅이 기계 기록한다 —
-  손으로 고치지 말 것. 의미 요약은 `/handoff`로 채운다.
+- `HANDOFF.md`는 `/handoff` 커맨드(명시 호출)로만 작성된다 — 자동 기록 훅은 없다
+  (PreCompact/SessionEnd 스냅샷 훅은 2026-09 제거).
 - 훅 스크립트는 2계열: base는 Node(`bin/hooks/*.js`, `_lib/hook-stdin.js` 컨벤션), 루프
   플러그인(harness/mvp/feature-loop)은 bash Stop훅(`hooks/*-stop-hook.sh`).
 - `infra/otel/` = 로컬 관측 스택(Claude Code 내장 OTel 수신, Grafana localhost:3000) —

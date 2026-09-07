@@ -43,8 +43,8 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 ## Easily Confused Structure
 
 - `claude/` = the global `~/.claude` distribution template — unrelated to this file (project memory).
-- The `<!-- auto-snapshot -->` block at the top of `HANDOFF.md` is machine-written by the PreCompact/SessionEnd hooks —
-  do not edit it by hand. Fill in the semantic summary via `/handoff`.
+- `HANDOFF.md` is written only by the `/handoff` command (explicit invocation) — there is no hook that records it
+  automatically (the PreCompact/SessionEnd snapshot hook was removed 2026-09).
 - Hook scripts come in 2 families: base is Node (`bin/hooks/*.js`, `_lib/hook-stdin.js` convention), and the loop
   plugins (harness/mvp/feature-loop) are bash Stop hooks (`hooks/*-stop-hook.sh`).
 - `infra/otel/` = the local observability stack (Claude Code built-in OTel receiver, Grafana localhost:3000) —
