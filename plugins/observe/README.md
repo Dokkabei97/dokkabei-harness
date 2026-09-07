@@ -36,6 +36,7 @@ All hooks operate only when `OBSERVE_TRACE=1`, and since they emit no stdout (ze
 ### Aggregation engine
 
 - `bin/observe-report.js` — A dependency-free deterministic aggregator and the output engine of `/observe-report`. Using a tolerant reader, it reads the traces and outputs a summary of invocations·completion·unused assets·missed-activation candidates·session boundaries as JSON (`--json`) or Korean text. Not making LLM judgments (confirming missed activation, diagnosing descriptions) is this file's contract. The inventory denominator is determined in the order `--plugins-dir` > the trace's `session_start.plugin_root` > back-derivation from the file's own location.
+- `bin/observe-export.js` — A deterministic renderer that turns the aggregate JSON (stdin) into a wiki-ingestable markdown snapshot (stdout). It refuses input carrying raw-text fields (candidates/followups/why etc.) with exit 2 (fail-closed), drops absolute paths, and renders asset names as `[[wikilinks]]` (entity upsert + crossref). Being stdout-only it does not breach the proposals-only contract — materialization and ingest are the consumer's (`wiki-ops:wiki-harness-feed`) responsibility.
 
 ## Setup
 

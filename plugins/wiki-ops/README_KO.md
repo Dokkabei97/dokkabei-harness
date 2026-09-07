@@ -28,6 +28,7 @@ exit code가 한다.
 | `/wiki-curate` | 스킬 | 게이트 그린까지 소견 해소 (`/loop-run` 위임, engine=generic) |
 | `/wiki-ask` | 스킬 | 인용 질의응답: query / `--persist` synthesis / research 라우팅 |
 | `/wiki-status` | 스킬 | 읽기 전용 1화면 현황 (상태 변경 없음) |
+| `/wiki-harness-feed` | 스킬 | observe 브릿지 — 원문 0 집계 스냅샷을 이중 게이트·승인 후 vault 시계열로 ingest |
 | `wiki-curator` | 에이전트 | maker — 대량 ingest·소견 해소 편집 (Edit 보유) |
 | `wiki-auditor` | 에이전트 | checker — lint triage·사기 적발 (의도적 Edit 미보유) |
 | `wiki-librarian` | 에이전트 | 질의·synthesis 라우팅, "근거 없음" 정직 보고 |

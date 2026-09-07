@@ -100,7 +100,7 @@
       "name": "observe",
       "source": "./plugins/observe",
       "description": "Correlation-logs harness usage via hooks to diagnose improvements",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "category": "harness",
       "keywords": [
         "observe",
@@ -391,7 +391,7 @@
       "name": "wiki-ops",
       "source": "./plugins/wiki-ops",
       "description": "Operates a cited llm-wiki knowledge vault through gated feed, audit, curation-loop, and Q&A",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "productivity",
       "keywords": [
         "wiki",

@@ -28,6 +28,7 @@ Completion is judged by exit codes, never by model self-assessment.
 | `/wiki-curate` | skill | Fix lint findings until gates are green (delegates to `/loop-run`, engine=generic) |
 | `/wiki-ask` | skill | Cited Q&A: query / `--persist` synthesis / research routing |
 | `/wiki-status` | skill | Read-only one-screen vault status (never mutates state) |
+| `/wiki-harness-feed` | skill | observe bridge — ingests raw-text-free aggregate snapshots into the vault time series after double gating and approval |
 | `wiki-curator` | agent | Maker — batch ingest, finding-resolution edits (has Edit) |
 | `wiki-auditor` | agent | Checker — lint triage + fraud detection (no Edit by design) |
 | `wiki-librarian` | agent | Q&A/synthesis routing, honest "no grounding" reporting |

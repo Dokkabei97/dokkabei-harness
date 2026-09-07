@@ -41,6 +41,7 @@ v1.3.0은 hermes-agent curator의 **결정론 절반만** 집계기에 이식했
 ### 집계 엔진
 
 - `bin/observe-report.js` — 의존성 없는 결정론 집계기이자 `/observe-report`의 산출 엔진. tolerant reader로 트레이스를 읽어 호출·완주·미사용 자산·미발화 후보·세션 경계 요약을 JSON(`--json`) 또는 한국어 텍스트로 출력한다. LLM 판단(미발화 확정, description 진단)은 하지 않는 것이 이 파일의 계약이다. 인벤토리 분모는 `--plugins-dir` > 트레이스의 `session_start.plugin_root` > 파일 자신의 위치 역산 순으로 결정한다.
+- `bin/observe-export.js` — 집계 JSON(stdin)을 위키 투입용 마크다운 스냅샷(stdout)으로 바꾸는 결정론 렌더러. 원문 운반 필드(candidates/followups/why 등)가 입력에 보이면 exit 2로 거부하고(fail-closed), 절대경로를 드롭하며, 자산명을 `[[위키링크]]`(entity upsert + 교차링크)로 렌더한다. stdout-온리라 제안-온리 계약을 침해하지 않는다 — 물화·ingest는 소비측(`wiki-ops:wiki-harness-feed`)의 책임이다.
 
 ## 세팅
 
