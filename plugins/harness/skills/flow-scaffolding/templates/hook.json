@@ -8,8 +8,7 @@
             "type": "command",
             "command": "{{SHELL_COMMAND}}"
           }
-        ],
-        "description": "{{DESCRIPTION}}"
+        ]
       }
     ]
   },

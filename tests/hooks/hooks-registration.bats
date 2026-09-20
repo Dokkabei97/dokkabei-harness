@@ -67,3 +67,24 @@ $f -> missing: $resolved"
   done
   [ -z "$violations" ] || { printf 'referenced hook script(s) not found:%s\n' "$violations"; false; }
 }
+
+# matcher 그룹(hooks.<Event>[i]) 은 matcher/hooks 2 키만 허용한다.
+# 배경: 그룹 레벨에 description 같은 스키마 외 키를 두면 Claude Code 가 조용히 무시하고
+#       세션 시작마다 'hooks.json: unknown key "..." ignored' 를 출력한다(2.1.278 실측).
+#       timeout/args/async/if 는 그룹이 아니라 핸들러 엔트리(hooks[j]) 소속이다.
+#       훅 설명은 hooks.json 이 아니라 훅 스크립트 헤더 주석에 적는다.
+@test "hooks-registration: matcher groups carry only matcher/hooks keys" {
+  local f violations=""
+  for f in $(plugin_hooks_files); do
+    local unknown
+    unknown="$(jq -r '.hooks | to_entries[] as $e | $e.value | to_entries[] as $g
+                      | $g.value | keys[] | select(. != "matcher" and . != "hooks")
+                      | "hooks.\($e.key)[\($g.key)] -> \(.)"' "$f")"
+    while IFS= read -r u; do
+      [ -z "$u" ] && continue
+      violations="$violations
+$f -> $u"
+    done <<< "$unknown"
+  done
+  [ -z "$violations" ] || { printf 'unknown key(s) in matcher group (무시+경고):%s\n' "$violations"; false; }
+}

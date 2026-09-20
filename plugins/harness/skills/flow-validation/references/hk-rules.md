@@ -15,10 +15,15 @@
 - **Check**: `hooks[].type` is one of: "command", "http", "prompt", "agent"
 - **Auto-fixable**: Yes (set to "command" if missing)
 
-## HK-004: Description Present
+## HK-004: No Unknown Keys in Matcher Group
 - **Severity**: Medium
-- **Check**: Non-empty description string
-- **Auto-fixable**: Yes (generate from matcher expression)
+- **Check**: A matcher group (`hooks.<Event>[i]`) carries only `matcher` and `hooks`
+- **Auto-fixable**: Yes (drop the off-schema key)
+- **Note**: Off-schema keys such as `description` are silently ignored and make Claude Code print
+  `hooks.json: unknown key "..." ignored` at every session start (measured on 2.1.278).
+  `timeout` / `args` / `async` / `if` belong to the handler entry (`hooks[j]`), not the group;
+  `$schema` is the only tolerated top-level extra (v2.1.274+).
+  Document a hook in its script header comment, never in hooks.json.
 
 ## HK-005: No Duplicate Matchers
 - **Severity**: High

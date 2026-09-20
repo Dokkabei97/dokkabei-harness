@@ -1,7 +1,7 @@
 {
   "name": "feature-loop",
   "description": "Regression-safe feature-development loop for brownfield codebases",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

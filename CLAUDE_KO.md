@@ -21,6 +21,10 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
 - hooks.json `matcher`는 **툴명 regex만** 유효(`Bash`, `Edit|Write`). `tool == "X"` 표현식이나 명령
   내용 필터를 matcher에 넣으면 **조용히 미발화**한다(실측 2026-07) — 명령/인자 필터링은 반드시
   훅 스크립트 내부에서 한다.
+- hooks.json **matcher 그룹은 `matcher`·`hooks` 2키만** 가진다(최상위 예외는 `$schema` 하나).
+  `timeout`/`args`/`async`/`if`는 핸들러 엔트리 소속이며, `description` 같은 스키마 외 키는 무시되고
+  세션 시작마다 `hooks.json: unknown key "..." ignored` 경고를 낸다(실측 2026-09, CC 2.1.278) —
+  훅 설명은 스크립트 헤더 주석에 적는다. `tests/hooks/hooks-registration.bats` + HK-004로 가드.
 - 플러그인은 **레포 소스에서만 편집**한다. `~/.claude/plugins/cache`·marketplaces 클론 직접 수정
   금지(실측된 캐시 드리프트 사고 이력). 공식 반영 경로는 커밋 후 `/plugin update`이며,
   훅·설정 변경은 다음 세션부터 유효하다.

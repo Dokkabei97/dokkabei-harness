@@ -127,7 +127,7 @@ Check each component against its type-specific structural requirements.
 | HK-001 | Valid JSON structure | Critical | Parse JSON without errors |
 | HK-002 | Matcher expression present | Critical | Non-empty matcher string |
 | HK-003 | Hook type validity | High | `hooks[].type` is one of: command, http, prompt, agent |
-| HK-004 | Description present | Medium | Non-empty description string |
+| HK-004 | No unknown keys in matcher group | Medium | Group carries only `matcher`, `hooks` (off-schema keys are ignored + warned) |
 | HK-005 | No duplicate matchers | High | Unique matcher expressions across all hooks |
 | HK-006 | Script command is safe | High | No `rm -rf`, `eval`, or dangerous patterns |
 | HK-007 | Event name validity | Critical | One of 27 valid events |

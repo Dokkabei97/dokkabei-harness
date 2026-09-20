@@ -21,6 +21,10 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - hooks.json `matcher` accepts **only a tool-name regex** (`Bash`, `Edit|Write`). Putting a `tool == "X"` expression or a command-content
   filter in the matcher causes it to **silently miss activation** (measured 2026-07) — command/argument filtering must
   be done inside the hook script.
+- A hooks.json **matcher group carries only `matcher` and `hooks`** (`$schema` is the sole tolerated top-level extra).
+  `timeout`/`args`/`async`/`if` belong to the handler entry, and an off-schema key such as `description` is ignored
+  with a `hooks.json: unknown key "..." ignored` warning at every session start (measured 2026-09, CC 2.1.278) —
+  document a hook in its script header comment. Guarded by `tests/hooks/hooks-registration.bats` + HK-004.
 - Plugins are **edited only in the repo source**. Directly modifying the `~/.claude/plugins/cache` / marketplaces clone is
   forbidden (measured cache-drift incident history). The official propagation path is commit then `/plugin update`, and
   hook/config changes take effect from the next session onward.

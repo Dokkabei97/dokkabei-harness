@@ -47,9 +47,11 @@ Creates a skill directory `skills/{name}/` with:
 File: [templates/hook.json](templates/hook.json)
 
 Creates a hook entry for `claude/settings.json` with:
-- Matcher expression for tool/condition filtering
+- Matcher expression for tool/condition filtering (tool-name regex only)
 - Hook command (Node.js script)
-- Description
+
+The matcher group takes only `matcher` and `hooks` — an off-schema key such as `description` is
+ignored and warned at every session start (HK-004). Document the hook in its script header comment.
 
 ### 5. Plugin Template
 File: [templates/plugin.json](templates/plugin.json)
@@ -108,7 +110,7 @@ Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/lo
 | Command | `commands/{name}.md` | kebab-case verb-noun (e.g., `deploy-check`) |
 | Agent | `agents/{name}.md` | kebab-case role-noun (e.g., `security-scanner`) |
 | Skill | `skills/{name}/SKILL.md` | kebab-case domain-noun (e.g., `redis-best-practices`) |
-| Hook | Entry in `settings.json` | descriptive sentence |
+| Hook | Entry in `settings.json` + `hooks/{name}.{js,sh}` | matcher = tool-name regex, script kebab-case |
 | Plugin | `.claude-plugin/plugin.json` | kebab-case (e.g., `my-plugin`) |
 
 ## Frontmatter Field Reference

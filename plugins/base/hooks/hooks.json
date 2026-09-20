@@ -10,8 +10,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-dev-server.js"]
           }
-        ],
-        "description": "Block dev servers outside tmux - ensures you can access logs (includes Python servers). 명령 패턴 필터는 스크립트 내부 — matcher 는 tool 명 regex 만 유효(표현식 미발화 실측, 2026-07)"
+        ]
       },
       {
         "matcher": "Bash",
@@ -21,8 +20,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-tmux.js"]
           }
-        ],
-        "description": "Reminder to use tmux for long-running commands (includes gradlew, pip, uv). 명령 패턴 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Bash",
@@ -32,8 +30,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-git-push.js"]
           }
-        ],
-        "description": "Reminder before git push to review changes. 명령 패턴 필터는 스크립트 내부"
+        ]
       }
     ],
     "PostToolUse": [
@@ -45,8 +42,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/log-pr-mr.js"]
           }
-        ],
-        "description": "Log PR/MR URL and provide review command after GitHub PR or GitLab MR creation"
+        ]
       },
       {
         "matcher": "Bash",
@@ -58,8 +54,7 @@
             "async": true,
             "timeout": 30
           }
-        ],
-        "description": "Async hook for npm/pnpm/yarn build analysis (runs in background without blocking). 명령 패턴 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Bash",
@@ -71,8 +66,7 @@
             "async": true,
             "timeout": 60
           }
-        ],
-        "description": "Async hook for Gradle build analysis (runs in background without blocking). 명령 패턴 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -82,8 +76,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-prettier.js"]
           }
-        ],
-        "description": "Auto-format JS/TS files with Prettier after edits. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -93,8 +86,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-ktlint.js"]
           }
-        ],
-        "description": "Auto-format Kotlin files with ktlintFormat after edits. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -104,8 +96,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-tsc.js"]
           }
-        ],
-        "description": "TypeScript check after editing .ts/.tsx files. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -115,8 +106,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-kotlin-compile.js"]
           }
-        ],
-        "description": "Kotlin compile check after editing .kt/.kts files. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -126,8 +116,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-console-log.js"]
           }
-        ],
-        "description": "Warn about console.log statements after JS/TS edits. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -137,8 +126,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-println.js"]
           }
-        ],
-        "description": "Warn about println() statements after Kotlin edits. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -148,8 +136,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-py-compile.js"]
           }
-        ],
-        "description": "Python syntax check with py_compile after editing .py files. 확장자 필터는 스크립트 내부"
+        ]
       },
       {
         "matcher": "Edit",
@@ -159,8 +146,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-print.js"]
           }
-        ],
-        "description": "Warn about print() statements after Python edits"
+        ]
       },
       {
         "matcher": "Edit",
@@ -170,8 +156,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
           }
-        ],
-        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Edit on code files. 확장자 필터는 스크립트 내부 — matcher 는 tool 명 regex 만 유효(표현식 미발화 실측, 2026-07)"
+        ]
       },
       {
         "matcher": "Write",
@@ -181,8 +166,7 @@
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
           }
-        ],
-        "description": "Warn about high-signal security patterns (secrets, injection, unsafe deserialization, TLS bypass, XSS) after Write on code files. 확장자 필터는 스크립트 내부"
+        ]
       }
     ]
   }
