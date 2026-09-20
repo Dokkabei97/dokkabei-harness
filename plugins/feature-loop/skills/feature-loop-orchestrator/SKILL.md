@@ -102,7 +102,7 @@ task AC·회귀 반증(모드 ②) 디스패치의 오케스트레이터 의무 
 
 종료 허용 = **① ∧ ②ᴿ ∧ ②ᴱ ∧ ③** (②는 ①의 all-passes에 마커 재검사로 인입).
 
-**가드레일 5종**: max iterations(`LOOP_MAX_ITER=24`) · no-progress(실패 시그니처 연속 2회) · 시간 상한(`LOOP_MAX_MINUTES=120`) · 킬스위치(`/floop-stop`) · circuit breaker(동일 task 3연속 실패 → skip+BLOCKED). **안전핀**: `loop-active` 없으면 Stop훅 무동작(exit 0).
+**가드레일 5종**: max iterations(`LOOP_MAX_ITER=24` — 세션 내 실효 8, Stop훅 8블록 오버라이드 실측) · no-progress(실패 시그니처 연속 2회) · 시간 상한(`LOOP_MAX_MINUTES=120`) · 킬스위치(`/floop-stop`) · circuit breaker(동일 task 3연속 실패 → skip+BLOCKED). **안전핀**: `loop-active` 없으면 Stop훅 무동작(exit 0).
 
 ## Gate Policy (자율 통과 + 실패 시만 보고)
 

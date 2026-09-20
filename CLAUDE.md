@@ -25,6 +25,11 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
   `timeout`/`args`/`async`/`if` belong to the handler entry, and an off-schema key such as `description` is ignored
   with a `hooks.json: unknown key "..." ignored` warning at every session start (measured 2026-09, CC 2.1.278) —
   document a hook in its script header comment. Guarded by `tests/hooks/hooks-registration.bats` + HK-004.
+- A **Stop hook is overridden after 8 consecutive blocks** — Claude Code ends the turn regardless (measured 2026-09-20,
+  3/3 trials: the hook is invoked 9 times and the 9th `exit 2` is ignored). So the in-session ceiling for the loop engines is
+  **8 iterations**, not the documented `LOOP_MAX_ITER` default of 24/12. The headless driver (`plugins/feature-loop/bin/floop-headless.sh`)
+  is unaffected because each `claude -p` call is a fresh turn. The engines do **not** yet detect this cap — see
+  `tasks/spikes/harness-bottleneck-research.md`.
 - Plugins are **edited only in the repo source**. Directly modifying the `~/.claude/plugins/cache` / marketplaces clone is
   forbidden (measured cache-drift incident history). The official propagation path is commit then `/plugin update`, and
   hook/config changes take effect from the next session onward.

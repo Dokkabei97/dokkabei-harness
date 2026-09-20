@@ -110,7 +110,7 @@ compaction된 기억에 의존하지 말고 매번 아티팩트에서 이해를 
 | `LOOP_TEST_CMD` | 미설정 (`.planning/gate-cmd` 사용) | 결정론 게이트(단위/통합) 명령을 일시적으로 강제 지정 (예: 부분 테스트로 빠른 반복) | 세션 시작 전 셸에서 `export LOOP_TEST_CMD="pytest -q tests/unit"`. 영구 변경은 env가 아니라 gate-cmd 파일 수정 |
 | `LOOP_E2E_CMD` | 미설정 (`.planning/e2e-gate-cmd` 사용, 없으면 E2E 미적용) | E2E 수용 게이트 명령 지정 — all-passes 도달 시 1회 실행. 비대화형·exit code 필수 | `export LOOP_E2E_CMD="npx playwright test"`. 영구 적용은 `.planning/e2e-gate-cmd` 파일에 1줄 기록 |
 | `LOOP_PROMISE` | `<promise>MVP_COMPLETE</promise>` | 완료 약속문(정확 문자열 일치 대상) | `export LOOP_PROMISE=...` — 변경 시 progress.md 기록 문자열도 반드시 일치시킬 것 |
-| `LOOP_MAX_ITER` | `24` (권장: 스토리 수 × 3) | 반복 상한 — 무한 spin 차단 | `/mvp-run --max-iter <n>`(`loop-state.json`의 `max_iter` 필드에 기록) 또는 `export LOOP_MAX_ITER=<n>`. 훅 로드 순서: env > loop-state.json 필드 > 기본값 |
+| `LOOP_MAX_ITER` | `24` (권장: 스토리 수 × 3, 세션 내 실효 8) | 반복 상한 — 무한 spin 차단. ⚠️ Stop 훅은 연속 8블록 후 오버라이드됨(2026-09-20 실측 3/3) | `/mvp-run --max-iter <n>`(`loop-state.json`의 `max_iter` 필드에 기록) 또는 `export LOOP_MAX_ITER=<n>`. 훅 로드 순서: env > loop-state.json 필드 > 기본값 |
 | `LOOP_MAX_MINUTES` | `120` | 시간 상한 — `loop-state.json`의 `started_at`(epoch 초) 대비 경과 분 | `/mvp-run --max-minutes <n>`(`loop-state.json`의 `max_minutes` 필드에 기록) 또는 `export LOOP_MAX_MINUTES=<n>`. 훅 로드 순서: env > loop-state.json 필드 > 기본값 |
 
 튜닝 지침: 스토리 8개 MVP라면 `--max-iter 24`(기본)가 적정. 스토리 10개 이상 대형 MVP는
@@ -135,7 +135,7 @@ compaction된 기억에 의존하지 말고 매번 아티팩트에서 이해를 
 
 | 가드 | 기본값/트리거 | 동작 |
 |------|--------------|------|
-| max iterations | `LOOP_MAX_ITER=24` (권장: 스토리 수×3) | 도달 시 exit 0 + 미완 상태 보고. promise만으론 부족(과제가 어려우면 무한 spin) |
+| max iterations | `LOOP_MAX_ITER=24` (권장: 스토리 수×3, 세션 내 실효 8) | 도달 시 exit 0 + 미완 상태 보고. promise만으론 부족(과제가 어려우면 무한 spin). 8 블록 오버라이드는 미감지 — 핸드오프 없이 종료 |
 | no-progress | 실패 시그니처(fail/error 라인에서 숫자 토큰 제거 정규화 후 md5) 연속 2회 동일 — 소요시간 등 숫자 비결정 출력에 대응하되, 그 외 비결정 문자열이 섞이면 max-iter가 backstop | exit 0 + BLOCKED.md에 iteration·시그니처·테스트 출력 tail 기록 |
 | 시간 상한 | `LOOP_MAX_MINUTES=120` (`loop-state.json` `started_at` 대비) | 초과 시 현 반복 완료 후 exit 0 + 재개 방법(`/mvp-run`) 보고 |
 | 킬스위치 | `/mvp-stop` (사용자 수동) | loop-active 삭제 → 훅 즉시 무력화, 핸드오프 기록, 마스터 `status: paused` |

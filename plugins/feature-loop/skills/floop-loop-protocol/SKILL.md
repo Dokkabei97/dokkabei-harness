@@ -97,7 +97,7 @@ E2E 미적용 프로젝트는 전 task `passes:true` 도달 + 회귀 0 즉시 pr
 | `LOOP_TEST_CMD` | 미설정(`.planning/gate-cmd` 사용) | 결정론 게이트 명령 일시 강제(부분 테스트로 빠른 반복). 영구 변경은 gate-cmd 파일 |
 | `LOOP_E2E_CMD` | 미설정(`.planning/e2e-gate-cmd` 사용) | E2E 게이트 명령 — all-passes 도달 시 1회. 영구 적용은 `.planning/e2e-gate-cmd` |
 | `LOOP_PROMISE` | `<promise>FEATURE_COMPLETE</promise>` | 완료 약속문(정확 일치 대상). 변경 시 progress.md 기록 문자열도 일치시킬 것 |
-| `LOOP_MAX_ITER` | `24` (권장: task 수 × 3) | 반복 상한. `/floop-run --max-iter <n>` 또는 env. 로드 순서: env > loop-state.json > 기본값 |
+| `LOOP_MAX_ITER` | `24` (권장: task 수 × 3) | 반복 상한. `/floop-run --max-iter <n>` 또는 env. 로드 순서: env > loop-state.json > 기본값. ⚠️ **세션 내 실효 상한은 8** — Claude Code 가 Stop 훅을 연속 8블록 후 오버라이드한다(2026-09-20 실측 3/3). 24 는 헤드리스(`bin/floop-headless.sh`)에서만 도달 가능 |
 | `LOOP_MAX_MINUTES` | `120` | 시간 상한(`loop-state.json` `started_at` 대비). `/floop-run --max-minutes <n>` 또는 env |
 
 > baseline 회귀 게이트는 별도 env가 없다 — `baseline.json` 파일이 곧 스위치다(있으면 적용, 없으면 미적용).
@@ -115,7 +115,7 @@ E2E 미적용 프로젝트는 전 task `passes:true` 도달 + 회귀 0 즉시 pr
 
 | 가드 | 기본값/트리거 | 동작 |
 |------|--------------|------|
-| max iterations | `LOOP_MAX_ITER=24` | 도달 시 exit 0 + 미완 보고 |
+| max iterations | `LOOP_MAX_ITER=24` (세션 내 실효 8) | 도달 시 exit 0 + 미완 보고. 8 블록 오버라이드는 엔진이 감지하지 못해 **핸드오프 없이 조용히 종료**된다 |
 | no-progress | 실패 시그니처(숫자 토큰 제거 정규화 후 md5) 연속 2회 동일 | exit 0 + BLOCKED.md 기록 |
 | 시간 상한 | `LOOP_MAX_MINUTES=120` | 초과 시 현 반복 완료 후 exit 0 + 재개 방법 보고 |
 | 킬스위치 | `/floop-stop` (수동) | loop-active 삭제 → 훅 무력화, 핸드오프, 마스터 `status: paused` |

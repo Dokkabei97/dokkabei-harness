@@ -25,6 +25,10 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
   `timeout`/`args`/`async`/`if`는 핸들러 엔트리 소속이며, `description` 같은 스키마 외 키는 무시되고
   세션 시작마다 `hooks.json: unknown key "..." ignored` 경고를 낸다(실측 2026-09, CC 2.1.278) —
   훅 설명은 스크립트 헤더 주석에 적는다. `tests/hooks/hooks-registration.bats` + HK-004로 가드.
+- **Stop 훅은 연속 8회 블록 후 오버라이드**된다 — Claude Code 가 훅과 무관하게 턴을 종료한다(2026-09-20 실측, 3/3 시행:
+  훅이 9회 호출되고 9번째 `exit 2` 가 무시됨). 따라서 루프 엔진의 세션 내 실효 상한은 문서화된 `LOOP_MAX_ITER`
+  기본값 24/12 가 아니라 **8 반복**이다. 헤드리스 드라이버(`plugins/feature-loop/bin/floop-headless.sh`)는 매
+  `claude -p` 가 새 턴이라 영향 없다. 엔진은 이 상한을 **아직 감지하지 못한다** — `tasks/spikes/harness-bottleneck-research.md` 참조.
 - 플러그인은 **레포 소스에서만 편집**한다. `~/.claude/plugins/cache`·marketplaces 클론 직접 수정
   금지(실측된 캐시 드리프트 사고 이력). 공식 반영 경로는 커밋 후 `/plugin update`이며,
   훅·설정 변경은 다음 세션부터 유효하다.
