@@ -91,7 +91,7 @@
 - **Severity**: Medium
 - **Check**: If `model` specified, it's a valid model identifier
 - **Auto-fixable**: No
-- **Valid values**: sonnet, opus, haiku, or full model ID
+- **Valid values**: fable, opus, sonnet, haiku, or full model ID
 
 ## SKL-017: Skill Hooks Validity
 - **Severity**: High

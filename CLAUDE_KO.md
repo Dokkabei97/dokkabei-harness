@@ -46,6 +46,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
 - 컴포넌트 규칙·검증 룰셋: `plugins/harness/skills/flow-validation/` (`/verify-flow`가 사용;
   SKILL.md 토큰 예산 <3.5k 최적)
 - 스캐폴딩 템플릿: `plugins/harness/skills/flow-scaffolding/` (`/create-flow`가 사용)
+- 하네스 v2(upstream revfactory/harness v2.1.0 동기화): `TeamCreate`/팀 객체 없음 — 팀 정의는 오케스트레이터의
+  `## Team Members` 표, 하네스 변경 이력은 CLAUDE.md 표가 아니라 git 커밋 본문(`harness:evolve`)
 - Claude Code v2.1.3+에서 command/skill 통합 — 신규 컴포넌트는 skill 포맷 권장
 
 ## 헷갈리기 쉬운 구조

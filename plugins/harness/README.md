@@ -9,8 +9,8 @@
 `harness` is a harness for building other harnesses. It analyzes a domain to design an agent team (`team-harness`),
 scaffolds the decided design into actual component files (`create-flow` + `flow-scaffolding`),
 and machine-validates the output against 10 rulesets (`verify-flow` + `flow-validation`). In other words, it splits
-the single responsibility of "design → generate → validate" across three skills + two commands. It is a fork that starts
-from the monolithic single skill of [revfactory/harness](https://github.com/revfactory/harness) (Apache-2.0) and
+the responsibilities of "design → generate → validate" across skills + commands, and evolves a harness after use (`evolve`). It is a fork of
+[revfactory/harness](https://github.com/revfactory/harness) (Apache-2.0, synced to v2.1.0) that
 restructures it to fit the in-house marketplace; the detailed mapping is in `docs/ARCHITECTURE.md`.
 
 On top of this, it embeds a **lightweight general-purpose loop engine** (`/loop-run`·`/loop-stop`) that iterates only "until the gate is green"
@@ -30,8 +30,9 @@ the completion promise.
 
 ### Skills
 
-- `team-harness` — A multi-agent team design meta-skill. It performs domain analysis, selection among 6 architecture patterns (Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), validation·loop reinforcement patterns, and orchestrator design, delegating generation to `/create-flow` and validation to `/verify-flow`. Activates on things like "하네스 구성해줘", "팀 설계해줘".
-- `flow-scaffolding` — A standard template system for each component type (9 kinds: command·agent·skill·hook·plugin·team agent·orchestrator·team config·loop Stop hook). It includes a frontmatter field reference and naming conventions and is used by `/create-flow`.
+- `team-harness` — A multi-agent team design meta-skill (v2). It performs domain analysis, selection among 3 execution modes (Workflow orchestration / persistent named-agent collaboration / sub-agent delegation) and 6 architecture patterns (Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), verification·loop patterns, task-based model tiers (fable/opus/sonnet), orchestrator design, and v1 (`TeamCreate`) → v2 migration, delegating generation to `/create-flow` and validation to `/verify-flow`. Activates on things like "하네스 구성해줘", "팀 설계해줘", "하네스 점검".
+- `evolve` — Evolves an existing harness from its run results: collects and generalizes feedback, applies one change at a time to agents/skills/orchestrators, re-validates with `/verify-flow` and trigger tests, and records each delta as a git commit with the why. Activates on "하네스 회고", "하네스 개선", "피드백 반영해줘".
+- `flow-scaffolding` — A standard template system for each component type (8 kinds: command·agent·skill·hook·plugin·team agent·orchestrator·loop Stop hook). It includes a frontmatter field reference and naming conventions and is used by `/create-flow`.
 - `flow-validation` — A component validation ruleset and checklist. It holds the rules of 10 categories (CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA), a severity scale, and the Health Score calculation method, and is used by `/verify-flow`. Among them, the LOOP ruleset (10 rules) is a safety protocol exclusive to the Stop hook loop engine.
 
 ### Hooks
@@ -41,6 +42,7 @@ the completion promise.
 ## Usage
 
 - **Harness design**: For requests like "팀 설계해줘"·"하네스 구성해줘", `team-harness` auto-activates and proceeds through domain analysis → pattern selection → orchestrator design, with actual file creation continuing via `/create-flow --team` and validation via `/verify-flow --target team`.
+- **Harness evolution**: After running a harness, say "하네스 회고해줘" or "이 피드백 하네스에 반영해줘" and `evolve` proposes generalized changes, applies them one at a time after approval, and commits each with its rationale.
 - **Component generation·validation**: When you need a single component, call it directly like `/create-flow <name> --type skill`, and right after generation confirm convention compliance with `/verify-flow <path> --target skill`. The two commands are a mutually complementary pair.
 - **Starting/stopping the lightweight loop**:
   ```

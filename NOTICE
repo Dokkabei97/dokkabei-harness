@@ -21,5 +21,9 @@ Apache License, Version 2.0.
     - Added the create-flow and verify-flow commands.
     - Added 9 validation rulesets under flow-validation/references/.
     - Localized and adapted documentation to Korean.
+    - (2.0.0) Re-based team-harness on upstream v2.1.0 (three execution modes,
+      model tiers, v1->v2 migration, new references) and added the `evolve`
+      skill derived from upstream skills/evolve, adapted to a git-based change
+      ledger and /verify-flow validation.
 
   See plugins/harness/NOTICE for the directory-local attribution.

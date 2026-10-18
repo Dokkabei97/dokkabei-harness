@@ -10,7 +10,8 @@ description: |
   작업·리뷰·루프 종료 시점에 세션의 교정 내용을 자산화하려 할 때.
   Delegation boundaries: 컨벤션 변화의 CLAUDE.md 반영은 workflow:sync-claude-md에 위임(직접
   편집 금지), 가드 훅 스캐폴딩은 harness:create-flow에 위임(이 스킬은 #가드-훅-후보 태그
-  표기까지만), 플러그인 스킬 본문은 수정 제안만 산출(자동 수정 금지).
+  표기까지만), 플러그인 스킬 본문은 수정 제안만 산출(자동 수정 금지), 여러 실행에 걸친
+  하네스 컴포넌트 개선은 harness:evolve 소관.
   Provides a lesson-compounding methodology for session retrospectives: extracts corrections, mistakes, and discoveries, filters by quality criteria, and routes them to tasks/lessons.md, CLAUDE.md sync delegation, or skill-edit proposals with duplicate checks and user-approval gates. Use when: running /retro, doing a retrospective, consolidating lessons learned, preventing repeated mistakes.
 metadata:
   version: 1.0.0
@@ -88,7 +89,7 @@ metadata:
 
 ## 3. 라우팅 표
 
-team-harness Phase 6 피드백 라우팅(품질→스킬 / 역할→에이전트 / 트리거→description)의
+harness:evolve 피드백 라우팅(품질→스킬 / 역할→에이전트 / 트리거→description)의
 골격을 세션 교훈에 맞게 확장한 것이다.
 
 | 유형 | 판정 신호 | 라우팅 대상 | 적용 방식 | 경계 |
@@ -97,12 +98,12 @@ team-harness Phase 6 피드백 라우팅(품질→스킬 / 역할→에이전트
 | **(b) 반복 실수 패턴** | 동일 패턴 교정·실수가 세션 내 2회+ 또는 기존 lessons 항목과 동일 | `tasks/lessons.md` 기록 | 승인 후 직접 기록 | 유일하게 직접 쓰는 파일 |
 | **(b′) 가드 훅 후보** | (b) 중 결정론적 검사 가능 + 누적 2회+ 재발 | lessons 항목에 `#가드-훅-후보` 태그 | 태그 표기까지만 | 훅 생성은 harness:create-flow 담당 (lessons 입력 모드는 별도 작업 예정) |
 | **(c) 도메인 지식 갱신** | 플러그인 스킬 내용이 낡음, 예시가 틀림, 레퍼런스 누락 | 해당 스킬 수정 **제안서** | 제안 출력만 | 자동 수정 금지 |
-| **(c′) 트리거 미스** | 스킬이 발동해야 할 상황에서 발동 안 함(또는 오발동) | 해당 스킬 description 수정 **제안서** | 제안 출력만 | team-harness Phase 6과 동일 원칙 |
+| **(c′) 트리거 미스** | 스킬이 발동해야 할 상황에서 발동 안 함(또는 오발동) | 해당 스킬 description 수정 **제안서** | 제안 출력만 | harness:evolve와 동일 원칙 |
 
 - 복수 유형에 해당하면 복수 라우팅한다. 예: "커맨드 complexity 값 신조어 사용"은
   (b) 반복 실수 기록이면서, 검증 규칙이 있다면 (b′) 가드 훅 후보다.
 - 하네스(에이전트 팀) 자체의 역할·워크플로우 문제는 이 스킬의 범위 밖 —
-  `harness:team-harness` Phase 6 피드백 루프로 안내한다.
+  `harness:evolve`(기존 구성 조정) 또는 `harness:team-harness`(에이전트 추가·구조 재설계)로 안내한다.
 
 ### 가드 훅 후보 판정 기준 (b′)
 
@@ -198,5 +199,5 @@ lessons.md는 늘어날수록 좋은 파일이 아니다. 세션 시작마다 �
 | `/retro` 커맨드 | 이 스킬의 기준을 사용하는 실행 절차 (Phase 1~6) |
 | `workflow:sync-claude-md` | (a) 컨벤션 변화의 CLAUDE.md 반영 위임 대상 |
 | `harness:create-flow` | (b′) 가드 훅 후보의 스캐폴딩 담당 — lessons 입력 모드는 별도 작업 예정 |
-| `harness:team-harness` | Phase 6 피드백 라우팅 골격의 출처. 하네스 자체 문제는 그쪽으로 안내 |
+| `harness:evolve` | 피드백 라우팅 골격의 출처. 하네스 컴포넌트 개선(여러 실행에 걸친 피드백 반영)은 그쪽으로 안내 |
 | `workflow:handoff` | 세션 컨텍스트 이관 담당 — /retro는 교훈만, /handoff는 작업 상태만 다룬다 |

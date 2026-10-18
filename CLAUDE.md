@@ -47,6 +47,8 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - Component rules / validation ruleset: `plugins/harness/skills/flow-validation/` (used by `/verify-flow`;
   SKILL.md token budget optimized to <3.5k)
 - Scaffolding templates: `plugins/harness/skills/flow-scaffolding/` (used by `/create-flow`)
+- Harness v2 (synced to upstream revfactory/harness v2.1.0): no `TeamCreate`/team objects — a team is the orchestrator's
+  `## Team Members` table; harness change history lives in git commit bodies (`harness:evolve`), not a CLAUDE.md table
 - command/skill unification in Claude Code v2.1.3+ — new components should prefer the skill format
 
 ## Easily Confused Structure

@@ -40,7 +40,8 @@ Scan the project to find all components that match the `--target` filter.
 --target skill    -> Glob: skills/*/SKILL.md
 --target hook     -> Read: claude/settings.json (extract hooks array)
 --target plugin   -> Glob: .claude-plugin/plugin.json + skills/ + agents/ + hooks/
---target team     -> Glob: agents/*.md (filter by team frontmatter) + skills/*-orchestrator/SKILL.md
+--target team     -> Glob: skills/*/SKILL.md containing `## Team Members` (orchestrator roster = team definition)
+                     + agents/*.md listed in that table or carrying team/teamRole frontmatter
 --target all      -> All of the above
 ```
 
@@ -82,7 +83,7 @@ Check each component against its type-specific structural requirements.
 |----|------|----------|-------|
 | AGT-001 | Frontmatter present and valid YAML | Critical | Parse YAML between `---` delimiters |
 | AGT-002 | Required frontmatter fields | Critical | name, description (tools now optional) |
-| AGT-003 | Tools array contains valid tool names | High | Each tool in ["Read", "Grep", "Glob", "Bash", "Write", "Edit", "WebSearch", "WebFetch"] |
+| AGT-003 | Tools array contains valid tool names | High | Each tool in ["Read", "Grep", "Glob", "Bash", "Write", "Edit", "WebSearch", "WebFetch", "Agent", "Skill", "NotebookEdit", "SendMessage", "TaskCreate", "TaskUpdate", "TaskList", "TaskGet", "TaskStop"] |
 | AGT-004 | Role description section present | High | Grep: `^## Your Role` or `^## Role` |
 | AGT-005 | Workflow section with numbered steps | Critical | Grep: `^## .*(Workflow|Analysis)` + `### Step` |
 | AGT-006 | Decision matrices or grep patterns | Medium | Presence of table markdown or `Grep:` patterns |
@@ -90,7 +91,7 @@ Check each component against its type-specific structural requirements.
 | AGT-008 | Boundaries section | High | Grep: `^## Boundaries` |
 | AGT-009 | Description trigger quality | Critical | Must contain "Use when" or "Use PROACTIVELY when" + role identification + tech scope |
 | AGT-010 | Tools minimality | Low | All declared tools are referenced in agent body |
-| AGT-013 | Model override validity | Medium | Valid model identifier |
+| AGT-013 | Model override validity | Medium | fable, opus, sonnet, haiku, inherit, or full model ID |
 | AGT-014 | Permission mode validity | High | Valid permission mode |
 | AGT-015 | MaxTurns reasonableness | Low | Between 1 and 100 |
 | AGT-016 | Skills preload validity | Medium | Referenced skills exist |
@@ -98,6 +99,10 @@ Check each component against its type-specific structural requirements.
 | AGT-018 | Memory scope validity | Medium | Valid scope |
 | AGT-019 | Isolation mode validity | Low | Must be "worktree" |
 | AGT-020 | Agent hooks validity | High | Valid events and types |
+| AGT-021 | Team Communication Protocol (team agents) | High | Named `SendMessage({to:"<name>"})` targets, no broadcast, shared task list usage, first report lists available tools |
+| AGT-022 | SendMessage target validity (team agents) | High | Targets exist in the orchestrator `## Team Members` Name column |
+| AGT-024 | Model tier selection (team agents) | Medium/Low | Per-task tier + reason comment; all members on the same high tier → Medium |
+| AGT-027 | Tool set matches edit intent | High/Medium | Read-only reviewers lack Edit (Write only for own report); modifiers with Write also have Edit |
 
 **Skill Validation Rules:**
 
@@ -156,32 +161,36 @@ Check each component against its type-specific structural requirements.
 
 **Team Validation Rules:**
 
-> Note: These rules are conditional — only apply when team metadata is detected.
+> Note: These rules are conditional — only apply when an orchestrator skill has a `## Team Members` table (the v2 team definition; there is no team config file).
 
 | ID | Rule | Severity | Check |
 |----|------|----------|-------|
-| TEAM-001 | Team definition structure | Critical | Must contain team_name, description, pattern, members |
-| TEAM-002 | Team pattern validity | Critical | Pattern is one of 6 valid types |
-| TEAM-003 | Member registration completeness | High | Each member has name, agent, role |
-| TEAM-004 | Member role assignment validity | High | Valid roles + pattern-specific constraints |
-| TEAM-005 | No orphaned team members | High | All referenced agents exist |
-| TEAM-006 | Orchestrator skill existence | Critical | Referenced orchestrator skill exists |
-| TEAM-007 | Unique member names | High | All member names unique |
-| TEAM-008 | Team size reasonableness | Low | 2-10 members |
+| TEAM-001 | Team definition structure | Critical | `## Team Members` table with Name, Agent, Role, Output columns |
+| TEAM-002 | Team pattern validity | Critical/Low | Declared pattern is one of 6 valid types (none declared → Low) |
+| TEAM-003 | Member registration completeness | High | Each row has Name, Agent, Role, Output |
+| TEAM-004 | Member role assignment validity | High | Role keyword (leader/member/specialist/checker) + pattern-specific constraints |
+| TEAM-005 | No orphaned team members | High | Every Agent cell resolves to an agent file or built-in type |
+| TEAM-006 | Orchestrator skill existence | Critical | Every team-frontmatter agent is listed by an existing orchestrator |
+| TEAM-007 | Unique member names | High | All Name cells unique |
+| TEAM-008 | Team size reasonableness | Low | 2-10 rows |
 
 **Orchestrator Validation Rules:**
 
 | ID | Rule | Severity | Check |
 |----|------|----------|-------|
-| ORC-001 | Orchestrator skill identification | Critical | Contains orchestration phases or referenced by team |
+| ORC-001 | Orchestrator skill identification | Critical | Contains `## Team Members` table or orchestration phases |
 | ORC-002 | Team member coverage | High | All team members referenced in phases |
 | ORC-003 | Phase sequence completeness | High | Each phase has member, input, output |
 | ORC-004 | Data flow continuity | High | Phase N output matches Phase N+1 input |
 | ORC-005 | Error handling strategy | Medium | Error handling section exists |
 | ORC-006 | Re-run/maintenance mode | Low | Partial re-execution documented |
-| ORC-007 | Pattern-specific structure | Medium | Phase structure matches team pattern |
-| ORC-008 | CLAUDE.md pointer registration | Medium | Team entry in claude/CLAUDE.md |
+| ORC-007 | Pattern-specific structure | Medium | Phase structure matches declared pattern |
+| ORC-008 | CLAUDE.md pointer registration | Medium | Trigger-only entry in project `CLAUDE.md` (no change-history table) |
 | ORC-009 | Orchestrator skill line budget | High | Orchestrator SKILL.md under 500 lines (excess → references/) |
+| ORC-010 | v1 team API artifact detection | Critical | No `TeamCreate`/`TeamDelete`/`team_name`/`SendMessage({to:"all"})`/`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` → migrate per team-harness `references/execution-modes.md` |
+| ORC-011 | Execution mode declaration | Medium | `**실행 모드:**` A/B/C declared (per phase when mixed) |
+| ORC-012 | Embedded Workflow script pitfalls | High | Literal `meta`, no `Date.now()`/`Math.random()`/`new Date()`, `.filter(Boolean)`, `phase()` = `meta.phases`, `parallel()` only for barriers |
+| ORC-013 | Test scenarios section | Low | `## 테스트 시나리오` with 1 normal + ≥1 error flow |
 
 **Quality Validation Rules:**
 
@@ -282,12 +291,12 @@ Deductions:
 
 Rules per type (approximate):
   Commands:      13 rules (CMD-001..CMD-013)
-  Agents:        30 rules (AGT-001..AGT-026 + 020a-d)
+  Agents:        31 rules (AGT-001..AGT-027 + 020a-d)
   Skills:        21 rules (SKL-001..SKL-021)
   Hooks:         13 rules (HK-001..HK-013)
   Loop hooks:    10 rules (LOOP-001..LOOP-010, 루프 엔진 훅 한정)
   Teams:          8 rules (TEAM-001..TEAM-008)
-  Orchestrators:  9 rules (ORC-001..ORC-009)
+  Orchestrators: 13 rules (ORC-001..ORC-013)
   Cross-ref:     16 rules (XRF-001..XRF-016)
   Security:       7 rules (SEC-001..SEC-007)
   Quality:        7 rules (QUA-001..QUA-007)
@@ -370,17 +379,19 @@ Final Score = max(0, Base Score - Deductions)
 | CMD-010 | Reorder sections to match convention |
 | AGT-003 | Remove invalid tool names from tools array |
 | SKL-006 | Rename reference files to `{prefix}-{topic}.md` pattern |
-| HK-004 | Generate description from matcher expression |
+| HK-004 | Drop off-schema keys (e.g. `description`) from matcher groups |
 | TEAM-002 | Suggest closest valid team pattern |
 | TEAM-007 | Append numeric suffix to duplicate member names |
-| AGT-025 | Copy team role from team definition into agent frontmatter |
-| ORC-008 | Generate CLAUDE.md entry from team definition |
+| AGT-025 | Copy Role column of the orchestrator `## Team Members` row into agent `teamRole` |
+| ORC-008 | Generate trigger-only project `CLAUDE.md` entry from orchestrator name/description |
 
 **Manual-only Issues:**
 
 | ID | Reason |
 |----|--------|
 | CMD-006 | Behavioral Flow requires domain-specific content |
+| AGT-024 | Model tier depends on each agent's actual workload |
+| ORC-010 | v1 → v2 migration requires re-expressing the flow in an execution mode |
 | AGT-005 | Workflow steps require understanding of agent purpose |
 | SKL-004 | Content reduction requires human judgment |
 | HK-006 | Unsafe scripts need manual security review |
@@ -541,7 +552,7 @@ Target: all | Severity: all | Fix: suggest
 - Detect security concerns in hook scripts and examples
 - Verify token budgets for skill files
 - Cross-validate component references
-- Validate team definitions, orchestrator skills, and inter-agent references (TEAM/ORC rules)
+- Validate orchestrator `## Team Members` rosters, orchestrator skills (execution mode, v1 artifacts, Workflow pitfalls), and inter-agent references (TEAM/ORC rules)
 
 **Will Not:**
 - Validate runtime behavior or execution correctness

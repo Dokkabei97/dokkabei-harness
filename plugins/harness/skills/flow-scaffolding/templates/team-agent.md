@@ -1,13 +1,13 @@
 ---
 name: {{NAME}}
 description: {{DESCRIPTION}}
-tools: [{{TOOLS}}]
+tools: [{{TOOLS}}]  # 읽기 전용 검토자: Edit/Write 제외(Write는 자기 리포트 전용일 때만) · 산출물 수정: Write+Edit 둘 다 · 모드 B: SendMessage/TaskCreate/TaskUpdate 포함
 team: {{TEAM_NAME}}
-teamRole: {{leader|member|specialist}}
+teamRole: {{leader|member|specialist|checker}}
 reportsTo: {{REPORTS_TO_AGENT_NAME}}
 # --- Optional Fields ---
 # disallowedTools: [{{DISALLOWED_TOOLS}}]
-model: opus  # 팀 에이전트는 opus 필수
+model: {{fable|opus|sonnet|haiku|inherit}}  # {{MODEL_REASON}} — 업무 티어로 선택(fable=장기 자율·계획·조율 / opus=깊은 분석·설계·코드·교차검증 / sonnet=일상·변환·수집, 애매하면 기본). 전원 동일 고성능 일괄 지정 금지
 # permissionMode: {{default|acceptEdits|auto|dontAsk|bypassPermissions|plan}}
 # maxTurns: {{MAX_TURNS}}
 # skills: [{{PRELOADED_SKILLS}}]
@@ -37,7 +37,18 @@ You are a {{TEAM_ROLE}} of the **{{TEAM_NAME}}** team, reporting to {{REPORTS_TO
 
 ## Team Communication Protocol
 
+> Execution mode B (persistent agent collaboration). Workflow-only agents (mode A) replace this section with
+> `## Structured Output` (the JSON shape returned as data, not a message to the user).
+
+### First Report
+
+- On first contact, report to {{REPORTS_TO_AGENT_NAME}} the tools actually available at runtime
+  (deferred tools such as `TaskCreate`/`TaskUpdate` may be missing even when listed in `tools`).
+
 ### SendMessage Targets
+
+Every message names one recipient — `SendMessage({to: "<name>"})`, one call per recipient. Never address
+the whole team at once. Names match the orchestrator's `## Team Members` Name column.
 
 | Target Agent | When to Contact | Message Format |
 |-------------|-----------------|----------------|
@@ -45,9 +56,15 @@ You are a {{TEAM_ROLE}} of the **{{TEAM_NAME}}** team, reporting to {{REPORTS_TO
 | {{TARGET_AGENT_2}} | {{CONTACT_CONDITION_2}} | {{MESSAGE_FORMAT_2}} |
 | {{TARGET_AGENT_3}} | {{CONTACT_CONDITION_3}} | {{MESSAGE_FORMAT_3}} |
 
+### Shared Task List
+
+- **Registers**: {{TASKS_THIS_AGENT_CREATES}} via `TaskCreate` (with dependencies)
+- **Claims / updates**: {{TASKS_THIS_AGENT_UPDATES}} via `TaskUpdate` (status, owner)
+- **If Task tools are unavailable**: report status by `SendMessage` to {{REPORTS_TO_AGENT_NAME}}, who updates the list
+
 ### Task Assignment Patterns
 
-- **Receive tasks from**: {{REPORTS_TO_AGENT_NAME}} via task assignment message
+- **Receive tasks from**: {{REPORTS_TO_AGENT_NAME}} via the shared task list or a named `SendMessage`
 - **Delegate tasks to**: {{DELEGATEE_AGENTS}} (if leader/specialist)
 - **Task format**:
   ```

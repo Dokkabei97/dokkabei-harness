@@ -64,30 +64,22 @@ Creates a plugin manifest in `.claude-plugin/plugin.json` with:
 File: [templates/team-agent.md](templates/team-agent.md)
 
 Creates a team-aware agent in `agents/{name}.md` with:
-- YAML frontmatter (name, description, tools, team, teamRole, reportsTo)
-- Standard sections: Role, Team Communication Protocol, Analysis Workflow, Output Format, Boundaries
-- SendMessage targets, task assignment patterns, handoff format, escalation rules
+- YAML frontmatter (name, description, tools, team, teamRole, reportsTo, `model` chosen per task tier with a reason comment — no blanket opus)
+- Standard sections: Role, Team Communication Protocol (heading kept; v2 content), Analysis Workflow, Output Format, Boundaries
+- Named `SendMessage({to:"<name>"})` targets (no broadcast), shared task list (`TaskCreate`/`TaskUpdate`), first-report tool list, handoff format, escalation rules
 
 ### 7. Orchestrator Skill Template
 File: [templates/orchestrator-skill.md](templates/orchestrator-skill.md)
 
 Creates an orchestrator skill in `skills/{team-name}-orchestrator/SKILL.md` with:
 - YAML frontmatter (name, description)
-- Standard sections: When to Apply, Team Members, Workflow Phases, Completion Criteria, Error Handling, Re-run Support
-- Team member table with roles, skills, and outputs
+- `**실행 모드:**` declaration (A workflow / B persistent agents / C subagents; per phase when mixed) and `**Pattern:**`
+- Standard sections: When to Apply, Team Members, Data Transfer, Workflow Phases, Completion Criteria, Error Handling, Re-run Support, 테스트 시나리오
+- `## Team Members` table (Name | Agent | Role | Skills | Output) — this table **is** the team definition; there is no separate team config file
 - Numbered workflow phases with assigned members, inputs, and outputs
+- Re-run via `_workspace/` state check and `Workflow` `resumeFromRunId` (mode A)
 
-### 8. Team Configuration Template
-File: [templates/team-config.md](templates/team-config.md)
-
-Creates a team configuration reference with:
-- Team metadata (name, pattern, description, creation date)
-- Member registry with agent names, roles, model assignments
-- Communication protocols and message routing
-- Shared resources (skills, MCP servers)
-- CLAUDE.md registration template
-
-### 9. Loop Stop-Hook Template (루프 엔진)
+### 8. Loop Stop-Hook Template (루프 엔진)
 Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/loop-hooks.json](templates/loop-hooks.json)
 
 루프 하네스의 **세션 내 자율 루프 엔진**. Stop 훅이 종료를 가로채(exit 2) 정지 조건 충족까지 작업을 재주입한다.
@@ -137,7 +129,7 @@ Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/lo
 | `disable-model-invocation` | No | boolean | `true` |
 | `user-invocable` | No | boolean | `false` |
 | `allowed-tools` | No | array | `["Read", "Grep"]` |
-| `model` | No | string | `"sonnet"` / `"opus"` |
+| `model` | No | string | `"fable"` / `"opus"` / `"sonnet"` / `"haiku"` |
 | `context` | No | string | `"fork"` |
 | `agent` | No | string | `"Explore"` / `"Plan"` |
 | `hooks` | No | object | `{PreToolUse: [...]}` |
@@ -161,7 +153,7 @@ Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/lo
 | `description` | Yes | string | `"Security analysis specialist..."` |
 | `tools` | No | array | `["Read", "Grep", "Glob", "Bash"]` |
 | `disallowedTools` | No | array | `["Write", "Edit"]` |
-| `model` | No | string | `"sonnet"` / `"opus"` / `"haiku"` / `"inherit"` |
+| `model` | No | string | `"fable"` / `"opus"` / `"sonnet"` / `"haiku"` / `"inherit"` — per task tier, reason as comment |
 | `permissionMode` | No | string | `"acceptEdits"` / `"auto"` / `"plan"` |
 | `maxTurns` | No | number | `50` |
 | `skills` | No | array | `["my-skill"]` |
@@ -174,7 +166,7 @@ Files: [templates/loop-stop-hook.sh](templates/loop-stop-hook.sh), [templates/lo
 | `initialPrompt` | No | string | `"Start analysis of..."` |
 | `color` | No | string | `"blue"` / `"green"` / `"purple"` etc. |
 | `team` | No | string | `"code-review-team"` |
-| `teamRole` | No | string | `"leader"` / `"member"` / `"specialist"` |
+| `teamRole` | No | string | `"leader"` / `"member"` / `"specialist"` / `"checker"` |
 | `reportsTo` | No | string | `"orchestrator-agent-name"` |
 
 ### Plugin Fields (plugin.json)

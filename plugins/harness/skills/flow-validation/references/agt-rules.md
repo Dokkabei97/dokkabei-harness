@@ -15,7 +15,7 @@
 - **Severity**: High
 - **Check**: Each tool in array is a recognized tool name
 - **Auto-fixable**: Yes (remove invalid entries)
-- **Valid tools**: Read, Grep, Glob, Bash, Write, Edit, WebFetch, WebSearch, Agent, Skill, NotebookEdit
+- **Valid tools**: Read, Grep, Glob, Bash, Write, Edit, WebFetch, WebSearch, Agent, Skill, NotebookEdit, SendMessage, TaskCreate, TaskUpdate, TaskList, TaskGet, TaskStop (collaboration tools used by execution mode B — never auto-remove them)
 
 ## AGT-004: Role Description
 - **Severity**: High
@@ -73,7 +73,7 @@
 
 ## AGT-013: Model Override Validity
 - **Severity**: Medium
-- **Check**: If `model` specified, valid value (sonnet, opus, haiku, inherit, or full model ID)
+- **Check**: If `model` specified, valid value (fable, opus, sonnet, haiku, inherit, or full model ID)
 - **Auto-fixable**: No
 
 ## AGT-014: Permission Mode Validity
@@ -138,16 +138,21 @@
 
 ---
 
-> **Note**: AGT-021 through AGT-026 are **conditional rules** that only apply when the agent has `team` or `teamRole` in frontmatter.
+> **Note**: AGT-021 through AGT-026 are **conditional rules** that only apply when the agent has `team` or `teamRole` in frontmatter, or is listed in an orchestrator skill's `## Team Members` table (the team definition — there is no separate team config file). AGT-021 additionally applies only to members of a **mode B** (persistent agent collaboration) orchestrator or phase — mode A (Workflow) and mode C (sub-agent delegation, incl. `Sub-agents` declarations) members never message peers and are exempt. AGT-027 applies to all agents.
 
 ## AGT-021: Team Communication Protocol Section
 - **Severity**: High
-- **Check**: If agent is a team member, must have `## Team Communication Protocol` section
+- **Check**: If agent is a mode B team member, must have a `## Team Communication Protocol` section (heading kept for compatibility) whose content follows the v2 model:
+  1. Messages go to **named** targets — `SendMessage({to: "<name>"})`, one call per recipient
+  2. No broadcast — `SendMessage({to: "all"})` or "send to all members" wording is a violation
+  3. Shared task list usage documented — which tasks the agent registers/claims/updates via `TaskCreate`/`TaskUpdate` (or that the leader updates on its behalf)
+  4. First report lists the tools actually available at runtime (deferred tools such as `TaskCreate`/`TaskUpdate` may be missing even when declared)
 - **Auto-fixable**: No
+- **Note**: Workflow-only agents (execution mode A) replace this section with a structured-output section (JSON shape returned as data); do not flag them for missing SendMessage targets
 
 ## AGT-022: SendMessage Target Validity
 - **Severity**: High
-- **Check**: Named targets in agent body must exist in the team's `members` list
+- **Check**: Named `SendMessage` targets in agent body must exist in the Name column of the orchestrator skill's `## Team Members` table
 - **Auto-fixable**: No
 
 ## AGT-023: Task Assignment Pattern Documentation
@@ -155,17 +160,31 @@
 - **Check**: If `teamRole` is `coordinator` or `supervisor`, must document task assignment strategy
 - **Auto-fixable**: No
 
-## AGT-024: Team Agent Model Requirement
-- **Severity**: High
-- **Check**: All team agents must specify `model: "opus"` in frontmatter. Team collaboration quality depends on model reasoning capability; mixing weaker models degrades overall output quality
-- **Auto-fixable**: Yes (set `model: "opus"` if missing or different)
+## AGT-024: Team Agent Model Tier Selection
+- **Severity**: Medium (blanket high-tier assignment) / Low (missing reason comment)
+- **Check**: Each team agent's `model` is chosen per task tier, not per perceived importance, with the reason recorded as a comment (inline YAML comment on `model:` or a note in the orchestrator):
+  - `fable` — long-horizon autonomous planning, coordination, large-scale synthesis
+  - `opus` — scoped deep analysis, design/architecture, code generation, cross-verification
+  - `sonnet` — routine/procedural work (collection, conversion, static checks, summaries); default when unsure
+  - `haiku`, `inherit`, or a full model ID remain valid when deliberately chosen
+- **Flag**: Every member of the team assigned the same high tier (`fable` or `opus`) → Medium. A `model:` without a reason comment → Low
+- **Auto-fixable**: No (tier choice requires understanding of each agent's workload)
+- **Rationale**: v1 forced `model: "opus"` on all team agents; v2 retires that policy (see team-harness `references/model-selection-guide.md`)
 
 ## AGT-025: Team Role Frontmatter Presence
 - **Severity**: Medium
-- **Check**: If agent is listed in a team definition, frontmatter should contain `teamRole`
-- **Auto-fixable**: Yes (copy role from team definition)
+- **Check**: If agent is listed in an orchestrator skill's `## Team Members` table, frontmatter should contain `teamRole`
+- **Auto-fixable**: Yes (copy role from the Role column of the `## Team Members` table)
 
 ## AGT-026: Workspace Artifact Awareness
 - **Severity**: Medium
 - **Check**: Team worker agents should document `_workspace/` artifact paths they read or produce
 - **Auto-fixable**: No
+
+## AGT-027: Tool Set Matches Edit Intent
+- **Severity**: High (read-only agent holds `Edit`) / Medium (other mismatches)
+- **Check**: Applies to all agents with an explicit `tools` list:
+  1. **Read-only agents** (reviewer, checker, verifier, auditor — description/role says it reviews, verifies, or analyzes without changing the target) must not have `Edit`. `Write` is allowed only when the body restricts it to its own report/marker output; otherwise remove `Write` too
+  2. **Modifying agents** (body says it fixes, edits, or updates artifacts) that have `Write` must also have `Edit` — with Write only, large artifacts get rewritten wholesale or the agent works around the edit
+- **Auto-fixable**: No (intent classification requires judgment)
+- **Rationale**: Upstream harness v2 step 3 — read-only reviewers drop Edit/Write; artifact modifiers need both

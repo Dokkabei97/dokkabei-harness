@@ -9,8 +9,8 @@
 `harness`는 다른 하네스를 만들기 위한 하네스다. 도메인을 분석해 에이전트 팀을 설계하고(`team-harness`),
 결정된 설계를 실제 컴포넌트 파일로 스캐폴딩하며(`create-flow` + `flow-scaffolding`),
 생성물을 10개 룰셋으로 기계 검증한다(`verify-flow` + `flow-validation`). 즉 "설계 → 생성 → 검증"의
-단일 책임을 세 스킬 + 두 커맨드로 분리한 구조다. [revfactory/harness](https://github.com/revfactory/harness)(Apache-2.0)의
-모놀리식 단일 스킬에서 출발해 사내 마켓플레이스에 맞게 재구조화한 fork이며, 상세 매핑은 `docs/ARCHITECTURE.md`에 있다.
+책임을 스킬 + 커맨드로 분리하고, 사용 후에는 하네스를 진화시킨다(`evolve`). [revfactory/harness](https://github.com/revfactory/harness)(Apache-2.0, v2.1.0 동기화)에서
+출발해 사내 마켓플레이스에 맞게 재구조화한 fork이며, 상세 매핑은 `docs/ARCHITECTURE.md`에 있다.
 
 여기에 더해 산출물 구조(prd/tasks) 없이 "게이트 그린까지"만 반복하는 **경량 범용 루프 엔진**(`/loop-run`·`/loop-stop`)을
 내장한다. 이 루프는 `loop-active`에 `engine=generic`을 기록해, 그린필드 파이프라인(mvp)·브라운필드 작업분해(feature-loop)
@@ -28,8 +28,9 @@ completion promise를 직접 검증한다.
 
 ### 스킬
 
-- `team-harness` — 멀티 에이전트 팀 설계 메타 스킬. 도메인 분석, 6종 아키텍처 패턴 선택(Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), 검증·루프 보강 패턴, 오케스트레이터 설계를 수행하고 생성은 `/create-flow`, 검증은 `/verify-flow`에 위임한다. "하네스 구성해줘", "팀 설계해줘" 등에서 발화.
-- `flow-scaffolding` — 각 컴포넌트 유형의 표준 템플릿 시스템(커맨드·에이전트·스킬·훅·플러그인·팀 에이전트·오케스트레이터·팀 설정·루프 Stop 훅 9종). 프론트매터 필드 레퍼런스와 네이밍 컨벤션을 포함하며 `/create-flow`가 사용한다.
+- `team-harness` — 멀티 에이전트 팀 설계 메타 스킬(v2). 도메인 분석, 실행 모드 3종(워크플로 조율/지속형 에이전트 협업/서브에이전트 위임)과 6종 아키텍처 패턴 선택(Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), 검증·루프 보강 패턴, 업무 기반 모델 티어(fable/opus/sonnet), 오케스트레이터 설계, v1(`TeamCreate`)→v2 전환을 수행하고 생성은 `/create-flow`, 검증은 `/verify-flow`에 위임한다. "하네스 구성해줘", "팀 설계해줘", "하네스 점검" 등에서 발화.
+- `evolve` — 사용 중인 하네스의 실행 결과로 하네스를 진화시킨다. 피드백을 일반화해 에이전트·스킬·오케스트레이터에 한 번에 하나씩 반영하고, `/verify-flow`·트리거 테스트로 재검증한 뒤 델타를 사유와 함께 git 커밋으로 남긴다. "하네스 회고", "하네스 개선", "피드백 반영해줘" 등에서 발화.
+- `flow-scaffolding` — 각 컴포넌트 유형의 표준 템플릿 시스템(커맨드·에이전트·스킬·훅·플러그인·팀 에이전트·오케스트레이터·루프 Stop 훅 8종). 프론트매터 필드 레퍼런스와 네이밍 컨벤션을 포함하며 `/create-flow`가 사용한다.
 - `flow-validation` — 컴포넌트 검증 룰셋과 체크리스트. 10개 카테고리(CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA)의 규칙, 심각도 척도, Health Score 계산법을 담으며 `/verify-flow`가 사용한다. 그중 LOOP 룰셋(10룰)은 Stop 훅 루프 엔진 전용 안전 규약이다.
 
 ### 훅
@@ -39,6 +40,7 @@ completion promise를 직접 검증한다.
 ## 사용법
 
 - **하네스 설계**: "팀 설계해줘"·"하네스 구성해줘" 같은 요청이면 `team-harness`가 자동 발화해 도메인 분석 → 패턴 선택 → 오케스트레이터 설계를 진행하고, 실제 파일 생성은 `/create-flow --team`, 검증은 `/verify-flow --target team`으로 이어진다.
+- **하네스 진화**: 하네스를 실행한 뒤 "하네스 회고해줘"·"이 피드백 하네스에 반영해줘"라고 하면 `evolve`가 일반화한 변경안을 제안하고, 승인 후 1건씩 반영해 사유와 함께 커밋한다.
 - **컴포넌트 생성·검증**: 단일 컴포넌트가 필요하면 `/create-flow <name> --type skill` 처럼 직접 호출하고, 생성 직후 `/verify-flow <path> --target skill`로 컨벤션 준수를 확인한다. 두 커맨드는 상호 보완 쌍이다.
 - **경량 루프 시작/중지**:
   ```

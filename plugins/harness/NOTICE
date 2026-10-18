@@ -20,6 +20,21 @@ extends it as follows:
   - Added docs/ARCHITECTURE.md
   - Korean localization and adaptation throughout
 
+Version 2.0.0 (2026-10) re-synced with upstream v2.1.0 (commit 928de2c):
+  - team-harness re-based on upstream skills/harness v2: three execution
+    modes (Workflow orchestration / persistent named agents / sub-agent
+    delegation), task-based model tiers, v1 (TeamCreate) migration path,
+    error-handling and follow-up rules; local additions (verification/loop
+    patterns, cross-harness orchestration, loop harness design, drift
+    detection, reuse gate, create-flow/verify-flow delegation) retained
+  - references: agent-design-patterns.md replaced by team-patterns.md; added
+    execution-modes.md, model-selection-guide.md, workflow-recipes.md;
+    remaining references 3-way merged (upstream v1 -> local -> upstream v2)
+  - Added skill `evolve` derived from upstream skills/evolve, adapted to use
+    git commit history as the change ledger and /verify-flow for validation
+  - flow-validation / flow-scaffolding updated to v2 (opus-for-all rule and
+    team-config template removed, v1 artifact detection rules added)
+
 All original copyright, license, and attribution notices are retained
 per Apache-2.0 §4(c). Modifications: Copyright 2026 Dokkabei97 (Minkyu Jang),
 distributed under the same Apache License, Version 2.0.

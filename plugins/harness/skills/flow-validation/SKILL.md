@@ -23,12 +23,12 @@ Reference these rules when:
 | Prefix | Component | Rule Count |
 |--------|-----------|------------|
 | `CMD-` | Commands | 13 rules |
-| `AGT-` | Agents | 30 rules |
+| `AGT-` | Agents | 31 rules |
 | `SKL-` | Skills | 21 rules |
 | `HK-` | Hooks | 13 rules |
 | `LOOP-` | Loop Engine Hooks | 10 rules |
 | `TEAM-` | Teams | 8 rules |
-| `ORC-` | Orchestrators | 9 rules |
+| `ORC-` | Orchestrators | 13 rules |
 | `XRF-` | Cross-Reference | 16 rules |
 | `SEC-` | Security | 7 rules |
 | `QUA-` | Quality | 7 rules |
@@ -48,8 +48,8 @@ Execute validation in this order for optimal dependency resolution:
 
 1. **Structural** (CMD/AGT/SKL/HK/LOOP rules) - File exists, frontmatter valid, sections present
 2. **Content Quality** (QUA rules) - Descriptions specific, examples present, triggers concrete
-3. **Team Structural** (TEAM rules) - Team definition, members, orchestrator
-4. **Orchestrator** (ORC rules) - Phase sequence, data flow, error handling
+3. **Team Structural** (TEAM rules) - `## Team Members` table in the orchestrator skill (the v2 team definition)
+4. **Orchestrator** (ORC rules) - Phase sequence, data flow, execution mode, v1 artifacts, Workflow pitfalls
 5. **Security** (SEC rules) - No credentials, safe scripts, no dangerous commands
 6. **Cross-Reference** (XRF rules) - Component references valid, no orphans
 
@@ -98,11 +98,12 @@ skills/{name}/
 
 ### Team Required Structure
 ```
-agents/{member-1}.md          (team frontmatter + Team Communication Protocol)
-agents/{member-2}.md          
+agents/{member-1}.md          (team frontmatter + Team Communication Protocol, per-tier model)
+agents/{member-2}.md
 skills/{team-name}-orchestrator/
-  SKILL.md                    (member registry + workflow phases)
-claude/CLAUDE.md              (team registration entry)
+  SKILL.md                    (## Team Members table = team definition,
+                               execution mode A/B/C, phases, test scenarios)
+CLAUDE.md                     (project root: trigger-only entry, no change history)
 ```
 
 ### Plugin Required Structure

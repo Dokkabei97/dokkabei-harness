@@ -51,22 +51,22 @@
 
 ## XRF-010: Team to Agent References Valid
 - **Severity**: High
-- **Check**: Every `members[].agent` in team definition resolves to `agents/{name}.md` or a valid built-in type
+- **Check**: Every Agent cell in the orchestrator's `## Team Members` table resolves to `agents/{name}.md` or a valid built-in type
 - **Auto-fixable**: No
 
 ## XRF-011: Team to Orchestrator Skill Reference Valid
 - **Severity**: Critical
-- **Check**: Team's orchestrator reference resolves to an existing `skills/{name}/SKILL.md`
+- **Check**: An agent's `team` frontmatter value resolves to an existing orchestrator `skills/{team}-orchestrator/SKILL.md` (same resolution as TEAM-006) whose `## Team Members` table lists that agent
 - **Auto-fixable**: No
 
 ## XRF-012: Orchestrator to Team Member References Valid
 - **Severity**: High
-- **Check**: All member names referenced in orchestrator phases exist in the team's `members` list
+- **Check**: All member names referenced in orchestrator phases exist in the Name column of its `## Team Members` table
 - **Auto-fixable**: No
 
 ## XRF-013: Agent Team Self-Reference Consistency
 - **Severity**: Medium
-- **Check**: Agent frontmatter `team` and `teamRole` values match the corresponding team definition entry
+- **Check**: Agent frontmatter `team` and `teamRole` values match the corresponding `## Team Members` row (owning orchestrator and Role column)
 - **Auto-fixable**: No
 
 ## XRF-014: Workspace Artifact Path Consistency

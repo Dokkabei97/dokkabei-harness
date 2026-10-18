@@ -88,7 +88,7 @@ Define the scope and relationships of the new component.
 3. **Workflow Steps**: Plan the agent's step-by-step analysis workflow
 4. **Language Support**: Determine supported languages/frameworks
 5. **Output Format**: Define the agent's report structure
-6. **Model Selection**: Choose model override (`sonnet`, `opus`, `haiku`, `inherit`)
+6. **Model Selection**: Choose model override per task tier (`fable` long-horizon autonomy/coordination, `opus` deep analysis/design/code, `sonnet` routine work — default when unsure; `haiku`, `inherit` also valid) and record the reason as a comment
 7. **Permission Mode**: Set permission mode for agent execution
 8. **Persistent Memory**: Configure `memory` scope (user, project, local)
 9. **Isolation**: Determine if agent needs `isolation: worktree`
@@ -125,12 +125,13 @@ Define the scope and relationships of the new component.
 
 **For Teams (--team mode):**
 1. **Team Spec Intake**: Receive team specification from team-harness skill
-2. **Pattern Validation**: Verify selected pattern (Pipeline, Fan-out/Fan-in, Expert Pool, Producer-Reviewer, Supervisor, Hierarchical)
-3. **Member Definition**: Define each agent's name, role, tools, model, skills
-4. **Orchestrator Design**: Define workflow phases, member assignments, data flow
-5. **Communication Protocol**: Define inter-agent messaging patterns
-6. **Hook Planning**: Determine team lifecycle hooks (TeammateIdle, TaskCompleted)
-7. **Registration**: Plan claude/CLAUDE.md pointer entry
+2. **Execution Mode**: Take the mode from the spec, or derive it and confirm with AskUserQuestion — A workflow orchestration (`Workflow`) if control flow can be fixed in code → B persistent agent collaboration (`Agent(name:)` + `SendMessage` + `TaskCreate`/`TaskUpdate`) if agents must converse or keep context → C subagent delegation (`Agent` calls) if only results are needed. Mixed mode: one mode per phase. Mode A needs explicit user consent and starts small
+3. **Pattern Validation**: Verify selected pattern (Pipeline, Fan-out/Fan-in, Expert Pool, Producer-Reviewer, Supervisor, Hierarchical)
+4. **Member Definition**: Define each agent's name, role, tools (read-only reviewers without Edit/Write; modifiers with both Write and Edit), skills, and model per task tier with a reason — never one high tier for every member
+5. **Orchestrator Design**: Define the `## Team Members` roster (the team definition), workflow phases, member assignments, data-transfer method, error handling, test scenarios
+6. **Communication Protocol**: Named `SendMessage({to: "<name>"})` routes only (no broadcast) and shared task list usage (mode B); structured output schema (mode A)
+7. **Hook Planning**: Determine optional lifecycle hooks (TeammateIdle, TaskCompleted)
+8. **Registration**: Plan a trigger-only entry in the project `CLAUDE.md` (change history stays in git)
 
 ### Phase 3: Design
 Generate the component design document and confirm with the user before implementation.
@@ -201,7 +202,7 @@ Frontmatter:
 name: {name}
 description: "{description}"
 tools: [{tools}]
-# model: {sonnet|opus|haiku|inherit}
+# model: {fable|opus|sonnet|haiku|inherit}  # {reason: task tier}
 # permissionMode: {default|acceptEdits|plan}
 # maxTurns: {number}
 # skills: [{skills}]
@@ -286,28 +287,32 @@ plugin.json:
 
 When `--team` flag is used, batch-generate all team components:
 
+No team config file is generated — the orchestrator's `## Team Members` table is the team definition.
+v1 constructs (`TeamCreate`, `TeamDelete`, `team_name`, broadcast `SendMessage({to:"all"})`, the experimental agent-teams flag) are never emitted.
+
 1. **Agent Generation**: For each team member, generate `agents/{name}.md` using team-agent template:
    - Standard agent frontmatter + team fields (team, teamRole, reportsTo)
-   - Team Communication Protocol section with SendMessage targets
+   - `model:` per task tier with an inline reason comment
+   - Team Communication Protocol section (mode B: named SendMessage targets, shared task list, first-report tool list), a structured-output section (mode A workflow-only agents), or neither for mode C sub-agents (they return a result only — AGT-021 exempts them)
    - I/O Protocol referencing `_workspace/` paths
 
-2. **Orchestrator Skill Generation**: Generate `skills/{team-name}-orchestrator/SKILL.md`:
-   - Workflow phases mapped from team spec
-   - Agent delegation instructions referencing each member
-   - Completion criteria and escalation rules
+2. **Orchestrator Skill Generation**: Generate `skills/{team-name}-orchestrator/SKILL.md` from the orchestrator-skill template:
+   - `**실행 모드:**` declaration (per phase when mixed) and `**Pattern:**`
+   - `## Team Members` table (Name | Agent | Role | Skills | Output)
+   - Workflow phases mapped from team spec; data-transfer method; error handling
+   - Embedded `Workflow` script only for mode A (literal `meta`, `.filter(Boolean)` on results, no `Date.now()`/`Math.random()`)
+   - Re-run via `_workspace/` check and `resumeFromRunId`; `## 테스트 시나리오` (1 normal + ≥1 error flow)
    - Follow-up keywords in description
 
 3. **Team Hook Generation** (optional): Add entries to `hooks/hooks.json`:
    - TeammateIdle event for monitoring
    - TaskCompleted event for logging
 
-4. **Team Registration**: Add minimal pointer to `claude/CLAUDE.md`:
+4. **Team Registration**: Add a trigger-only pointer to the project `CLAUDE.md` (no change-history table — history lives in git commits):
    ```markdown
    ## Harness: {Domain}
-   **Trigger:** Use `{team-name}-orchestrator` for {domain} tasks.
-   **Change History:**
-   | Date | Change | Target | Reason |
-   | {today} | Initial creation | All | Team harness setup |
+   **Goal:** {one line}
+   **Trigger:** Use the `{team-name}-orchestrator` skill for {domain} tasks. Simple questions may be answered directly.
    ```
 
 5. **Auto-Validation**: Recommend running `/verify-flow --target team` after generation
@@ -488,11 +493,12 @@ Compare AI outputs with Claude's design and select the best structure for each s
 ```
 /create-flow --team --team-name code-review-team
 # Interactive workflow:
-# 1. Receives team spec from team-harness (pattern, members, orchestrator)
-# 2. Shows team design preview with all agents + orchestrator
+# 1. Receives team spec from team-harness (execution mode, pattern, members, orchestrator)
+#    - no mode in spec → derives one (A/B/C) and confirms with the user
+# 2. Shows team design preview with all agents (model tier + reason) + orchestrator
 # 3. Batch-generates: agents/security-reviewer.md, agents/perf-reviewer.md, agents/test-reviewer.md
-# 4. Generates: skills/code-review-team-orchestrator/SKILL.md
-# 5. Registers team in claude/CLAUDE.md
+# 4. Generates: skills/code-review-team-orchestrator/SKILL.md (## Team Members = team definition)
+# 5. Adds a trigger-only entry to the project CLAUDE.md
 # 6. Runs verify-flow --target team for validation
 ```
 

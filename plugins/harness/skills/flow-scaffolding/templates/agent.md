@@ -4,7 +4,7 @@ description: {{DESCRIPTION}}
 tools: [{{TOOLS}}]
 # --- Optional Fields ---
 # disallowedTools: [{{DISALLOWED_TOOLS}}]
-# model: {{sonnet|opus|haiku|inherit}}
+# model: {{fable|opus|sonnet|haiku|inherit}}  # {{MODEL_REASON}} — fable=장기 자율·계획·조율 / opus=깊은 분석·설계·코드 / sonnet=일상·변환·수집(애매하면 기본)
 # permissionMode: {{default|acceptEdits|auto|dontAsk|bypassPermissions|plan}}
 # maxTurns: {{MAX_TURNS}}
 # skills: [{{PRELOADED_SKILLS}}]
