@@ -21,7 +21,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 - `/handoff` — 세션 컨텍스트(목표·시도·다음 단계 + git 상태)를 `HANDOFF.md`에 저장해 다음 세션이 이어받게 한다. 컨텍스트 한계 임박·세션 종료 시 사용.
 - `/release-notes` — 직전 릴리즈 태그 이후 머지된 MR을 `glab`으로 수집, conventional commit/MR 제목으로 변경 유형을 분류해 한국어 체인지로그·릴리즈 노트 초안을 만들고 다음 semver 버전과 태그·Release 생성 명령을 제안한다(원격 반영은 승인 후).
 - `/retro` — 이번 세션의 교정·실수·발견을 추출해 유형별로 라우팅하는 회고 컴파운딩 라우터. 컨벤션 변화는 `sync-claude-md`로, 반복 실수는 `tasks/lessons.md`(가드 훅 후보 태그 포함)로, 도메인 지식은 스킬 수정 제안으로 분배한다. 모든 적용은 사용자 승인 게이트를 거친다.
-- `/review-mr` — GitLab MR diff를 분석해 버그·보안 취약점·로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성한다. diff 성격에 따라 `analyze` 플러그인의 전문 에이전트(arch-reviewer/perf-reviewer/sql-analyzer)를 선택 디스패치하고, confidence 기반으로 low 지적사항을 제외·강등한다.
+- `/review-mr` — GitLab MR diff를 분석해 버그·보안 취약점·로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성한다. confidence 기반으로 low 지적사항을 제외·강등한다.
 
 ### 스킬
 
@@ -51,7 +51,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 ## 의존성
 
 - 별도의 플러그인 `requires`는 없다. 다만 일부 구성요소는 외부 도구/플러그인이 있을 때만 완전히 동작한다.
-  - `/review-mr`, `/release-notes` — GitLab CLI `glab` 필요. `/review-mr`는 `analyze` 플러그인의 리뷰 에이전트(arch-reviewer/perf-reviewer/sql-analyzer)를 선택 디스패치한다.
+  - `/review-mr`, `/release-notes` — GitLab CLI `glab` 필요.
   - `issue-tracker` — `plane-cli`(Plane) 필요. `document-latest` — Outline MCP 필요. `post-merge` — 둘 다 필요(Plane + Outline).
   - `retro-compound` — 가드 훅 스캐폴딩은 `harness:create-flow`에 위임.
   - `doc-collab-guide` — 공식 `doc-coauthoring` 스킬(anthropics/skills) 설치가 전제.

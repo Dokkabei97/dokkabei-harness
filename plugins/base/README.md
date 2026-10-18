@@ -8,7 +8,7 @@
 
 `base` is the lowest-level foundational layer that other plugins commonly lay down first. Attached to Claude Code's `PreToolUse`/`PostToolUse` hooks, it activates automatically at every shell command and file edit without any separate invocation. It blocks dangerous behaviors (e.g., dev servers outside tmux) and gives non-blocking feedback for the rest — format cleanup, compile checks, security vulnerability warnings, and so on.
 
-There are two core design intents. First, real-time security warnings (`warn-security`) catch high-signal patterns such as secrets, injection, and deserialization the moment they are edited, but operate strictly as warning-only that never block the flow. Second, it serves as the safety net that loop-type harnesses like `mvp` and `feature-loop` presume via `requires` — this hook layer becomes the guardrail while an autonomous iteration loop runs. The plugin itself exposes no commands, agents, or skills; it is composed purely of hooks and LSP configuration.
+There are two core design intents. First, real-time security warnings (`warn-security`) catch high-signal patterns such as secrets, injection, and deserialization the moment they are edited, but operate strictly as warning-only that never block the flow. Second, it serves as the safety net for loop-type harnesses such as the `harness` generic loop (`/loop-run`) — this hook layer becomes the guardrail while an autonomous iteration loop runs. The plugin itself exposes no commands, agents, or skills; it is composed purely of hooks and LSP configuration.
 
 ## Components
 
@@ -64,7 +64,7 @@ No separate invocation is needed after installation. As long as the plugin is en
 ## Dependencies
 
 - This plugin itself has no `requires`/`dependencies` (can be installed standalone).
-- Loop-type harnesses such as `mvp` and `feature-loop` presume `base` via `requires` — since it becomes a safety net during loop execution, using them together is the default combination.
+- `observe` presumes `base` via `requires`. It also becomes a safety net during loop execution (`harness` `/loop-run`), so using them together is the default combination.
 
 ## Notes
 

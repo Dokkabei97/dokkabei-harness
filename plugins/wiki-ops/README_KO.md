@@ -51,6 +51,6 @@ no-progress 감지, 킬스위치 `/loop-stop`. 모순은 **절대 자동 해소�
 
 ## 경계
 
-- llm-wiki 소스코드 자체의 개발 → `feature-loop` / 스택 플러그인
+- llm-wiki 소스코드 자체의 개발 → 스택 플러그인
 - 사내 위키(Outline) 문서화 → `workflow:document-latest`
 - 웹 기반 심층 리서치 리포트 → `deep-research` (vault 근거 리서치는 `/wiki-ask --research`)

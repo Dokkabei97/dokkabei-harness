@@ -237,4 +237,3 @@ High가 0~2건이고 Med 이하면:
 - Hook: `kotlin-nullable-policy` — 자동 감지 (nullable 비율)
 - `search/skills/es-deep-patterns` — ES 쿼리/매핑 심화
 - `search/skills/kotlin-es-client-patterns` — Kotlin ES 클라이언트
-- `utils/analyze/agents/arch-reviewer` — 프로젝트 전체 아키텍처 리뷰 (보완적)

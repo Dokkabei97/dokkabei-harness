@@ -8,7 +8,7 @@ description: |
 # /wiki-harness-feed — 하네스 건강 스냅샷 투입
 
 observe(생산)와 wiki-ops(소비)를 잇는 브릿지 스킬이다. 결합은 하드 의존이 아니라
-**파일 존재 검사**다(mvp↔startup 브릿지 선례) — observe 미설치·트레이스 부재 시 중단하고 안내한다.
+**파일 존재 검사**다 — observe 미설치·트레이스 부재 시 중단하고 안내한다.
 observe 는 어떤 파일도 쓰지 않으므로(stdout-온리 계약) 물화·ingest 는 전부 이 스킬의 책임이다.
 
 ## When to Apply

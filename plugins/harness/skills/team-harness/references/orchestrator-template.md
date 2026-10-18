@@ -27,7 +27,7 @@
 
 ## 1. 공통 골격 (모든 템플릿)
 
-세 템플릿은 아래 골격을 공유한다. `## Team Members`·`## Orchestration Phases`는 하위 오케스트레이터(mvp·feature-loop·wiki-ops·scaleup)도 쓰는 헤딩이고 `/verify-flow` 규칙이 그대로 참조하므로 바꾸지 않는다. 실행 모드는 헤딩 대신 `**실행 모드:**` 줄로 써도 ORC-011이 동등하게 인정한다.
+세 템플릿은 아래 골격을 공유한다. `## Team Members`·`## Orchestration Phases`는 하위 오케스트레이터(wiki-ops·search)도 쓰는 헤딩이고 `/verify-flow` 규칙이 그대로 참조하므로 바꾸지 않는다. 실행 모드는 헤딩 대신 `**실행 모드:**` 줄로 써도 ORC-011이 동등하게 인정한다.
 
 | 헤딩 | 역할 |
 |------|------|
@@ -395,7 +395,6 @@ exit 0
 ```
 
 - 훅을 바꾸면 `tests/hooks/*.bats` 회귀 테스트를 함께 갱신한다. hooks.json은 `jq .`로 검증한다.
-- feature-loop worktree 레인 stage③(병렬 레인 완료 게이트)이 이 예시를 참조한다 — 선행 조건은 "마커 없는 완료 주장이 훅에 100% 차단됨"의 별도 스파이크 확인이다.
 - `TeammateIdle`이 B 모드 이름 있는 에이전트에서 발화하는지는 환경별로 실측한다. 관찰용으로만 쓰고 게이트로 의존하지 않는다.
 
 ---

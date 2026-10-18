@@ -10,7 +10,7 @@
 
 역할은 세 단계로 나뉜다. 요구사항을 컴포넌트 트리·데이터 흐름·라우트 구조로 설계하는 `/nextjs-page-design`, 이름과 타입만으로 Page·Layout·Loading·Error·Component·Form·Hook·Test를 자동 생성하는 `/nextjs-gen`, 그리고 이 두 커맨드가 실제 코드 생성을 위임하는 `nextjs-developer` 에이전트다. 판단 기준이 필요한 순간에는 `nextjs-guide` 스킬이 Server First·라우팅·데이터 페칭·테스트 모범 사례를 자동으로 붙여준다.
 
-설계·생성은 "Server First"(기본은 Server Component, 인터랙션이 필요할 때만 `'use client'`)와 colocation, 타입 안전(Zod + `z.infer`)을 일관되게 따른다. 이 플러그인은 **코드 구조**(Server/Client 경계·라우팅·데이터 페칭·테스트)를 담당하며, 텍스트 와이어프레임·유저플로우 설계는 mvp 플러그인의 `ux-designer`, 고충실도 시각 스타일링('AI 티 나는 밋밋한 UI' 방지)은 공식 `frontend-design` 스킬 소관으로 경계를 둔다.
+설계·생성은 "Server First"(기본은 Server Component, 인터랙션이 필요할 때만 `'use client'`)와 colocation, 타입 안전(Zod + `z.infer`)을 일관되게 따른다. 이 플러그인은 **코드 구조**(Server/Client 경계·라우팅·데이터 페칭·테스트)를 담당하며, 고충실도 시각 스타일링('AI 티 나는 밋밋한 UI' 방지)은 공식 `frontend-design` 스킬 소관으로 경계를 둔다.
 
 ## 구성요소
 
@@ -62,4 +62,4 @@
 - **App Router 전용.** Pages Router·`getServerSideProps` 등 레거시 패턴은 생성하지 않으며, 감지 시 App Router 마이그레이션을 권한다.
 - **직접 만들지 않는 것:** API 라우트·백엔드 로직, 임의의 비즈니스 로직(대신 `TODO(human)` 마커 삽입), 프로젝트에 없는 의존성을 요구하는 코드. 기존 파일은 명시적 요청 없이 수정하지 않고, 불필요한 `'use client'`를 붙이지 않는다.
 - **선택적 연동(설치 시에만, 미설치 시 graceful degrade):** 시각 스타일링은 공식 `frontend-design` 스킬(`/plugin install frontend-design@claude-plugins-official`)과 조합하고, 버전 민감 API(App Router async params, 캐싱 기본값 등)는 backend-shared 플러그인의 Context7 최신 문서 조회 규약(`context7-docs-guide`)을 따른다.
-- **함께 쓰면 좋은 것:** 기능 기획·와이어프레임은 mvp 플러그인의 `ux-designer`, 백엔드 API·DB는 `backend-*` 플러그인과 역할을 나눠 쓴다.
+- **함께 쓰면 좋은 것:** 백엔드 API·DB는 `backend-*` 플러그인과 역할을 나눠 쓴다.

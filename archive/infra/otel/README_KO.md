@@ -78,7 +78,7 @@ export OTEL_LOG_USER_PROMPTS=1   # 프롬프트 원문 전송 (프롬프트↔�
 
 - `OTEL_LOG_TOOL_DETAILS` 미설정 시 마켓플레이스 플러그인 스킬은 `skill_name="custom_skill"`로
   **마스킹**되고 `plugin_name`/`marketplace_name`도 빠진다 — 하네스 계측이 목적이면 필수.
-  설정 시 `skill_name="feature-loop:floop-status"`, `plugin_name="feature-loop"`,
+  설정 시 `skill_name="harness:loop-run"`, `plugin_name="harness"`,
   `marketplace_name="dokkabei-harness"`처럼 전체 귀속이 나온다 (번들 스킬은 게이트 없이도 실명).
 - `OTEL_LOG_USER_PROMPTS` 미설정 시 `user_prompt` 이벤트의 `prompt`가 `<REDACTED>`
   (단, `command_name`·`prompt_length`는 항상 보임).

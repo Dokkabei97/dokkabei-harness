@@ -2,15 +2,15 @@
 # =============================================================================
 # generic-loop-stop-hook.sh — /loop-run 경량 반복 루프 엔진 (Stop 훅)
 # flow-scaffolding templates/loop-stop-hook.sh 의 물화(harness 프로덕션판).
-# mvp(그린필드 파이프라인)·floop(브라운필드 작업분해)와 달리 산출물 구조(prd/tasks)
-# 없이 "게이트 그린까지 반복"만 수행하는 단발 미니 루프 엔진이다.
+# 산출물 구조(prd/tasks) 없이 "게이트 그린까지 반복"만 수행하는 단발 미니 루프 엔진이다.
+# (mvp·feature-loop 엔진은 2026-10 archive/ 로 이동 — 레포에 남은 유일한 루프 엔진)
 #   - exit 0 : 종료 허용 (루프 비활성 / 타 엔진 소유 / 정지조건 충족 / 가드레일 도달)
 #   - exit 2 : 종료 차단. stderr가 Claude에게 전달되어 다음 반복이 이어진다.
 #
 # engine 스코프 (공유 계약 — loop-active engine 스코프):
 #   .planning/loop-active 에 "engine=generic" 1줄이 명시된 경우에만 활성.
-#   engine 줄이 없는 레거시 loop-active 는 무주장(exit 0) — 레거시 소유권은
-#   mvp/floop 훅의 몫이다. engine=mvp|floop 등 타 값도 즉시 exit 0.
+#   engine 줄이 없는 레거시 loop-active 는 무주장(exit 0) — archive 된 mvp/floop 엔진의
+#   잔존물일 수 있다. 타 engine 값도 즉시 exit 0.
 #   /loop-run 이 loop-active 생성 시 "engine=generic" 을 기록한다.
 #
 # 정지조건 (판정 주체 = 본 훅, 모델 아님):
@@ -18,6 +18,10 @@
 #   ② completion promise: progress.md 의 정확 문자열 일치 (grep -qF, 정규식 금지)
 #   종료 허용 = ① ∧ ②
 # 가드레일: max iterations(기본 12) · no-progress(md5 시그니처 연속 동일) · 시간 상한(기본 60분)
+# 턴 블록 상한: Claude Code 는 연속 8회 Stop 블록 후 9번째 exit 2 를 무시하고 턴을 끝낸다
+#   (실측 2026-09-20, n=3). stop_hook_active 로 턴 단위 연속 블록(turn_blocks)을 세고,
+#   상한 도달 시 차단 대신 progress.md 에 핸드오프를 남기고 종료 허용(loop-active 유지 —
+#   다음 턴에 카운터가 리셋되어 루프가 이어진다). iteration(누적)과는 별개의 카운터다.
 # 킬스위치: /loop-stop (loop-active 삭제) — 가드레일과 별개의 수동 중단 수단
 # =============================================================================
 set -euo pipefail
@@ -29,8 +33,8 @@ PLAN="$PROJ/.planning"
 [ -f "$PLAN/loop-active" ] || exit 0
 
 # (a') engine 스코프 가드 — engine=generic 명시된 경우에만 내 소유.
-# 레거시(engine 줄 없음)는 mvp/floop 레거시 호환의 몫이므로 무주장 exit 0. 타 엔진 값도 exit 0.
-# mvp/floop 훅과 동일한 tr -d '\r' 방어 패턴 — CRLF 로 기록된 loop-active 도 대칭 판정.
+# 레거시(engine 줄 없음)·타 엔진 값은 무주장 exit 0.
+# tr -d '\r' 방어 — CRLF 로 기록된 loop-active 도 동일 판정.
 loop_engine="$(grep -m1 '^engine=' "$PLAN/loop-active" 2>/dev/null | tr -d '\r' || true)"
 [ "${loop_engine#engine=}" = "generic" ] || exit 0
 
@@ -85,15 +89,20 @@ hash_stdin() {
 input="$(cat || true)"
 stop_active="$(printf '%s' "$input" | jq -r '.stop_hook_active // false' 2>/dev/null || echo false)"
 
-# 상태 로드 — iteration / last_fail_sig / started_at (epoch 초)
-iter=0; last_fail_sig=""; started_at=0
+# 상태 로드 — iteration / last_fail_sig / started_at (epoch 초) / turn_blocks
+iter=0; last_fail_sig=""; started_at=0; turn_blocks=0
 if [ -f "$STATE_FILE" ]; then
   iter="$(jq -r '.iteration // 0' "$STATE_FILE" 2>/dev/null || echo 0)"
   last_fail_sig="$(jq -r '.last_fail_sig // ""' "$STATE_FILE" 2>/dev/null || echo "")"
   started_at="$(jq -r '.started_at // 0' "$STATE_FILE" 2>/dev/null || echo 0)"
+  turn_blocks="$(jq -r '.turn_blocks // 0' "$STATE_FILE" 2>/dev/null || echo 0)"
 fi
 case "$iter" in (''|*[!0-9]*) iter=0;; esac
 case "$started_at" in (''|*[!0-9]*) started_at=0;; esac
+case "$turn_blocks" in (''|*[!0-9]*) turn_blocks=0;; esac
+# 새 턴(stop_hook_active=false)이면 연속 블록 카운터 리셋
+[ "$stop_active" = "true" ] || turn_blocks=0
+TURN_BLOCK_CAP=8
 
 now="$(date +%s)"
 
@@ -114,7 +123,7 @@ fi
 
 # 출력의 명백한 실패 표지 판정 — exit 0이어도 출력에 실패 카운트가 있으면 보수적으로 레드.
 # "0 failed" 류 오탐 방지: 행두 FAIL 또는 1 이상 카운트가 붙은 실패 표지만 매칭.
-# ※ 정규식은 mvp/floop 훅과 공유 규약 — 세 훅이 동일 판정을 보장한다. 변경 시 셋을 함께 갱신하라.
+# ※ 정규식은 flow-scaffolding templates/loop-stop-hook.sh 와 공유 규약 — 변경 시 함께 갱신하라.
 has_failure_marker() { printf '%s\n' "$1" | grep -Eqi '(^FAIL([ :]|$)|[1-9][0-9]* +(fail(ed|ure|ures)?|errors?))'; }
 
 # ① 결정론 게이트 실행 — eval 금지, bash -c 사용. 판정은 exit code 우선.
@@ -146,13 +155,15 @@ fi
 
 # 상태 갱신 — 임시파일→mv 원자적 기록(부분 기록 방지). started_at은 최초 반복에서 초기화 후
 # 보존, promise/max_iter/max_minutes 는 /loop-run 기록 값 보존 (없으면 현재 해석값으로 채움)
+# turn_blocks 는 이번 호출이 차단으로 끝날 때의 값(+1)을 기록 — 허용 경로에선 다음 턴에 리셋되므로 무해
 next_iter=$((iter + 1))
 [ "$started_at" -gt 0 ] || started_at="$now"
 state_tmp="$STATE_FILE.tmp.$$"
 jq -n --argjson it "$next_iter" --arg sig "$fail_sig" --argjson st "$started_at" \
   --arg pr "${state_promise:-$PROMISE}" \
   --argjson mi "${state_max_iter:-$MAX_ITER}" --argjson mm "${state_max_minutes:-$MAX_MINUTES}" \
-  '{iteration:$it, last_fail_sig:$sig, started_at:$st, promise:$pr, max_iter:$mi, max_minutes:$mm}' > "$state_tmp"
+  --argjson tb "$((turn_blocks + 1))" \
+  '{iteration:$it, last_fail_sig:$sig, started_at:$st, promise:$pr, max_iter:$mi, max_minutes:$mm, turn_blocks:$tb}' > "$state_tmp"
 mv "$state_tmp" "$STATE_FILE"
 
 # 정지 판정: ①(게이트 그린) ∧ ②(promise) → 종료 허용 + 루프 해제
@@ -176,9 +187,24 @@ if [ -n "$fail_sig" ] && [ "$fail_sig" = "$last_fail_sig" ]; then
     echo '```'
     printf '%s\n' "$test_out" | tail -20
     echo '```'
-    echo "- 권장 다음 행동: 실패 원인 분석 후 /loop-run 재가동. 작업이 다건 분해가 필요할 만큼 구조적이면 /floop-run(브라운필드 작업분해)으로 승격을 검토하라."
+    echo "- 권장 다음 행동: 실패 원인 분석 후 /loop-run 재가동."
   } >> "$BLOCKED_FILE"
   echo "[generic-loop] no-progress 감지(동일 실패 시그니처 연속) — 루프 종료(loop-active 해제). 상세는 $BLOCKED_FILE 참조." >&2
+  exit 0
+fi
+
+# 턴 블록 상한 — 이미 이번 턴에 8회 차단했다면 이번 exit 2 는 Claude Code 가 무시한다.
+# 조용히 끝나지 않도록 핸드오프를 남기고 종료 허용. loop-active 는 유지(다음 턴에 재개).
+if [ "$turn_blocks" -ge "$TURN_BLOCK_CAP" ]; then
+  {
+    echo ""
+    echo "## 턴 블록 상한 핸드오프 — $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "- 엔진: generic (/loop-run), iteration: $next_iter/$MAX_ITER"
+    echo "- 이번 턴 연속 블록 ${turn_blocks}회 = Claude Code 상한 — 턴 종료"
+    echo "- 게이트: $([ "$gate_green" = true ] && echo 그린 || echo "레드 (exit=$gate_exit)")"
+    echo "- 재개: 아무 메시지(예: '계속')로 다음 턴을 시작하면 루프가 이어진다. 중단은 /loop-stop"
+  } >> "$PROGRESS_FILE"
+  echo "[generic-loop] 이번 턴 연속 블록 ${turn_blocks}회 — Claude Code 상한(${TURN_BLOCK_CAP})이라 턴을 넘긴다. loop-active 유지, 핸드오프는 $PROGRESS_FILE 참조. '계속'으로 재개, 중단은 /loop-stop." >&2
   exit 0
 fi
 

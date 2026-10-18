@@ -20,7 +20,7 @@ harness/
 │   ├── verify-flow.md       # 컴포넌트 검증 진입점
 │   ├── loop-run.md          # 경량 범용 루프 시작
 │   └── loop-stop.md         # 경량 범용 루프 킬스위치
-├── hooks/                   # generic-loop-stop-hook.sh (engine=generic)
+├── hooks/                   # generic-loop-stop-hook.sh (engine=generic) + test-guard.sh (PreToolUse)
 └── docs/
     └── ARCHITECTURE_KO.md   # (이 문서)
 ```
@@ -51,9 +51,10 @@ harness/
 - **커맨드 분리**: `/create-flow`·`/verify-flow`로 생성/검증을 독립 호출
 - **flow-validation 10개 룰셋**: agt/cmd/hk/loop/orc/qua/sec/skl/team/**xrf**(교차참조) — v1 유물 감지·워크플로 스크립트 함정까지 기계 검사
 - **검증·루프 보강 패턴**: upstream 품질 패턴 위에 Verification Gate / Guardrails, Stop훅 엔진 기반 Loop Harness Design(4요소)
+- **generic 루프 안전장치**: Claude Code 세션 내 상한(연속 Stop 블록 8회)을 감지해 `progress.md` 핸드오프와 함께 턴을 넘기고, PreToolUse test-guard가 `engine=generic` 루프 중 테스트 파일 삭제를 차단
 - **하네스 간 협업**: 협업 호출 규약 표, 위임 경계, 루프 엔진 재사용 vs 복제 규칙
 - **git을 변경 원장으로**: evolve는 CLAUDE.md 표 대신 델타 1건을 Conventional Commit 1건으로, 본문에 사유를 기록
-- **프로덕션 운영**: `search`·`mvp`·`feature-loop` 등 실제 운영 하네스를 이 메타 스킬로 운용
+- **프로덕션 운영**: `search`·`wiki-ops` 등 실제 운영 하네스를 이 메타 스킬로 운용
 
 ## 4. upstream 동기화 시 주의사항
 

@@ -55,8 +55,8 @@ ingest exit 3을 유발하는 것을 예방한다.
 /loop-run "wiki 큐레이션: lint 3종(구조·무결성·스키마) 그린까지 소견 해소" --gate-cmd '<위 1행 사슬>' --promise "<promise>WIKI_CURATE_COMPLETE</promise>" [--max-iter N] [--max-minutes M]
 ```
 
-- **이중 가동 금지**: 기존 `.planning/loop-active`가 engine=mvp/floop이면 가동하지 말고
-  해당 킬스위치(`/mvp-stop`·`/floop-stop`)를 안내한다. 타 엔진 파일을 삭제·덮어쓰지 않는다 (비침범 규약)
+- **이중 가동 금지**: 기존 `.planning/loop-active`가 engine=generic이 아니면 가동하지 말고
+  내용을 보여준 뒤 사용자 확인을 받는다. 확인 없이 타 엔진 파일을 삭제·덮어쓰지 않는다 (비침범 규약)
 - 킬스위치: `/loop-stop` (engine=generic만 해제, 멱등)
 - 가드레일 (generic 기본): max 12회 / 60분 / no-progress 연속 2회 → BLOCKED.md
 - 조정: `/loop-run`의 `--max-iter`·`--max-minutes` 옵션 우선 — 사용자 지정 상한은 반드시 옵션으로 전달. env `LOOP_MAX_ITER`·`LOOP_MAX_MINUTES`는 미전달 시 대안 (훅 우선순위: env > loop-state.json > 기본값)

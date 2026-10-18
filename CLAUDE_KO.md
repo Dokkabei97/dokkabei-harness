@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 정체
 
-Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23종이 `plugins/<name>/`에 살고
+Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12종이 `plugins/<name>/`에 살고
 `.claude-plugin/marketplace.json`에 등록된다. 설치: `/plugin install <name>@dokkabei-harness`.
 
 ## 명령
@@ -26,9 +26,9 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
   세션 시작마다 `hooks.json: unknown key "..." ignored` 경고를 낸다(실측 2026-09, CC 2.1.278) —
   훅 설명은 스크립트 헤더 주석에 적는다. `tests/hooks/hooks-registration.bats` + HK-004로 가드.
 - **Stop 훅은 연속 8회 블록 후 오버라이드**된다 — Claude Code 가 훅과 무관하게 턴을 종료한다(2026-09-20 실측, 3/3 시행:
-  훅이 9회 호출되고 9번째 `exit 2` 가 무시됨). 따라서 루프 엔진의 세션 내 실효 상한은 문서화된 `LOOP_MAX_ITER`
-  기본값 24/12 가 아니라 **8 반복**이다. 헤드리스 드라이버(`plugins/feature-loop/bin/floop-headless.sh`)는 매
-  `claude -p` 가 새 턴이라 영향 없다. 엔진은 이 상한을 **아직 감지하지 못한다** — `tasks/spikes/harness-bottleneck-research.md` 참조.
+  훅이 9회 호출되고 9번째 `exit 2` 가 무시됨). 따라서 턴당 실효 상한은 `LOOP_MAX_ITER`(기본 12)가 아니라 **8 반복**이다.
+  generic 엔진은 `stop_hook_active` 로 턴 단위 연속 블록(loop-state.json `turn_blocks`)을 세고, 상한 도달 시
+  progress.md 에 핸드오프를 남기고 loop-active 를 유지한 채 exit 0 한다(LOOP-011). 누적 `iteration` 으로 판정하지 말 것.
 - 플러그인은 **레포 소스에서만 편집**한다. `~/.claude/plugins/cache`·marketplaces 클론 직접 수정
   금지(실측된 캐시 드리프트 사고 이력). 공식 반영 경로는 커밋 후 `/plugin update`이며,
   훅·설정 변경은 다음 세션부터 유효하다.
@@ -55,8 +55,11 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 23
 - `claude/` = 전역 `~/.claude` 배포 템플릿이다 — 이 파일(프로젝트 메모리)과 무관.
 - `HANDOFF.md`는 `/handoff` 커맨드(명시 호출)로만 작성된다 — 자동 기록 훅은 없다
   (PreCompact/SessionEnd 스냅샷 훅은 2026-09 제거).
-- 훅 스크립트는 2계열: base는 Node(`bin/hooks/*.js`, `_lib/hook-stdin.js` 컨벤션), 루프
-  플러그인(harness/mvp/feature-loop)은 bash Stop훅(`hooks/*-stop-hook.sh`).
+- 훅 스크립트는 2계열: base는 Node(`bin/hooks/*.js`, `_lib/hook-stdin.js` 컨벤션), harness generic 루프는
+  bash(`hooks/generic-loop-stop-hook.sh` + `hooks/test-guard.sh`).
+- `archive/` = 은퇴 플러그인(mvp·feature-loop·startup·scaleup·enterprise·eng-gov·legal·finance·hr·analyze·etc —
+  실사용 0으로 2026-10 archive)과 그 bats(`archive/tests/hooks/`). 설치 불가(`.claude-plugin/` 없음)·marketplace.json
+  미등재·CI 미실행. 복원 = 원위치 이동 + manifest·marketplace 엔트리 재추가.
 - `infra/otel/` = 로컬 관측 스택(Claude Code 내장 OTel 수신, Grafana localhost:3000) —
   observe 플러그인의 `.claude/skill-trace.jsonl`과 직교 보완재.
 - `docs/` = GitHub Pages 랜딩 사이트(`index.html`, self-contained, EN/KO 토글) — 특정 플러그인과 무관하며

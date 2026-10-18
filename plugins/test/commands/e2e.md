@@ -335,15 +335,14 @@ For PMX, prioritize these E2E tests:
 - Use `/e2e` for integration and user journey tests
 - Use `/code-review` to verify test quality
 
-## Integration with the MVP Loop (mvp plugin)
+## Using E2E as a Loop Gate (`/loop-run`)
 
-`/e2e` doubles as the **E2E acceptance gate (②ᴱ)** of the `mvp` plugin's Stage 4 loop. To wire it in:
+The suite can serve as the deterministic gate of the harness generic loop:
 
 1. Set up Playwright with a `webServer` block in `playwright.config.ts` so the app boots/stops automatically (non-interactive, exits with a status code).
-2. Record the run command as a single line in **`.planning/e2e-gate-cmd`**, e.g. `npx playwright test`.
-3. The loop's Stop hook (`mvp-loop-stop-hook.sh`) runs it **only once all stories reach `passes:true`**, and refuses the `MVP_COMPLETE` promise until the full user journey is green. If the file is absent, E2E is simply not applied (zero regression for pure-backend MVPs).
+2. Pass the run command as the gate: `/loop-run "<goal>" --gate-cmd "npx playwright test"`. The Stop hook keeps the loop going until it exits 0 and the completion promise is written.
 
-This keeps the fast unit gate (`pnpm test`/`pytest`) on every iteration while the slower E2E suite runs just at the finish line. See the `mvp` plugin's `gate-policy.md` (②ᴱ) and `stack-presets.md` (Next.js → E2E 수용 게이트).
+E2E is slow, so prefer chaining it after the fast unit gate (`--gate-cmd "pnpm test && npx playwright test"`) rather than running E2E alone.
 
 ## Related
 

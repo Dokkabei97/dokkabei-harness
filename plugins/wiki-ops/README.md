@@ -51,6 +51,6 @@ they always escalate to a human decision (★G1 user gate).
 
 ## Boundaries
 
-- Developing the llm-wiki source code itself → `feature-loop` / stack plugins
+- Developing the llm-wiki source code itself → stack plugins
 - Company wiki documentation (Outline) → `workflow:document-latest`
 - Web-based deep research reports → `deep-research` (vault-grounded research: `/wiki-ask --research`)

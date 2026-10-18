@@ -26,7 +26,7 @@
 | Anthropic 유형 (트리거) | 정지 기준 | 본 하네스 구현 (메커니즘) |
 |------|--------|------|
 | **Turn-based** | Claude가 완료 판단 | 의도적으로 하네스 **밖**(순수 대화) — 게이트 불필요한 단발 작업 |
-| **Goal-based** (`/goal`) | 목표 달성 OR max turns | **Stop훅 재주입** — gate-cmd 결정론 게이트 + promise + max_iter (`/loop-run`·mvp·feature-loop) |
+| **Goal-based** (`/goal`) | 목표 달성 OR max turns | **Stop훅 재주입** — gate-cmd 결정론 게이트 + promise + max_iter (`/loop-run`) |
 | **Time-based** (`/loop`·`/schedule`) | 사용자 취소 OR 완료 | **스케줄(Automations)** — `/loop`·Routines·Cron |
 | **Proactive** | 태스크별 목표 달성(무인) | **headless `claude -p` 셸 루프** + Workflow 도구(무인 fan-out) |
 
@@ -41,7 +41,7 @@
   `.planning/loop-active` 활성 중 네이티브 `/goal`·`/loop` 가동은 재주입·판정 주체를 둘로 만든다.
 - **스케줄 축은 감싸기**: 네이티브 `/schedule`(Routines)·Cron이 "언제"를 맡고 본 하네스가
   "무엇을+판정"을 맡는 조합은 권장 — headless 러너의 `headless-active` 락이 중첩 실행을 거부한다
-  (레시피: mvp headless-recipe §실행·재개·스케줄).
+  (레시피: `archive/mvp/skills/mvp-orchestrator/references/headless-recipe.md` — 2026-10 archive, 현행 엔진엔 headless 러너 없음).
 - **모델 판정 리뷰는 루프 밖**: 네이티브 `/code-review`·`workflow:review-mr` 등 모델 판정 리뷰는
   루프 **정지 판정에 불사용** — 게이트는 결정론만. 게이트 그린 이후의 품질 리뷰로만 쓴다.
 

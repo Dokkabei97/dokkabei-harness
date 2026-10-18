@@ -27,7 +27,7 @@ description: |
 
 1. 게이트 시운전: gate-cmd 1회 직접 실행 — exit 0이면 "이미 그린" 즉시 종료,
    exit 2/127이면 진입 금지 (원인 해결 먼저), exit 1이면 진입
-2. 이중 가동 확인: `.planning/loop-active`가 타 엔진(mvp/floop)이면 가동 거부 + 해당 킬스위치 안내
+2. 이중 가동 확인: `.planning/loop-active`가 engine=generic이 아니면 가동 보류 + 내용 표시 후 사용자 확인
 3. `/loop-run` 위임 — gate-cmd = lint 3종 `&&` 사슬(1행),
    promise = `<promise>WIKI_CURATE_COMPLETE</promise>`,
    Usage로 받은 `--max-iter`/`--max-minutes`는 /loop-run에 그대로 전달

@@ -78,7 +78,7 @@ Claude Code works normally even when the stack is down (export failures are sile
 
 - When `OTEL_LOG_TOOL_DETAILS` is unset, marketplace plugin skills are **masked** as `skill_name="custom_skill"`
   and `plugin_name`/`marketplace_name` are also dropped — essential if harness instrumentation is the goal.
-  When set, full attribution appears, e.g. `skill_name="feature-loop:floop-status"`, `plugin_name="feature-loop"`,
+  When set, full attribution appears, e.g. `skill_name="harness:loop-run"`, `plugin_name="harness"`,
   `marketplace_name="dokkabei-harness"` (bundled skills show their real names even without the gate).
 - When `OTEL_LOG_USER_PROMPTS` is unset, the `prompt` of the `user_prompt` event is `<REDACTED>`
   (however, `command_name` and `prompt_length` are always visible).

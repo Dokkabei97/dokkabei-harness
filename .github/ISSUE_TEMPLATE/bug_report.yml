@@ -16,8 +16,6 @@ body:
       multiple: true
       options:
         - base
-        - etc
-        - analyze
         - test
         - workflow
         - harness
@@ -28,12 +26,6 @@ body:
         - go-mux
         - nextjs
         - search
-        - startup
-        - mvp
-        - feature-loop
-        - legal
-        - finance
-        - hr
         - wiki-ops
         - marketplace / cross-cutting
         - unsure

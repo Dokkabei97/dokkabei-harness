@@ -26,7 +26,7 @@ Reference these rules when:
 | `AGT-` | Agents | 31 rules |
 | `SKL-` | Skills | 21 rules |
 | `HK-` | Hooks | 13 rules |
-| `LOOP-` | Loop Engine Hooks | 10 rules |
+| `LOOP-` | Loop Engine Hooks | 11 rules |
 | `TEAM-` | Teams | 8 rules |
 | `ORC-` | Orchestrators | 13 rules |
 | `XRF-` | Cross-Reference | 16 rules |

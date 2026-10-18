@@ -144,7 +144,7 @@ Check each component against its type-specific structural requirements.
 
 **Loop Engine Hook Validation Rules:**
 
-> Note: 조건부 룰셋 — Stop훅 루프 엔진(mvp/floop/generic 훅 및 `flow-scaffolding/templates/loop-stop-hook.sh` 파생물)에만 적용한다. 상세: `skills/flow-validation/references/loop-rules.md`
+> Note: 조건부 룰셋 — Stop훅 루프 엔진(generic 훅 및 `flow-scaffolding/templates/loop-stop-hook.sh` 파생물)에만 적용한다. 상세: `skills/flow-validation/references/loop-rules.md`
 
 | ID | Rule | Severity | Check |
 |----|------|----------|-------|
@@ -158,6 +158,7 @@ Check each component against its type-specific structural requirements.
 | LOOP-008 | Atomic state write | Medium | loop-state.json 임시파일→mv 원자 기록 |
 | LOOP-009 | Failure-marker correction | High | exit 0 + 실패 카운트 출력 → red 보정 ('0 failed' 오탐 금지) |
 | LOOP-010 | Loop-state update contract | Medium | iteration 증가·started_at/max_iter/max_minutes 보존 |
+| LOOP-011 | Turn block cap handoff | High | `stop_hook_active` 턴 카운터 — 연속 8블록 도달 시 핸드오프 후 exit 0 |
 
 **Team Validation Rules:**
 
@@ -294,7 +295,7 @@ Rules per type (approximate):
   Agents:        31 rules (AGT-001..AGT-027 + 020a-d)
   Skills:        21 rules (SKL-001..SKL-021)
   Hooks:         13 rules (HK-001..HK-013)
-  Loop hooks:    10 rules (LOOP-001..LOOP-010, 루프 엔진 훅 한정)
+  Loop hooks:    11 rules (LOOP-001..LOOP-011, 루프 엔진 훅 한정)
   Teams:          8 rules (TEAM-001..TEAM-008)
   Orchestrators: 13 rules (ORC-001..ORC-013)
   Cross-ref:     16 rules (XRF-001..XRF-016)

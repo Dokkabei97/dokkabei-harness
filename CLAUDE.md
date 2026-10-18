@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Identity
 
-A Claude Code plugin marketplace (`dokkabei-harness`). 23 plugins live in `plugins/<name>/` and
+A Claude Code plugin marketplace (`dokkabei-harness`). 12 plugins live in `plugins/<name>/` and
 are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <name>@dokkabei-harness`.
 
 ## Commands
@@ -26,10 +26,10 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
   with a `hooks.json: unknown key "..." ignored` warning at every session start (measured 2026-09, CC 2.1.278) —
   document a hook in its script header comment. Guarded by `tests/hooks/hooks-registration.bats` + HK-004.
 - A **Stop hook is overridden after 8 consecutive blocks** — Claude Code ends the turn regardless (measured 2026-09-20,
-  3/3 trials: the hook is invoked 9 times and the 9th `exit 2` is ignored). So the in-session ceiling for the loop engines is
-  **8 iterations**, not the documented `LOOP_MAX_ITER` default of 24/12. The headless driver (`plugins/feature-loop/bin/floop-headless.sh`)
-  is unaffected because each `claude -p` call is a fresh turn. The engines do **not** yet detect this cap — see
-  `tasks/spikes/harness-bottleneck-research.md`.
+  3/3 trials: the hook is invoked 9 times and the 9th `exit 2` is ignored). So the in-session ceiling per turn is
+  **8 iterations**, not `LOOP_MAX_ITER` (default 12). The generic engine counts consecutive blocks per turn via
+  `stop_hook_active` (`turn_blocks` in loop-state.json) and, at the cap, writes a progress.md handoff and exits 0 with
+  loop-active kept (LOOP-011). Never gate on the cumulative `iteration` counter for this.
 - Plugins are **edited only in the repo source**. Directly modifying the `~/.claude/plugins/cache` / marketplaces clone is
   forbidden (measured cache-drift incident history). The official propagation path is commit then `/plugin update`, and
   hook/config changes take effect from the next session onward.
@@ -56,8 +56,11 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - `claude/` = the global `~/.claude` distribution template — unrelated to this file (project memory).
 - `HANDOFF.md` is written only by the `/handoff` command (explicit invocation) — there is no hook that records it
   automatically (the PreCompact/SessionEnd snapshot hook was removed 2026-09).
-- Hook scripts come in 2 families: base is Node (`bin/hooks/*.js`, `_lib/hook-stdin.js` convention), and the loop
-  plugins (harness/mvp/feature-loop) are bash Stop hooks (`hooks/*-stop-hook.sh`).
+- Hook scripts come in 2 families: base is Node (`bin/hooks/*.js`, `_lib/hook-stdin.js` convention), and the harness
+  generic loop is bash (`hooks/generic-loop-stop-hook.sh` + `hooks/test-guard.sh`).
+- `archive/` = retired plugins (mvp, feature-loop, startup, scaleup, enterprise, eng-gov, legal, finance, hr, analyze, etc —
+  archived 2026-10 after zero use) with their bats tests in `archive/tests/hooks/`. Not installable (no `.claude-plugin/`),
+  not in marketplace.json, not run by CI. Restore = move back + re-add the manifest and marketplace entry.
 - `infra/otel/` = the local observability stack (Claude Code built-in OTel receiver, Grafana localhost:3000) —
   an orthogonal complement to the observe plugin's `.claude/skill-trace.jsonl`.
 - `docs/` = the GitHub Pages landing site (`index.html`, self-contained, EN/KO toggle) — unrelated to any plugin;

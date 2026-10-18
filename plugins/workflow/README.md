@@ -21,7 +21,7 @@ so in a session where a loop harness is running they step back on their own to a
 - `/handoff` — Saves the session context (goals, attempts, next steps + git status) to `HANDOFF.md` so the next session can pick it up. Use when nearing the context limit or ending a session.
 - `/release-notes` — Collects MRs merged since the previous release tag via `glab`, classifies the change types by conventional commit / MR titles to produce a Korean changelog and release notes draft, and proposes the next semver version along with the tag/Release creation commands (remote application only after approval).
 - `/retro` — A retrospective compounding router that extracts this session's corrections, mistakes, and discoveries and routes them by type. Convention changes go to `sync-claude-md`, recurring mistakes to `tasks/lessons.md` (including guard-hook candidate tags), and domain knowledge is distributed as skill-edit proposals. Every application passes through a user approval gate.
-- `/review-mr` — Analyzes a GitLab MR diff to detect bugs, security vulnerabilities, and logic errors, and writes review comments on the MR. Depending on the nature of the diff, it selectively dispatches the `analyze` plugin's specialist agents (arch-reviewer/perf-reviewer/sql-analyzer), and excludes or downgrades low findings based on confidence.
+- `/review-mr` — Analyzes a GitLab MR diff to detect bugs, security vulnerabilities, and logic errors, and writes review comments on the MR. It excludes or downgrades low findings based on confidence.
 
 ### Skills
 
@@ -51,7 +51,7 @@ so in a session where a loop harness is running they step back on their own to a
 ## Dependencies
 
 - There is no separate plugin `requires`. However, some components only work fully when an external tool/plugin is present.
-  - `/review-mr`, `/release-notes` — Require the GitLab CLI `glab`. `/review-mr` selectively dispatches the `analyze` plugin's review agents (arch-reviewer/perf-reviewer/sql-analyzer).
+  - `/review-mr`, `/release-notes` — Require the GitLab CLI `glab`.
   - `issue-tracker` — Requires `plane-cli` (Plane). `document-latest` — Requires Outline MCP. `post-merge` — Requires both (Plane + Outline).
   - `retro-compound` — Guard-hook scaffolding is delegated to `harness:create-flow`.
   - `doc-collab-guide` — Presupposes installation of the official `doc-coauthoring` skill (anthropics/skills).

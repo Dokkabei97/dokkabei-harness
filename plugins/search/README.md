@@ -63,7 +63,7 @@ On-demand reviewer invoked explicitly, separate from the Pool:
 
 ## Dependencies
 
-There are no forced dependencies (`requires`) in `plugin.json`/`marketplace.json`. However, when the search service is implemented in Kotlin/Spring Boot it is complementary to use together with the `backend-kotlin` plugin, and when deep SQL, architecture, or performance reviews are needed, with the `analyze` plugin.
+There are no forced dependencies (`requires`) in `plugin.json`/`marketplace.json`. However, when the search service is implemented in Kotlin/Spring Boot it is complementary to use together with the `backend-kotlin` plugin.
 
 ## Notes
 

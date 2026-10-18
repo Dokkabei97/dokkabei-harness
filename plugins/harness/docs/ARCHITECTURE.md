@@ -19,7 +19,7 @@ harness/
 │   ├── verify-flow.md       # component validation entry point
 │   ├── loop-run.md          # lightweight generic loop start
 │   └── loop-stop.md         # lightweight generic loop kill switch
-├── hooks/                   # generic-loop-stop-hook.sh (engine=generic)
+├── hooks/                   # generic-loop-stop-hook.sh (engine=generic) + test-guard.sh (PreToolUse)
 └── docs/
     └── ARCHITECTURE.md      # (this document)
 ```
@@ -50,9 +50,10 @@ harness/
 - **Command separation**: independently invoke generation/validation via `/create-flow`·`/verify-flow`
 - **flow-validation 10 rulesets**: agt/cmd/hk/loop/orc/qua/sec/skl/team/**xrf** (cross-reference) — mechanical checks, including v1-artifact detection and Workflow-script pitfalls
 - **Verification·loop patterns**: Verification Gate / Guardrails on top of upstream's quality patterns, and the Loop Harness Design (4 elements) with a Stop-hook engine
+- **Generic loop safety**: detects Claude Code's 8-consecutive-Stop-block in-session cap (ends the turn with a `progress.md` handoff), and a PreToolUse test-guard blocks test-file deletion while an `engine=generic` loop runs
 - **Cross-harness orchestration**: collaboration call table, delegation boundaries, reuse-vs-clone rule for loop engines
 - **Git as the change ledger**: evolve records every delta as one Conventional Commit with the why in the body, instead of a CLAUDE.md table
-- **Production operation**: actually operating production harnesses such as `search`·`mvp`·`feature-loop` with this meta-skill
+- **Production operation**: actually operating production harnesses such as `search`·`wiki-ops` with this meta-skill
 
 ## 4. Cautions When Syncing with upstream
 

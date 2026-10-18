@@ -4,7 +4,7 @@
 # 대상: plugins/harness/hooks/generic-loop-stop-hook.sh
 # 검증 축: 안전핀 / engine 스코프(공유 계약 — 레거시 무주장·타 엔진 무개입·CRLF 방어) /
 #          정지조건 ①(게이트 exit code + has_failure_marker 보정) ②(promise, AND 결합) /
-#          가드레일(max-iter · no-progress · 시간 상한)
+#          가드레일(max-iter · no-progress · 시간 상한) / 턴 블록 상한(8 — stop_hook_active 카운터)
 # 규약: exit 0 = 종료 허용, exit 2 = 종료 차단(stderr 재주입)
 # 주의: @test 이름은 ASCII 로 유지한다 — macOS 기본 bash 3.2 에서 bats 의
 #       테스트명 인코딩이 한글(멀티바이트)을 깨뜨려 "unknown test name" 이 된다.
@@ -12,9 +12,6 @@
 # =============================================================================
 
 load 'helpers'
-
-# 대상 훅 절대 경로 — helpers.bash 는 mvp/floop 계열만 정의하므로 로컬로 지정한다
-GENERIC_HOOK="$REPO_ROOT/plugins/harness/hooks/generic-loop-stop-hook.sh"
 
 setup()    { make_project; }
 teardown() { cleanup_project; }
@@ -27,7 +24,7 @@ teardown() { cleanup_project; }
   [ "$status" -eq 0 ]
 }
 
-# (b) 빈 loop-active(engine 줄 없음 = 레거시, mvp/floop 소유) — generic 훅은 무주장:
+# (b) 빈 loop-active(engine 줄 없음 = 레거시, archive 된 엔진 잔존물) — generic 훅은 무주장:
 #     게이트 red 여도 판정 없이 조용히 exit 0, loop-active 유지
 @test "engine scope: legacy empty loop-active -> silent exit 0 without claim" {
   activate_loop
@@ -49,7 +46,7 @@ teardown() { cleanup_project; }
 }
 
 # (c') CRLF 로 기록된 engine=generic — tr -d '\r' 방어로 소유 인정(게이트 red 면 exit 2)
-#      mvp/floop 훅과의 CRLF 판정 대칭성 확인
+#      CRLF 로 기록된 loop-active 판정 확인
 @test "engine scope: engine=generic with CRLF -> owned, gate red exit 2" {
   printf 'engine=generic\r\n' > "$TEST_PROJ/.planning/loop-active"
   write_gate_script 'echo "1 failed"; exit 1'
@@ -153,4 +150,95 @@ teardown() { cleanup_project; }
   [ "$status" -eq 0 ]
   [[ "$output" == *"시간 상한 도달"* ]]
   [ ! -f "$TEST_PROJ/.planning/loop-active" ]
+}
+
+# ── 턴 블록 상한 (Claude Code 는 연속 8블록 후 9번째 exit 2 를 무시) ─────────────
+
+# (j) 같은 턴 재진입(stop_hook_active=true) — turn_blocks 누적
+@test "turn-block counter: reentry increments turn_blocks" {
+  activate_loop_engine generic
+  write_gate_script 'echo "1 failed"; exit 1'
+  write_loop_state '{"iteration":2,"turn_blocks":3}'
+  run invoke_hook "$GENERIC_HOOK" '{"stop_hook_active":true}'
+  [ "$status" -eq 2 ]
+  [ "$(jq -r '.turn_blocks' "$TEST_PROJ/.planning/loop-state.json")" = "4" ]
+}
+
+# (k) 새 턴(stop_hook_active=false) — 이전 턴 카운터가 커도 리셋 후 차단
+@test "turn-block counter: new turn resets turn_blocks and blocks" {
+  activate_loop_engine generic
+  write_gate_script 'echo "1 failed"; exit 1'
+  write_loop_state '{"iteration":9,"turn_blocks":8}'
+  run invoke_hook "$GENERIC_HOOK" '{"stop_hook_active":false}'
+  [ "$status" -eq 2 ]
+  [ "$(jq -r '.turn_blocks' "$TEST_PROJ/.planning/loop-state.json")" = "1" ]
+}
+
+# (l) 이번 턴 8회 차단 후 9번째 호출 — 차단 대신 progress.md 핸드오프 + exit 0,
+#     loop-active 유지(다음 턴 재개)
+@test "turn-block cap: 8 blocks in turn -> handoff to progress.md + exit 0 + loop-active kept" {
+  activate_loop_engine generic
+  write_gate_script 'echo "1 failed"; exit 1'
+  write_loop_state '{"iteration":8,"turn_blocks":8}'
+  run invoke_hook "$GENERIC_HOOK" '{"stop_hook_active":true}'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"턴을 넘긴다"* ]]
+  grep -q "턴 블록 상한 핸드오프" "$TEST_PROJ/.planning/progress.md"
+  [ -f "$TEST_PROJ/.planning/loop-active" ]
+}
+
+# (m) 상한 도달 턴이어도 정지조건 충족이면 정상 종료가 우선
+@test "turn-block cap: stop condition met takes precedence over handoff" {
+  activate_loop_engine generic
+  write_gate_script 'exit 0'
+  write_progress '<promise>LOOP_COMPLETE</promise>'
+  write_loop_state '{"iteration":8,"turn_blocks":8}'
+  run invoke_hook "$GENERIC_HOOK" '{"stop_hook_active":true}'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"정지조건 충족"* ]]
+  [ ! -f "$TEST_PROJ/.planning/loop-active" ]
+}
+
+# ── test-guard (PreToolUse: Bash) — 루프 중 테스트 삭제 차단 ───────────────────
+
+rm_cmd() { printf '{"tool_input":{"command":"%s"}}' "$1"; }
+
+@test "test-guard: rm -rf tests/ while generic loop active -> exit 2" {
+  activate_loop_engine generic
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm -rf tests/')"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"테스트 삭제 금지"* ]]
+}
+
+@test "test-guard: rm foo.spec.ts -> exit 2" {
+  activate_loop_engine generic
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm src/foo.spec.ts')"
+  [ "$status" -eq 2 ]
+}
+
+@test "test-guard: rm latest.log -> exit 0 (no false positive)" {
+  activate_loop_engine generic
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm latest.log')"
+  [ "$status" -eq 0 ]
+}
+
+@test "test-guard: loop inactive -> exit 0 even for rm tests/" {
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm -rf tests/')"
+  [ "$status" -eq 0 ]
+}
+
+@test "test-guard: legacy or foreign engine loop-active -> exit 0" {
+  activate_loop
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm -rf tests/')"
+  [ "$status" -eq 0 ]
+  activate_loop_engine wiki
+  run invoke_hook "$TEST_GUARD" "$(rm_cmd 'rm -rf tests/')"
+  [ "$status" -eq 0 ]
+}
+
+@test "test-guard: jq missing -> exit 0 with notice (fail-open)" {
+  activate_loop_engine generic
+  run invoke_hook_without_jq "$TEST_GUARD" "$(rm_cmd 'rm -rf tests/')"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"jq 미설치"* ]]
 }

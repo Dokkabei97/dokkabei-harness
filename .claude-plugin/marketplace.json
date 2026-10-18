@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Dokkabei97's harness plugin marketplace",
-    "version": "2.1.0"
+    "version": "3.0.0"
   },
   "plugins": [
     {
@@ -21,36 +21,6 @@
         "security"
       ],
       "requires": []
-    },
-    {
-      "name": "etc",
-      "source": "./plugins/etc",
-      "description": "General-purpose utility skills for external AI CLI integration",
-      "version": "1.0.0",
-      "category": "productivity",
-      "keywords": [
-        "etc"
-      ]
-    },
-    {
-      "name": "analyze",
-      "source": "./plugins/analyze",
-      "description": "Comprehensive static analysis of code quality, performance, architecture, and SQL",
-      "version": "1.1.0",
-      "category": "productivity",
-      "keywords": [
-        "analyze",
-        "code-review",
-        "performance",
-        "architecture",
-        "security",
-        "anti-pattern",
-        "sql",
-        "query-optimization",
-        "index",
-        "simplification",
-        "refactoring"
-      ]
     },
     {
       "name": "test",
@@ -71,7 +41,7 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "Workflow harness automating the full development lifecycle",
-      "version": "1.5.2",
+      "version": "1.5.3",
       "category": "productivity",
       "keywords": [
         "workflow",
@@ -87,7 +57,7 @@
       "name": "harness",
       "source": "./plugins/harness",
       "description": "Meta-plugin for harness design (v2 execution modes), evolution, generation, validation, and lightweight loops",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "category": "harness",
       "keywords": [
         "harness",
@@ -227,164 +197,6 @@
         "korean-analyzer",
         "kafka",
         "indexing"
-      ]
-    },
-    {
-      "name": "startup",
-      "source": "./plugins/startup",
-      "description": "Lean-startup validation & strategy harness (maker/checker)",
-      "version": "1.1.0",
-      "category": "startup",
-      "keywords": [
-        "pm",
-        "marketing"
-      ]
-    },
-    {
-      "name": "scaleup",
-      "source": "./plugins/scaleup",
-      "description": "Scale-up execution OS — OKR cadence, org scaling, board reporting, enterprise deal qualification",
-      "version": "1.0.0",
-      "category": "scaleup",
-      "keywords": [
-        "okr",
-        "scaleup",
-        "board",
-        "meddpicc",
-        "revops",
-        "headcount",
-        "growth"
-      ]
-    },
-    {
-      "name": "enterprise",
-      "source": "./plugins/enterprise",
-      "description": "Enterprise governance OS — GRC pipelines and corporate planning with deterministic evidence gates",
-      "version": "1.0.0",
-      "category": "enterprise",
-      "keywords": [
-        "grc",
-        "risk-register",
-        "iso27001",
-        "soc2",
-        "compliance",
-        "budget",
-        "strategy",
-        "fpna"
-      ]
-    },
-    {
-      "name": "mvp",
-      "source": "./plugins/mvp",
-      "description": "Drives a one-line idea to an MVP through a gated loop",
-      "version": "1.1.1",
-      "category": "develop",
-      "keywords": [
-        "mvp",
-        "prd",
-        "scaffolding",
-        "greenfield",
-        "loop",
-        "gate",
-        "startup",
-        "product"
-      ],
-      "requires": [
-        "base"
-      ]
-    },
-    {
-      "name": "feature-loop",
-      "source": "./plugins/feature-loop",
-      "description": "Regression-safe feature-development loop for brownfield codebases",
-      "version": "1.1.1",
-      "category": "develop",
-      "keywords": [
-        "feature-loop",
-        "brownfield",
-        "loop",
-        "gate",
-        "regression",
-        "baseline",
-        "tasks",
-        "existing-codebase",
-        "incremental"
-      ],
-      "requires": [
-        "base"
-      ]
-    },
-    {
-      "name": "eng-gov",
-      "source": "./plugins/eng-gov",
-      "description": "Engineering governance harness — ADR, change evidence, threat model, supply-chain gates as local exit 0/1",
-      "version": "1.0.1",
-      "category": "develop",
-      "keywords": [
-        "governance",
-        "adr",
-        "soc2",
-        "iso27001",
-        "sbom",
-        "gitleaks",
-        "dora",
-        "evidence"
-      ],
-      "requires": []
-    },
-    {
-      "name": "legal",
-      "source": "./plugins/legal",
-      "description": "Multi-agent harness for first-pass Korean-law legal risk diagnosis",
-      "version": "1.1.0",
-      "category": "legal",
-      "keywords": [
-        "legal",
-        "law",
-        "korean-law",
-        "contract",
-        "compliance",
-        "privacy",
-        "labor",
-        "ip",
-        "corporate",
-        "investment",
-        "defamation",
-        "criminal-risk",
-        "risk-assessment"
-      ]
-    },
-    {
-      "name": "finance",
-      "source": "./plugins/finance",
-      "description": "Harness for first-pass operational finance & tax risk diagnosis",
-      "version": "1.0.0",
-      "category": "finance",
-      "keywords": [
-        "finance",
-        "tax",
-        "korean-tax",
-        "expense",
-        "accounting",
-        "risk-assessment",
-        "vat",
-        "withholding"
-      ]
-    },
-    {
-      "name": "hr",
-      "source": "./plugins/hr",
-      "description": "Recruiting & onboarding documentation; labor law delegated to legal",
-      "version": "1.0.0",
-      "category": "hr",
-      "keywords": [
-        "hr",
-        "recruiting",
-        "jd",
-        "interview",
-        "onboarding",
-        "people-ops",
-        "labor"
       ]
     },
     {

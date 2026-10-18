@@ -13,8 +13,8 @@
 출발해 사내 마켓플레이스에 맞게 재구조화한 fork이며, 상세 매핑은 `docs/ARCHITECTURE.md`에 있다.
 
 여기에 더해 산출물 구조(prd/tasks) 없이 "게이트 그린까지"만 반복하는 **경량 범용 루프 엔진**(`/loop-run`·`/loop-stop`)을
-내장한다. 이 루프는 `loop-active`에 `engine=generic`을 기록해, 그린필드 파이프라인(mvp)·브라운필드 작업분해(feature-loop)
-루프와 소유권이 겹치지 않는 3중 경계를 이룬다. 완료 판정의 주체는 모델이 아니라 하네스 — Stop 훅이 결정론 게이트와
+내장한다. 이 루프는 `loop-active`에 `engine=generic`을 기록해
+자기 소유 루프에만 개입한다. 완료 판정의 주체는 모델이 아니라 하네스 — Stop 훅이 결정론 게이트와
 completion promise를 직접 검증한다.
 
 ## 구성요소
@@ -24,18 +24,19 @@ completion promise를 직접 검증한다.
 - `/create-flow` — 에이전트·커맨드·스킬·훅·플러그인·팀을 프로젝트 컨벤션에 맞춰 대화형으로 스캐폴딩한다. `--type` 미지정 시 이름 패턴으로 자동 감지하며, `--team`으로 팀 컴포넌트를 일괄 생성하고, `--from-lessons`로 `tasks/lessons.md`의 `#가드-훅-후보` 태그 항목을 warn/block 가드 훅 초안으로 만든다(사용자 승인 게이트 필수).
 - `/verify-flow` — 기존 컴포넌트를 컨벤션 대비 검증한다. 구조·콘텐츠 품질·교차참조·보안을 심각도별로 판정해 Health Score 리포트를 내고, `--fix auto`로 결정론적 결함을 자동 수정한다.
 - `/loop-run` — 목표 프롬프트와 `--gate-cmd`(필수)로 `loop-active(engine=generic)`·`loop-state.json`을 초기화하고 Stop 훅 루프 엔진에 진입한다. "lint 0까지"·"테스트 그린까지"처럼 검증 명령 하나로 완료가 정의되는 단발 반복에 쓴다.
-- `/loop-stop` — `engine=generic` 루프의 수동 킬스위치. `loop-active`를 삭제해 Stop 훅을 즉시 무력화하고 목표·iteration·마지막 게이트 결과를 `progress.md`에 핸드오프로 남긴다. 타 엔진(mvp/floop) 소유 루프는 건드리지 않고 해당 킬스위치를 안내한다.
+- `/loop-stop` — `engine=generic` 루프의 수동 킬스위치. `loop-active`를 삭제해 Stop 훅을 즉시 무력화하고 목표·iteration·마지막 게이트 결과를 `progress.md`에 핸드오프로 남긴다. 타 엔진 소유 `loop-active`는 건드리지 않는다.
 
 ### 스킬
 
 - `team-harness` — 멀티 에이전트 팀 설계 메타 스킬(v2). 도메인 분석, 실행 모드 3종(워크플로 조율/지속형 에이전트 협업/서브에이전트 위임)과 6종 아키텍처 패턴 선택(Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), 검증·루프 보강 패턴, 업무 기반 모델 티어(fable/opus/sonnet), 오케스트레이터 설계, v1(`TeamCreate`)→v2 전환을 수행하고 생성은 `/create-flow`, 검증은 `/verify-flow`에 위임한다. "하네스 구성해줘", "팀 설계해줘", "하네스 점검" 등에서 발화.
 - `evolve` — 사용 중인 하네스의 실행 결과로 하네스를 진화시킨다. 피드백을 일반화해 에이전트·스킬·오케스트레이터에 한 번에 하나씩 반영하고, `/verify-flow`·트리거 테스트로 재검증한 뒤 델타를 사유와 함께 git 커밋으로 남긴다. "하네스 회고", "하네스 개선", "피드백 반영해줘" 등에서 발화.
 - `flow-scaffolding` — 각 컴포넌트 유형의 표준 템플릿 시스템(커맨드·에이전트·스킬·훅·플러그인·팀 에이전트·오케스트레이터·루프 Stop 훅 8종). 프론트매터 필드 레퍼런스와 네이밍 컨벤션을 포함하며 `/create-flow`가 사용한다.
-- `flow-validation` — 컴포넌트 검증 룰셋과 체크리스트. 10개 카테고리(CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA)의 규칙, 심각도 척도, Health Score 계산법을 담으며 `/verify-flow`가 사용한다. 그중 LOOP 룰셋(10룰)은 Stop 훅 루프 엔진 전용 안전 규약이다.
+- `flow-validation` — 컴포넌트 검증 룰셋과 체크리스트. 10개 카테고리(CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA)의 규칙, 심각도 척도, Health Score 계산법을 담으며 `/verify-flow`가 사용한다. 그중 LOOP 룰셋(11룰)은 Stop 훅 루프 엔진 전용 안전 규약이다.
 
 ### 훅
 
-- `Stop` (`*`) → `hooks/generic-loop-stop-hook.sh` — 경량 범용 루프 엔진. `.planning/loop-active`에 `engine=generic`이 명시된 경우에만 활성화되며, 매 종료 시도마다 정지조건(① 결정론 게이트 그린 ② `progress.md`의 completion promise 정확 문자열)을 검증한다. 미충족이면 `exit 2`로 종료를 차단하고 실패 출력과 함께 작업을 재주입하며, 충족 또는 가드레일 도달 시 `loop-active`를 해제하고 종료를 허용한다. 레거시/타 엔진 `loop-active`에는 무개입(`exit 0`)한다.
+- `Stop` (`*`) → `hooks/generic-loop-stop-hook.sh` — 경량 범용 루프 엔진. `.planning/loop-active`에 `engine=generic`이 명시된 경우에만 활성화되며, 매 종료 시도마다 정지조건(① 결정론 게이트 그린 ② `progress.md`의 completion promise 정확 문자열)을 검증한다. 미충족이면 `exit 2`로 종료를 차단하고 실패 출력과 함께 작업을 재주입하며, 충족 또는 가드레일 도달 시 `loop-active`를 해제하고 종료를 허용한다. 레거시/타 엔진 `loop-active`에는 무개입(`exit 0`)한다. Claude Code의 세션 내 상한(턴당 연속 Stop 블록 8회)도 감지해, 한 턴에 8회 차단한 뒤에는 무시될 9번째 차단 대신 `loop-active`를 유지한 채 턴을 넘기고 재개용 핸드오프를 `progress.md`에 기록한다.
+- `PreToolUse` (`Bash`) → `hooks/test-guard.sh` — `engine=generic` 루프 활성 중 테스트 파일 삭제(`test`/`spec` 경로 대상 `rm`)를 `exit 2`로 차단해, 테스트 삭제로 게이트를 그린으로 만드는 경로를 막는다.
 
 ## 사용법
 
@@ -51,13 +52,12 @@ completion promise를 직접 검증한다.
   /loop-stop
   # engine=generic loop-active 삭제 → Stop 훅 즉시 무력화 + progress.md 핸드오프 기록
   ```
-  `--promise`·`--max-iter`·`--max-minutes`로 정지 문자열과 상한을 조정할 수 있다. 스토리/작업 목록이 필요할 만큼 커지면 `/mvp-new`·`/floop-new`로 승격한다.
+  `--promise`·`--max-iter`·`--max-minutes`로 정지 문자열과 상한을 조정할 수 있다.
 
 ## 의존성
 
 `plugin.json`에 하드 의존성은 없다. 다음 플러그인과 함께 쓰면 시너지가 있다.
 
-- `mvp`(`/mvp-run`)·`feature-loop`(`/floop-run`) — 산출물 구조가 필요한 그린필드/브라운필드 루프. `engine` 스코프 공유 계약으로 `/loop-run`과 3중 경계를 이룬다.
 - `observe`(`/observe-report`) — 여기서 만든 하네스가 실제로 어떤 프롬프트에서 발화·완주했는지 관측·개선한다.
 - `workflow`(`/retro`) — 반복 실수를 `tasks/lessons.md`에 `#가드-훅-후보`로 태깅한다. `/create-flow --from-lessons`의 입력원이다.
 

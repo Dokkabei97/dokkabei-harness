@@ -80,7 +80,7 @@ metadata:
 | **Verification Gate** | 테스트·린터·타입체커 등 결정론적 게이트가 종료 조건 | LLM 자기평가에 맡기지 말 것 |
 | **Guardrails** | circuit breaker·no-progress·토큰 예산(`budget.remaining()`) | 모든 장기 실행에 필수 |
 
-> 적용 예: search 오케스트레이터(Expert Pool + Adversarial Verify + Loop-until-dry), feature-loop 오케스트레이터(Pipeline + Verification Gate + Guardrails).
+> 적용 예: search 오케스트레이터(Expert Pool + Adversarial Verify + Loop-until-dry), wiki-ops 오케스트레이터(Pipeline + Verification Gate + Guardrails).
 
 ## Cross-Harness Orchestration (하네스 간 협업)
 
@@ -88,7 +88,7 @@ metadata:
 오케스트레이터 설계 시 다음 4가지를 포함한다:
 
 1. **협업 호출 규약 표** (표준 표기 `| 시점 | 호출 대상 | 용도 |`): 루프/Stage 안에서 언제 어떤 타 하네스
-   스킬·에이전트를 부르는지 명시. 정본 예: feature-loop-orchestrator·mvp-orchestrator
+   스킬·에이전트를 부르는지 명시. 정본 예: wiki-ops-orchestrator·search-team-orchestrator
 2. **위임 경계**: 발동하지 않는 도메인과 그 소관 하네스를 description·When to Apply에 명시
    (예: hr→legal 강제 에스컬레이션, finance→legal 형사 신호 위임, wiki-ops→deep-research)
 3. **재사용 vs 복제 구분**: 루프 엔진은 **재사용이 기본**(wiki-ops→harness generic, `requires` 선언 + XRF-016

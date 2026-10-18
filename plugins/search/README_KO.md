@@ -63,7 +63,7 @@ Pool과 별개로 명시 호출하는 온디맨드 리뷰어:
 
 ## 의존성
 
-`plugin.json`/`marketplace.json`에 강제 의존성(`requires`)은 없다. 다만 검색 서비스가 Kotlin/Spring Boot로 구현되는 경우 `backend-kotlin` 플러그인, SQL·아키텍처·성능 심화 리뷰가 필요한 경우 `analyze` 플러그인과 함께 쓰면 상호 보완적이다.
+`plugin.json`/`marketplace.json`에 강제 의존성(`requires`)은 없다. 다만 검색 서비스가 Kotlin/Spring Boot로 구현되는 경우 `backend-kotlin` 플러그인과 함께 쓰면 상호 보완적이다.
 
 ## 참고
 

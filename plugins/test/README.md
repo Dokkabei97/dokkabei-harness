@@ -8,7 +8,7 @@
 
 `test` automates testing across the entire development cycle. It is built on two axes: a **TDD loop** (RED → GREEN → REFACTOR, 80%+ coverage) that forces you to write failing tests before writing code, and **E2E testing** that verifies completed user journeys. E2E splits into two paths depending on purpose. Playwright-based `/e2e` handles CI/CD regression, multi-browser, and headless automation, while Chrome Extension-based `/e2e-chrome` handles visual verification that needs an authenticated session or a quick, eyes-on local check.
 
-It supports both TypeScript (Jest/Vitest/Playwright) and Kotlin (Kotest/MockK/Spring Boot Test) stacks. `/e2e` is designed to be reused as the **E2E acceptance gate (②ᴱ)** of the `mvp` plugin's Stage 4 loop, so the unit gate runs on every iteration while the slow E2E suite runs only once, just before completion.
+It supports both TypeScript (Jest/Vitest/Playwright) and Kotlin (Kotest/MockK/Spring Boot Test) stacks. `/e2e` can also serve as a deterministic gate for a loop — pass its run command to the `harness` generic loop as `--gate-cmd`.
 
 ## Components
 
@@ -29,7 +29,7 @@ It supports both TypeScript (Jest/Vitest/Playwright) and Kotlin (Kotest/MockK/Sp
 ## Usage
 
 - **TDD**: `/tdd <description of the feature you want to implement>` — e.g. `/tdd I need a function to calculate market liquidity score`. The skill first defines the interface and generates a failing test, then drives just enough code to pass, the refactor, and the coverage report. For a bug fix, it starts by writing a reproduction test (RED).
-- **Playwright E2E**: `/e2e <user journey to verify>` — e.g. `/e2e Test the market search and view flow`. It analyzes the scenario, generates test code, runs it across multiple browsers, and leaves failure artifacts. To wire it into the `mvp` loop, record the run command as a single line in `.planning/e2e-gate-cmd` (e.g. `npx playwright test`), and the Stop hook runs it automatically once all stories pass (if the file is absent, E2E is skipped, zero regression).
+- **Playwright E2E**: `/e2e <user journey to verify>` — e.g. `/e2e Test the market search and view flow`. It analyzes the scenario, generates test code, runs it across multiple browsers, and leaves failure artifacts.
 - **Chrome visual verification**: `/e2e-chrome <natural-language scenario>` — e.g. `/e2e-chrome --gif Fill out the signup form and confirm the redirect to the email verification page`. It requires `claude --chrome` mode; when inactive, it guides you to restart with `claude --chrome -c` while keeping the current session.
 
 ### Choosing `/e2e` vs `/e2e-chrome`
@@ -44,7 +44,7 @@ It supports both TypeScript (Jest/Vitest/Playwright) and Kotlin (Kotest/MockK/Sp
 
 The plugin itself has no required dependencies. Good combinations to use together:
 
-- `mvp` — Wires `/e2e` in as the E2E acceptance gate (②ᴱ) of the Stage 4 loop to verify the entire user journey just before completion.
+- `harness` — Pass the E2E run command (e.g. `npx playwright test`) to `/loop-run --gate-cmd` to iterate until the user journey is green.
 
 ## Notes
 

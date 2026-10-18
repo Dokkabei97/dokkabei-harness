@@ -14,8 +14,7 @@ the responsibilities of "design → generate → validate" across skills + comma
 restructures it to fit the in-house marketplace; the detailed mapping is in `docs/ARCHITECTURE.md`.
 
 On top of this, it embeds a **lightweight general-purpose loop engine** (`/loop-run`·`/loop-stop`) that iterates only "until the gate is green"
-without an output structure (prd/tasks). This loop records `engine=generic` in `loop-active`, forming a triple boundary
-whose ownership does not overlap with the greenfield pipeline (mvp) or brownfield task-decomposition (feature-loop) loops.
+without an output structure (prd/tasks). This loop records `engine=generic` in `loop-active` and intervenes only in loops it owns.
 The owner of the completion decision is not the model but the harness — the Stop hook directly verifies the deterministic gate and
 the completion promise.
 
@@ -26,18 +25,19 @@ the completion promise.
 - `/create-flow` — Interactively scaffolds agents, commands, skills, hooks, plugins, and teams following project conventions. When `--type` is unspecified it auto-detects from the name pattern, `--team` batch-generates team components, and `--from-lessons` turns `#가드-훅-후보`-tagged entries from `tasks/lessons.md` into warn/block guard hook drafts (a user approval gate is required).
 - `/verify-flow` — Validates existing components against conventions. It judges structure, content quality, cross-references, and security by severity to produce a Health Score report, and with `--fix auto` auto-fixes deterministic defects.
 - `/loop-run` — Initializes `loop-active(engine=generic)`·`loop-state.json` with a goal prompt and `--gate-cmd` (required), then enters the Stop hook loop engine. Used for one-shot iterations where completion is defined by a single validation command, such as "until lint is 0"·"until tests are green".
-- `/loop-stop` — A manual kill switch for the `engine=generic` loop. It deletes `loop-active` to immediately disable the Stop hook and leaves a handoff of the goal·iteration·last gate result in `progress.md`. It does not touch loops owned by other engines (mvp/floop) and instead points to the relevant kill switch.
+- `/loop-stop` — A manual kill switch for the `engine=generic` loop. It deletes `loop-active` to immediately disable the Stop hook and leaves a handoff of the goal·iteration·last gate result in `progress.md`. It does not touch `loop-active` owned by other engines.
 
 ### Skills
 
 - `team-harness` — A multi-agent team design meta-skill (v2). It performs domain analysis, selection among 3 execution modes (Workflow orchestration / persistent named-agent collaboration / sub-agent delegation) and 6 architecture patterns (Pipeline/Fan-out·Fan-in/Expert Pool/Producer-Reviewer/Supervisor/Hierarchical), verification·loop patterns, task-based model tiers (fable/opus/sonnet), orchestrator design, and v1 (`TeamCreate`) → v2 migration, delegating generation to `/create-flow` and validation to `/verify-flow`. Activates on things like "하네스 구성해줘", "팀 설계해줘", "하네스 점검".
 - `evolve` — Evolves an existing harness from its run results: collects and generalizes feedback, applies one change at a time to agents/skills/orchestrators, re-validates with `/verify-flow` and trigger tests, and records each delta as a git commit with the why. Activates on "하네스 회고", "하네스 개선", "피드백 반영해줘".
 - `flow-scaffolding` — A standard template system for each component type (8 kinds: command·agent·skill·hook·plugin·team agent·orchestrator·loop Stop hook). It includes a frontmatter field reference and naming conventions and is used by `/create-flow`.
-- `flow-validation` — A component validation ruleset and checklist. It holds the rules of 10 categories (CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA), a severity scale, and the Health Score calculation method, and is used by `/verify-flow`. Among them, the LOOP ruleset (10 rules) is a safety protocol exclusive to the Stop hook loop engine.
+- `flow-validation` — A component validation ruleset and checklist. It holds the rules of 10 categories (CMD·AGT·SKL·HK·LOOP·TEAM·ORC·XRF·SEC·QUA), a severity scale, and the Health Score calculation method, and is used by `/verify-flow`. Among them, the LOOP ruleset (11 rules) is a safety protocol exclusive to the Stop hook loop engine.
 
 ### Hooks
 
-- `Stop` (`*`) → `hooks/generic-loop-stop-hook.sh` — The lightweight general-purpose loop engine. It activates only when `engine=generic` is specified in `.planning/loop-active`, and on every termination attempt it verifies the stop conditions (① the deterministic gate is green ② the exact completion promise string in `progress.md`). If unmet, it blocks termination with `exit 2` and re-injects the task along with the failure output; when met or when a guardrail is reached, it releases `loop-active` and permits termination. It does not intervene (`exit 0`) with legacy/other-engine `loop-active`.
+- `Stop` (`*`) → `hooks/generic-loop-stop-hook.sh` — The lightweight general-purpose loop engine. It activates only when `engine=generic` is specified in `.planning/loop-active`, and on every termination attempt it verifies the stop conditions (① the deterministic gate is green ② the exact completion promise string in `progress.md`). If unmet, it blocks termination with `exit 2` and re-injects the task along with the failure output; when met or when a guardrail is reached, it releases `loop-active` and permits termination. It does not intervene (`exit 0`) with legacy/other-engine `loop-active`. It also detects Claude Code's in-session cap (8 consecutive Stop blocks per turn): after 8 blocks in a turn it yields the turn instead of a futile 9th block, keeping `loop-active` and recording a resume handoff in `progress.md`.
+- `PreToolUse` (`Bash`) → `hooks/test-guard.sh` — While an `engine=generic` loop is active, blocks test-file deletion (`rm` targeting `test`/`spec` paths) with `exit 2`, so the gate cannot be turned green by deleting tests.
 
 ## Usage
 
@@ -53,13 +53,12 @@ the completion promise.
   /loop-stop
   # delete engine=generic loop-active → immediately disable Stop hook + record progress.md handoff
   ```
-  You can adjust the stop string and limits with `--promise`·`--max-iter`·`--max-minutes`. When it grows large enough to need a story/task list, promote it to `/mvp-new`·`/floop-new`.
+  You can adjust the stop string and limits with `--promise`·`--max-iter`·`--max-minutes`.
 
 ## Dependencies
 
 `plugin.json` has no hard dependencies. It has synergy when used together with the following plugins.
 
-- `mvp`(`/mvp-run`)·`feature-loop`(`/floop-run`) — Greenfield/brownfield loops that need an output structure. Via the shared `engine` scope contract they form a triple boundary with `/loop-run`.
 - `observe`(`/observe-report`) — Observes and improves which prompts the harnesses built here actually activated on·completed.
 - `workflow`(`/retro`) — Tags recurring mistakes into `tasks/lessons.md` as `#가드-훅-후보`. It is the input source for `/create-flow --from-lessons`.
 

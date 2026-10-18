@@ -1,7 +1,7 @@
 ---
 name: wiki-ops-orchestrator
 description: |
-  llmwiki CLI를 도구로 구동해 인용 기반 지식 vault를 운영하는 지식 운영 하네스 오케스트레이터. 문서 투입(feed)→결정론 감사(lint 구조·무결성·스키마)→큐레이션 루프(harness generic 루프 엔진 재사용)→인용 질의응답(ask)의 게이트 기반 상태기계. "위키/vault에 문서 넣어줘", "지식 베이스 감사·정리해줘", "vault에서 답 찾아줘" 요청과 /wiki-feed·/wiki-audit·/wiki-curate·/wiki-ask 실행 시 발동. llm-wiki 소스코드 개발에는 발동하지 않음 — feature-loop·스택 플러그인에 위임. Outline 사내위키 문서화는 workflow:document-latest 소관.
+  llmwiki CLI를 도구로 구동해 인용 기반 지식 vault를 운영하는 지식 운영 하네스 오케스트레이터. 문서 투입(feed)→결정론 감사(lint 구조·무결성·스키마)→큐레이션 루프(harness generic 루프 엔진 재사용)→인용 질의응답(ask)의 게이트 기반 상태기계. "위키/vault에 문서 넣어줘", "지식 베이스 감사·정리해줘", "vault에서 답 찾아줘" 요청과 /wiki-feed·/wiki-audit·/wiki-curate·/wiki-ask 실행 시 발동. llm-wiki 소스코드 개발에는 발동하지 않음 — 스택 플러그인에 위임. Outline 사내위키 문서화는 workflow:document-latest 소관.
   Knowledge-ops orchestrator that drives the llmwiki CLI to operate a cited knowledge vault: gated feed → deterministic audit (structure/integrity/schema lint) → curation loop (reuses the harness generic loop engine) → cited Q&A. Use when: ingesting documents into an llm-wiki vault, auditing or curating wiki health, or answering questions from the compiled wiki. Does not fire for developing the llm-wiki source code itself.
 ---
 
@@ -22,7 +22,7 @@ LLM-0 결정론 게이트다 — 이 하네스는 게이트를 새로 만들지 
 - /wiki-feed · /wiki-audit · /wiki-curate · /wiki-ask · /wiki-status 실행 시
 
 미발동 (위임 경계):
-- llm-wiki 소스코드 개발·버그픽스 → feature-loop(브라운필드)·python-fastapi 등 스택 플러그인
+- llm-wiki 소스코드 개발·버그픽스 → python-fastapi 등 스택 플러그인
 - Outline 사내위키 문서화 → workflow:document-latest
 - 웹 기반 심층 리서치 리포트 → deep-research (vault 근거 리서치는 /wiki-ask --research)
 
@@ -31,7 +31,7 @@ LLM-0 결정론 게이트다 — 이 하네스는 게이트를 새로 만들지 
 | 축 | 결정 |
 |---|---|
 | 패턴 | Pipeline (feed→audit→curate→ask) + Producer-Reviewer (wiki-curator maker ↔ wiki-auditor checker) |
-| 실행 모드 | Sub-agents (산출물 파일 경유, 교차 통신 불필요). Stage 3 루프 주체는 **메인 세션** — Stop훅이 메인 세션 종료를 가로채는 구조적 제약 (mvp와 동일) |
+| 실행 모드 | Sub-agents (산출물 파일 경유, 교차 통신 불필요). Stage 3 루프 주체는 **메인 세션** — Stop훅이 메인 세션 종료를 가로채는 구조적 제약 |
 | 루프 엔진 | **harness generic 엔진 재사용** (engine=generic, /loop-run 위임) — 자체 훅 0줄. 플러그인 의존성: harness |
 | 메모리 | vault 자체(git history) + `.planning/wiki-feed-report.md`·`wiki-audit.md` + generic 루프 파일(`.planning/loop-*`) |
 | 도구 계약 | [references/llmwiki-contract.md](references/llmwiki-contract.md) — **에이전트 디스패치 프롬프트에 3요소(vault 절대경로 · LLMWIKI_BIN · 이 파일의 절대경로)를 반드시 포함** (서브에이전트는 이전 대화를 모른다) |
@@ -86,7 +86,7 @@ LLM-0 결정론 게이트다 — 이 하네스는 게이트를 새로 만들지 
   3. 반복 규율: 소견 해소 편집 → `lint --schema` 자가 확인 → vault 커밋("curate: …") → 종료 시도 (판정은 훅)
   4. 편집 불변식: raw/ 수정 금지, claim 삭제로 integrity 통과 금지(사용자 승인 필요), stale은 재-ingest로 해소
 - 정지 조건(훅 판정): 게이트 그린 ∧ promise. 가드레일: max 12회 / 60분 / no-progress 2회 → BLOCKED.md
-- 킬스위치: `/loop-stop`. 타 엔진(mvp/floop) loop-active 발견 시 가동 거부 + 해당 킬스위치 안내
+- 킬스위치: `/loop-stop`. generic 외 loop-active 발견 시 가동 보류 + 사용자 확인
 - Output: 게이트 그린 vault + progress.md
 
 ### Stage 4 — Ask (담당: 경량 질의 메인 세션 / 다면 리서치 WL 디스패치)
@@ -110,7 +110,7 @@ LLM-0 결정론 게이트다 — 이 하네스는 게이트를 새로 만들지 
 | dirty tree (exit 3) | git status로 원인 식별 — 큐레이션 편집이면 커밋, 미지 파일이면 사용자 확인 |
 | no-progress BLOCKED | BLOCKED.md 확인 — 동일 소견 반복이면 해소 불가 사유 보고 + 사용자 에스컬레이션 |
 | airgap 위반 (exit 4) | 우회 금지 — 정책 보고 |
-| loop-active가 타 엔진 | 가동 거부 + `/mvp-stop`·`/floop-stop` 안내 (비침범 규약) |
+| loop-active가 generic 외 | 가동 보류 + 내용 표시 후 사용자 확인 (비침범 규약) |
 
 ## Completion Criteria
 
@@ -133,9 +133,9 @@ Will:
 - harness generic 루프 엔진에 큐레이션 루프 위임
 
 Will Not:
-- llm-wiki 소스코드 수정 (→ feature-loop / 스택 플러그인)
+- llm-wiki 소스코드 수정 (→ 스택 플러그인)
 - vault의 raw/ 편집, 모순 자동 해소, `--semantic`을 루프 게이트로 사용
-- 타 루프 엔진(mvp/floop)의 loop-active 침범
+- 사용자 확인 없는 타 엔진 loop-active 침범
 
 ## References
 

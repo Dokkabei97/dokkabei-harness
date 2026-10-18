@@ -21,9 +21,9 @@ MAX_ITER="${LOOP_MAX_ITER:-10}"                # 반복 상한 (무한루프 차
 PROGRESS_FILE="${LOOP_PROGRESS_FILE:-.planning/progress.md}"  # promise를 찾을 파일
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── 옵션: 안전핀 + engine 스코프 가드 (프로덕션 역이식 — generic-loop-stop-hook.sh 29·31-35행) ──
+# ── 옵션: 안전핀 + engine 스코프 가드 (프로덕션 역이식 — generic-loop-stop-hook.sh 33·35-39행) ──
 # 멀티 루프 엔진 공존 시 .planning/loop-active 의 "engine=<값>" 1줄로 소유권을 판별한다.
-# tr -d '\r' 은 CRLF 로 기록된 loop-active 방어 — mvp/floop/generic 프로덕션 훅과 동일 패턴.
+# tr -d '\r' 은 CRLF 로 기록된 loop-active 방어 — generic 프로덕션 훅과 동일 패턴.
 # 활성화: 아래 4줄 주석 해제 + <my-engine> 을 자기 엔진명으로 교체 (LOOP-001/002 룰 충족).
 # PLAN="${CLAUDE_PROJECT_DIR:-.}/.planning"
 # [ -f "$PLAN/loop-active" ] || exit 0                                      # 루프 미가동 세션은 무개입
@@ -46,11 +46,15 @@ input="$(cat || true)"
 stop_active="$(printf '%s' "$input" | jq -r '.stop_hook_active // false' 2>/dev/null || echo false)"
 
 # 상태 로드
-iter=0; last_fail_sig=""
+iter=0; last_fail_sig=""; turn_blocks=0
 if [ -f "$STATE_FILE" ]; then
   iter="$(jq -r '.iteration // 0' "$STATE_FILE" 2>/dev/null || echo 0)"
   last_fail_sig="$(jq -r '.last_fail_sig // ""' "$STATE_FILE" 2>/dev/null || echo "")"
+  turn_blocks="$(jq -r '.turn_blocks // 0' "$STATE_FILE" 2>/dev/null || echo 0)"
 fi
+case "$turn_blocks" in (''|*[!0-9]*) turn_blocks=0;; esac
+# 턴 블록 상한(LOOP-011): Claude Code 는 연속 8블록 후 9번째 exit 2 를 무시한다 — 턴 단위로 센다
+[ "$stop_active" = "true" ] || turn_blocks=0
 
 # 가드레일 1: max iterations
 if [ "$iter" -ge "$MAX_ITER" ]; then
@@ -58,7 +62,7 @@ if [ "$iter" -ge "$MAX_ITER" ]; then
   exit 0   # 종료 허용
 fi
 
-# ── 옵션: 가드레일 — 시간 상한 (프로덕션 역이식 — mvp-loop-stop-hook.sh 113-119행) ──
+# ── 옵션: 가드레일 — 시간 상한 (프로덕션 역이식 — generic-loop-stop-hook.sh 116-122행) ──
 # loop-state.json 의 started_at(epoch 초, 최초 반복에서 기록) 대비 상한(분) 초과 시 종료 허용.
 # 활성화: 주석 해제 + 아래 '상태 갱신' jq 에 started_at 필드를 추가해 최초 값을 보존하라.
 # MAX_MINUTES="${LOOP_MAX_MINUTES:-60}"
@@ -73,7 +77,7 @@ fi
 
 # 출력의 명백한 실패 표지 판정 — exit 0 이어도 출력에 실패 카운트가 있으면 보수적으로 레드.
 # "0 failed" 류 오탐 방지: 행두 FAIL 또는 1 이상 카운트가 붙은 실패 표지만 매칭 (LOOP-009).
-# ※ 정규식은 mvp/floop/generic 프로덕션 훅과 공유 규약 — 변경 시 함께 갱신하라.
+# ※ 정규식은 generic 프로덕션 훅과 공유 규약 — 변경 시 함께 갱신하라.
 has_failure_marker() { printf '%s\n' "$1" | grep -Eqi '(^FAIL([ :]|$)|[1-9][0-9]* +(fail(ed|ure|ures)?|errors?))'; }
 
 # ① 결정론적 게이트 실행 — eval 금지, bash -c 사용 (LOOP 룰). 판정은 exit code 우선.
@@ -93,7 +97,7 @@ if [ "$tests_pass" = false ]; then
   [ -n "$fail_sig" ] || fail_sig="$(printf 'exit=%s\n%s' "$gate_exit" "$(printf '%s' "$test_out" | tail -20)" | hash_stdin 2>/dev/null || echo "")"
 fi
 
-# ── 옵션: E2E 수용 게이트 / baseline 회귀 게이트 (프로덕션 역이식 — mvp ②ᴱ 155-170행 · floop ②ᴿ 140-177행) ──
+# ── 옵션: E2E 수용 게이트 / baseline 회귀 게이트 (archive 역이식 — archive/mvp/hooks/mvp-loop-stop-hook.sh ②ᴱ 155-170행 · archive/feature-loop/hooks/floop-loop-stop-hook.sh ②ᴿ 140-177행) ──
 # E2E: .planning/e2e-gate-cmd(또는 LOOP_E2E_CMD env)가 있으면 최종 수용 시점에 1회 실행해
 #      단위 게이트가 놓치는 전체 유저플로우 동작을 보증한다. 파일 부재 시 미적용(통과 간주).
 # 활성화: 주석 해제 후 아래 '정지 판정' 조건에 [ "$e2e_pass" = true ] 를 AND 로 추가하라.
@@ -107,7 +111,8 @@ fi
 # fi
 # baseline 회귀 게이트(브라운필드): red 기준선 프로젝트는 "신규 회귀 0"을 게이트 통과로 재정의한다
 # — .planning/baseline.json 의 baseline_exit/fail_count 대비 현재 실패 수를 비교해 증가분만 차단.
-# 구현 전체는 floop-loop-stop-hook.sh 85-93행(extract_fail_count)·140-177행(판정 정책)을 복제하라.
+# 구현 전체는 archive/feature-loop/hooks/floop-loop-stop-hook.sh 85-93행(extract_fail_count)·140-177행(판정 정책)을 복제하라.
+# 간이판: harness /loop-run 의 baseline 레시피(gate-cmd 1행)로 충분한 경우가 많다.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ② completion promise 확인
@@ -116,10 +121,10 @@ promise_found=false
 
 # 상태 갱신
 next_iter=$((iter + 1))
-jq -n --argjson it "$next_iter" --arg sig "$fail_sig" \
-  '{iteration:$it, last_fail_sig:$sig}' > "$STATE_FILE"
+jq -n --argjson it "$next_iter" --arg sig "$fail_sig" --argjson tb "$((turn_blocks + 1))" \
+  '{iteration:$it, last_fail_sig:$sig, turn_blocks:$tb}' > "$STATE_FILE"
 
-# ── 옵션: verified 마커 재검사 (프로덕션 역이식 — mvp-loop-stop-hook.sh 141-153행) ──
+# ── 옵션: verified 마커 재검사 (archive 역이식 — archive/mvp/hooks/mvp-loop-stop-hook.sh 141-153행) ──
 # prd.json/tasks.json 산출물 구조를 쓰는 루프에서 passes:true 각 id 의 .planning/verified/{id}
 # 존재를 재검사한다 — guard 훅(Edit|Write 포착)을 Bash 리다이렉션으로 우회한 자기승인의 최종 방어선.
 # 활성화: 주석 해제 후 아래 '정지 판정' 조건에 [ "$markers_ok" = true ] 를 AND 로 추가하라.
@@ -140,6 +145,13 @@ fi
 # 가드레일 2: no-progress (동일 실패 시그니처 연속) → 종료 + 기록
 if [ -n "$fail_sig" ] && [ "$fail_sig" = "$last_fail_sig" ]; then
   echo "[loop] no-progress 감지(동일 실패 반복) — 종료. BLOCKED.md에 기록 권장." >&2
+  exit 0
+fi
+
+# 턴 블록 상한 — 이번 턴 8회 차단 후엔 exit 2 가 무시되므로 핸드오프를 남기고 종료 허용
+if [ "$turn_blocks" -ge 8 ]; then
+  echo "[loop] 이번 턴 연속 블록 ${turn_blocks}회(Claude Code 상한) — 턴을 넘긴다. '계속'으로 재개." >&2
+  printf '\n## 턴 블록 상한 핸드오프 — iteration %s/%s\n' "$next_iter" "$MAX_ITER" >> "$PROGRESS_FILE"
   exit 0
 fi
 
