@@ -14,7 +14,7 @@ observe 는 어떤 파일도 쓰지 않으므로(stdout-온리 계약) 물화·i
 ## When to Apply
 
 - 주간 하네스 건강 스냅샷을 vault 시계열로 축적할 때 (권장 주기: 주 1회 수동)
-- 트레이스가 10MB 로테이션으로 소실되기 전에 사용 이력을 영속화할 때
+- raw TTL 정리·레포 이동·삭제 등으로 원천 트레이스가 사라지기 전에 사용 이력을 영속화할 때
 - description 튜닝 근거를 "이번 주 수치"에서 "N주 연속 claim"으로 상향하고 싶을 때
 
 ## Usage
@@ -32,7 +32,7 @@ observe 는 어떤 파일도 쓰지 않으므로(stdout-온리 계약) 물화·i
 
 ## Flow
 
-1. **Phase 0 — 존재 검사**: ① `.claude/skill-trace.jsonl` ② observe 설치본의 `bin/observe-export.js`
+1. **Phase 0 — 존재 검사**: ① 트레이스 — `.tracer/events/`(observe 2.0) 또는 구 경로 `.claude/skill-trace.jsonl`(1.x, 2.0 호환 reader 가 계속 읽음) ② observe 설치본의 `bin/observe-export.js`
    ③ vault 경로. 하나라도 없으면 중단 — ①은 `OBSERVE_TRACE=1` 활성화(다음 세션부터 유효),
    ②는 `/plugin install observe`, ③은 vault 준비(`/wiki-feed` 의 Stage 0)를 안내한다.
 2. **Phase 1 — 주간 슬롯 고정 + 렌더 + 2차 게이트**: 스냅샷 대상은 **지난 완결 ISO 주**다.
@@ -66,7 +66,7 @@ observe 는 어떤 파일도 쓰지 않으므로(stdout-온리 계약) 물화·i
 
 Will: 원문 0 집계 스냅샷의 렌더·이중 게이트·승인·물화·ingest 위임, env 라벨 시계열 축적,
 멱등/신규 구분 영수증(source_id·commit·claims), 부채 카운터 보고
-Will Not: 원시 트레이스(`skill-trace.jsonl`)·원문 필드(candidates/followups/why/args)의 ingest,
+Will Not: 원시 트레이스(`.tracer/`·구 `skill-trace.jsonl`)·원문 필드(candidates/followups/why/args)의 ingest,
 승인 없는 자동 feed, vault 미지정 시 진행(fail-closed), ingest 우회 wiki/ 직접 쓰기,
 회사 어휘 유래 제안의 공개 레포 라우팅(회사 도메인 용어는 회사 프로젝트-로컬 CLAUDE.md 소관),
 환경 간 트레이스 파일 병합·운반(환경 구분은 머신·vault 분리로 성립)

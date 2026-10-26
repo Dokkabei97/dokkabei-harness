@@ -1,10 +1,12 @@
-// PostToolUse(Skill|Agent|Task): 스킬/에이전트 호출의 "완료" 사실을 skill-trace.jsonl 에 append.
-// PostToolUse 는 성공한 호출에만 발화하므로 이 레코드의 존재 자체가 완주 신호이며,
+// PostToolUse(Skill|Agent|Task): 스킬/에이전트 호출의 "로드/반환" 사실을 레포 .tracer 이벤트로 append.
+// PostToolUse 는 툴 호출이 성공했을 때 발화한다 — 스킬은 본문이 로드된 시점, 에이전트는 반환 시점이라
+// 이 레코드는 로드/반환 신호이지 작업 완주 신호가 아니다(턴이 어떻게 끝났는지는 Stop 다이제스트의 턴 outcome 몫).
 // tool_use_id 로 대응하는 type:'skill'/'agent' 레코드와 join 하면 소요시간이 나온다.
 // 응답 본문은 기록하지 않는다(용량·민감정보) — 크기만 남겨 산출물 유무의 프록시로 쓴다.
 // 추적은 best-effort — 항상 조용히 종료(exit 0, stdout 무출력).
-const { readEvent } = require('./_lib/hook-stdin');
-const { enabled, logPath, append } = require('./_lib/trace');
+const { readEvent } = require('../../_lib/hook-stdin');
+const { enabled, emit, runtimeOf, CODEX } = require('../../_lib/writer');
+const { repoRoot } = require('../../_lib/paths');
 
 const TARGET_TOOLS = new Set(['Skill', 'Agent', 'Task']);
 
@@ -20,11 +22,15 @@ function responseBytes(resp) {
   try {
     if (!enabled()) return;
     const { json } = await readEvent();
+    // 빈/깨진 stdin(json={})·비객체 payload·문자열이 아닌 session_id(파일명 키) 는 기록하지 않는다 — session_id:null 쓰레기 레코드 방지
+    if (!json || typeof json.session_id !== 'string' || !json.session_id) return;
     // matcher 오설정 대비 이중 가드 — 대상 외 툴은 즉시 무시
     if (!json.tool_name || !TARGET_TOOLS.has(json.tool_name)) return;
+    // Codex 에는 Skill/Agent 툴이 없다 — Codex 훅 env 로 들어온 이벤트는 claude-code 레코드로 남기지 않는다(Codex 는 trace-tool 휴리스틱 몫)
+    if (runtimeOf(json) === CODEX) return;
 
     const ti = json.tool_input || {};
-    append(logPath(json.cwd), {
+    emit(repoRoot(json.cwd), {
       ts: new Date().toISOString(),
       session_id: json.session_id || null,
       type: 'result',

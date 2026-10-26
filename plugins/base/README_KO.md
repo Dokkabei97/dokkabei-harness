@@ -64,7 +64,7 @@
 ## 의존성
 
 - 이 플러그인 자체의 `requires`/`dependencies`는 없다(독립 설치 가능).
-- `observe`가 `requires`로 `base`를 전제한다. 루프 실행(`harness` `/loop-run`) 중에도 안전망이 되므로 함께 쓰는 것이 기본 조합이다.
+- `observe`도 의존성이 없다. 다만 루프 실행(`harness` `/loop-run`) 중 안전망이 되므로 `base`를 함께 쓰는 것을 권장한다.
 
 ## 참고
 

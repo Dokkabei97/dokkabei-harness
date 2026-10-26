@@ -9,13 +9,16 @@
 *.iml
 out
 gen
+# observe 트레이스 — 2.0 은 .tracer/ 가 자기 무시(.tracer/.gitignore "*")하지만 이 레포는 이중 안전망,
+# 구 경로(1.x)는 observe-migrate 전까지 남아 있다(.migrated 포함)
+.tracer/
 .claude/skill-trace.jsonl*
 
 # Playwright MCP local render artifacts
 .playwright-mcp/
 
 # 로컬 Grafana 홈 대시보드 선택 (EN/KO) 등 개인 오버라이드
-infra/otel/.env
+archive/infra/otel/.env
 
 # Claude Harness
 tasks

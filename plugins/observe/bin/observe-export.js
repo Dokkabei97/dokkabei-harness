@@ -7,7 +7,8 @@
 // 물화(파일 저장)와 ingest 는 wiki-ops 측(wiki-harness-feed 스킬)의 책임이다.
 //
 // 프라이버시 fail-closed (1차 게이트): 입력 JSON 어디든 프롬프트 원문 운반 필드
-// (text/next_prompt/why/args/prompt_head/prompt)가 보이면 렌더를 거부하고 exit 2 로 죽는다 —
+// (text/next_prompt/why/args/prompt_head/prompt 와 P2 의 description/last_assistant_message/
+// tool_input/tool_response/error/stdout/stderr)가 보이면 렌더를 거부하고 exit 2 로 죽는다 —
 // "--candidates 0 --followups 0 을 기억하는" LLM 규율이 아니라 코드가 원문 유출을 막는다.
 // 입력은 JSON 객체만 허용(비객체는 exit 2 — 상류 파이프 실패의 fail-open 방지). 자산명 등
 // 데이터 유래 문자열은 제어문자·개행·마크업([[ ]] ** )을 살균해 claim 구조 주입을 막는다.
@@ -28,6 +29,10 @@
 // 정규화한다 (로컬타임 파싱은 머신 TZ 에 따라 주차가 갈리는 비결정론 — 실측 W52/W53 분기).
 "use strict";
 
+// P2: 다이제스트·툴 카운터 계층이 다루는 원문 운반 후보(훅 payload 의 tool_input/tool_response/error,
+// Stop 의 last_assistant_message, Bash 출력 stdout/stderr, 에이전트 description)도 막는다 — 현재 어느 산출물에도
+// 기록하지 않지만 additive 확장 드리프트로 섞여 들어오면 렌더를 거부한다. ("command" 는 넣지 않는다 —
+// 이벤트 prompt_meta.command 는 슬래시 커맨드 이름이라 원문이 아니다.)
 const FORBIDDEN_KEYS = new Set([
   "text",
   "next_prompt",
@@ -35,6 +40,13 @@ const FORBIDDEN_KEYS = new Set([
   "args",
   "prompt_head",
   "prompt",
+  "description",
+  "last_assistant_message",
+  "tool_input",
+  "tool_response",
+  "error",
+  "stdout",
+  "stderr",
 ]);
 // 홈/마운트 루트 준식별자 — /Users·/home 만으로는 회사 공유드라이브(/Volumes/<사명>/…)와
 // 리눅스 마운트(/mnt·/media·/srv)가 새는 실측 우회가 있어 루트를 넓힌다.
@@ -107,11 +119,17 @@ function pct(rate) {
 }
 
 // 호출 집계 1건 → 자립형 claim 1줄 (env·주차 내장 — 인용 시 시계열 비교 가능)
-function usageLine(item, stamp) {
+//   loadedLabel — PostToolUse result join 의 이름: 스킬은 "로드"(본문 로드 시점), 에이전트는 "반환"(반환 시점).
+//   어느 쪽도 작업 완주가 아니다. 텍스트 리포트와 같은 용어. 구 집계 JSON 의 completed 도 읽는다
+function usageLine(item, stamp, loadedLabel) {
   const parts = [
     `호출 ${num(item.calls)}회 (user ${num(item.user)} / model ${num(item.model)})`,
-    `완주 ${num(item.completed)}회`,
+    `${loadedLabel} ${num(item.loaded ?? item.completed)}회`,
   ];
+  // 턴 결과 분포(Stop 다이제스트) — 그 이름을 쓴 턴이 커밋/취소로 끝난 수. 다이제스트가 없으면 생략
+  const oc = item.outcome;
+  if (oc && num(oc.turns) > 0)
+    parts.push(`사용 턴 ${num(oc.turns)}개 중 커밋 ${num(oc.committed)}·취소 ${num(oc.cancelled)}·교정 후보 ${num(oc.corrected)}·실패 ${num(oc.failed)}`);
   if (Number.isFinite(item.avg_ms)) parts.push(`평균 ${item.avg_ms}ms`);
   if (Number.isFinite(item.why_rate))
     parts.push(`why 표착률 ${pct(item.why_rate)}`);
@@ -168,7 +186,7 @@ function render(report, opts) {
       ...capped(
         skills,
         15,
-        (s) => usageLine(s, stamp),
+        (s) => usageLine(s, stamp, "로드"),
         (n) => `호출 상위 15종 외 ${n}종은 생략됐다 (전체는 집계 JSON 참조).`,
       ),
     );
@@ -183,7 +201,7 @@ function render(report, opts) {
       ...capped(
         agents,
         10,
-        (a) => usageLine(a, stamp),
+        (a) => usageLine(a, stamp, "반환"),
         (n) => `호출 상위 10종 외 ${n}종은 생략됐다 (전체는 집계 JSON 참조).`,
       ),
     );

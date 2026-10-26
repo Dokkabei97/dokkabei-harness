@@ -1,7 +1,7 @@
 # 하네스 건강 스냅샷 렌더 형식 규약
 
 `plugins/observe/bin/observe-export.js`(생산)와 `wiki-harness-feed` 스킬(소비)이 공유하는
-형식 계약이다. 렌더러를 수정하면 이 문서와 `tests/hooks/observe-export.bats` 를 함께 갱신한다.
+형식 계약이다. 렌더러를 수정하면 이 문서를 함께 갱신하고, 픽스처 집계 JSON 으로 렌더 결과를 수동 확인한다(레포 내 테스트 스위트 없음).
 
 ## 형식 규칙 (llmwiki ingest 동작 실측 근거)
 
@@ -31,8 +31,8 @@
 렌더(`--now`) 양쪽에 고정 주입해야 한다. 이 고정이 없으면 `idle_days`·coverage 등 벽시계
 파생값이 실행 시각마다 변해 "동일 주차 재실행 = 동일 바이트" 멱등이 성립하지 않는다
 (리뷰 확정 소견). 지난 완결 주의 트레이스는 append-only 특성상 불변이므로, 고정 슬롯 하에서
-주중 재실행은 `skipped:true`(정상 멱등)로 끝난다. 내용이 실제로 바뀌면(예: 트레이스 로테이션
-소실) **새 source_id 페이지가 추가**된다(llmwiki 에 supersede 없음) — 이 누적이 부채
+주중 재실행은 `skipped:true`(정상 멱등)로 끝난다. 내용이 실제로 바뀌면(예: 트레이스 정리·migrate
+후 재집계) **새 source_id 페이지가 추가**된다(llmwiki 에 supersede 없음) — 이 누적이 부채
 카운터(SKILL.md Phase 5)의 존재 이유다.
 
 ## stale 미발화 전제 (설계 승계)

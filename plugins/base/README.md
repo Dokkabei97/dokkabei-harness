@@ -64,7 +64,7 @@ No separate invocation is needed after installation. As long as the plugin is en
 ## Dependencies
 
 - This plugin itself has no `requires`/`dependencies` (can be installed standalone).
-- `observe` presumes `base` via `requires`. It also becomes a safety net during loop execution (`harness` `/loop-run`), so using them together is the default combination.
+- `observe` has no dependencies either. `base` is still recommended alongside it as a safety net during loop execution (`harness` `/loop-run`).
 
 ## Notes
 

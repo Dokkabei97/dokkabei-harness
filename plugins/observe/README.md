@@ -2,108 +2,201 @@
 
 # observe
 
-> An observation-and-improvement plugin that correlation-logs the harness's real usage via hooks and feeds that telemetry back as improvement proposals.
+> Measures how the harness is really used (which skills and agents fire, why, and how each turn ends) and turns those measurements into improvement proposals. Proposals only: it never edits a file.
 
 ## Overview
 
-`observe` correlation-logs, via hooks, "for which prompt which skill/agent was invoked **why**, and whether that invocation **completed**" in order to diagnose the health of the harness itself. Six hooks each append session start, prompt, skill invocation, agent invocation, invocation result, and session end to `.claude/skill-trace.jsonl`, using `session_id`·`prompt_id`·`tool_use_id` as join keys to retroactively combine the prompt↔skill↔agent↔result↔session boundaries. The accumulated traces are unpacked by `/observe-report` in the order "deterministic aggregation (script) → interpretation (LLM) → improvement proposal," but it produces **only proposals, without modifying any file at all**.
+`observe` records, per repository, which skill or agent each prompt invoked, why it was invoked, and how the turn ended: `committed`, `cancelled`, `corrected` (correction candidate), `failed` or `unknown`. Hooks and transcript readers write everything to `<repo>/.tracer/`. `/observe-report` then runs a deterministic aggregation, has the LLM interpret it, and produces proposals: missed activations, description-tuning drafts, stale or dead assets, orchestration candidates and instrumentation gaps. It produces only proposals and never edits a file. Its sole write is appending events with no raw text to its own `.tracer/recommendations.jsonl`. You answer each proposal (accept, reject or snooze), and those answers become the feedback that tunes later reports.
 
-The reason observe exists becomes clear in contrast with the hermes agent. Whereas the hermes agent is a generative evolution that **autonomously creates** skills/harnesses based on user behavior and grows from there, observe is on the opposite side — an **instrumentation-based improvement loop** that measures whether an **already-built harness** is being invoked well in real usage, and improves the harness itself on the basis of that telemetry data. Rather than the side that creates and multiplies new assets, this plugin's role is the side that empirically measures whether existing assets activate and complete as designed, and feeds that back through description tuning, dead-asset cleanup, and filling instrumentation gaps.
+Where Nous Research's Hermes Agent grows by **creating** skills from experience, observe takes the evaluation-first path. It checks whether an **already-built** harness fires as designed and whether its turns lead to results, then proposes fixes. It ports the deterministic half of Hermes's curator: the usage lifecycle (stale ≥30 days, archive candidate ≥90 days) and correction signals.
 
-The design intent lies in clear boundaries. This plugin is dedicated to **post-hoc diagnosis of real-usage telemetry**. It delegates cost/token/tool_decision instrumentation to Claude Code's built-in OTel (`CLAUDE_CODE_ENABLE_TELEMETRY`), and delegates the a-priori benchmarking of description activation rates to `skill-creator` eval — mutually non-overlapping orthogonal complements. Also, because it records prompt originals by nature, it only operates when `OBSERVE_TRACE=1` is opted in, so it has no effect by default on loop-type plugins like `harness`'s generic loop.
+Claude Code's `/usage` shows usage by skill, subagent and MCP at one point in time. observe adds the reason each one fired, how its turn ended, the activations that were missed and the correction signals, and it keeps the trace so results build up across sessions.
 
-Claude Code's native `/usage` breaks down recent usage by skill / subagent / MCP — observe overlaps there but goes deeper: it adds *why* each fired, whether it *completed*, missed activations, usage lifecycle (stale / archive candidates), and correction signals, and persists the trace so it compounds across sessions rather than showing a point-in-time snapshot.
-
-v1.3.0 ports the **deterministic half** of hermes-agent's curator into the aggregator: usage-lifecycle candidates (stale ≥30d / archive ≥90d since last observed use, thresholds configurable, `--now` injectable for tests) and correction-candidate pairs (`followups` — the plain user prompt immediately after a skill/agent invocation; whether it is a correction is judged only in the LLM phase). State transitions are still proposals only. If generative coupling (auto-creating/patching skills) is ever added, the preconditions come from hermes itself: agent-created assets isolated in their own namespace/marking, archive-only (never delete), and read-before-write — until all three exist, observe stays evaluative.
+Recording is **opt-in** (`OBSERVE_TRACE=1`) because prompt text is stored locally. With it unset, every hook exits immediately.
 
 ## Components
 
-### Command
+### Commands
 
-- `/observe-report` — A harness health report based on skill-trace telemetry. It runs deterministic aggregation (per-skill/agent invocation counts·user/model trigger ratios·completion rate·elapsed time, unused assets, missed-activation candidate turns), then compares those candidates against the skill description to judge "missed activation" vs "skill not needed," and produces a proposal of description tuning drafts·dead-asset candidates·new-skill candidates·instrumentation improvement items. Options: `--raw` (aggregation JSON only), `--window <days>` (last N days), `--focus skills|agents|prompts`, `--stale-days/--archive-days` (lifecycle thresholds), `--followups <n>` (correction-pair cap).
+| Command | What it does |
+|---|---|
+| `/observe-report` | Harness health report: aggregation → interpretation → proposals → asks for your answer to each recommendation ID. Options: `--raw` (aggregation JSON only), `--window <days>`, `--focus skills\|agents\|prompts`, `--stale-days`/`--archive-days`, `--followups <n>`, `--all` (sum over every registered repo, raw text excluded), `--theta`/`--margin`/`--min-sample`/`--orch-min` (experiments, not recorded), `--no-record`. |
+| `/observe-git-hooks` | Opt-in commit-boundary git hooks: `install [--no-pre-commit] [--trailer]`, `uninstall`, `status`, `print <hook>`. |
 
-### Hooks
+### Claude Code hooks (`hooks/hooks.json`)
 
-All hooks operate only when `OBSERVE_TRACE=1`, and since they emit no stdout (zero context pollution) they always exit with `exit 0` — a tracing failure never blocks skill/agent execution.
+The hooks print nothing to stdout (no context pollution) and always `exit 0`, so a tracing failure never blocks work. They do nothing unless `OBSERVE_TRACE` is on, and they return immediately when `OBSERVE_CHILD=1`, which observe sets on its own child processes.
 
-- `SessionStart` → `trace-session.js` — Appends session start (`source`, `plugin_root`=install-root basis) as a `session_start` record. `plugin_root` is the join basis for the report to enumerate the denominator (inventory) of unused assets from the **same install** as the trace.
-- `UserPromptSubmit` → `trace-prompt.js` — Appends the user prompt original as a `prompt` record (including the `is_command` approximation flag). It is subsequently combined with skill invocations by `session_id`/`prompt_id`.
-- `PreToolUse` (matcher `Skill`) → `trace-skill.js` — Appends the Skill invocation (skill·args) along with its basis (`why`=preamble extraction of the current turn)·`trigger` (user/model)·`turn_command` (command-chain provenance)·`tool_use_id` (result join key). The matcher is a tool-name regex, and it was empirically confirmed that expressions (`tool == …`) do not activate (2026-07).
-- `PreToolUse` (matcher `Agent|Task`) → `trace-agent.js` — Appends the subagent invocation (`subagent_type`·description·first 300 chars of prompt) along with its basis (current turn preamble) as an `agent` record. `Agent` is the tool name that `Task` was renamed to in v2.1.63, so both matchers are listed together (legacy compatibility).
-- `PostToolUse` (matcher `Skill|Agent|Task`) → `trace-result.js` — Appends invocation completion as a `result` record. It joins with the Pre record via `tool_use_id` to derive elapsed time, and proxies the presence of output via `response_bytes` (the body is not recorded due to size·sensitive-information concerns). Since PostToolUse activates only on successful invocations, the mere existence of the record is a completion signal.
-- `SessionEnd` → `trace-session.js` — Appends session end (`reason`) as a `session_end` record. It is the basis for distinguishing session boundaries·completion ('last skill' vs 'log truncation').
+| Event (matcher) | Script (`bin/hooks/adapters/claude/`) | Records |
+|---|---|---|
+| `SessionStart` | `trace-session.js` | `session_start` (source, plugin install root, the denominator of the unused-asset list). It also catches up on earlier sessions that were never closed. |
+| `UserPromptSubmit` | `trace-prompt.js` | `prompt` (metadata in events; the text goes to `raw/`) |
+| `PreToolUse` (`Skill`) | `trace-skill.js` | `skill_use`: name, trigger (user/model), the turn preamble as `why`, `tool_use_id` |
+| `PreToolUse` (`Agent\|Task`) | `trace-agent.js` | `subagent`: type, why, description and prompt head (in `raw/`) |
+| `PostToolUse` (`Skill\|Agent\|Task`) | `trace-result.js` | `tool_result`: `response_bytes` and elapsed time. A Skill result is stamped when the skill body is **loaded**, so the report calls it `loaded`, not completion. |
+| `PostToolUse`/`PostToolUseFailure` (`*`, async) | `trace-tool.js` | `tool_call` counters, only with `OBSERVE_TRACE_SCOPE=tools` (otherwise it exits before reading stdin). Under Codex it also detects skills and `spawn_agent` (see Runtimes). Plugin hooks cannot be registered conditionally on an env var, so a node process (about 20–30 ms, async, non-blocking) still starts on every tool call. |
+| `Stop` | `trace-stop.js` | **Turn digest** (`turn_summary`), read incrementally from the transcript cursor. It only records: it never blocks and never emits a decision or context, and it exits at once on `stop_hook_active`. |
+| `SessionEnd` | `trace-session.js` | `session_end`, then a detached worker closes the session (last turn plus `session_summary`). |
 
-### Aggregation engine
+Matchers are tool-name regexes only (an expression matcher never fires, measured 2026-07). Any finer filtering happens inside the scripts.
 
-- `bin/observe-report.js` — A dependency-free deterministic aggregator and the output engine of `/observe-report`. Using a tolerant reader, it reads the traces and outputs a summary of invocations·completion·unused assets·missed-activation candidates·session boundaries as JSON (`--json`) or Korean text. Not making LLM judgments (confirming missed activation, diagnosing descriptions) is this file's contract. The inventory denominator is determined in the order `--plugins-dir` > the trace's `session_start.plugin_root` > back-derivation from the file's own location.
-- `bin/observe-export.js` — A deterministic renderer that turns the aggregate JSON (stdin) into a wiki-ingestable markdown snapshot (stdout). It refuses input carrying raw-text fields (candidates/followups/why etc.) with exit 2 (fail-closed), drops absolute paths, and renders asset names as `[[wikilinks]]` (entity upsert + crossref). Being stdout-only it does not breach the proposals-only contract — materialization and ingest are the consumer's (`wiki-ops:wiki-harness-feed`) responsibility.
+### CLIs (`bin/`)
+
+| CLI | Purpose |
+|---|---|
+| `observe-report.js` | Deterministic aggregator behind `/observe-report` (`--json` or Korean text). It does not make LLM judgments. It also records the feedback answers (see Feedback loop). |
+| `observe-backfill.js` | Digests past Claude Code, Codex and Antigravity sessions whose working directory belongs to this repo: `[--root] [--runtime claude\|codex\|antigravity\|all] [--claude-dir <dir>]… [--codex-dir <dir>]… [--antigravity-dir <dir>] [--dry-run] [--json]`. It is idempotent. |
+| `observe-migrate.js` | One-shot 1.x → 2.0 move of `.claude/skill-trace.jsonl(.1)` into `.tracer/`: `[--root] [--dry-run]`. The old files are renamed to `*.migrated`, never deleted. |
+| `observe-git-hooks.js` | Installer behind `/observe-git-hooks`. |
+| `observe-export.js` | Turns the aggregate JSON (stdin) into a wiki snapshot (stdout) for `wiki-ops:wiki-harness-feed`. If the input contains any raw-text field it fails closed with `exit 2`. |
+
+### How it works
+
+- **Turn digest** (`adapters/claude/transcript.js`, `_lib/digest.js`). Turns are split by `promptId`. Each `turn_summary` holds the tool flow `seq_compact` (e.g. `S1>B(other)2>B(git)2`), counts, failures, interrupts and rejections, exec kinds, edited files (repo-relative, ≤20), skills, subagents, commits and pushes, tokens (deduplicated by message id), model, effort and duration. `outcome` is picked in priority order:
+  1. `committed`: the turn has a commit SHA.
+  2. `cancelled`: a `[Request interrupted by user…]` marker, or a tool rejection with no progress after it.
+  3. `corrected`: a plain prompt follows a skill or agent turn. This is only a candidate; the LLM phase decides.
+  4. `failed`: at least half of the tool results failed.
+  5. `unknown`: none of the above.
+
+  System-injected turns (task notifications, `!` bash mode) are tagged `prompt_kind` and kept out of outcome counts. Each turn is settled one turn late (at the next Stop, SessionEnd or catch-up), and writes are upsert-skip on `(runtime, session, turn)`, so nothing is written twice.
+- **Commit SHAs.** The digest takes them from `gitOperation.commit`, then from a stdout `[branch sha]` line, then from `git log --all --reflog` over the run window of a successful `git commit`. The `git-log`/`git-log-weak` paths are heuristics and are labelled as such.
+- **Recommendation engine** (`bin/lib/match.js`, `recommend.js`). BM25 ranks each prompt against skill and command descriptions. Korean is matched as character bigrams and English as words. Quoted phrases weigh most, then `triggers:`, then "Use when", then prose. The engine produces three types:
+  - `missed`: a settled turn that used no skill but has top1 ≥ θ (10) and margin ≥ 3, or a gold label (the next human turn invoked that slash command).
+  - `tune`: prompt terms that the description lacks.
+  - `orchestrate`: chains or tool flows that repeat across ≥3 sessions.
+
+  Noise limits: nothing below 20 human prompts, evidence counted once per session, one-offs dropped, at most 3 per type. IDs are `sha1(type|target)` and are appended to `.tracer/recommendations.jsonl` (append-only, no raw text).
+- **Feedback loop.** `/observe-report` ends by asking for your answer to each recommendation ID and records only those answers with `observe-report.js --accept|--reject|--snooze <id>[,<id>…]` (`--snooze-days <n>`, a positive integer; a reshown item is passed as `<id>@<evidence_n>` so an answer to it always opens a new round, even from a run that did not record). An unknown ID or conflicting answers write nothing and exit 1. The state is one of `proposed`, `accepted`, `rejected` (30-day cooldown, reshown early only if the evidence doubles), `snoozed` (default 7 days) or `expired` (no answer for 30 days, derived rather than written). Only your explicit answers are written. The report head shows per-type `precision = accepted / (accepted + rejected)` once there are at least 10 answers; below that it shows `표본 부족` (insufficient sample). θ, the margin, the expiry and the minimum denominator are manual constants; nothing is auto-calibrated.
+- **Compatibility reader** (`bin/lib/reader.js`). It reads `.tracer/` v1 and the legacy `.claude/skill-trace.jsonl(.1)` v0 as one stream. The legacy fallback stays for the whole 2.x major.
 
 ## Setup
 
-Trace collection is opt-in — you must turn on `OBSERVE_TRACE=1` for the six hooks to operate. The settings file differs depending on whether it is **global** (all projects) or **per-project**, and settings always apply **starting from the next newly started session** (they are not retroactive to an already-open session). A shell-profile `export OBSERVE_TRACE=1` also works, but the `settings.json` approach below is recommended because its session scope is clearer.
+Settings apply from the **next new session**; a session that is already open does not pick them up.
 
-### 1. Global — trace across all projects
+### 1. Claude Code
 
-Put it in the `env` block of `~/.claude/settings.json`. Every session started thereafter inherits it.
-
-```json
-{
-  "env": {
-    "OBSERVE_TRACE": "1"
-  }
-}
-```
-
-### 2. Per-project — only in this repo
-
-Put the same key in the `env` of `<project>/.claude/settings.local.json` (personal, `.gitignore`d) or `.claude/settings.json` (team-shared, committed). **Since local beats global**, if you turn it on globally and then want to turn it off for only a specific sensitive project, override it with `"OBSERVE_TRACE": "0"` in that project.
-
-### 3. Together with the built-in OTel stack — recommended (cross-validation)
-
-observe is an orthogonal complement in charge of "**why**·completion," while Claude Code's built-in OTel is in charge of "cost·token·event·**what and when**." Turning both on lets them join directly since `session_id`·`prompt_id` have identical values, so you can cross-validate whether hooks activated (→ this repo's `infra/otel` provides a local receiving stack `docker-compose` and a Grafana dashboard). Configure them together in the global `env`:
+Global (all projects), in `~/.claude/settings.json`:
 
 ```json
-{
-  "env": {
-    "OBSERVE_TRACE": "1",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_METRICS_EXPORTER": "otlp",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
-    "OTEL_LOG_TOOL_DETAILS": "1",
-    "OTEL_LOG_USER_PROMPTS": "1"
-  }
-}
+{ "env": { "OBSERVE_TRACE": "1" } }
 ```
 
-- `OTEL_LOG_TOOL_DETAILS` unmasks third-party (marketplace) skill names — without it, `skill_name` is stamped only as `custom_skill`, making per-harness aggregation impossible (empirically measured 2026-07).
-- `OTEL_LOG_USER_PROMPTS` transmits the prompt original to populate the dashboard's prompt↔skill correlation view — without it, `<REDACTED>`.
-- The session works normally even if the stack is down (OTLP export failures are silently ignored). `CLAUDE_CODE_ENABLE_TELEMETRY` alone does not turn on the observe hooks, so keep `OBSERVE_TRACE` separate — the two are orthogonal.
+Per project: put the same key in `<project>/.claude/settings.local.json` (personal) or `.claude/settings.json` (shared). The project setting beats the global one, so `"OBSERVE_TRACE": "0"` turns recording off for one sensitive repo. A shell `export OBSERVE_TRACE=1` also works.
 
-> ⚠️ **Privacy**: `OBSERVE_TRACE`·`OTEL_LOG_USER_PROMPTS` record the prompt **original**. Turning it on globally leaves every prompt, including those of sensitive projects, in the local store (`.claude/skill-trace.jsonl` + local Loki) — since it is local loopback there is no leakage off the machine, but recording originals is an explicit decision. To exclude only a specific project, turn it off with `"0"` in the `env` of that project's `.claude/settings.local.json`.
+| Variable | Effect |
+|---|---|
+| `OBSERVE_TRACE=1` | Turns recording on (`1`, `true`, `on` and `yes` are accepted). |
+| `OBSERVE_TRACE_SCOPE=tools` | Also writes per-tool `tool_call` counters. |
+| `OBSERVE_LLM=1` | Lets the git post-commit worker add an LLM section to `commits/<sha>.md`. |
+| `OBSERVE_LLM_DAILY=<n>` | Daily cap on those LLM calls (default 5). |
+| `OBSERVE_CHILD=1` | Set by observe on its own children. Every hook exits immediately. |
+
+### 2. Codex (optional)
+
+Codex loads the same `hooks/hooks.json` (Claude-format plugin hooks). To set it up:
+
+1. Install the plugin in Codex.
+2. Trust its hooks with `/hooks`. Trust is tied to the hook hash, so trust them again after every update.
+3. Start Codex with `OBSERVE_TRACE=1` in the environment, e.g. `OBSERVE_TRACE=1 codex`.
+
+Codex runs `async` hooks synchronously, so once the hooks are trusted, the `*` PostToolUse hook adds one node start (about 20–30 ms) to every Codex tool call, even with `OBSERVE_TRACE` unset. To remove that cost, disable or untrust the hook in `/hooks`.
+
+### 3. Antigravity and past Claude Code / Codex sessions (backfill)
+
+Antigravity has no hooks. Its transcripts (`~/.gemini/antigravity-cli/brain/`), Codex rollouts (`~/.codex/sessions`, `~/.codex/archived_sessions`) and this repo's past Claude Code transcripts (`~/.claude/projects/<encoded repo path>/*.jsonl`, written before the hooks were on) are read by:
+
+```sh
+node <observe>/bin/observe-backfill.js            # this repo's sessions only; rerun freely
+node <observe>/bin/observe-backfill.js --dry-run  # count only
+```
+
+A session is closed only after its file has been idle for more than 30 minutes; for a session still running, the last human turn is held back. Codex Desktop imports of external sessions (`external-import-turn-N` turns, or the `<EXTERNAL SESSION IMPORTED>` marker) are skipped, with one stderr line each, so the same work is not counted twice. `.jsonl.zst` rollouts need the `zstd` CLI; without it they are skipped and reported. Run the backfill before `/observe-report`.
+
+### 4. Git hooks (optional, per repo)
+
+```
+/observe-git-hooks install        # post-commit + non-blocking pre-commit
+/observe-git-hooks install --trailer   # also add an Agent-Session trailer (off by default)
+/observe-git-hooks status | uninstall
+```
+
+- **post-commit** passes HEAD to a detached analyzer and returns at once. The analyzer appends a `commit` event (`events/git-hook/<YYYY-MM>.jsonl`) and writes `.tracer/commits/<sha>.md`: subject, changed files, the attributed session and turn, that turn's tool flow and the open recommendations, with no raw text.
+- **Attribution order**:
+  1. A transcript SHA match.
+  2. The `Agent-Session` trailer.
+  3. `CLAUDE_CODE_SESSION_ID` in the hook environment.
+  4. For a human commit: the turn that ended within the previous 2 hours and whose edited files overlap the commit most.
+- **pre-commit** prints one deterministic line of open recommendations to stderr from a cache. It never uses an LLM and never blocks the commit.
+- **Existing hooks** are moved to `observe-orig/<hook>` inside the hooks directory. They run first, and their exit code is returned unchanged. `uninstall` restores them byte for byte.
+- With `core.hooksPath`, husky or lefthook present, nothing is installed. The command explains how to paste `print <hook>` output into that tool's hook instead.
+- Measured cost (temp repo, 40 alternating pairs): `git commit` gets about 30 ms slower at p95.
+- Human commits in a terminal are recorded only if that shell also has `OBSERVE_TRACE=1`, because `settings.json` `env` applies only inside Claude Code.
+- The hooks embed the plugin's absolute path. After `/plugin update`, `status` reports them as stale; run `install` again.
+
+### 5. Upgrading from 1.x
+
+The legacy `.claude/skill-trace.jsonl` is still read as v0, so no history is lost. To move it into `.tracer/`, run `node <observe>/bin/observe-migrate.js` once.
 
 ## Usage
 
-Once setup is complete, simply proceeding with a session as usual causes the six hooks to automatically append records to `.claude/skill-trace.jsonl` (no separate invocation needed). Once traces have accumulated over a period, run the report.
+Work as usual; records accumulate in `<repo>/.tracer/`. Once some traces exist, run:
 
 ```
-/observe-report                    # full flow through aggregation → interpretation → improvement proposal
-/observe-report --raw --window 14  # last 14 days deterministic aggregation JSON only (for external-tool integration)
-/observe-report --focus skills     # centered on missed-activation judgment·user-only skill diagnosis
+/observe-report                    # aggregation → interpretation → proposals → your answers
+/observe-report --raw --window 14  # last 14 days, aggregation JSON only
+/observe-report --focus skills     # missed-activation and user-only skill diagnosis
+/observe-report --all              # every registered repo (no raw text, no per-turn judgments)
 ```
 
-If the trace is empty (`OBSERVE_TRACE` unset), the report prints the activation method and re-collection guidance and exits. If the sample is small (sessions < 5), the interpretation is tagged with a "insufficient sample — for trend reference only" warning to prevent over-generalization. The proposal includes the target file path·current description·revision draft·cited basis turns, but **applying it is a separate task after user approval**.
+If the trace is empty, the report explains how to turn recording on and exits. With fewer than 5 sessions, the interpretation carries a small-sample warning. Each proposal names the target file, the current description, a draft revision and the evidence turns. Applying a proposal is a separate task that you approve.
+
+## `.tracer/` layout
+
+```text
+<repo>/.tracer/
+├── .gitignore                         # "*" — the whole folder stays out of git status
+├── VERSION                            # schema version (1)
+├── events/<runtime>/<YYYY-MM>/<session>.jsonl   # canonical events — no raw text
+├── events/git-hook/<YYYY-MM>.jsonl    # commit events (git hooks)
+├── raw/<YYYY-MM>/<session>.jsonl      # prompt text, why, args (redacted) — referenced by raw_ref/why_ref
+├── digests/<YYYY-MM>/<session>.jsonl  # turn_summary / session_summary — no raw text
+├── cursors/<runtime>/<session>.json   # incremental transcript offsets
+├── recommendations.jsonl              # recommendation created/status events — append-only, no raw text
+├── commits/<sha>.md                   # per-commit analysis (git hooks) — no raw text
+└── index/                             # derived, safe to delete (precommit.txt, llm-budget.json)
+
+~/.tracer/index/repos.d/<sha1(root)>   # one marker per repo (its path only) for --all
+```
+
+`<runtime>` is `claude-code`, `codex` or `antigravity`. The repo's own `.gitignore` is not touched. The report and migrate commands walk up from the cwd to the nearest `.tracer/` (stopping at the git toplevel), so running them from a subdirectory or a monorepo package finds the right store.
+
+## Runtime support
+
+| Runtime | How | Turn key | Skill detection | Notes |
+|---|---|---|---|---|
+| Claude Code | hooks + transcript digest | `promptId` | explicit (Skill tool) | Full support. |
+| Codex | the same hooks + rollout digest (`adapters/codex/rollout.js`), plus backfill | `turn_id` | heuristic: a shell read of `…/skills/<name>/SKILL.md`, named `<plugin>:<skill>` | No Skill/Agent tools, so `trace-skill`/`trace-agent`/`trace-result` never fire. A `$skill` mention injected without a tool call is not seen. Approval denials are not modeled. Hooks have not yet been run in a live Codex session (checked against the 0.164 binary's hook schema). |
+| Antigravity CLI | backfill only (`adapters/antigravity/transcript.js`) | `step:<USER_INPUT index>` | heuristic (same as Codex) | The source has no tokens, model or cancel marker. The repo root is the most frequent `run_command` Cwd. |
+
+Heuristic skill use means a skill was opened, not necessarily used. Reads of a skill's own source inside the session repo, as when editing a plugin, are not counted.
+
+## Privacy
+
+- `OBSERVE_TRACE` stores prompt **text**. It lives only in the git-ignored `<repo>/.tracer/raw/`, after write-time redaction of AWS `AKIA…`, `ghp_…`/`github_pat_…`, `sk-…`, `xox[bp]-…`, JWTs, PRIVATE KEY blocks, e-mail addresses, IPv4 addresses and home paths (→ `~`). Regex redaction cannot catch names or internal jargon, which is why raw text is kept apart. Nothing expires automatically; delete `raw/` to drop it.
+- Events, digests, recommendations and commit `.md` files hold names, counts, relative paths, SHAs and join keys, but no prompt, command or output text. Tool-result bodies are never stored, only `response_bytes`.
+- The global layer `~/.tracer/` holds only repo path markers. A session whose root is the home directory is not recorded at all.
+- Nothing is uploaded, with one exception: with `OBSERVE_LLM=1`, the git worker sends the deterministic commit `.md` (no raw text) to `claude -p` (no tools, capped daily). `observe-export.js` refuses any input that carries raw text.
+- OTel (Claude Code's built-in telemetry) is not supported: observe neither reads nor exports it.
 
 ## Dependencies
 
-- `requires`: `base` — operates on top of the base plugin.
-- Plugins good to use together: proposals produced by `/observe-report` route dead assets to `workflow:deprecation-guide` (deprecation procedure), new-skill/hook candidates to `harness:create-flow` (scaffolding), and a-priori activation-rate validation of description revision drafts to `skill-creator` eval. It is also a data-driven complement to `workflow:retro`, which handles session-anecdote-based lessons.
+- `requires`: none. observe is self-contained and bundles its own copy of `hook-stdin`. Node 22 built-ins only.
+- Works well with: `workflow:deprecation-guide` (for dead assets), `harness:create-flow` (for new skill or hook candidates), `skill-creator` eval (for checking a description draft's activation rate before you adopt it), `workflow:retro` (anecdote-based lessons, complementary) and `wiki-ops:wiki-harness-feed` (wiki snapshots via `observe-export.js`).
 
 ## Notes
 
-- **opt-in premise**: All hooks operate only when `OBSERVE_TRACE=1`. This command/hook does not auto-activate `OBSERVE_TRACE` — the decision to record prompt originals is up to the user.
-- **Privacy·storage**: Traces accumulate in the project root's `.claude/skill-trace.jsonl`, and on first record they idempotently add `.claude/skill-trace.jsonl*` to `.gitignore` to block commits. On exceeding 10MB it rotates one generation to `.1`. The invocation-result body is not recorded due to size·sensitive-information concerns, leaving only `response_bytes`.
-- **Orthogonal boundary**: Cost/token/tool_decision instrumentation is delegated to built-in OTel (`CLAUDE_CODE_ENABLE_TELEMETRY`), and a-priori activation-rate benchmarking (trigger/non-trigger query eval) is delegated to `skill-creator` eval — this plugin does not reimplement these.
-- **Instrumentation boundary (empirically confirmed, 2026-07)**: A headless (`claude -p "/command"`) user-slash command does not go through the Skill tool, so no `skill` record is left — in this case the `is_command` flag of the `prompt` record is the invocation basis (in an interactive session a user-slash has the model invoke the Skill tool, so it is tracked normally). The built-in OTel's `skill_activated` event (`invocation_trigger: user-slash|claude-proactive`) catches both paths, so matching it by `prompt_id` against the local OTel stack (`infra/otel`) lets you cross-validate whether hooks activated.
-- **Proposal-only**: `/observe-report` does not modify any file — SKILL.md·command·hook, etc. It does not directly fix even hook-logic bugs, only leaving a flag (no-unauthorized-modification principle).
+- **Out of scope**: cost dashboards and tool_decision instrumentation (the digest keeps only token totals), and benchmarking description activation rates in advance (use `skill-creator` eval).
+- **Headless slash commands** (`claude -p "/command"`) do not go through the Skill tool, so for those the `prompt` record's `is_command` flag is the only evidence of the call.
+- **Proposals only**: `/observe-report` never modifies a SKILL.md, command or hook, not even to fix a hook bug. Its only writes are appends to its own `.tracer/recommendations.jsonl`: `created` events and the status events for your answers.
+- **Known gaps**: Codex hooks are unverified in a live session. Attributing a commit to a subagent works only through `CLAUDE_CODE_SESSION_ID`. Commits that never fire post-commit (e.g. `git merge`) appear only through the transcript digest. `corrected` stays a candidate until the LLM phase judges it.

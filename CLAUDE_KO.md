@@ -11,9 +11,10 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
 
 ## 명령
 
-- 훅·루프 엔진 회귀 테스트: `bats tests/hooks` (bats-core 로컬 설치 전제; CI는 ubuntu+macOS 매트릭스)
+- 레포 내 테스트 스위트·CI 없음(`tests/`와 GitHub Actions 워크플로는 2026-10 제거) — 훅 변경은 실데이터 샘플이나
+  픽스처 payload 를 스크립트에 직접 파이프해 exit 코드·stdout 바이트·기록된 레코드를 수동 확인한다
 - 훅 JSON 검증: `jq . plugins/*/hooks/hooks.json`
-- 셸 훅 린트(CI와 동일): `shellcheck --severity=error plugins/**/{hooks,bin}/**/*.sh`
+- 셸 훅 린트(로컬): `shellcheck --severity=error plugins/**/{hooks,bin}/**/*.sh`
 - package.json 없음 — npm 스크립트를 찾지 말 것
 
 ## 절대 규칙 (실측 사고 이력 기반)
@@ -24,7 +25,7 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
 - hooks.json **matcher 그룹은 `matcher`·`hooks` 2키만** 가진다(최상위 예외는 `$schema` 하나).
   `timeout`/`args`/`async`/`if`는 핸들러 엔트리 소속이며, `description` 같은 스키마 외 키는 무시되고
   세션 시작마다 `hooks.json: unknown key "..." ignored` 경고를 낸다(실측 2026-09, CC 2.1.278) —
-  훅 설명은 스크립트 헤더 주석에 적는다. `tests/hooks/hooks-registration.bats` + HK-004로 가드.
+  훅 설명은 스크립트 헤더 주석에 적는다. `/verify-flow` 규칙 HK-004로 가드.
 - **Stop 훅은 연속 8회 블록 후 오버라이드**된다 — Claude Code 가 훅과 무관하게 턴을 종료한다(2026-09-20 실측, 3/3 시행:
   훅이 9회 호출되고 9번째 `exit 2` 가 무시됨). 따라서 턴당 실효 상한은 `LOOP_MAX_ITER`(기본 12)가 아니라 **8 반복**이다.
   generic 엔진은 `stop_hook_active` 로 턴 단위 연속 블록(loop-state.json `turn_blocks`)을 세고, 상한 도달 시
@@ -34,8 +35,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
   훅·설정 변경은 다음 세션부터 유효하다.
 - 플러그인 버전은 **두 곳 수동 동기화 필수**: `plugins/<name>/.claude-plugin/plugin.json` ↔
   `.claude-plugin/marketplace.json`의 해당 플러그인 엔트리.
-- 훅을 수정하면 `tests/hooks/*.bats` 회귀 테스트를 같이 갱신한다. PreToolUse 차단은 exit 2
-  (exit 1은 비차단 경고로 통과된다).
+- 훅을 수정하면 같은 변경에서 실데이터 샘플이나 픽스처 payload 로 수동 검증한다(직접 파이프 — 명령 절 참고).
+  갱신할 회귀 스위트는 없다. PreToolUse 차단은 exit 2 (exit 1은 비차단 경고로 통과된다).
 
 ## 컨벤션
 
@@ -60,7 +61,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
 - `archive/` = 은퇴 플러그인(mvp·feature-loop·startup·scaleup·enterprise·eng-gov·legal·finance·hr·analyze·etc —
   실사용 0으로 2026-10 archive)과 그 bats(`archive/tests/hooks/`). 설치 불가(`.claude-plugin/` 없음)·marketplace.json
   미등재·CI 미실행. 복원 = 원위치 이동 + manifest·marketplace 엔트리 재추가.
-- `infra/otel/` = 로컬 관측 스택(Claude Code 내장 OTel 수신, Grafana localhost:3000) —
-  observe 플러그인의 `.claude/skill-trace.jsonl`과 직교 보완재.
+- `archive/infra/otel/` = 은퇴한 로컬 OTel/Grafana 스택(2026-10 archive). observe 는 OTel 과 연동하지 않는다.
+- `.tracer/` = observe 플러그인의 런타임 기록 폴더(자체 `.gitignore` `*` 로 git 에서 무시, `~/.tracer/` 는 `--all` 용 전역 층) —
+  프로젝트 메모리나 이 파일과 무관하다. 구 `.claude/skill-trace.jsonl` 은 그 v0 경로다.
 - `docs/` = GitHub Pages 랜딩 사이트(`index.html`, self-contained, EN/KO 토글) — 특정 플러그인과 무관하며
   공개 홈페이지(`dokkabei97.github.io/dokkabei-harness`)다. 플러그인의 `references/` 문서와 혼동 금지.

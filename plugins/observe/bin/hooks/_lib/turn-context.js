@@ -15,21 +15,59 @@
 //     (v2.1.201 실측) 과거 "마지막 tool_use" 휴리스틱의 반복 호출 오귀속이 없다.
 //   · why = anchor(미발견 시 EOF)에서 역방향으로 현재 턴 경계(마지막 실사용자 발화) 안의
 //     마지막 assistant 텍스트. 없으면 null 폴백 — 어떤 실패도 throw 하지 않는다.
+//   · transcript 는 tail 바이트 범위만 파싱한다(readTurnContext). 전체 파싱(실측 최대 ~4.8MB)은
+//     Pre 훅을 늦춰 flush·deferred append 를 함께 지연시킨다. 범위를 256KB → 1MB → 전체로 넓혀
+//     결국 전체까지 읽으므로 추출 결과는 전체 읽기와 동일하다 — 종료 조건 두 가지: ① 턴 경계(userText) 발견
+//     (실측: anchor→경계 거리 p50 ≈108KB, 1MB 초과도 존재 — 고정 tail 은 경계를 놓친다),
+//     ② anchor 를 범위 안에서 찾았거나, 범위 앞쪽 바이트에 tool_use_id 문자열이 없음(=정말
+//     미flush). ②가 없으면 anchor 가 tail 밖에 있는 사후 재실행에서 EOF 기준 엉뚱한 턴을 뽑는다.
+//   · deferred 자식은 훅 시점 transcript 크기(offset) 이후만 폴링한다 — anchor 는 훅 종료 뒤
+//     flush 되므로 반드시 offset 뒤에 있고, 그 뒤로 tail 범위 넘게 기록이 쌓여도 놓치지 않는다.
+//     offset 은 원시 크기가 아니라 "마지막 완결 라인 끝"이다 — 훅 시점에 anchor 라인이 쓰이는
+//     중(라인 중간 EOF)이면 잘린 첫 라인 폐기 규칙에 anchor 가 통째로 버려져 예산(15s)을 다 쓴다.
 const fs = require('fs');
-const { append } = require('./trace');
+const { emit } = require('./writer');
 
 const WHY_MAX = 1000;          // why 길이 상한 — 레코드 비대 방지 (trace-skill args 상한과 동일 규약)
 const DEFER_POLL_MS = 100;     // deferred 자식의 anchor flush 폴링 주기
 const DEFER_BUDGET_MS = 15000; // deferred 자식 폴링 총 예산 — 초과 시 무anchor 폴백 기록
+const TAIL_BYTES = 256 * 1024; // transcript 최초 tail 읽기 범위 — 미확정 시 4배(1MB) 후 전체로 확장
+// 확장 단계: 단계마다 재파싱하므로 단계를 늘리면 최악(=전체 읽기) 비용이 누적된다 — 2단 후 전체.
+const TAIL_STEPS = [TAIL_BYTES, TAIL_BYTES * 4, 0];
 
-// transcript JSONL → 레코드 배열. 깨진 라인은 건너뛴다.
-function readTranscript(p) {
-  if (!p) return [];
+// transcript JSONL 의 끝 maxBytes 범위(또는 fromOffset 이후) → { records, whole, from, end }.
+//   깨진 라인은 건너뛴다. maxBytes·fromOffset 생략 시 전체. 범위 시작이 라인 중간이면 그
+//   (잘린) 첫 라인은 버린다 — 1바이트 앞부터 읽어 직전 바이트가 개행이면 온전한 첫 라인을 보존한다.
+//   whole = 파일 전체를 읽었는가, from = 실제 파싱 시작 바이트,
+//   end = 읽은 범위의 마지막 완결 라인 끝(마지막 '\n' 다음 바이트, 개행이 없으면 0 — 0 은 전체 읽기).
+//   실패는 빈 결과(whole=true).
+function readTranscript(p, maxBytes, fromOffset) {
+  if (!p) return { records: [], whole: true, from: 0, end: 0 };
+  let fd;
   try {
-    return fs.readFileSync(p, 'utf8').split('\n').filter(Boolean).map((l) => {
+    fd = fs.openSync(p, 'r');
+    const size = fs.fstatSync(fd).size;
+    const start = fromOffset > 0 ? Math.min(fromOffset, size) - 1
+      : maxBytes && size > maxBytes ? size - maxBytes - 1 : 0;
+    let buf = Buffer.alloc(size - start);
+    fs.readSync(fd, buf, 0, buf.length, start);
+    const last = buf.lastIndexOf(0x0a);
+    const end = last < 0 ? 0 : start + last + 1;
+    let from = 0;
+    if (start > 0) {
+      const nl = buf.indexOf(0x0a); // UTF-8 다바이트 시퀀스엔 0x0a 가 없어 바이트 단위 절단이 안전
+      buf = nl < 0 ? Buffer.alloc(0) : buf.subarray(nl + 1);
+      from = nl < 0 ? size : start + nl + 1;
+    }
+    const records = buf.toString('utf8').split('\n').filter(Boolean).map((l) => {
       try { return JSON.parse(l); } catch (_) { return null; }
     }).filter(Boolean);
-  } catch (_) { return []; }
+    return { records, whole: start === 0, from, end };
+  } catch (_) {
+    return { records: [], whole: true, from: 0, end: 0 };
+  } finally {
+    if (fd !== undefined) try { fs.closeSync(fd); } catch (_) { /* 무시 */ }
+  }
 }
 
 // 메시지 content(문자열 | 블록 배열)에서 text 블록만 모아 반환. tool_result 배열은 '' 가 된다.
@@ -50,6 +88,23 @@ function parseCommandWrapper(text) {
   if (!m) return null;
   const a = /<command-args>\s*([^<]*?)\s*<\/command-args>/.exec(text);
   return { name: m[1].replace(/^\//, ''), args: a ? a[1] : '' };
+}
+
+// transcript 의 [0, end) 바이트에 needle 문자열이 있는가 — 파싱 없이 원시 바이트 검색.
+//   tail 밖에 anchor 가 있을 수 있는지(=이미 flush 됨) 판별용. 실패는 true(보수적 — 계속 확장).
+function bytesBefore(p, needle, end) {
+  if (!needle || end <= 0) return false;
+  let fd;
+  try {
+    fd = fs.openSync(p, 'r');
+    const buf = Buffer.alloc(end);
+    fs.readSync(fd, buf, 0, end, 0);
+    return buf.indexOf(needle) >= 0;
+  } catch (_) {
+    return true;
+  } finally {
+    if (fd !== undefined) try { fs.closeSync(fd); } catch (_) { /* 무시 */ }
+  }
 }
 
 // tool_use_id 로 현재 호출의 anchor 레코드 인덱스를 찾는다 (역방향 — 최신 우선). 없으면 -1.
@@ -105,17 +160,36 @@ function extractTurnContext(records, fromIndex) {
   return { why, why_source: why ? 'preamble' : null, userText: '', command: null };
 }
 
+// tail 범위 읽기 + anchor 탐색 + 턴 컨텍스트 추출 (trace-skill/trace-agent/deferred 자식 공용).
+// 범위를 TAIL_STEPS 대로 넓히다가 "턴 경계 발견 + anchor 확정(범위 안 발견 또는 범위 앞에 id
+// 바이트 없음)" 또는 파일 전체를 읽으면 멈춘다 — 결과는 전체 읽기와 동일.
+// 반환: { anchorFound, ctx, size(마지막 완결 라인 끝 — deferred 자식의 폴링 시작 offset) }
+function readTurnContext(transcriptPath, toolUseId) {
+  let idBefore = false; // 범위 앞에 id 바이트가 있음을 한 번 확인하면 이후 확장에선 재검색 생략
+  for (const n of TAIL_STEPS) {
+    const { records, whole, from, end } = readTranscript(transcriptPath, n);
+    const anchor = findToolUseIndex(records, toolUseId);
+    const ctx = extractTurnContext(records, anchor >= 0 ? anchor : undefined);
+    if (whole || (ctx.userText && (anchor >= 0
+      || (!idBefore && !(idBefore = bytesBefore(transcriptPath, toolUseId, from)))))) {
+      return { anchorFound: anchor >= 0, ctx, size: end };
+    }
+  }
+}
+
 // 레코드 append + why 지연 해석 (trace-skill/trace-agent 공용 기록 경로).
 //   anchorFound=true → 이미 flush 됨(사후 파이프 재실행·anchor 선기록 포맷) — 동기 append.
 //   anchor 미발견 + tool_use_id·transcript 존재 → v2.1.201 훅 시점 미flush 정상 경로 —
 //     detached 자식을 띄워 flush 후 why/why_source 만 갱신해 append (정확히 1회 기록,
 //     훅 프로세스는 즉시 종료하므로 툴 실행을 차단하지 않는다).
 //   그 외(tool_use_id 없음·transcript 없음 — 기존 픽스처 경로) → 동기 append (하위 호환).
+//   root = 레포 루트(_lib/paths.repoRoot) — 기록은 writer.emit 이 .tracer 하위에 한다.
+//   offset = 훅 시점 transcript 크기(readTurnContext 의 size) — 자식은 그 이후만 폴링한다.
 //   spawn 실패 시 동기 폴백으로 레코드 유실을 막는다. 모든 실패는 삼킨다 (best-effort).
-function appendResolvingWhy(file, record, transcriptPath, toolUseId, anchorFound) {
+function appendResolvingWhy(root, record, transcriptPath, toolUseId, anchorFound, offset) {
   try {
     if (!anchorFound && toolUseId && transcriptPath && fs.existsSync(transcriptPath)) {
-      const payload = JSON.stringify({ file, record, transcriptPath, toolUseId });
+      const payload = JSON.stringify({ root, record, transcriptPath, toolUseId, offset: offset || 0 });
       const child = require('child_process').spawn(
         process.execPath, [__filename, '--deferred-why', payload],
         { detached: true, stdio: 'ignore' },
@@ -124,11 +198,12 @@ function appendResolvingWhy(file, record, transcriptPath, toolUseId, anchorFound
       return;
     }
   } catch (_) { /* spawn 실패 → 동기 폴백 */ }
-  append(file, record);
+  emit(root, record);
 }
 
 module.exports = {
   readTranscript,
+  readTurnContext,
   extractTurnContext,
   parseCommandWrapper,
   findToolUseIndex,
@@ -143,19 +218,19 @@ module.exports = {
 if (require.main === module && process.argv[2] === '--deferred-why') {
   (async () => {
     try {
-      const { file, record, transcriptPath, toolUseId } = JSON.parse(process.argv[3]);
+      const { root, record, transcriptPath, toolUseId, offset } = JSON.parse(process.argv[3]);
       const deadline = Date.now() + DEFER_BUDGET_MS;
-      let records = readTranscript(transcriptPath);
-      let anchor = findToolUseIndex(records, toolUseId);
-      while (anchor < 0 && Date.now() < deadline) {
+      // flush 폴링은 훅 시점 offset 이후만 본다 — anchor 는 훅 종료 뒤 flush 되므로 offset 뒤에
+      // 있다. 고정 tail 로 보면 anchor 뒤에 tail 넘게 기록이 쌓일 때(큰 tool_result 등) 놓친다.
+      // offset 이 없으면(0) 전체 파일 — 정확성 우선.
+      const flushed = () => findToolUseIndex(readTranscript(transcriptPath, 0, offset).records, toolUseId) >= 0;
+      while (!flushed() && Date.now() < deadline) {
         await new Promise((r) => setTimeout(r, DEFER_POLL_MS));
-        records = readTranscript(transcriptPath);
-        anchor = findToolUseIndex(records, toolUseId);
       }
-      const ctx = extractTurnContext(records, anchor >= 0 ? anchor : undefined);
+      const { ctx } = readTurnContext(transcriptPath, toolUseId);
       record.why = ctx.why;
       record.why_source = ctx.why_source;
-      append(file, record);
+      emit(root, record);
     } catch (_) { /* best-effort */ }
     process.exit(0);
   })();

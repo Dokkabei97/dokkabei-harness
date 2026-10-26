@@ -1,13 +1,10 @@
 {
   "name": "observe",
-  "description": "Correlation-logs harness usage via hooks to diagnose improvements",
-  "version": "1.4.1",
+  "description": "Measures real harness usage (Claude Code + Codex hooks, Antigravity backfill, opt-in git hooks) into a per-repo .tracer/ store and turns it into improvement proposals with an explicit feedback loop",
+  "version": "2.0.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
-  "license": "Apache-2.0",
-  "dependencies": [
-    "base"
-  ]
+  "license": "Apache-2.0"
 }

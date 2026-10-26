@@ -11,9 +11,11 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 
 ## Commands
 
-- Hook and loop-engine regression tests: `bats tests/hooks` (assumes bats-core is installed locally; CI uses an ubuntu+macOS matrix)
+- No in-repo test suite and no CI (`tests/` and the GitHub Actions workflow were removed 2026-10) — verify a hook
+  change by hand: pipe a real-data sample or fixture payload into the script and check exit code, stdout bytes and
+  the written record
 - Hook JSON validation: `jq . plugins/*/hooks/hooks.json`
-- Shell hook lint (same as CI): `shellcheck --severity=error plugins/**/{hooks,bin}/**/*.sh`
+- Shell hook lint (local): `shellcheck --severity=error plugins/**/{hooks,bin}/**/*.sh`
 - No package.json — do not look for npm scripts
 
 ## Absolute Rules (based on measured incident history)
@@ -24,7 +26,7 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - A hooks.json **matcher group carries only `matcher` and `hooks`** (`$schema` is the sole tolerated top-level extra).
   `timeout`/`args`/`async`/`if` belong to the handler entry, and an off-schema key such as `description` is ignored
   with a `hooks.json: unknown key "..." ignored` warning at every session start (measured 2026-09, CC 2.1.278) —
-  document a hook in its script header comment. Guarded by `tests/hooks/hooks-registration.bats` + HK-004.
+  document a hook in its script header comment. Guarded by `/verify-flow` rule HK-004.
 - A **Stop hook is overridden after 8 consecutive blocks** — Claude Code ends the turn regardless (measured 2026-09-20,
   3/3 trials: the hook is invoked 9 times and the 9th `exit 2` is ignored). So the in-session ceiling per turn is
   **8 iterations**, not `LOOP_MAX_ITER` (default 12). The generic engine counts consecutive blocks per turn via
@@ -35,7 +37,8 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
   hook/config changes take effect from the next session onward.
 - Plugin versions **must be manually synced in two places**: `plugins/<name>/.claude-plugin/plugin.json` ↔
   the corresponding plugin entry in `.claude-plugin/marketplace.json`.
-- When you modify a hook, update the `tests/hooks/*.bats` regression tests along with it. PreToolUse blocking is exit 2
+- When you modify a hook, verify it in the same change against a real-data sample or fixture payload (manual pipe —
+  see Commands); there is no regression suite to update. PreToolUse blocking is exit 2
   (exit 1 passes through as a non-blocking warning).
 
 ## Conventions
@@ -61,7 +64,8 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - `archive/` = retired plugins (mvp, feature-loop, startup, scaleup, enterprise, eng-gov, legal, finance, hr, analyze, etc —
   archived 2026-10 after zero use) with their bats tests in `archive/tests/hooks/`. Not installable (no `.claude-plugin/`),
   not in marketplace.json, not run by CI. Restore = move back + re-add the manifest and marketplace entry.
-- `infra/otel/` = the local observability stack (Claude Code built-in OTel receiver, Grafana localhost:3000) —
-  an orthogonal complement to the observe plugin's `.claude/skill-trace.jsonl`.
+- `archive/infra/otel/` = the retired local OTel/Grafana stack (archived 2026-10). observe does not integrate with OTel.
+- `.tracer/` = the observe plugin's runtime trace store (self-gitignored via its own `.gitignore` `*`; `~/.tracer/` is the
+  global layer for `--all`) — unrelated to project memory or this file. The legacy `.claude/skill-trace.jsonl` is its v0 path.
 - `docs/` = the GitHub Pages landing site (`index.html`, self-contained, EN/KO toggle) — unrelated to any plugin;
   it is the public homepage (`dokkabei97.github.io/dokkabei-harness`). Not to be confused with a plugin's `references/` docs.

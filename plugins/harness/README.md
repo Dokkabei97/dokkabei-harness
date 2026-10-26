@@ -59,7 +59,7 @@ the completion promise.
 
 `plugin.json` has no hard dependencies. It has synergy when used together with the following plugins.
 
-- `observe`(`/observe-report`) — Observes and improves which prompts the harnesses built here actually activated on·completed.
+- `observe`(`/observe-report`) — Observes and improves which prompts the harnesses built here actually activated on and how those turns ended (outcome).
 - `workflow`(`/retro`) — Tags recurring mistakes into `tasks/lessons.md` as `#가드-훅-후보`. It is the input source for `/create-flow --from-lessons`.
 
 ## Notes
