@@ -18,23 +18,22 @@ measured incident history. The most important ones bite silently if ignored:
   directly (cache-drift incident history). The propagation path is: commit → `/plugin update`.
 - **Plugin versions are synced in two places**: `plugins/<name>/.claude-plugin/plugin.json` ↔ the
   matching entry in `.claude-plugin/marketplace.json`. They must match to the string.
-- **When you modify a hook, update its `tests/hooks/*.bats` regression tests in the same change.**
+- **When you modify a hook, verify it in the same change against a real-data sample or fixture payload**
+  (pipe the JSON into the script; check exit code, stdout bytes and the written record).
   PreToolUse blocking is exit 2 (exit 1 passes through as a non-blocking warning).
 
 ## Development setup
 
-There is **no `package.json`** — this is not an npm project. The checks that CI runs (and that you
-should run locally before opening a PR):
+There is **no `package.json`** — this is not an npm project. There is no CI and no in-repo test suite
+(`tests/` was removed 2026-10). Run these locally before opening a PR:
 
 ```sh
-bats tests/hooks                                            # hook + loop-engine regression suite
 jq . plugins/*/hooks/hooks.json                             # hooks.json validity
 shellcheck --severity=error plugins/**/{hooks,bin}/**/*.sh  # shell hook/runner lint
 ```
 
-`bats` runs on an ubuntu + macOS matrix in CI (`.github/workflows/loop-engine-ci.yml`) — macOS is
-included to exercise the `md5sum`→`md5`/`shasum` fallback and bash 3.2 portability. If you touch a
-hook or shell runner, add/adjust the corresponding `.bats` case so the matrix stays green.
+If you touch a hook or shell runner, exercise it by hand with a fixture payload (and on macOS, mind the
+`md5sum`→`md5`/`shasum` fallback and bash 3.2 portability).
 
 ## Building components
 
@@ -63,15 +62,15 @@ near-duplicate — overlapping components create trigger conflicts and maintenan
 ## Pull request checklist
 
 1. Branch from `main` (never commit directly to `main`).
-2. `bats tests/hooks` is green locally, plus `jq` and `shellcheck` clean.
+2. `jq` and `shellcheck` clean, and any changed hook verified by hand with a fixture payload.
 3. If you added/changed a component, `/verify-flow` reports no Critical/High findings.
 4. If you added a plugin, both version locations are synced and the marketplace entry is complete.
 5. Fill in the PR template — describe what changed, why, and how you verified it.
 
 ## Reporting bugs & requesting features
 
-Use the [issue templates](.github/ISSUE_TEMPLATE/). For a bug, a failing `bats` case reproduces it
-deterministically and is the fastest path to a fix. For a feature, name the **distinct domain** a new
+Use the [issue templates](.github/ISSUE_TEMPLATE/). For a bug, a minimal hook payload (stdin JSON) that
+reproduces it deterministically is the fastest path to a fix. For a feature, name the **distinct domain** a new
 plugin would own — the bar for a new plugin is "no existing plugin can absorb this."
 
 ## License

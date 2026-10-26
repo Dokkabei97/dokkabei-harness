@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for filing a bug. Please fill in the fields below so it can be reproduced deterministically.
-        For hook/loop-engine issues, the output of `bats tests/hooks` is especially helpful.
+        For hook/loop-engine issues, the hook's stdin payload and its stderr/exit code are especially helpful.
   - type: dropdown
     id: plugin
     attributes:
@@ -43,7 +43,7 @@ body:
     id: repro
     attributes:
       label: Steps to reproduce
-      description: The exact prompt, command, or sequence. A failing `bats` case is ideal.
+      description: The exact prompt, command, or sequence. A minimal hook payload that reproduces it is ideal.
       value: |
         1.
         2.
@@ -66,7 +66,7 @@ body:
         - Claude Code version:
         - OS (e.g. macOS 15 / Ubuntu 24.04):
         - Install path (marketplace `/plugin install …` vs local checkout):
-        - bats-core version (if hook-related):
+        - Node / bash version (if hook-related):
     validations:
       required: false
   - type: checkboxes
