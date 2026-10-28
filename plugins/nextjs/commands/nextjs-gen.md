@@ -3,10 +3,7 @@ name: nextjs-gen
 description: |
   Next.js App Router 컴포넌트·페이지·레이아웃 스캐폴딩. 이름과 타입을 입력하면 Page, Layout, Loading, Error, Component, Form, Hook, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
   Scaffolds Next.js App Router components, pages, and layouts — given a name and type, auto-generates Page, Layout, Loading, Error, Component, Form, Hook, and Test files following project conventions. Use when: creating a new Next.js page, route, component, form, or custom hook, scaffolding UI for a new feature in an existing Next.js project.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /nextjs-gen - Next.js App Router 코드 생성
@@ -37,6 +34,8 @@ Options:
 
 **Steps:**
 1. **Scan**: `next.config.*`, `package.json`, `tsconfig.json` 스캔하여 프레임워크 버전과 설정 파악
+   - `next` 버전을 단정하지 말고 `package.json`·`node_modules/next/package.json` 으로 확인. 앱 디렉터리 `AGENTS.md` 의 `nextjs-agent-rules` 블록과 동봉 문서 `node_modules/next/dist/docs/`(16.2+)를 우선 참조
+   - `cacheComponents` 사용 여부, `proxy.ts`/`middleware.ts` 중 무엇을 쓰는지 확인 — `nextjs-guide` 스킬 0절 절차
 2. **Analyze**: 기존 Page, Component, Layout 파일을 읽어 패턴 추출
    - 디렉토리 구조 (`app/` colocation vs `components/` 분리)
    - 컴포넌트 파일 이름 규칙 (kebab-case vs PascalCase)
@@ -89,6 +88,8 @@ Options:
 - TypeScript strict mode — `any` 사용 금지
 - Zod 스키마가 있으면 `z.infer`로 타입 도출
 - 비즈니스 로직이 필요한 부분은 TODO(human) 마커 사용
+- Server Action 은 공개 POST 엔드포인트다 — 생성하는 모든 액션 첫 부분에 인증·인가 재검증 자리(TODO(human))를 두고, 클라이언트가 보낸 id 외의 값(가격·소유자 등)은 서버에서 재조회한다(`nextjs-guide` RSC-ACT-01/02). 반환값은 최소 형태로(RSC-ACT-03), `redirect` 는 try 밖·무효화 뒤에(RSC-ACT-05)
+- Server→Client props 는 필요한 필드만 매핑해 전달(RSC-BND-02/04)
 - 공식 `frontend-design` 스킬(anthropics/skills — 'AI 티 나는 밋밋한 UI' 방지)이 설치되어 있으면 컴포넌트·페이지의 시각 스타일링(타이포·색·간격·시각 위계)에 스킬 가이드를 조합 적용한다. 미설치 시 위 규칙만으로 기존 동작을 유지한다(graceful degrade)
 
 ### Phase 3: Verification
@@ -96,7 +97,7 @@ Options:
 
 **Steps:**
 1. **TypeCheck**: `npx tsc --noEmit` 실행
-2. **Lint**: `npx next lint` 또는 `npx eslint .` 실행
+2. **Lint**: 프로젝트의 lint 스크립트 실행(`next lint` 는 Next 16 에서 제거됨 — 16+ 는 `npx eslint .` 또는 Biome)
 3. **Test**: 테스트 파일이 있으면 실행 `npx vitest run [file]` 또는 `npx jest [file]`
 4. **Report**: 생성 결과 요약 출력
 
@@ -294,6 +295,10 @@ export async function createProduct(
   const parsed = createProductSchema.safeParse(
     Object.fromEntries(formData),
   )
+
+  // TODO(human): 세션 재검증 + 권한 확인 — 페이지 인증은 액션을 보호하지 않는다
+  // const session = await verifySession()
+  // if (!session) return { error: '인증이 필요합니다' }
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message }

@@ -1,7 +1,7 @@
 {
   "name": "nextjs",
-  "description": "Next.js App Router frontend design and code generation",
-  "version": "1.0.1",
+  "description": "Next.js App Router specialist layer: version-aware caching, RSC boundary, data-waterfall and self-hosting pitfall triage, plus page design and code generation",
+  "version": "2.0.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

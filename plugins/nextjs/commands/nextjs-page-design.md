@@ -3,10 +3,7 @@ name: nextjs-page-design
 description: |
   Next.js 페이지/기능 UI 설계 및 컴포넌트 분해. 요구사항을 분석하여 컴포넌트 트리, Server/Client 경계, 데이터 흐름, 라우트 구조를 설계하고 스캐폴딩한다.
   Designs Next.js page/feature UI and decomposes it into components — analyzes requirements to design the component tree, Server/Client Component boundaries, data flow, and route structure, then scaffolds them. Use when: designing the UI structure of a new page or feature, breaking a complex feature into components, restructuring an existing Next.js page.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /nextjs-page-design - Next.js 페이지 UI 설계
@@ -41,6 +38,7 @@ Options:
    - 기존 컴포넌트 라이브러리 확인 (`components/ui/`, shadcn/ui)
    - 기존 데이터 페칭 패턴 확인
    - 기존 레이아웃 구조 확인
+   - `next` 버전·`cacheComponents` 여부·`proxy.ts`/`middleware.ts` 를 단정하지 말고 확인(`nextjs-guide` 0절, 동봉 문서 `node_modules/next/dist/docs/` 우선)
 3. **Identify**: 재사용 가능한 기존 컴포넌트 목록화
 
 ### Phase 2: Component Decomposition
@@ -54,7 +52,8 @@ Options:
 2. **Data Flow**: 데이터 흐름 설계
    - 어떤 컴포넌트가 데이터를 fetch하는가
    - Props vs Context vs URL State vs Global State
-   - Server Action mutation 흐름
+   - Server Action mutation 흐름(액션별 인증·인가 재검증 지점 표기 — `nextjs-guide` RSC-ACT-01)
+   - 서버→클라이언트 경계로 넘기는 데이터의 필드 최소화, 느린 읽기는 개별 Suspense 경계로(RSC-BND-02, NX-CACHE-10)
 3. **Route Structure**: 라우트 파일 구조 설계
    - page.tsx, layout.tsx, loading.tsx, error.tsx 배치
    - Route groups, parallel routes 필요 여부
