@@ -7,25 +7,9 @@ description: |
   Automatically refreshes Outline wiki documentation after code changes: analyzes the diff, classifies the document type, decides between updating an existing doc or creating a new one, and writes Korean docs to the Outline wiki with automatic sensitive-data masking. Use when: updating the wiki after finishing work, syncing documentation, documenting API changes in Outline.
 metadata:
   version: 1.0.0
-  category: documentation
   domain: wiki-automation
   requires_mcp: outline
-triggers:
-  - "문서 업데이트"
-  - "위키 업데이트"
-  - "outline 업데이트"
-  - "문서 동기화"
-  - "문서화"
-auto_suggest:
-  keywords:
-    - "작업 완료"
-    - "커밋할게"
-    - "PR 생성"
-    - "API 변경"
-    - "다 했어"
-    - "머지"
-  action: "Outline 위키에 변경사항을 반영할까요?"
-  phase: 6
+disable-model-invocation: true
 ---
 
 # Document Latest - Outline 위키 자동 업데이트
@@ -43,8 +27,7 @@ auto_suggest:
 
 | 트리거 유형 | 조건 | 동작 |
 |-------------|------|------|
-| **수동** | "문서 업데이트", "위키 업데이트", "outline 업데이트", "문서 동기화", "문서화" 등 명시적 호출 | Phase 1~6 전체 실행 |
-| **자동 제안** | "작업 완료", "커밋할게", "PR 생성", "API 변경" 등 완료 신호 감지 | "Outline 위키에 변경사항을 반영할까요?" 질문 → 승인 시 Phase 2~6 실행 |
+| **수동** | `/document-latest` 명시 호출 (사용자 직접 실행 전용) | Phase 1~6 전체 실행 |
 | **설정 초기화** | "outline 설정", "문서 설정" | Phase 1만 실행 (`.outline-context.json` 생성) |
 
 ---
@@ -484,18 +467,6 @@ auto_suggest:
           → "⚠ 다음 민감정보가 마스킹되었습니다: 사설 IP 2건"
 [Phase 6] create_document 실행 → 완료
           → "문서가 생성되었습니다: https://wiki.example.com/doc/..."
-```
-
-### 예시 4: 자동 제안 (커밋 시)
-
-```
-사용자: "다 했어, 커밋할게"
-
-에이전트: Outline 위키에 변경사항을 반영할까요?
-
-사용자: "아니, 괜찮아"
-
-에이전트: (문서화 생략, 다른 작업 계속)
 ```
 
 ---

@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "Workflow harness automating the full development lifecycle",
-  "version": "1.5.3",
+  "description": "Development lifecycle workflows: project rules (CLAUDE.md stack facts + .claude/rules specialist selection), spec/planning/shipping guides, MR review, handoff, release notes, retrospectives, and CLAUDE.md sync",
+  "version": "1.6.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

@@ -7,24 +7,9 @@ description: |
   Integrates with the Plane issue tracker via plane-cli: auto-detects the issue from the branch name, then manages it across the whole dev cycle — work status tracking, change history logging, and subtask split suggestions. Use when: linking or tracking issues, updating Plane tickets, recording work history, connecting a branch to its issue.
 metadata:
   version: 2.0.0
-  category: workflow
   domain: issue-tracking
   requires_cli: plane
-triggers:
-  - "이슈 연결"
-  - "이슈 추적"
-  - "plane 연동"
-  - "이슈 트래커"
-  - "작업 기록"
-auto_suggest:
-  keywords:
-    - "작업 완료"
-    - "다 했어"
-    - "커밋할게"
-    - "PR 생성"
-    - "머지"
-  action: "Plane에 작업 이력을 기록할까요?"
-  phase: 5
+disable-model-invocation: true
 ---
 
 # Issue Tracker - Plane CLI 기반 이슈 트래커 연동
@@ -66,8 +51,7 @@ plane config init
 
 | 트리거 유형 | 조건 | 동작 |
 |-------------|------|------|
-| **수동** | "이슈 연결", "이슈 추적", "plane 연동" 등 명시적 호출 | Phase 1~5 전체 실행 |
-| **자동 제안** | "작업 완료", "다 했어", "커밋할게", "PR 생성" 등 완료 신호 감지 | "Plane에 기록할까요?" 질문 → 승인 시 Phase 5만 실행 |
+| **수동** | `/issue-tracker` 명시 호출 (사용자 직접 실행 전용) | Phase 1~5 전체 실행 |
 
 ---
 
@@ -331,21 +315,7 @@ plane config init
           → SHOP-38 연결
 ```
 
-### 예시 3: 작업 완료 시 자동 제안
-
-```
-사용자: "다 했어, 커밋할게"
-
-에이전트: Plane에 작업 이력을 기록할까요? (연결된 이슈: SHOP-42)
-
-사용자: "응"
-
-[Phase 5] git log + git diff → 변경 요약 생성
-          → plane comment create --issue SHOP-42 --body "<HTML 코멘트>"
-          → 상태를 Done으로 변경할까요?
-```
-
-### 예시 4: 대규모 변경 시 서브태스크 제안
+### 예시 3: 대규모 변경 시 서브태스크 제안
 
 ```
 [Phase 4] git diff --name-only → 22개 파일 변경

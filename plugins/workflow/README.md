@@ -11,39 +11,41 @@ It bundles into a single plugin everything from upfront stages such as idea refi
 post-merge issue closing and documentation refresh, and even the retrospective that turns lessons learned in a session into assets.
 Skills that integrate with external tools/wikis such as GitLab (`glab`), Plane, and Outline are an opt-in setup that only works when the corresponding tool is present,
 while planning, spec, shipping, and deprecation guides activate as pure methodology with no external dependency.
-The `/retro` retrospective router and the automatic session snapshot hook are designed to respect ownership boundaries with other sessions and other plugins (base, harness),
-so in a session where a loop harness is running they step back on their own to avoid conflicts.
+`project-rules` is the entry point that detects the project's stack (build-file versions, tools, git host) and proposes a stack-facts block for the project CLAUDE.md
+plus specialist rules under `.claude/rules/` (only the stack-plugin items that match the detected versions).
+User-run integrations and generators carry `disable-model-invocation: true`, so they run only from the slash menu.
 
 ## Components
 
-### Commands
+### Commands (all user-invoked only)
 
 - `/handoff` — Saves the session context (goals, attempts, next steps + git status) to `HANDOFF.md` so the next session can pick it up. Use when nearing the context limit or ending a session.
 - `/release-notes` — Collects MRs merged since the previous release tag via `glab`, classifies the change types by conventional commit / MR titles to produce a Korean changelog and release notes draft, and proposes the next semver version along with the tag/Release creation commands (remote application only after approval).
-- `/retro` — A retrospective compounding router that extracts this session's corrections, mistakes, and discoveries and routes them by type. Convention changes go to `sync-claude-md`, recurring mistakes to `tasks/lessons.md` (including guard-hook candidate tags), and domain knowledge is distributed as skill-edit proposals. Every application passes through a user approval gate.
 - `/review-mr` — Analyzes a GitLab MR diff to detect bugs, security vulnerabilities, and logic errors, and writes review comments on the MR. It excludes or downgrades low findings based on confidence.
 
 ### Skills
 
+- `project-rules` — Detects the project stack (JDK/Kotlin/Spring Boot, go.mod, pyproject, next, ES client and mappings, migration tool, ORM or not, git host) and proposes, as diffs, a CLAUDE.md marker block (`<!-- project-rules:start/end -->`, ≤30 lines) and `.claude/rules/<stack>-specialist.md` (`paths`-scoped, ≤15 specialist items selected by ID for the detected versions), plus the command to enable stack plugins with `--scope local`. `--check` reports version drift, missing tools, vanished IDs, and CLAUDE.md over 200 lines. Every write needs approval.
+- `retro` (`/retro`) — Extracts this session's corrections, mistakes, and discoveries and routes them by type: convention changes to `sync-claude-md`, recurring mistakes to `tasks/lessons.md` (with guard-hook candidate tags), domain knowledge as skill-edit proposals. Criteria live in `references/compound-criteria.md` (the former `retro-compound` skill, merged 2026-10). Every application needs approval.
 - `spec-driven-dev` — A gated workflow that finalizes the spec before writing code (SPECIFY → PLAN → TASKS → IMPLEMENT) to prevent scope drift and rework.
 - `planning-guide` — Converts vague ideas into concrete plans and implementable tasks (idea refinement, dependency mapping, vertical slicing, task sizing).
 - `shipping-guide` — Pre/post production deployment verification (pre-launch checklist, feature flags, staged rollout, rollback, post-launch monitoring).
 - `deprecation-guide` — A systematic process for deprecating systems/modules/APIs and migrating consumers (deprecation decision framework, Strangler/Adapter/Feature Flag, safe removal).
-- `issue-tracker` — Plane issue integration based on `plane-cli`. Auto-detects issues from branch names, tracks status, records change history, and proposes subtask splitting.
-- `document-latest` — Automatically refreshes Outline wiki documents after a code change is complete. Auto-classifies document type, decides new vs. update, writes in Korean, and auto-masks sensitive information.
-- `post-merge` — An orchestrator that, after an MR merge, runs `issue-tracker` and `document-latest` in tandem to batch-process Plane issue closing and Outline document updates.
-- `sync-claude-md` — Analyzes code changes before commit/PR to determine whether `CLAUDE.md` needs updating, and if there are architecture, integration, convention, or environment changes, proposes and executes the update. It activates silently and automatically on commit/push/PR/MR requests.
-- `retro-compound` — The retrospective methodology that `/retro` follows. It filters lessons by reproducibility, generalizability, and judgeability criteria, distributes them according to a per-type routing table, and embeds duplicate/conflict checks and principles for preventing the accumulation of low-quality rules. CLAUDE.md reflection is delegated to `sync-claude-md`, and guard-hook scaffolding to `harness:create-flow`.
+- `issue-tracker` (user-invoked only) — Plane issue integration based on `plane-cli`. Auto-detects issues from branch names, tracks status, records change history, and proposes subtask splitting.
+- `document-latest` (user-invoked only) — Refreshes Outline wiki documents after a code change is complete. Auto-classifies document type, decides new vs. update, writes in Korean, and auto-masks sensitive information.
+- `post-merge` (user-invoked only) — An orchestrator that, after an MR merge, runs `issue-tracker` and `document-latest` in tandem to batch-process Plane issue closing and Outline document updates.
+- `sync-claude-md` — Analyzes code changes before commit/PR to determine whether `CLAUDE.md` needs updating, and if there are architecture, integration, convention, or environment changes, proposes a minimal diff and applies it after approval. It leaves the `project-rules` block alone.
 - `doc-collab-guide` — A thin protocol for co-authoring long-form documents such as plans, proposals, and reports with the user. It defines only the official `doc-coauthoring` skill installation guidance and the outline approval gate, delegating the authoring techniques themselves to the official skill.
 
 ### Hooks
 
-- `PreToolUse(Bash)` → `hooks/remind-claude-md-sync.js` — Blocks `git commit`/`git push` once per session with exit 2 to deterministically enforce the `sync-claude-md` review (whether CLAUDE.md needs updating). Retrying the same command after the review passes, and it does not fire in projects without a CLAUDE.md. Kill switch: `CLAUDE_MD_SYNC_REMIND=0`.
+- `PreToolUse(Bash)` → `hooks/remind-claude-md-sync.js` — A non-blocking nudge: on the session's first `git commit`/`git push` it adds one line suggesting a `sync-claude-md` review via `additionalContext` (exit 0, no permission decision). The line arrives with the command's result, so a needed update goes into a follow-up commit. It does not fire in projects without a CLAUDE.md. Kill switch: `CLAUDE_MD_SYNC_REMIND=0`.
 
 ## Usage
 
+- Project start: run "set up this project" / `/project-rules` for stack facts and specialist rules; after bumping versions, run `/project-rules --check` for drift.
 - Upfront stage: For a new feature, gate the spec with `spec-driven-dev`, and for vague requirements decompose down to tasks with `planning-guide` before starting.
-- During development: When an MR is opened, review it with `/review-mr [number|URL]` (auto-detects the current branch if no argument is given). At commit/PR time, `sync-claude-md` automatically checks whether CLAUDE.md needs updating.
+- During development: When an MR is opened, review it with `/review-mr [number|URL]` (auto-detects the current branch if no argument is given). On the first commit/push the hook suggests a `sync-claude-md` review in one line.
 - Session management: When the context grows long or you hand off work, record the session summary and git status into `HANDOFF.md` with `/handoff` — explicit invocation only; nothing is written automatically.
 - Post-merge: Batch-process Plane issue closing + Outline document updates with `post-merge`, and at release close, organize the changelog and next version with `/release-notes`.
 - Wrap-up: At the end of work/review/loop, extract session lessons with `/retro` and route them to lessons.md, CLAUDE.md, and skills (approval before every application).
@@ -53,11 +55,12 @@ so in a session where a loop harness is running they step back on their own to a
 - There is no separate plugin `requires`. However, some components only work fully when an external tool/plugin is present.
   - `/review-mr`, `/release-notes` — Require the GitLab CLI `glab`.
   - `issue-tracker` — Requires `plane-cli` (Plane). `document-latest` — Requires Outline MCP. `post-merge` — Requires both (Plane + Outline).
-  - `retro-compound` — Guard-hook scaffolding is delegated to `harness:create-flow`.
+  - `retro` — Guard-hook scaffolding is delegated to `harness:create-flow`.
+  - `project-rules` — Reads specialist items from installed stack plugins' references (`kotlin-spring`, `go-mux`, `python-fastapi`, `nextjs`, `search`, `backend-shared`, `test`); depends on the item format `### <PREFIX>-<AREA>-<NN> · title` plus an `- 적용:` line.
   - `doc-collab-guide` — Presupposes installation of the official `doc-coauthoring` skill (anthropics/skills).
 
 ## Notes
 
 - Operations that affect the remote (tag/GitLab Release creation, CLAUDE.md/document updates, lessons/skill reflection) are always executed only after user approval.
-- `sync-claude-md` activates silently and automatically in the commit/push/PR/MR flow, and if no update is needed it does nothing and moves on.
+- `sync-claude-md` is not enforced — the hook only suggests it; ignore the line when nothing structural changed.
 - External-integration skills (`glab`/Plane/Outline) are an opt-in setup that does not activate without the corresponding tool/authentication.

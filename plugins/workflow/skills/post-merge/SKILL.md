@@ -6,23 +6,10 @@ description: |
   Orchestrates post-merge follow-up after an MR is merged: chains the issue-tracker and document-latest skills to close the Plane issue and update Outline wiki docs in a single batch. Use when: an MR was just merged, closing tickets and syncing documentation after a merge, post-merge cleanup.
 metadata:
   version: 1.0.0
-  category: workflow
   domain: post-merge-automation
   requires_mcp: [plane, outline]
   delegates_to: [issue-tracker, document-latest]
-triggers:
-  - "머지 완료"
-  - "머지됐어"
-  - "머지해줘"
-  - "post merge"
-  - "머지 후 처리"
-auto_suggest:
-  keywords:
-    - "머지"
-    - "merge"
-    - "glab mr merge"
-  action: "머지 후 Plane/Outline 처리를 진행할까요?"
-  phase: 1
+disable-model-invocation: true
 ---
 
 # Post-Merge - 머지 후 자동화 오케스트레이터
@@ -33,16 +20,17 @@ MR(Merge Request) 머지 완료 후 후속 작업을 자동화합니다.
 Plane 이슈 종료(코멘트 + 상태 변경)와 Outline 문서 업데이트를 하나의 흐름으로 연계 실행합니다.
 기존 `issue-tracker`와 `document-latest` 스킬에 위임하여 각 스킬의 독립성을 유지합니다.
 
+> 세 스킬 모두 사용자 직접 호출 전용(`disable-model-invocation: true`)이라 Skill 도구로 하위 스킬을 부를 수 없다.
+> 위임 단계에서는 `../issue-tracker/SKILL.md`·`../document-latest/SKILL.md` 를 Read 해 해당 Phase 를 그대로 따른다.
+
 ---
 
 ## 1. 활성화 규칙
 
 | 트리거 유형 | 조건 | 동작 |
 |-------------|------|------|
-| **수동** | "머지 완료", "머지됐어", "post merge" 등 명시적 호출 | Phase 1~6 전체 실행 |
+| **수동** | `/post-merge` 또는 사용자가 "머지 완료", "머지됐어" 와 함께 명시 호출 | Phase 1~6 전체 실행 |
 | **머지 요청** | "머지해줘" | Phase 1(경로 C)에서 `glab mr merge` 실행 후 Phase 2~6 진행 |
-| **Hook 연동** | `glab mr merge` 성공 감지 (PostToolUse Hook) | "머지 후 Plane/Outline 처리를 진행할까요?" 제안 → 승인 시 Phase 1~6 실행 |
-| **자동 제안** | "머지", "merge" 키워드 감지 | "머지 후 Plane/Outline 처리를 진행할까요?" 질문 → 승인 시 실행 |
 
 ---
 
@@ -52,7 +40,7 @@ Plane 이슈 종료(코멘트 + 상태 변경)와 Outline 문서 업데이트를
 
 ```
 1. MR 정보 확보 (경로 분기):
-   경로 A: Hook에서 호출됨 → MR ID가 이미 전달됨
+   경로 A: 인자로 MR ID/URL 이 전달됨 → 그대로 사용
    경로 B: "머지됐어" / "머지 완료"
      → git branch --show-current → 현재 브랜치명 확인
      → glab mr list --source-branch={branch} --state merged -F json
@@ -300,18 +288,6 @@ Plane 이슈 종료(코멘트 + 상태 변경)와 Outline 문서 업데이트를
 [Phase 3] 변경 파일 3개 → 소규모 → 문서화 건너뜀
 [Phase 5] 완료 요약 출력
 [Phase 6] "로컬 브랜치를 삭제할까요?"
-```
-
-### 예시 3: Hook 연동 (glab mr merge 성공 후)
-
-```
-사용자: glab mr merge 42 (Bash 도구로 실행)
-
-[Hook] 머지 성공 감지 → "[Hook] MR !42 머지 완료. 머지 후 Plane/Outline 처리를 진행할까요?"
-
-사용자: "응"
-
-[Phase 1~6] post-merge 스킬 전체 실행
 ```
 
 ---

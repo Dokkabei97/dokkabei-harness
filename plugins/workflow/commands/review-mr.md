@@ -3,10 +3,7 @@ name: review-mr
 description: |
   GitLab Merge Request 코드 리뷰. MR diff를 분석하여 버그, 보안 취약점, 로직 오류를 탐지하고 MR에 리뷰 코멘트를 작성합니다. confidence 기반으로 low 지적사항을 제외·강등합니다.
   Reviews GitLab Merge Requests: analyzes the MR diff to detect bugs, security vulnerabilities, and logic errors, then posts review comments on the MR, demoting or dropping low-confidence findings. Use when: reviewing a GitLab MR, code review of a merge request diff.
-category: review
-complexity: standard
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /review-mr - GitLab Merge Request Code Review

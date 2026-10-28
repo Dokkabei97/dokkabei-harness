@@ -1,10 +1,9 @@
 ---
 name: handoff
-description: "Save session context to HANDOFF.md for seamless continuation in the next session"
-category: utility
-complexity: basic
-mcp-servers: []
-personas: []
+description: |
+  세션 컨텍스트(목표·시도·다음 단계·git 상태)를 HANDOFF.md 에 저장해 다음 세션이 이어받게 한다. 명시 호출 전용.
+  Saves session context to HANDOFF.md for seamless continuation in the next session. Use when: /handoff, ending a session or nearing the context limit.
+disable-model-invocation: true
 ---
 
 # /handoff - Session Context Transfer
