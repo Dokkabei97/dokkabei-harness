@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,8 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-dev-server.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/block-dev-server.js\""
           }
         ]
       },
@@ -17,8 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-tmux.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-tmux.js\""
           }
         ]
       },
@@ -27,8 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-git-push.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-git-push.js\""
           }
         ]
       }
@@ -39,8 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/log-pr-mr.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/log-pr-mr.js\""
           }
         ]
       },
@@ -49,8 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/notify-build-async.js"],
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/notify-build-async.js\"",
             "async": true,
             "timeout": 30
           }
@@ -61,8 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/notify-gradle-build-async.js"],
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/notify-gradle-build-async.js\"",
             "async": true,
             "timeout": 60
           }
@@ -73,8 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-prettier.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-prettier.js\""
           }
         ]
       },
@@ -83,8 +75,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-ktlint.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/format-ktlint.js\""
           }
         ]
       },
@@ -93,8 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-tsc.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-tsc.js\""
           }
         ]
       },
@@ -103,8 +93,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-kotlin-compile.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-kotlin-compile.js\""
           }
         ]
       },
@@ -113,8 +102,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-console-log.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-console-log.js\""
           }
         ]
       },
@@ -123,8 +111,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-println.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-println.js\""
           }
         ]
       },
@@ -133,8 +120,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-py-compile.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/check-py-compile.js\""
           }
         ]
       },
@@ -143,8 +129,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-print.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-print.js\""
           }
         ]
       },
@@ -153,8 +138,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js\""
           }
         ]
       },
@@ -163,8 +147,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js"]
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/hooks/warn-security.js\""
           }
         ]
       }

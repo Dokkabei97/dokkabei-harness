@@ -1,0 +1,4 @@
+# Codex CLI 전용 — SKILL.md 의 disable-model-invocation: true 대응(Codex 는 그 키를 무시).
+# 암묵 호출만 끄고 명시 호출($<plugin>:<skill>)은 유지. Claude Code 는 이 파일을 읽지 않는다.
+policy:
+  allow_implicit_invocation: false

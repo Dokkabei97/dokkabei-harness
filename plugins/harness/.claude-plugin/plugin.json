@@ -1,7 +1,7 @@
 {
   "name": "harness",
   "description": "Meta-plugin for harness design (v2 execution modes), evolution, generation, validation, and lightweight loops",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

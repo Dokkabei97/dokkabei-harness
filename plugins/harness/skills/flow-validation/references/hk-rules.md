@@ -22,7 +22,9 @@
 - **Note**: Off-schema keys such as `description` are silently ignored and make Claude Code print
   `hooks.json: unknown key "..." ignored` at every session start (measured on 2.1.278).
   `timeout` / `args` / `async` / `if` belong to the handler entry (`hooks[j]`), not the group;
-  `$schema` is the only tolerated top-level extra (v2.1.274+).
+  No top-level `$schema`: Codex rejects the whole hooks file on it (`unknown field $schema`, measured 0.165,
+  2026-10). Write the handler as one `command` string (`node "${CLAUDE_PLUGIN_ROOT}/…"`), not `command` + `args`
+  — Codex silently drops `args`.
   Document a hook in its script header comment, never in hooks.json.
 
 ## HK-005: No Duplicate Matchers

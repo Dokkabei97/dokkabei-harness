@@ -3,7 +3,7 @@ name: fastapi-guide
 description: |
   FastAPI/Python 진단 에이전트(읽기 전용) — 이벤트루프 블로킹, DB 풀 고갈·PgBouncer, 직렬화 비용, 메모리·GC, uvicorn 502, PostGIS 인덱스 문제를 근본 원인까지 추적.
   Read-only FastAPI diagnostics. Use when: slow or stuck endpoints, pool errors, memory growth, uvicorn/LB errors, specialist code review.
-tools: Read, Grep, Glob, Bash
+tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 skills: ["python-fastapi-guide"]
 ---

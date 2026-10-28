@@ -22,7 +22,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
 - hooks.json `matcher`는 **툴명 regex만** 유효(`Bash`, `Edit|Write`). `tool == "X"` 표현식이나 명령
   내용 필터를 matcher에 넣으면 **조용히 미발화**한다(실측 2026-07) — 명령/인자 필터링은 반드시
   훅 스크립트 내부에서 한다.
-- hooks.json **matcher 그룹은 `matcher`·`hooks` 2키만** 가진다(최상위 예외는 `$schema` 하나).
+- hooks.json **matcher 그룹은 `matcher`·`hooks` 2키만** 가진다최상위 `$schema` 금지 — Codex 0.165 가 파일 전체를 거부한다(2026-10 실측). 핸들러는 `command` 문자열 하나
+  (`node "${CLAUDE_PLUGIN_ROOT}/…"`)로 쓰고 `command`+`args` 는 쓰지 않는다(Codex 가 `args` 를 버림).
   `timeout`/`args`/`async`/`if`는 핸들러 엔트리 소속이며, `description` 같은 스키마 외 키는 무시되고
   세션 시작마다 `hooks.json: unknown key "..." ignored` 경고를 낸다(실측 2026-09, CC 2.1.278) —
   훅 설명은 스크립트 헤더 주석에 적는다. `/verify-flow` 규칙 HK-004로 가드.

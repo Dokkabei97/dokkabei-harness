@@ -64,9 +64,12 @@ BOM·플랫폼이 관리하는 버전(예: Spring Boot BOM 의 `elasticsearch-ja
 | SQL 마이그레이션 | 의존성·디렉터리 | Flyway(`flyway-core`, `db/migration/V*__*.sql`), Liquibase(`db/changelog`), Alembic(`alembic.ini`), dbmate(`-- migrate:up`), golang-migrate, goose |
 | 메시징/캐시 | 의존성 | `spring-kafka`, `org.apache.kafka`, `segmentio/kafka-go`, `IBM/sarama`, `confluent-kafka`; Redis/Valkey 클라이언트 |
 | 컨테이너 배포 | `Dockerfile`, k8s(`kind: Deployment`), `Chart.yaml` | **앱 자체**의 이미지·매니페스트가 있으면 "컨테이너 배포" 조건 충족. compose 로 DB·ES 같은 의존 서비스만 띄우면 해당 없음 |
-| 검증 명령 | CI 설정(`.gitlab-ci.yml`, `.github/workflows/*.yml`), `Makefile`/`justfile`, 빌드 스크립트, 기존 CLAUDE.md | CI 에서 실제로 돌리는 명령을 우선 |
-| 플러그인 활성 | `.claude/settings.local.json`, `.claude/settings.json` `enabledPlugins`, 사용자 전역 | 이미 켜져 있으면 (d) 안내 생략 |
-| 기존 지침 | 블록 밖 `CLAUDE.md`, `@import` 대상, 하위 `CLAUDE.md`/`AGENTS.md` | 이미 적힌 사실·함정 → 블록·rules 에서 중복 제외 |
+| 검증 명령 | CI 설정(`.gitlab-ci.yml`, `.github/workflows/*.yml`), `Makefile`/`justfile`, 빌드 스크립트, 기존 AGENTS.md·CLAUDE.md | CI 에서 실제로 돌리는 명령을 우선 |
+| 플러그인 활성 | Claude `.claude/settings{,.local}.json` `enabledPlugins`·사용자 전역 / Codex `~/.codex/config.toml`·`.codex/config.toml` `[plugins."<name>@dokkabei-harness"]` / Antigravity `~/.gemini/config/plugins/<name>`·`.agents/plugins/<name>` | 이미 켜져 있으면 해당 런타임의 (d) 안내 생략 |
+| 지침 파일 배치 | 루트(·`<subdir>`)의 `AGENTS.md`, `CLAUDE.md`·`.claude/CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.override.md`, `GEMINI.md` | 크기(`wc -c`)·`@AGENTS.md` 유무(코드 밖)·심볼릭 링크 여부 → SKILL Phase 4 (b) 분기 |
+| 이전 버전 출력 | CLAUDE.md 안 `project-rules:start/end`, `.claude/rules/specialist-core.md` | 있으면 Phase 4 (f) 이전 제안 |
+| 사본 관계 | AGENTS.md ↔ CLAUDE.md | 비어 있지 않은 줄 절반 이상이 같으면 "사본" — import 하면 중복 로드(SKILL (f)-3) |
+| 기존 지침 | 블록 밖 `AGENTS.md`·`CLAUDE.md`, `@import` 대상, 하위 `CLAUDE.md`/`AGENTS.md` | 이미 적힌 사실·함정 → 블록·rules 에서 중복 제외 |
 | VCS 호스트 | `git remote get-url origin` | `gitlab` 포함 → glab 계열, `github.com` → gh |
 
 ## 2. 프로필 → 스택 플러그인

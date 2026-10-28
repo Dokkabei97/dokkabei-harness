@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "Development lifecycle workflows: project rules (CLAUDE.md stack facts + .claude/rules specialist selection), spec/planning/shipping guides, MR review, handoff, release notes, retrospectives, and CLAUDE.md sync",
-  "version": "1.6.0",
+  "description": "Development lifecycle workflows: project rules (AGENTS.md stack facts + specialist core for Claude Code, Codex and Antigravity; Claude path-scoped rules), spec/planning/shipping guides, MR review, handoff, release notes, retrospectives, and CLAUDE.md sync",
+  "version": "1.7.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

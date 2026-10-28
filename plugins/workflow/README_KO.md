@@ -11,8 +11,9 @@
 머지 후 이슈 종료·문서 최신화, 그리고 세션에서 얻은 교훈을 자산화하는 회고까지 한 플러그인에 묶는다.
 GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스킬은 해당 도구가 있을 때만 동작하는 opt-in 구성이며,
 계획·스펙·배포·폐기 가이드류는 외부 의존 없이 순수 방법론으로 활성화된다.
-`project-rules`는 프로젝트의 스택(빌드 파일 버전·도구·git 호스트)을 감지해 프로젝트 CLAUDE.md 의 스택 사실 블록과
-`.claude/rules/` 의 스페셜리스트 규칙(스택 플러그인 항목 중 해당 버전에 맞는 것만)을 제안하는 진입점이다.
+`project-rules`는 프로젝트의 스택(빌드 파일 버전·도구·git 호스트)을 감지해 프로젝트 루트 AGENTS.md 의 스택 사실·스페셜리스트 핵심 블록
+(Claude Code·Codex·Antigravity 공통, CLAUDE.md 는 `@AGENTS.md` 로 연결)과 Claude 전용 `.claude/rules/` 경로 한정 스페셜리스트 규칙
+(스택 플러그인 항목 중 해당 버전에 맞는 것만)을 제안하는 진입점이다.
 사용자가 직접 실행하는 외부 연동·생성 작업은 `disable-model-invocation: true` 로 모델 자동 발화에서 빠져 있다(슬래시로만 실행).
 
 ## 구성요소
@@ -25,7 +26,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 
 ### 스킬
 
-- `project-rules` — 프로젝트 스택 감지(JDK/Kotlin/Spring Boot, go.mod, pyproject, next, ES 클라이언트·매핑, 마이그레이션 도구, ORM 유무, git 호스트) → 프로젝트 CLAUDE.md 마커 블록(`<!-- project-rules:start/end -->`, ≤30줄)과 `.claude/rules/<stack>-specialist.md`(`paths` 스코프, 해당 버전에 맞는 스페셜리스트 항목 ≤15개를 ID 로 선별)를 diff 로 제안하고, 스택 플러그인을 `--scope local` 로 켜는 명령을 안내한다. `--check` 는 버전 드리프트·없는 도구·사라진 ID·200줄 초과를 보고. 모든 쓰기는 승인 후.
+- `project-rules` — 프로젝트 스택 감지(JDK/Kotlin/Spring Boot, go.mod, pyproject, next, ES 클라이언트·매핑, 마이그레이션 도구, ORM 유무, git 호스트) → 프로젝트 루트 `AGENTS.md` 마커 블록(`<!-- project-rules:start/end -->`, 스택 사실 ≤30줄 + 항상 적용 스페셜리스트 핵심 ≤15줄, ≤6,000바이트 — Codex·Antigravity 가 직접 읽음), 기존 `CLAUDE.md` 의 `@AGENTS.md` 한 줄(Claude Code 는 CLAUDE.md 가 없을 때만 AGENTS.md 를 직접 읽음), Claude 전용 `.claude/rules/<stack>-specialist.md`(`paths` 스코프, 해당 버전에 맞는 항목 ≤15개를 ID 로 선별, Antigravity glob 규칙 미러는 선택)를 diff 로 제안하고, 스택 플러그인을 이 프로젝트에서만 켜는 런타임별 명령(Claude `--scope local`, Codex 프로젝트 `.codex/config.toml`, Antigravity `agy plugin install`·`.agents/plugins/`)을 안내한다. 이전 배치(CLAUDE.md 블록, `.claude/rules/specialist-core.md`)는 이전을 제안. `--check` 는 블록 위치·`@AGENTS.md` 연결 누락·버전 드리프트·없는 도구·사라진 ID·크기 한도(AGENTS.md ≤24,000바이트 Antigravity, 경로 합계 ≤32 KiB Codex, CLAUDE.md+import ≤200줄)를 보고. 모든 쓰기는 승인 후.
 - `retro` (`/retro`) — 이번 세션의 교정·실수·발견을 추출해 유형별로 라우팅하는 회고. 컨벤션 변화는 `sync-claude-md`로, 반복 실수는 `tasks/lessons.md`(가드 훅 후보 태그 포함)로, 도메인 지식은 스킬 수정 제안으로 분배한다. 판정 기준은 `references/compound-criteria.md`(구 `retro-compound` 스킬을 2026-10 병합). 모든 적용은 승인 후.
 - `spec-driven-dev` — 코드 작성 전 스펙을 먼저 확정하는 게이트 워크플로우(SPECIFY → PLAN → TASKS → IMPLEMENT)로 범위 이탈·재작업을 방지한다.
 - `planning-guide` — 모호한 아이디어를 구체적 계획과 실행 가능한 태스크로 변환(아이디어 정제·의존성 매핑·수직 슬라이싱·태스크 사이징).
@@ -43,7 +44,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
 
 ## 사용법
 
-- 프로젝트 시작: "이 프로젝트 세팅" / `/project-rules` 로 스택 사실·스페셜리스트 규칙을 만들고, 버전을 올린 뒤엔 `/project-rules --check` 로 드리프트를 확인한다.
+- 프로젝트 시작: "이 프로젝트 세팅" / `/project-rules`(Codex `$workflow:project-rules`, Antigravity `/workflow:project-rules`) 로 스택 사실·스페셜리스트 규칙을 만들고, 버전을 올린 뒤엔 `--check` 로 드리프트를 확인한다.
 - 사전 단계: 새 기능은 `spec-driven-dev`로 스펙을 게이팅하고, 모호한 요구는 `planning-guide`로 태스크까지 분해한 뒤 착수한다.
 - 개발 중: MR이 열리면 `/review-mr [번호|URL]`(인자 없으면 현재 브랜치 자동 감지)로 리뷰한다. 첫 커밋/푸시 때 훅이 `sync-claude-md` 검토를 한 줄로 권한다.
 - 세션 관리: 컨텍스트가 길어지거나 작업을 넘길 때 `/handoff`로 세션 요약과 git 상태를 `HANDOFF.md`에 남긴다 — 명시 호출 전용이며, 자동으로 기록되는 경로는 없다.
@@ -56,7 +57,7 @@ GitLab(`glab`)·Plane·Outline 같은 외부 도구/위키와 연동하는 스�
   - `/review-mr`, `/release-notes` — GitLab CLI `glab` 필요.
   - `issue-tracker` (직접 실행 전용) — `plane-cli`(Plane) 필요. `document-latest` — Outline MCP 필요. `post-merge` — 둘 다 필요(Plane + Outline).
   - `retro` — 가드 훅 스캐폴딩은 `harness:create-flow`에 위임.
-  - `project-rules` — 스페셜리스트 항목은 설치된 스택 플러그인(`kotlin-spring`, `go-mux`, `python-fastapi`, `nextjs`, `search`, `backend-shared`, `test`)의 references 에서 읽는다(항목 포맷 `### <PREFIX>-<AREA>-<NN> · 제목` + `- 적용:` 줄에 의존).
+  - `project-rules` — 스페셜리스트 항목은 설치된 스택 플러그인(`kotlin-spring`, `go-mux`, `python-fastapi`, `nextjs`, `search`, `backend-shared`, `test`)의 references 에서 읽는다(항목 포맷 `### <PREFIX>-<AREA>-<NN> · 제목` + `- 적용:` 줄에 의존). `scripts/specialist-index.sh auto` 가 실행 중인 workflow 설치본(레포·Claude/Codex 캐시·Antigravity) 옆에서 먼저 찾고, 없으면 다른 런타임 설치 경로로 넘어간다.
   - `doc-collab-guide` — 공식 `doc-coauthoring` 스킬(anthropics/skills) 설치가 전제.
 
 ## 참고

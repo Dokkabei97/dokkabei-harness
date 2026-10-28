@@ -3,7 +3,7 @@ name: spring-boot-guide
 description: |
   JVM·Kotlin·Spring 런타임 진단 에이전트(읽기 전용) — 지연·메모리·OOMKilled·GC, 코루틴/가상 스레드 동시성, @Transactional 미적용·롤백, JPA N+1·풀 고갈, 빈/프록시·자동설정 문제를 프로젝트 사실 확인 후 kotlin-spring-guide 항목 ID 로 근거를 대며 진단하고 측정 방법을 제시한다.
   Read-only diagnostic agent for Kotlin/Spring runtime problems (latency, memory, GC, concurrency, transactions, JPA, pool, DI/proxy) grounded in kotlin-spring-guide item IDs with measurement steps. Use when: diagnosing a Kotlin/Spring performance, memory, transaction or bean/proxy issue.
-tools: Read, Grep, Glob, Bash
+tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 skills: ["kotlin-spring-guide"]
 ---

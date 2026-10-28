@@ -1,4 +1,5 @@
 ---
+name: e2e
 description: |
   Playwright E2E 테스트 코드 생성·실행 — 사용자 여정을 Playwright 스펙으로 작성해 저장소에 남기고, 실행·실패 아티팩트(스크린샷·트레이스) 확인, flaky 원인 분석, 루프 게이트화까지.
   Generates and runs Playwright E2E specs for a user journey, inspects failure artifacts (screenshots, traces), diagnoses flaky tests, and wires the suite as a loop gate.
@@ -43,7 +44,8 @@ npx playwright show-report
 
 - RED 확인: 기능이 없거나 버그가 있는 상태에서 **의도한 이유로** 실패하는지 먼저 본다.
 - 실패 시 트레이스의 액션 타임라인·네트워크·콘솔로 원인을 특정하고, 재시도·타임아웃 증가로 덮지 않는다.
-- flaky·환경 함정은 `${CLAUDE_PLUGIN_ROOT}/skills/e2e-chrome/references/playwright.md` (TST-PW-01~10) 참조.
+- flaky·환경 함정은 `${CLAUDE_PLUGIN_ROOT}/skills/e2e-chrome/references/playwright.md` (TST-PW-01~10) 참조
+  (`${CLAUDE_PLUGIN_ROOT}` 미치환 런타임이면 이 플러그인의 `skills/e2e-chrome/references/playwright.md`).
 
 ## 4. 결과 보고
 

@@ -19,7 +19,8 @@ Playwright 테스트 코드를 생성·실행해 저장소에 남기려면 사�
 | 깨끗한 브라우저, 재현 가능한 확인, 콘솔/네트워크 로그 수집 | Playwright MCP (`mcp__plugin_playwright_playwright__*` 등) |
 | 회귀 테스트로 저장소에 남기기·CI 게이트 | `/e2e` (Playwright 테스트 코드) |
 
-도구가 세션에 없으면: claude-in-chrome 은 `claude --chrome` 으로 연결(현재 대화 유지는 `claude --chrome -c`), Playwright MCP 는 플러그인/MCP 설정 필요 — 사용자에게 안내하고 멈춘다.
+도구가 세션에 없으면 사용자에게 연결 방법을 안내하고 멈춘다 — Claude Code: claude-in-chrome 은 `claude --chrome` 으로 연결(현재 대화 유지는 `claude --chrome -c`), Playwright MCP 는 플러그인/MCP 설정.
+그 외 런타임(Codex·Antigravity 등)은 그 런타임의 브라우저 도구나 Playwright MCP 설정을 안내한다 — 도구 이름이 달라도 2~6절 절차는 같다.
 claude-in-chrome 을 쓰기 전에는 `claude-in-chrome`(또는 `chrome-browser`) 스킬의 탭·권한·다이얼로그 규칙을 먼저 따른다.
 
 ## 2. 시작 전 확인
@@ -86,7 +87,7 @@ claude-in-chrome 을 쓰기 전에는 `claude-in-chrome`(또는 `chrome-browser`
 
 ## 7. 위임과 반복
 
-- 단계가 많거나 스크린샷이 많아 메인 컨텍스트를 아끼고 싶으면 `chrome-e2e-runner` 에이전트에 계획(3절)을 넘겨 실행시킨다.
+- 단계가 많거나 스크린샷이 많아 메인 컨텍스트를 아끼고 싶으면 `chrome-e2e-runner` 에이전트에 계획(3절)을 넘겨 실행시킨다(Claude Code 한정 — 그 에이전트가 없는 런타임은 메인 세션에서 직접 실행).
 - 같은 여정을 반복 검증해야 하면 브라우저 수동 확인을 Playwright 테스트로 굳히는 것을 제안한다(`/e2e`) — 그 다음부터는 `/loop-run --gate-cmd "npx playwright test"` 로 게이트화 가능.
 
 ## 레퍼런스

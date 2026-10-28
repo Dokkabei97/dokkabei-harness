@@ -4,7 +4,7 @@ description: |
   PG/Kafka/Valkey 연동 진단·리뷰 전문가 — 커넥션 풀 고갈, 느린 쿼리·플래너 함정, 컨슈머 랙·리밸런스·중복/유실, 빅키·핫키·분산락, 타임아웃·재시도 설계를 스페셜리스트 항목(PG/KFK/VK/DIST ID)으로 근거와 측정법을 붙여 진단한다 (Kotlin/Spring, Go, Python).
   Diagnoses and reviews PostgreSQL, Kafka and Valkey integration code and config against ID'd specialist pitfalls with evidence and measurement steps.
   Use when: delegating an infra integration review, diagnosing pool exhaustion, consumer lag, cache or lock issues across a service.
-tools: Read, Grep, Glob, Bash
+tools: ["Read", "Grep", "Glob", "Bash"]
 model: sonnet
 skills:
   - async-event-patterns
