@@ -2,65 +2,56 @@
 
 # kotlin-spring
 
-> A backend-specialized plugin that generates idiomatic CRUD-layer code in Kotlin + Spring Boot projects and bundles framework diagnostics, principles, naming, and idiomatic patterns into a single set.
+> A JVM · Kotlin · Spring specialist layer: a symptom-to-pitfall triage skill covering what strong senior generalists still miss (GC and container memory, map and collection choice, coroutines and virtual threads, transactions, JPA and connection pools, profiling), plus convention-first CRUD scaffolding and a read-only runtime diagnostic agent.
 
 ## Overview
 
-`kotlin-spring` is a collection of code generation, diagnostic, and reference tools specialized for the Kotlin + Spring Boot stack. Its core capability is scaffolding the entire Entity → Repository → Service → Controller → DTO → Test layer from a single domain name, aligned with the project's existing conventions (`/spring-gen` + `spring-developer`). Combined with this are a specialist agent that diagnoses framework-level problems (`spring-boot-guide`) and skills that attach development principles, naming, and idiomatic patterns at the moment they are needed.
+`kotlin-spring` does not restate idioms the model already knows. Its core is `kotlin-spring-guide`, a triage index that maps symptoms (OOMKilled, latency spikes past 64 concurrent requests, `UnexpectedRollbackException`, `HHH90003004`, stack-less NPEs, ...) to **67 specialist items** with stable IDs (`JVM-GC-02`, `KT-CORO-03`, `SPR-JPA-05`, ...). Every item states its applicability (JDK/Spring/library version and conditions), signal, mechanism, prescription, counter-case, verification method and source URL, so it can be applied only where it fits and selected per project by `workflow:project-rules`.
 
-Code generation follows the discipline of "analyze first, then generate." It scans `build.gradle.kts`, `application.yml`, and existing sources to extract the package structure, DTO patterns, test framework (Kotest/JUnit·MockK), error-handling approach, and Audit patterns, then emits code following those conventions. It enforces a Kotlin First style that excludes Java idioms (`Optional`, getter/setter, `!!`), and it does not arbitrarily implement business logic — leaving it behind as `TODO(human)` markers instead.
+Nothing about the stack is assumed: the skill, the command and both agents first read the build file, Dockerfile/manifests and existing code to confirm JDK and Boot versions, data-access technology, web stack and migration tool.
 
-Language-neutral backend cross-cutting concerns (REST/GraphQL API contracts, DB migration safety, hexagonal architecture, observability/caching/events/resilience/security) are not handled by this plugin and are delegated to the `backend-shared` plugin. Because it covers only the Kotlin/Spring-specific parts, it presumes the two are installed together and combined.
+Language-neutral backend concerns (API contracts, migration safety, security, ...) belong to `backend-shared`.
 
 ## Components
 
-### Commands
+### Skill
 
-- `/spring-gen [domain-name]` — Scaffolds the full Kotlin Spring Boot CRUD layer. It proceeds in 3 stages: Discovery (convention analysis) → Generation (per-layer generation) → Verification (compile·test), and the `--fields`, `--layers`, `--no-test`, `--reactive` (WebFlux + R2DBC), `--soft-delete`, and `--audit` options adjust the generation scope and patterns.
+- `kotlin-spring-guide` — Specialist triage (entry skill, preloaded by both agents). `SKILL.md` is a fact-check table plus a symptom → item-ID index; details live in one-level `references/`:
+  - `jvm-gc-memory.md` — JVM-GC-01~09, JVM-MEM-01~04 (Serial GC ergonomics in small containers, MaxRAMPercentage, CPU-shares change in JDK 19, compressed-oops 32GB boundary, G1 humongous objects, generational ZGC per JDK version, Shenandoah availability, DisableExplicitGC vs direct buffers, glibc arenas, Korean strings and compact strings, compact object headers, OOM heap dumps)
+  - `collections.md` — JVM-COL-01~06, KT-COL-01~03·05~06 (HashMap capacity vs threshold, treeification conditions, EnumMap/EnumSet, IdentityHashMap, LRU `get` as structural change, CHM `computeIfAbsent`, Kotlin Linked defaults, boxing and primitive maps, Sequence break-even, Kotlin 1.6 `minus`/`removeAll` without set conversion, value-class boxing)
+  - `concurrency.md` — KT-CORO-01~06, JVM-CONC-01~05 (Dispatchers.IO 64 limit and `limitedParallelism`, `runBlocking`, swallowed cancellation, `withTimeout`, MDC/transaction context loss, virtual-thread pinning and JEP 491, Boot executor defaults, commonPool, false sharing)
+  - `jit-allocation.md` — JVM-JIT-01~07, KT-LOG-01 (escape analysis limits, megamorphic call sites, regex recompilation and Kotlin vs Java `split`, exception cost, OmitStackTraceInFastThrow, code cache, CDS/AOT warm-up, log templates)
+  - `spring-data-tx.md` — SPR-TX-01~05, SPR-JPA-01~06, SPR-POOL-01~03 (kotlin-spring/allOpen proxies, self-invocation and Spring 6 visibility, rollback on checked exceptions, rollback-only, readOnly routing, open-in-view, in-memory pagination, batch fetch, bulk writes, `isNew` merge, driver ResultSet buffering on large reads, Hikari sizing, pool deadlock, maxLifetime)
+  - `spring-runtime.md` — SPR-JSON-01~03, SPR-OPS-01~02, KT-VAL-01 (ObjectMapper reuse, Jackson 2 vs 3 in Boot 4, Kotlin-module null semantics, graceful shutdown on k8s, metric cardinality, Bean Validation annotation use-site targets)
+  - `observability.md` — JVM-OBS-01~03 (always-on JFR, async-profiler modes, GC/safepoint logging)
+  - `team-conventions.md` — the team's own naming/review decisions and code-generation defaults (used only when a project has no convention of its own)
+
+### Command
+
+- `/spring-gen [domain]` — Scaffolds Entity → Repository → Service → Controller → DTO → Test. User-invoked only (`disable-model-invocation`). Phase 1 detects the stack (build file, compiler plugins, data access, web stack, test libraries, migration tool, an existing domain sample) before generating; detected conventions override the bundled examples. Options: `--fields`, `--layers`, `--no-test`, `--reactive`, `--soft-delete`, `--audit`.
 
 ### Agents
 
-- `spring-developer` — A code generation specialist agent. As the actual generation engine of `/spring-gen`, it extracts the project's conventions (Decision Matrix) to build an idiomatic Kotlin full CRUD stack. Its tools are Read/Grep/Glob/Bash/Write/Edit, and it references the skill `kotlin-spring-guide`.
-- `spring-boot-guide` — A Spring Boot (Kotlin) framework diagnostics expert (read-only: Read/Grep/Glob/Bash). It diagnoses DI/bean conflicts, `@Transactional` propagation·proxy (self-invocation) issues, Spring Security, Data JPA/R2DBC, N+1, test slices, auto-configuration, and Spring for GraphQL problems, and recommends patterns.
-
-### Skills
-
-- `kotlin-spring-guide` — A development-principles·decision-making guide. It provides the Kotlin First, layer discipline (top→bottom dependencies), Fail Fast (triple defense), and Convention over Configuration principles, along with the selection criteria for architecture/stack/test framework. As detailed references it includes `references/layer-patterns.md` (per-layer patterns), `references/jpa-patterns.md` (Entity design·N+1 prevention·associations·persistence context), and `references/testing-patterns.md` (Kotest·MockK·@WebMvcTest·@DataJpaTest).
-- `spring-boot-patterns` — An idiomatic-pattern reference centered on actual implementation code examples. It covers `@Transactional` semantics (propagation/isolation/readOnly/rollbackFor·proxy pitfalls), Spring Data JPA queries (method queries·JPQL·QueryDSL·@EntityGraph·Page/Slice), `@ControllerAdvice` (RFC 7807 ProblemDetail)·error-code system, Bean Validation (group validation·custom Validator), configuration binding (@ConfigurationProperties·relaxed binding), Spring for GraphQL (@BatchMapping·DataLoader), Coroutines integration, and WebClient patterns.
-- `naming-conventions` — Kotlin naming idioms. It organizes into rules and checklists: purpose-oriented vs implementation-oriented (`isExpired` vs `expiredAt`), Enum name invariance (`POPULARITY` vs `POPULARITY_SCORE`), verb-form conversion functions (`convertTo~` vs `to~`), uppercase `const val`, parameters named from the function's standpoint, domain-term consistency (avoiding `~Info`/`~Data`), avoiding `Map<String, Any>` parameters, and avoiding primitive extension functions.
+- `spring-developer` — Generation engine for `/spring-gen`. Detects conventions, generates, checks generated code against relevant pitfall IDs (SPR-TX-01, SPR-JPA-05, KT-CORO-03, ...), then compiles and runs tests.
+- `spring-boot-guide` — Read-only runtime diagnosis: confirms facts, maps symptoms to item IDs, rules out by applicability/counter-case, collects code evidence and proposes concrete measurements before prescribing.
 
 ## Usage
 
-CRUD scaffolding is invoked directly with `/spring-gen`. Append options after the domain name to specify fields·layers·stack.
-
 ```
-# Generate the full CRUD layer for the Order domain
+/plugin install kotlin-spring@dokkabei-harness
+
 /spring-gen Order
-
-# Generate the Product layer with fields defined
 /spring-gen Product --fields "name:String, price:BigDecimal, stock:Int"
-
-# Only Entity/Repository/Service, without Controller
-/spring-gen Payment --layers "entity,repo,service"
-
-# WebFlux + R2DBC reactive stack (suspend/Flow)
 /spring-gen Notification --reactive
-
-# Apply soft delete + audit fields
-/spring-gen Member --soft-delete --audit
 ```
 
-Agents and skills operate from context without separate commands. `spring-developer` performs generation when `/spring-gen` runs, and `spring-boot-guide` is used when framework diagnostics for transactions/DI/GraphQL and the like are needed. The skills (`kotlin-spring-guide`·`spring-boot-patterns`·`naming-conventions`) are loaded automatically the moment you write·review·refactor Kotlin + Spring code, reinforcing principles, pattern examples, and naming decision criteria. The roles are split between `kotlin-spring-guide` for principles·decision-making and `spring-boot-patterns` for concrete implementation code examples.
+`kotlin-spring-guide` activates on Kotlin/Spring performance, memory, GC, concurrency or transaction questions and code reviews of hot or transactional paths. Pin the items that matter for a project in its `CLAUDE.md`/`.claude/rules` via `workflow:project-rules`.
 
 ## Dependencies
 
-- **requires / dependencies**: `backend-shared`. Because language-neutral backend common patterns (API contracts, migrations, hexagonal, observability/caching/events/resilience/security, DTO·test patterns) are handled by `backend-shared`, install it together and combine.
-- If Python/FastAPI specialization is needed, the `python-fastapi` plugin corresponds to that.
+- `backend-shared` (language-neutral backend patterns).
 
 ## Notes
 
-- `/spring-gen` does not modify existing files without authorization, and it does not arbitrarily implement business logic — marking it with `TODO(human)` markers instead.
-- It does not add `build.gradle.kts` dependencies without user confirmation, and it does not generate code that requires dependencies absent from the project.
-- It does not generate Java-style Kotlin (`Optional.get()`, getter/setter, `!!`, Java Stream).
-- Compile·test execution (`./gradlew compileKotlin`, `./gradlew test`) is performed in the verification stage, and after confirming that the generated code matches the project conventions, it is compiled into a report.
-- Version-sensitive APIs (Spring Boot 3.x configuration, etc.) are reflected after a Context7 lookup per the `backend-shared:context7-docs-guide` convention, and are omitted when it is not installed.
+- Retired in 2026-10 and moved to `archive/components/kotlin-spring/`: the `spring-boot-patterns` and `naming-conventions` skills (generic idioms; the team-specific naming rules were merged into `references/team-conventions.md`) and the generic `layer-patterns`/`jpa-patterns`/`testing-patterns` references.
+- `/spring-gen` never edits existing files or adds build dependencies without confirmation, and leaves business logic as `TODO(human)`.

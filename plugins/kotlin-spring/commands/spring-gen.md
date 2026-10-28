@@ -1,21 +1,12 @@
 ---
 name: spring-gen
 description: |
-  Kotlin Spring Boot CRUD 계층 코드 생성. 도메인명을 입력하면 Entity, Repository, Service, Controller, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
-  Generates Kotlin Spring Boot CRUD layer code: given a domain name, it auto-generates Entity, Repository, Service, Controller, DTO, and Test files following project conventions. Use when: creating CRUD for a new domain, scaffolding a Spring Boot domain end to end, or generating repository/service/controller boilerplate in Kotlin Spring projects.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+  Kotlin Spring Boot CRUD 계층 스캐폴딩 — 도메인명으로 Entity·Repository·Service·Controller·DTO·Test 를 프로젝트의 빌드 파일과 기존 코드 컨벤션을 먼저 감지해 그에 맞춰 생성한다(/spring-gen 으로 직접 호출).
+  Scaffolds Kotlin Spring Boot CRUD layers for a domain after detecting the project's build file and existing conventions. Use when: the user runs /spring-gen to create a new domain's entity, repository, service, controller, DTO and tests.
+disable-model-invocation: true
 ---
 
 # /spring-gen - Kotlin Spring Boot CRUD 코드 생성
-
-## Triggers
-- 새로운 도메인 모델의 CRUD 코드가 필요할 때
-- "Order 엔티티 만들어줘", "Product CRUD 생성해줘"
-- 기존 프로젝트에 새 도메인 계층을 추가할 때
-- Spring Boot 프로젝트에서 표준 계층 구조를 스캐폴딩할 때
 
 ## Usage
 ```
@@ -26,38 +17,41 @@ Options:
   --layers       생성할 계층 선택 (e.g., "entity,repo,service,controller")
   --no-test      테스트 코드 생성 생략
   --reactive     WebFlux + R2DBC 리액티브 스택으로 생성
-  --soft-delete  soft delete 패턴 적용 (deletedAt 필드 + @Where)
+  --soft-delete  soft delete 패턴 적용 (deletedAt 필드 + 조회 필터 — Hibernate 6.3+ 는 @SQLRestriction, 미만은 @Where)
   --audit        Auditing 필드 자동 포함 (createdAt, updatedAt, createdBy)
 ```
 
 ## Behavioral Flow
 
-### Phase 1: Discovery
-프로젝트 구조와 기존 코드 컨벤션을 분석한다.
+### Phase 1: Discovery — 스택 감지 (생성 전 필수, 단정 금지)
+아래를 **읽어서 확정**한다. 감지 결과가 옵션·이 문서의 예시와 다르면 감지 결과가 이긴다.
+확정할 수 없는 항목은 사용자에게 한 번에 묻고, 답이 없으면 가정을 리포트에 명시한다.
 
-**Steps:**
-1. **Scan**: `build.gradle.kts`, `application.yml` 스캔하여 의존성과 설정 파악
-2. **Analyze**: 기존 Entity, Controller, Service 파일을 읽어 패턴 추출
-   - 패키지 구조 (`com.example.app.model` vs `com.example.app.domain.order`)
-   - DTO 패턴 (inner class vs separate file, companion factory vs mapper)
-   - 테스트 프레임워크 (Kotest vs JUnit, MockK vs Mockito)
-   - 에러 핸들링 패턴 (sealed class, GlobalExceptionHandler)
-   - Audit 패턴 (BaseEntity, @CreatedDate)
-3. **Classify**: 프로젝트 타입 결정
-   - Servlet (Spring MVC) vs Reactive (WebFlux)
-   - JPA vs R2DBC vs JDBC
-   - Layered vs Hexagonal architecture
+1. **프로젝트 규칙**: 프로젝트 `CLAUDE.md`, `.claude/rules/` — 패키지·네이밍·테스트 규칙이 있으면 최우선.
+2. **빌드 파일**: `build.gradle.kts` / `build.gradle` / `pom.xml`, `gradle/libs.versions.toml`
+   - Spring Boot 메이저(3.x/4.x), Kotlin 버전, JDK toolchain
+   - Kotlin 컴파일러 플러그인: `plugin.spring`, `plugin.jpa`, `allOpen { … Entity }` — 없으면 프록시·lazy 로딩이 깨진다(kotlin-spring-guide SPR-TX-01). 추가는 사용자 확인 후.
+   - 데이터 접근: `spring-boot-starter-data-jpa` / `jooq` / `spring-boot-starter-jdbc` / `data-r2dbc` / `exposed`
+   - 웹: `starter-web`(MVC) vs `starter-webflux`; 테스트: kotest / junit-jupiter, mockk / springmockk / mockito
+   - 마이그레이션 도구: flyway / liquibase / 기타 — 의존성·`db/migration` 등 디렉터리로 판단. 스키마 파일 생성 여부는 사용자 확인.
+3. **설정**: `application.yml`/`.properties` — `spring.jpa.*`(open-in-view, batch 설정), 데이터소스 종류(DB 벤더 → ID 전략: 시퀀스 지원 여부)
+4. **기존 코드 샘플**: 가장 최근 도메인 하나를 골라 Entity·Repository·Service·Controller·DTO·Test 를 읽는다
+   - 패키지 구조(계층형 `controller/` vs 도메인형 `order/`, 헥사고날 `adapter/port`)
+   - Service 인터페이스+Impl 분리 여부, DTO 위치·팩토리 방식(companion `from` vs 매퍼)
+   - 에러 처리(ErrorCode/BusinessException, ProblemDetail), Audit(BaseEntity, `@CreatedDate`), ID 타입·전략
+5. **분류 확정**: MVC/WebFlux × JPA/jOOQ/JDBC/R2DBC × 계층형/헥사고날. 지원하지 않는 조합(예: Exposed)이면 생성 범위를 줄이고 이유를 보고한다.
+6. 기존 컨벤션이 없는 신규 프로젝트에서만 `kotlin-spring-guide` 의 `references/team-conventions.md` 기본값을 쓴다.
 
 ### Phase 2: Generation
 도메인 모델 정의를 기반으로 전체 계층 코드를 생성한다.
 
 **Steps:**
-1. **Entity**: JPA Entity with audit fields, validation, relationships
-2. **Repository**: Spring Data interface with custom queries
-3. **Service**: Interface + Implementation with business logic placeholders
+1. **Entity**: 감지된 데이터 접근 기술에 맞춘 모델(JPA Entity / jOOQ·JDBC 레코드 / R2DBC 엔티티), audit·관계는 기존 패턴대로
+2. **Repository**: Phase 1 에서 감지한 데이터 접근 방식대로(Spring Data interface / jOOQ DSL / JdbcClient·JdbcTemplate / R2DBC)
+3. **Service**: 프로젝트 방식(인터페이스+Impl 또는 단일 클래스), 비즈니스 로직은 TODO(human)
 4. **DTO**: Request/Response classes with Bean Validation
 5. **Controller**: REST endpoints with proper HTTP status codes
-6. **Test**: Unit (MockK) + Integration (@WebMvcTest, @DataJpaTest) tests
+6. **Test**: Unit(감지된 목 라이브러리) + 감지된 기술에 맞는 슬라이스 테스트(@WebMvcTest/@WebFluxTest, @DataJpaTest/@JooqTest/@JdbcTest/@DataR2dbcTest)
 
 **Generation Rules:**
 - Bottom-up 순서: Entity → Repository → Service → Controller
@@ -72,7 +66,9 @@ Options:
 **Steps:**
 1. **Compile**: `./gradlew compileKotlin` 실행
 2. **Test**: 생성된 테스트 실행 `./gradlew test --tests "*DomainName*"`
-3. **Report**: 생성 결과 요약 출력
+3. **Report**: 생성 결과 요약 + Phase 1 감지 결과(스택·가정) 출력
+
+Maven 프로젝트면 `./mvnw compile` / `./mvnw test -Dtest='*DomainName*'` 로 대체한다.
 
 ## Tool Coordination
 - **Glob**: 프로젝트 구조 파악, 기존 파일 탐색
@@ -117,7 +113,7 @@ Options:
 # soft delete (deletedAt) + audit (createdAt, updatedAt, createdBy) 패턴 적용
 ```
 
-## Generated Code Patterns
+## Generated Code Patterns (예시 — JPA + MVC + Kotest 조합일 때. 감지된 컨벤션이 우선)
 
 ### Entity
 ```kotlin
@@ -319,8 +315,8 @@ class OrderServiceTest : BehaviorSpec({
 class OrderControllerTest(
     @Autowired val mockMvc: MockMvc,
     @MockkBean val orderService: OrderService,
+    @Autowired val objectMapper: ObjectMapper, // Boot 구성 매퍼 재사용 (kotlin-spring-guide SPR-JSON-01)
 ) : BehaviorSpec({
-    val objectMapper = jacksonObjectMapper()
 
     Given("주문 생성 요청") {
         val request = CreateOrderRequest(name = "새 주문", status = OrderStatus.CREATED)
