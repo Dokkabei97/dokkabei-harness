@@ -1,12 +1,9 @@
 ---
 name: fastapi-gen
 description: |
-  Python FastAPI CRUD 계층 코드 생성. 도메인명을 입력하면 SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
-  Generates Python FastAPI CRUD layer code: given a domain name, automatically scaffolds SQLAlchemy Model, Pydantic Schema, Repository, Service, Router, and Test following project conventions. Use when: scaffolding a new FastAPI domain, generating CRUD boilerplate, or creating model/schema/repository/service/router layers for an entity.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+  FastAPI CRUD 계층 생성 — 쿼리 계층(ORM/원시 SQL)·마이그레이션 도구(Alembic/dbmate)를 감지해 기존 컨벤션대로 생성.
+  Generates FastAPI CRUD layers after detecting query layer and migration tool. Use when: /fastapi-gen <Domain>.
+disable-model-invocation: true
 ---
 
 # /fastapi-gen - Python FastAPI CRUD 코드 생성
@@ -25,7 +22,7 @@ Options:
   --fields       필드 정의 (e.g., "name:str, price:Decimal, status:OrderStatus")
   --layers       생성할 계층 선택 (e.g., "model,schema,repo,service,router")
   --no-test      테스트 코드 생성 생략
-  --async        비동기 스택으로 생성 (AsyncSession + async def)
+  --async        비동기 스택으로 생성 (감지 결과가 없을 때만 — 기존 코드가 있으면 그 방식을 따름)
   --soft-delete  soft delete 패턴 적용 (deleted_at 필드 + 쿼리 필터)
   --audit        Auditing 필드 자동 포함 (created_at, updated_at)
 ```
@@ -33,34 +30,35 @@ Options:
 ## Behavioral Flow
 
 ### Phase 1: Discovery
-프로젝트 구조와 기존 코드 컨벤션을 분석한다.
+프로젝트 구조와 기존 코드 컨벤션을 분석한다. **스택을 단정하지 않는다** — 감지 결과가 기본값보다 우선한다.
 
 **Steps:**
-1. **Scan**: `pyproject.toml`, `requirements.txt`, `alembic.ini` 스캔하여 의존성과 설정 파악
-2. **Analyze**: 기존 Model, Router, Service 파일을 읽어 패턴 추출
-   - 모듈 구조 (`app/models/order.py` vs `app/domain/order/model.py`)
-   - Schema 패턴 (`OrderCreate` / `OrderUpdate` / `OrderResponse`)
-   - DI 패턴 (`Depends(get_db)`, class-based `Depends`)
-   - 에러 핸들링 패턴 (custom exception handler, HTTPException)
-   - Audit 패턴 (TimestampMixin, created_at/updated_at)
-3. **Classify**: 프로젝트 타입 결정
-   - Sync vs Async (Session vs AsyncSession)
-   - SQLAlchemy 1.x vs 2.0
-   - Flat structure vs Domain-driven structure
+1. **Scan**: `pyproject.toml`/lock(`uv.lock`, `poetry.lock`, `requirements*.txt`), 프로젝트 `CLAUDE.md`·`.claude/rules/`·`docs/` 의 규약 확인
+2. **쿼리 계층 감지**:
+   | 신호 | 판정 | 생성 대상 |
+   |---|---|---|
+   | `sqlalchemy`/`sqlmodel` 의존성 + `DeclarativeBase`/`Mapped[` | ORM | Model + Repository(select/session) |
+   | `psycopg`(3)/`asyncpg` 직접 import, `%s`·`$1` SQL 문자열, `dict_row`/`class_row` | 원시 SQL | Repository(SQL 상수 + 바인딩), Model 클래스 없음 |
+   | `psycopg2` | 원시 SQL(레거시) | 기존 스타일 유지, psycopg 3 차이(PY-PG-01)는 이전 시에만 언급 |
+   | 혼용 | 경로별 | 새 도메인이 닮아야 할 기존 도메인을 사용자에게 확인 |
+3. **마이그레이션 도구 감지**: `alembic.ini` → Alembic revision · `db/migrations/*.sql` + `-- migrate:up` 또는 `dbmate` 언급 → dbmate SQL 파일(`dbmate new <name>` 명명 규칙) · 그 외 기존 디렉터리 관례 · 없음 → 스키마 변경 SQL 을 제안만 하고 파일은 만들지 않음
+4. **Analyze**: 기존 도메인 1개를 골라 파일 배치·Schema 명명(`OrderCreate`/`OrderResponse`)·DI(`Depends(get_conn)`, `Depends(get_db)`)·에러 처리·트랜잭션 경계(누가 commit 하는가 — yield 의존성 teardown commit 이면 FA-BG-03 확인)·sync/async 를 추출
+5. **DB 확장 확인**: PostGIS 등 확장 타입이 있으면 `python-fastapi-guide` 의 `references/postgis.md` 규칙(geography/SRID, 좌표 순서)을 적용
 
 ### Phase 2: Generation
-도메인 모델 정의를 기반으로 전체 계층 코드를 생성한다.
+감지 결과에 맞는 계층만 bottom-up 으로 생성한다.
 
 **Steps:**
-1. **Model**: SQLAlchemy Model with audit fields, validation, relationships
-2. **Schema**: Pydantic V2 Create/Update/Response with Field validation
-3. **Repository**: BaseRepository 상속 + 도메인 특화 쿼리
-4. **Service**: 비즈니스 로직 + 도메인 검증 + Repository 호출
-5. **Router**: REST endpoints with Depends, response_model, status_code
-6. **Test**: Unit (mock) + Integration (httpx AsyncClient) tests
+1. **Migration** (도구가 감지된 경우): 해당 도구 문법으로 테이블/인덱스 생성. 운영 테이블 인덱스는 `CONCURRENTLY`(dbmate 는 `-- migrate:up transaction:false` 별도 파일)
+2. **Model** (ORM 인 경우만): 기존 Base/Mixin 재사용
+3. **Schema**: Pydantic v2 Create/Update/Response
+4. **Repository**: ORM → session 쿼리 / 원시 SQL → SQL 상수 + 파라미터 바인딩(`= ANY(%s)` 등 psycopg 3 규칙), 기존 row factory 사용
+5. **Service**: 비즈니스 규칙 + Repository 호출, 트랜잭션 경계는 기존 관례대로
+6. **Router**: 반환 타입(`-> OrderResponse`)으로 응답 모델 지정, `response_class` 는 지정하지 않음(FA-RESP-01)
+7. **Test**: Unit (mock) + Integration (httpx AsyncClient). 원시 SQL 리포지토리는 실제 PostgreSQL 대상 테스트를 우선 — SQL 은 모킹으로 검증되지 않는다
 
 **Generation Rules:**
-- Bottom-up 순서: Model → Schema → Repository → Service → Router
+- Bottom-up 순서: (Migration) → (Model) → Schema → Repository → Service → Router
 - 각 계층은 아래 계층만 의존 (Router → Service → Repository)
 - Schema는 Model과 분리 (API 계약과 도메인 모델 독립)
 - 테스트는 각 계층별로 적합한 수준으로 생성
@@ -108,7 +106,7 @@ Options:
 ### Async Stack
 ```
 /fastapi-gen Notification --async
-# 비동기 스택으로 코드 생성 (AsyncSession + async def)
+# 감지할 기존 코드가 없을 때 비동기 스택으로 생성 (ORM: AsyncSession / 원시 SQL: AsyncConnection)
 ```
 
 ### Soft Delete + Audit
@@ -118,6 +116,8 @@ Options:
 ```
 
 ## Generated Code Patterns
+
+> 아래 Model/Repository 예시는 **ORM(SQLAlchemy) 감지 시** 형태다. 원시 SQL 이면 아래 "Repository (Raw SQL)"·"Migration (dbmate)" 예시를 따른다. 어느 쪽이든 기존 코드 스타일이 우선한다.
 
 ### Model
 ```python
@@ -199,6 +199,54 @@ class OrderRepository(BaseRepository[Order]):
         stmt = select(Order).where(Order.status == status)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+```
+
+### Repository (Raw SQL — psycopg 3, async)
+```python
+from psycopg import AsyncConnection
+from psycopg.rows import class_row
+
+from app.schemas.order import OrderCreate, OrderResponse
+
+_INSERT = """
+    INSERT INTO orders (name, amount, status)
+    VALUES (%(name)s, %(amount)s, %(status)s)
+    RETURNING id, name, amount, status, created_at, updated_at
+"""
+_BY_IDS = "SELECT id, name, amount, status, created_at, updated_at FROM orders WHERE id = ANY(%s)"
+
+
+class OrderRepository:
+    def __init__(self, conn: AsyncConnection) -> None:
+        self.conn = conn
+
+    async def create(self, data: OrderCreate) -> OrderResponse:
+        async with self.conn.cursor(row_factory=class_row(OrderResponse)) as cur:
+            await cur.execute(_INSERT, data.model_dump())
+            row = await cur.fetchone()
+        assert row is not None
+        return row
+
+    async def get_many(self, ids: list[int]) -> list[OrderResponse]:
+        async with self.conn.cursor(row_factory=class_row(OrderResponse)) as cur:
+            await cur.execute(_BY_IDS, (ids,))
+            return await cur.fetchall()
+```
+
+### Migration (dbmate)
+```sql
+-- migrate:up
+CREATE TABLE orders (
+  id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name        varchar(100) NOT NULL,
+  amount      numeric(12, 2) NOT NULL CHECK (amount > 0),
+  status      varchar(20) NOT NULL DEFAULT 'CREATED',
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+-- migrate:down
+DROP TABLE orders;
 ```
 
 ### Service

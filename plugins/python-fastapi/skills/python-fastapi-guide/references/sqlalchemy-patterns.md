@@ -2,6 +2,15 @@
 
 Python + FastAPI + SQLAlchemy 2.0에서 성능과 정합성을 위한 모범 사례.
 
+> **ORM(SQLAlchemy) 프로젝트 전용.** 쿼리 계층이 원시 SQL 이거나 마이그레이션 도구가 Alembic 이 아니면(dbmate 등) 이 파일을 적용하지 않는다 — `psycopg-postgres.md` 참조.
+
+## 목차
+- 모델 설계
+- N+1 문제
+- 연관 관계
+- Alembic 마이그레이션
+- 쿼리 최적화
+
 ---
 
 ## 모델 설계
@@ -481,12 +490,14 @@ async_session_factory = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False,
 )
 
-# FastAPI 의존성
+# FastAPI 의존성 — 주의: session.begin() 블록 종료(commit)는 0.118+ 에서 응답 전송 후 (FA-BG-03)
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_factory() as session:
         async with session.begin():
             yield session
 ```
+
+> 주의: FastAPI 0.118+ 에서 아래처럼 yield 의존성 teardown 에서 commit 하면 **응답 전송 후** 커밋된다 — 커밋 실패가 2xx 로 가려진다. 쓰기 경로는 서비스에서 명시 commit 하거나 `Depends(get_db, scope="function")`(0.121+). `async-concurrency.md` FA-BG-03.
 
 **`expire_on_commit=False` 설정 이유:**
 - commit 후에도 객체 속성에 접근 가능 (추가 쿼리 방지)

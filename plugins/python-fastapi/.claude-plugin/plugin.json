@@ -1,12 +1,10 @@
 {
   "name": "python-fastapi",
-  "description": "Python + FastAPI code generation, API design, and pattern guide bundle",
-  "version": "1.0.1",
+  "description": "Python + FastAPI specialist layer: async, pool, serialization, GC and deployment pitfall triage, plus convention-first code generation and API design",
+  "version": "2.0.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
-  "dependencies": [
-    "backend-shared"
-  ]
+  "dependencies": ["backend-shared"]
 }

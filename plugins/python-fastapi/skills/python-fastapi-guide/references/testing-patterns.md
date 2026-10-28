@@ -2,6 +2,19 @@
 
 Python + FastAPI 프로젝트의 테스트 작성 패턴과 전략.
 
+## 목차
+- 테스트 피라미드
+- pytest 기본 구조
+- 단위 테스트 — pytest + mock
+- 통합 테스트 — httpx AsyncClient
+- pytest-mock (mocker fixture)
+- Factory Boy + Faker
+- parametrize — 데이터 기반 테스트
+- 테스트 격리 전략
+- 비동기 테스트 설정
+- 흔한 실수와 해결
+- Testcontainers (실제 DB 테스트)
+
 ---
 
 ## 테스트 피라미드

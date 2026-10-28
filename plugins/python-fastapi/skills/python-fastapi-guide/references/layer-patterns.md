@@ -2,6 +2,16 @@
 
 Python + FastAPI에서 각 계층의 책임과 구현 패턴.
 
+> 범용 레퍼런스. Repository·DI 예시는 SQLAlchemy 기준이다 — 원시 SQL(psycopg) 프로젝트는 계층 책임만 참고하고 쿼리 코드는 기존 리포지토리 모듈 스타일과 `psycopg-postgres.md` 를 따른다.
+
+## 목차
+- Router Layer
+- Service Layer
+- Repository Layer
+- Dependency Injection — FastAPI Depends
+- Exception Handling
+- Pydantic V2 Schema 패턴
+
 ---
 
 ## Router Layer
@@ -329,6 +339,8 @@ class OrderRepository(BaseRepository[Order]):
 
 ### 기본 DI 체인
 
+> 주의: FastAPI 0.118+ 에서 아래처럼 yield 의존성 teardown 에서 commit 하면 **응답 전송 후** 커밋된다 — 커밋 실패가 2xx 로 가려진다. 쓰기 경로는 서비스에서 명시 commit 하거나 `Depends(get_db, scope="function")`(0.121+). `async-concurrency.md` FA-BG-03.
+
 ```python
 from collections.abc import AsyncGenerator
 
@@ -347,15 +359,15 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             yield session
 
 
-# 2단계: Repository
-def get_order_repository(
+# 2단계: Repository — I/O 없는 팩토리는 async def (def 면 요청마다 스레드풀 홉, FA-THREAD-02)
+async def get_order_repository(
     session: AsyncSession = Depends(get_db),
 ) -> OrderRepository:
     return OrderRepository(session)
 
 
 # 3단계: Service
-def get_order_service(
+async def get_order_service(
     repository: OrderRepository = Depends(get_order_repository),
 ) -> OrderService:
     return OrderService(repository)
@@ -367,6 +379,8 @@ def get_order_service(
 - Repository나 Session을 Router에서 직접 주입하지 않음
 
 ### Class-based Dependency (대안)
+
+> `Depends(OrderServiceDep)` 처럼 클래스를 의존성으로 쓰면 동기 `__init__` 이 스레드풀에서 실행된다(FA-THREAD-02) — 핫패스면 함수형 `async def` 팩토리가 낫다.
 
 ```python
 class OrderServiceDep:

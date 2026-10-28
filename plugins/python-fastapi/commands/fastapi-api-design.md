@@ -1,12 +1,9 @@
 ---
 name: fastapi-api-design
 description: |
-  FastAPI REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Router + Schema + 에러 핸들링 코드를 생성한다.
-  Designs and implements FastAPI REST APIs: turns requirements into endpoint designs and generates Router + Schema + error-handling code. Use when: designing a REST API in FastAPI, creating new API endpoints from requirements, or generating FastAPI routers and Pydantic schemas with error handling.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+  FastAPI REST API 설계·구현 — 기존 API 관례·쿼리 계층을 확인한 뒤 Router + Schema + 에러 처리 생성.
+  Designs FastAPI REST endpoints and generates Router + Schema + error handling. Use when: /fastapi-api-design <요구사항>.
+disable-model-invocation: true
 ---
 
 # /fastapi-api-design - FastAPI REST API 설계 및 구현
@@ -41,8 +38,13 @@ Options:
 2. **Operation Mapping**: CRUD + 커스텀 동작을 HTTP 메서드에 매핑
    - 표준 CRUD → GET, POST, PUT, PATCH, DELETE
    - 커스텀 동작 → POST `/resources/{id}/actions/{action}`
-3. **Convention Check**: 기존 프로젝트 API 패턴 분석
-   - URL 구조, 응답 형식, 페이지네이션, 에러 형식
+3. **Convention Check**: 기존 프로젝트 API 패턴 분석 — 감지 결과가 아래 "API 설계 원칙"의 기본값보다 우선
+   - URL 구조(버전 prefix 유무 포함), 응답 형식, 페이지네이션, 에러 형식
+   - 프로젝트 `CLAUDE.md`·`.claude/rules/`·`docs/` 의 API 규약
+4. **Stack Check**: 엔드포인트가 호출할 계층을 확인
+   - 쿼리 계층: SQLAlchemy ORM / 원시 SQL(psycopg 3·asyncpg) / 혼용 — Repository·Service 를 새로 만들어야 하면 `/fastapi-gen` 과 같은 감지 표를 따른다
+   - sync/async 경계: 기존 Repository 가 동기면 엔드포인트를 `def` 로(이벤트루프 블로킹 방지, `python-fastapi-guide` FA-ASYNC-01)
+   - 목록 API 는 데이터 규모를 확인해 offset 대신 keyset/cursor 페이지네이션 검토(FA-RESP-04)
 
 ### Phase 2: API 명세 설계
 엔드포인트 목록, 요청/응답 스키마, 에러 코드를 정의한다.
@@ -79,7 +81,7 @@ Options:
 설계된 API 명세를 기반으로 Router + Schema + Exception 코드를 생성한다.
 
 **Steps:**
-1. **Router**: APIRouter with endpoints, Depends, response_model
+1. **Router**: APIRouter with endpoints, Depends, 반환 타입/response_model (`response_class` 미지정 — FastAPI 0.130+ Rust 직렬화 경로 유지)
 2. **Schema**: Pydantic V2 Request/Response 모델
 3. **Exception**: 도메인 예외 클래스 + exception_handler 등록
 4. **Spec Output**: API 명세 요약표 출력
@@ -112,7 +114,7 @@ GET    /api/v1/orders/search?q=keyword&status=CREATED
 - 복수형 명사: `orders` (✓), `order` (✗)
 - kebab-case: `order-items` (✓), `orderItems` (✗)
 - 동사 금지: `create-order` (✗) → POST `/orders` (✓)
-- 버전 prefix: `/api/v1/` (필수)
+- 버전 prefix: 기존 프로젝트 관례를 따르고, 관례가 없을 때 `/api/v1/` 제안
 
 ### 페이지네이션
 
