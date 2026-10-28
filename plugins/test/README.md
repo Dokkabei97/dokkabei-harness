@@ -2,53 +2,63 @@
 
 # test
 
-> A test automation tool that bundles the TDD workflow and E2E testing (Playwright / Chrome) into a single plugin.
+> Test-first guidance plus browser E2E verification — with an index of testing pitfalls that even strong seniors miss.
+
+## Install
+
+```
+/plugin install test@dokkabei-harness
+```
 
 ## Overview
 
-`test` automates testing across the entire development cycle. It is built on two axes: a **TDD loop** (RED → GREEN → REFACTOR, 80%+ coverage) that forces you to write failing tests before writing code, and **E2E testing** that verifies completed user journeys. E2E splits into two paths depending on purpose. Playwright-based `/e2e` handles CI/CD regression, multi-browser, and headless automation, while Chrome Extension-based `/e2e-chrome` handles visual verification that needs an authenticated session or a quick, eyes-on local check.
+`test` has two axes. `tdd-workflow` keeps the RED → GREEN → REFACTOR cycle short and acts mainly as a triage index
+into specialist testing pitfalls (Spring context cache fragmentation, Kotest hook order, `runTest` virtual time, Go test
+cache and `synctest`, fake timers with promises, DB rollback isolation, Elasticsearch refresh and per-shard IDF,
+mutation testing). Browser verification is split into a model-invocable checklist (`e2e-chrome`, for Claude in Chrome
+or Playwright MCP) and a user-invoked generator for repository Playwright specs (`/e2e`).
 
-It supports both TypeScript (Jest/Vitest/Playwright) and Kotlin (Kotest/MockK/Spring Boot Test) stacks. `/e2e` can also serve as a deterministic gate for a loop — pass its run command to the `harness` generic loop as `--gate-cmd`.
+Nothing here assumes a stack: each guide first reads the project's build files, existing tests and `CLAUDE.md`/
+`.claude/rules`. Coverage numbers are guidance, not enforcement.
 
 ## Components
 
+### Skills
+
+- `tdd-workflow` (`test:tdd-workflow`) — Test-first cycle, Prove-It bug reproduction, test-level choice, coverage
+  interpretation, and a symptom → reference table. References (each item has an ID such as `TST-JVM-01` with
+  applicability, signal, mechanism, fix, counter-case, verification and source):
+  `jvm-kotlin.md`, `go.md`, `typescript.md`, `python.md`, `integration-data.md`, `coverage-mutation.md`.
+- `e2e-chrome` (`test:e2e-chrome`) — Browser verification checklist: pick the tool, pre-flight checks, scenario
+  decomposition, per-step evidence (snapshot, screenshot, console, network), completion criteria and report format.
+  References: `browser-tools.md` (Claude in Chrome / Playwright MCP notes), `playwright.md` (`TST-PW-01..10`).
+
 ### Commands
 
-- `/tdd` — Enforces the TDD methodology. Proceeds in the order: scaffold interface → write failing test (RED) → minimal implementation (GREEN) → refactor (REFACTOR) → verify 80%+ coverage. It applies the `tdd-workflow` skill and provides both TypeScript and Kotlin examples.
-- `/e2e` — Generates, maintains, and runs E2E tests with Playwright. Page Object Model-based test journey generation, multi-browser (Chromium/Firefox/WebKit) execution, screenshot/video/trace capture on failure, HTML/JUnit reports, flaky test detection and quarantine. The main session drives it directly via the `playwright` MCP server (when available) or the `npx playwright` CLI.
-- `/e2e-chrome` — Controls a real browser via the Chrome Extension to visually verify natural-language scenarios. It decomposes natural language into test steps, checks per-step screenshots and console errors, and produces a checklist report containing failure causes and proposed fixes. Supports `--url` / `--gif` / `--viewport` options. Local-only, and it dispatches the `chrome-e2e-runner` agent.
+- `/e2e <journey>` — Writes and runs Playwright specs that stay in the repository; trace-based failure diagnosis,
+  flaky checks, and use as a `/loop-run --gate-cmd` gate. User-invoked only (`disable-model-invocation: true`).
 
 ### Agents
 
-- `chrome-e2e-runner` — A visual E2E specialist agent that controls a real Chrome/Edge browser in `claude --chrome` mode. It leverages the browser's existing authenticated session to run natural-language journeys, verifies each step via DOM/console/screenshot, and produces a report that includes a session GIF and a severity-ranked issue table. (Tools: Read/Grep/Glob/Bash, model: opus)
-
-### Skills
-
-- `tdd-workflow` (`test:tdd-workflow`) — A skill that enforces test-first development when adding new features, fixing bugs, or refactoring. It covers the test pyramid (unit ~80% / integration ~15% / E2E ~5%), the Test Double preference hierarchy (Real > Fake > Stub > Mock), the DAMP > DRY principle for test code, and the Prove-It pattern of writing a bug reproduction test first. The `/tdd` command applies this skill.
+- `chrome-e2e-runner` — Runs a browser verification plan in a separate context and returns per-step evidence and a
+  PASS/FAIL/SKIP report. Inherits the session's MCP browser tools (no `tools` restriction); preloads `e2e-chrome`.
 
 ## Usage
 
-- **TDD**: `/tdd <description of the feature you want to implement>` — e.g. `/tdd I need a function to calculate market liquidity score`. The skill first defines the interface and generates a failing test, then drives just enough code to pass, the refactor, and the coverage report. For a bug fix, it starts by writing a reproduction test (RED).
-- **Playwright E2E**: `/e2e <user journey to verify>` — e.g. `/e2e Test the market search and view flow`. It analyzes the scenario, generates test code, runs it across multiple browsers, and leaves failure artifacts.
-- **Chrome visual verification**: `/e2e-chrome <natural-language scenario>` — e.g. `/e2e-chrome --gif Fill out the signup form and confirm the redirect to the email verification page`. It requires `claude --chrome` mode; when inactive, it guides you to restart with `claude --chrome -c` while keeping the current session.
-
-### Choosing `/e2e` vs `/e2e-chrome`
-
-| Situation | Command |
-|------|--------|
-| CI/CD regression · multi-browser · headless | `/e2e` (Playwright) |
-| Local visual check · authenticated session · external services (Google, etc.) | `/e2e-chrome` |
-| Sharing results with the team as a GIF | `/e2e-chrome` |
+- Test-first work or a flaky/slow test: just describe it — `tdd-workflow` activates on its own, or call `/test:tdd-workflow`.
+- "Check this page in the browser": `e2e-chrome` activates; long journeys can be delegated to `chrome-e2e-runner`.
+- A regression E2E test in the repo: `/e2e Checkout with a saved card`.
 
 ## Dependencies
 
-The plugin itself has no required dependencies. Good combinations to use together:
+None required. Works well with:
 
-- `harness` — Pass the E2E run command (e.g. `npx playwright test`) to `/loop-run --gate-cmd` to iterate until the user journey is green.
+- `harness` — pass a test command to `/loop-run --gate-cmd` to iterate until green.
+- Stack plugins (`kotlin-spring`, `go-mux`, `python-fastapi`, `nextjs`, `search`) for stack-specific performance, GC
+  and concurrency knowledge.
 
 ## Notes
 
-- **`/e2e-chrome` prerequisites**: `claude --chrome` mode, Claude in Chrome Extension v1.0.36+, Claude Code v2.0.73+, Chrome or Edge browser. It is a local-only path that does not work in CI/CD, and it does not generate Playwright code (that is the role of `/e2e`).
-- **Caution for money-related flows**: E2E involving real funds must only be run on testnet/staging, and no automated tests are run against production. For financial tests, use the `test.skip(process.env.NODE_ENV === 'production')` guard and a small-amount test wallet.
-- **Coverage baseline**: A minimum of 80% for all code, with 100% recommended for financial calculations, authentication, security, and core business logic.
-- `chrome-e2e-runner` does not store or transmit user credentials and does not access browser data outside the active test tab.
+- Claude in Chrome drives the user's real profile and sessions; irreversible actions require confirmation.
+- Retired in 2026-10: the `/tdd` command (merged into `tdd-workflow`) and the `/e2e-chrome` command (rewritten as the
+  `e2e-chrome` skill). Originals are in `archive/components/test/commands/`.
