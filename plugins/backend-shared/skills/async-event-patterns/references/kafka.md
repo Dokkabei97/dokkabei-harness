@@ -95,7 +95,7 @@
 - 신호: 재시작 후 일부 메시지 미처리, 처리 실패가 커밋을 막지 못함
 - 메커니즘: 동기 반환 리스너에서 오프셋 커밋(자동 커밋이든 Spring 의 BATCH/RECORD ack 든)은 리스너 메서드 **반환** 기준이다. 결과를 반환하지 않는 비동기 위임은 처리 완료 전에 커밋된다. 예외: **Spring Kafka 3.2+** 는 리스너 반환 타입이 `CompletableFuture<?>`·`Mono<?>`·Kotlin `suspend fun` 이면 AckMode 를 자동으로 `MANUAL` + out-of-order 커밋으로 바꾸고 비동기 완료 시점에 ack 한다.
 - 처방: (a) Spring Kafka 3.2+ 면 `suspend fun` 리스너(또는 `CompletableFuture` 반환)로 완료까지 기다리게 한다 — 단 비동기 결과 객체를 만들기 **전에** 던져진 예외는 리스너가 잡아 실패 완료된 결과로 반환해야 한다(문서 명시). 비동기 결과의 실패는 컨테이너 에러 핸들러(KFK-CON-03)가 처리. (b) 그 이전 버전은 리스너 안에서 처리를 끝내고 반환(배치 리스너 + 내부 병렬 `awaitAll`, → team-conventions 예시). (c) 직접 수동 ack 를 할 때는 오프셋이 파티션 내 연속이어야 하므로 순서 밖 완료를 추적해야 한다.
-- 반례: 유실 허용 이벤트(메트릭 등).
+- 반례: 유실 허용 이벤트(메트릭 등). (a) 의 비동기 반환은 이전 레코드 완료 전에 다음 레코드를 처리할 수 있어 **파티션 내 처리 순서가 보장되지 않는다** — 순서가 중요한 토픽은 (b) 처럼 리스너 안에서 완료까지 블로킹하고 처리량은 concurrency(파티션 수)로 얻는다.
 - 검증: 처리 중 프로세스 kill 후 재기동해 처리 누락 수 확인.
 - 근거: https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages/message-listener-container.html#committing-offsets , https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages/async-returns.html , https://kafka.apache.org/documentation/#consumerconfigs_enable.auto.commit
 

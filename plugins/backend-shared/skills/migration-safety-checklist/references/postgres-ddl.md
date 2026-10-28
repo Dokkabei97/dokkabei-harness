@@ -39,14 +39,14 @@
 - 처방:
   ```sql
   SET lock_timeout = '3s';
-  ALTER TABLE orders ADD CONSTRAINT orders_addr_nn CHECK (shipping_address IS NOT NULL) NOT VALID; -- 짧은 락, 신규 행부터 강제
+  ALTER TABLE orders ADD CONSTRAINT orders_addr_nn CHECK (shipping_address IS NOT NULL) NOT VALID; -- 짧은 락. 이후 모든 INSERT·UPDATE 에 강제(기존 NULL 행을 값 없이 UPDATE 하면 실패)
   -- (백필 완료 확인 후, 별도 파일/트랜잭션)
   ALTER TABLE orders VALIDATE CONSTRAINT orders_addr_nn;      -- SHARE UPDATE EXCLUSIVE, 스캔
   ALTER TABLE orders ALTER COLUMN shipping_address SET NOT NULL; -- 스캔 생략
   ALTER TABLE orders DROP CONSTRAINT orders_addr_nn;
   ```
   PG18+ 는 NOT NULL 제약 자체를 `NOT VALID` 로 추가하고 나중에 VALIDATE 할 수 있다(릴리즈노트) — 문법은 사용 버전 문서로 확인.
-- 반례: 수십만 행 이하 테이블은 단순 SET NOT NULL 이 더 단순하고 충분히 빠르다.
+- 반례: 수십만 행 이하 테이블은 단순 SET NOT NULL 이 더 단순하고 충분히 빠르다. NOT VALID 제약은 기존 행의 UPDATE 에도 걸리므로, 앱이 기존 NULL 행을 갱신할 때 값을 채우지 않는다면 ADD CONSTRAINT 를 백필 **후**로 옮긴다.
 - 검증: `SELECT conname, convalidated FROM pg_constraint WHERE conrelid = 'orders'::regclass;`
 - 근거: https://www.postgresql.org/docs/current/sql-altertable.html (SET NOT NULL 설명), https://www.postgresql.org/docs/release/12.0/ , https://www.postgresql.org/docs/release/18.0/
 

@@ -87,11 +87,11 @@
 ### KT-COL-05 · Kotlin 1.6+ `list - list`·`removeAll(list)` 는 더 이상 내부에서 HashSet 으로 바꾸지 않는다
 - 적용: Kotlin 1.6+ (1.5 이하에서 업그레이드한 코드 포함). 일반적인 루프 안 `x in list` 의 O(n·m) 은 다루지 않는다(상식).
 - 신호: `bigList - otherList`, `bigList.minus(otherList)`, `mutable.removeAll(otherList)`/`retainAll(otherList)`, `subtract` 를 큰 인자 컬렉션과 함께 사용. Kotlin 업그레이드 후 해당 구간만 느려짐.
-- 메커니즘: 1.6 전에는 stdlib 가 인자 컬렉션을 내부적으로 HashSet 으로 변환해 O(n) 에 가까웠다. 불안정한 `hashCode` 원소에서 결과가 틀릴 수 있어 1.6 에서 변환을 없앴고, 이제 인자가 `List` 면 원소마다 선형 `contains` → O(n·m). JVM 시스템 프로퍼티 `kotlin.collections.convert_arg_to_set_in_removeAll=true` 로 구 동작 복원 가능.
+- 메커니즘: 1.6 전에는 stdlib 가 인자 컬렉션을 내부적으로 HashSet 으로 변환해 O(n) 에 가까웠다. 불안정한 `hashCode` 원소에서 결과가 틀릴 수 있어 1.6 에서 변환을 없앴고, 이제 인자가 `List` 면 원소마다 선형 `contains` → O(n·m). 1.6 에 한해 JVM 시스템 프로퍼티 `kotlin.collections.convert_arg_to_set_in_removeAll=true` 로 임시 복원할 수 있었으나 **1.7 부터는 효과가 없다** — 처방으로 쓰지 말 것.
 - 처방: 인자를 명시적으로 `toHashSet()`(또는 처음부터 `Set`)으로 넘긴다 — `bigList - otherList.toHashSet()`.
 - 반례: 인자가 작으면(수십 개 이하) 변환 비용이 더 크다. 원소의 `hashCode`/`equals` 가 불안정·불일치하면 Set 변환이 결과를 바꾼다(변경의 이유).
 - 검증: 입력 크기 2배 시 시간 4배 여부, JMH.
-- 근거: https://kotlinlang.org/api/core/1.6/kotlin-stdlib/kotlin.collections/minus.html , https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/minus.html
+- 근거: https://kotlinlang.org/docs/compatibility-guide-16.html , https://kotlinlang.org/api/core/1.6/kotlin-stdlib/kotlin.collections/minus.html , https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/minus.html
 
 ### KT-COL-06 · value class 는 제네릭·nullable·인터페이스 위치에서 박싱된다
 - 적용: `@JvmInline value class UserId(val value: Long)` 로 ID 를 감싼 코드.

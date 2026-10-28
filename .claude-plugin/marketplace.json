@@ -88,7 +88,7 @@
       "name": "backend-shared",
       "source": "./plugins/backend-shared",
       "description": "Shared backend specialist layer: PostgreSQL, Kafka, Valkey and distributed-call pitfalls, migration safety, DTO/serialization rules, plus user-invoked API design, docs, test, and perf commands",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "develop",
       "keywords": [
         "backend",
@@ -110,7 +110,7 @@
       "name": "kotlin-spring",
       "source": "./plugins/kotlin-spring",
       "description": "JVM, Kotlin and Spring specialist layer: symptom-to-pitfall triage (GC, collections, coroutines, transactions, JPA, pools), a read-only diagnostic agent, and convention-first CRUD scaffolding",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "develop",
       "keywords": [
         "kotlin",
@@ -148,7 +148,7 @@
       "name": "go-mux",
       "source": "./plugins/go-mux",
       "description": "Go runtime and performance specialist layer (maps, GC, concurrency, net/http, database/sql) plus stdlib net/http mux code generation and API design",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "develop",
       "keywords": [
         "go",
@@ -181,7 +181,7 @@
       "name": "search",
       "source": "./plugins/search",
       "description": "Elasticsearch specialist layer: ES/Lucene performance, relevance (Korean nori), and vector/hybrid search pitfall hubs, review commands, and a user-invoked agent-team orchestrator",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "develop",
       "keywords": [
         "elasticsearch",

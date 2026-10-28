@@ -1,7 +1,7 @@
 {
   "name": "kotlin-spring",
   "description": "JVM, Kotlin and Spring specialist layer: symptom-to-pitfall triage (GC, collections, coroutines, transactions, JPA, pools), a read-only diagnostic agent, and convention-first CRUD scaffolding",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
