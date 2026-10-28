@@ -20,9 +20,10 @@
 // 을 JSON(--json) 또는 한국어 텍스트로 출력한다. LLM 판단(미발화 확정, description 진단)은
 // 여기서 하지 않는다 — 결정론 집계와 해석의 경계가 이 파일의 계약이다.
 //
-// 인벤토리 분모는 "트레이스를 쓴 설치본"에서 열거해야 한다(repo 디렉터리명과 설치
-// 네임스페이스의 드리프트 방지). 우선순위: --plugins-dir > 트레이스의 session_start.plugin_root
-// 역산 > 이 파일 자신의 위치(plugins/observe/bin → 형제 플러그인) 역산.
+// 인벤토리 분모는 "지금 설치된 것"에서 열거해야 한다(repo 디렉터리명과 설치
+// 네임스페이스의 드리프트 방지). 우선순위: --plugins-dir > ~/.claude/plugins/installed_plugins.json
+// (키당 installPath 하나 — 캐시의 고아 디렉터리 배제, meta.plugins_dir_source "installed")
+// > 트레이스의 session_start.plugin_root 역산 > 이 파일 자신의 위치(plugins/observe/bin → 형제 플러그인) 역산.
 // plugin_root 역산은 설치 캐시의 버전 간접 레이아웃(cache/<마켓>/<플러그인>/<버전>/)을
 // 인식한다 — 버전 디렉토리면 마켓플레이스 루트(조부모)까지 상향해 전체 설치본을 분모로 삼는다.
 const fs = require("fs");
@@ -314,14 +315,62 @@ function pluginItems(root, dir) {
   return items;
 }
 
+// ── 설치 목록 분모 (~/.claude/plugins/installed_plugins.json) ─────────────────
+// 캐시 디렉터리(cache/<마켓>/)에는 uninstall·archive 된 플러그인의 고아 디렉터리가 남는다(실측 2026-10:
+// mvp·feature-loop·startup·analyze·etc 가 분모 17에 섞임). 설치 목록이 진실원 — 키(<플러그인>@<마켓>)당 한 번,
+// 그 엔트리의 installPath(설치된 버전)를 쓴다. 범위: user·managed 는 항상, project·local 은 projectPath 가
+// 이 레포일 때만(allScopes = --all 이면 레포 무관 전부 — 전역 합산은 어느 레포의 설치든 분모다).
+// 파일 없음·파싱 실패·유효 엔트리 0 이면 null → 호출자가 기존 디렉터리 열거로 폴백.
+function installedPluginsPath() {
+  return path.join(
+    require("os").homedir(),
+    ".claude",
+    "plugins",
+    "installed_plugins.json",
+  );
+}
+
+function enumerateInstalled(root, allScopes) {
+  let j;
+  try {
+    j = JSON.parse(fs.readFileSync(installedPluginsPath(), "utf8"));
+  } catch (_) {
+    return null;
+  }
+  if (!j || typeof j.plugins !== "object" || !j.plugins) return null;
+  const inv = { plugins: 0, items: [] };
+  for (const [key, list] of Object.entries(j.plugins).sort()) {
+    const eligible = (Array.isArray(list) ? list : []).filter(
+      (e) =>
+        e &&
+        e.installPath &&
+        fs.existsSync(e.installPath) &&
+        (allScopes ||
+          e.scope === "user" ||
+          e.scope === "managed" ||
+          (root && path.resolve(e.projectPath || "") === path.resolve(root))),
+    );
+    if (!eligible.length) continue;
+    // 같은 키의 엔트리가 여럿(범위별 다른 버전)이면 가장 높은 version 하나만 — 분모는 플러그인당 1
+    eligible.sort((a, b) => cmpVersion(a.version || "", b.version || ""));
+    inv.plugins++;
+    inv.items.push(
+      ...pluginItems(
+        eligible[eligible.length - 1].installPath,
+        key.split("@")[0],
+      ),
+    );
+  }
+  return inv.plugins ? inv : null;
+}
+
 // ── 매칭 인벤토리 (추천 엔진 입력) ─────────────────────────────────────────────
-// 미사용 분모(enumerateInventory)는 그대로 두고, 매칭 후보만 넓힌다(로드맵 5.2).
-// 플러그인 출처: 설치 목록(~/.claude/plugins/installed_plugins.json — user 범위 + 이 레포 project 범위의 installPath)이
-//   읽히면 그것만 쓴다 — 트레이스 plugin_root 역산 분모(마켓 캐시 루트)에는 archive 된 구버전 플러그인이 남아 있어
-//   (실측: mvp·feature-loop·startup) 지금 설치되지 않은 자산을 추천하게 된다. --plugins-dir 명시 또는 설치 목록 부재면 분모 항목.
+// 미사용 분모(inv)를 시드로 매칭 후보만 넓힌다(로드맵 5.2).
+// 플러그인 출처: inv 그대로 — inv.source 가 "installed"(설치 목록)면 지금 설치된 자산만, --plugins-dir 명시
+//   또는 설치 목록 부재면 디렉터리 열거 분모 항목("plugins").
 // 비플러그인 출처: 스킬·커맨드·에이전트(<root>/.claude/·~/.claude/·<root>/.agents/skills·~/.agents/skills — 읽기만).
 // 비플러그인 자산 id 는 접두어 없는 이름(호출 이름 그대로). 같은 id 는 먼저 열거된 출처가 이긴다.
-function matchInventory(inv, root, preferInv) {
+function matchInventory(inv, root) {
   const os = require("os");
   const home = os.homedir();
   const out = [];
@@ -334,35 +383,7 @@ function matchInventory(inv, root, preferInv) {
       out.push({ ...it, source });
     }
   };
-  let installed = null;
-  if (!preferInv) {
-    try {
-      const j = JSON.parse(
-        fs.readFileSync(
-          path.join(home, ".claude", "plugins", "installed_plugins.json"),
-          "utf8",
-        ),
-      );
-      installed = [];
-      for (const [key, list] of Object.entries(j.plugins || {}).sort()) {
-        for (const e of Array.isArray(list) ? list : []) {
-          if (!e || !e.installPath || !fs.existsSync(e.installPath)) continue;
-          // user·managed 외 범위(project·local)는 projectPath 하나에 묶인다 — 이 레포가 아니면 이 레포에서 쓸 수 없는 자산
-          if (
-            e.scope !== "user" &&
-            e.scope !== "managed" &&
-            (!root || path.resolve(e.projectPath || "") !== path.resolve(root))
-          )
-            continue;
-          installed.push(...pluginItems(e.installPath, key.split("@")[0]));
-        }
-      }
-    } catch (_) {
-      installed = null; // 설치 목록 없음·깨짐 — 분모 항목으로 폴백
-    }
-  }
-  if (installed) add(installed, "installed");
-  else add(inv.items, "plugins");
+  add(inv.items, inv.source === "installed" ? "installed" : "plugins");
   // SKILL.md 탐색 — 깊이 3까지(~/.claude/skills/synced/<id>/<name>/SKILL.md 실측 레이아웃)
   const skillsUnder = (dir, depth = 3) => {
     const found = [];
@@ -786,7 +807,14 @@ function main() {
   };
   for (const s of agg.skills) s.outcome = outcomeOf(turns.by_skill, s.name);
   for (const a of agg.agents) a.outcome = outcomeOf(turns.by_agent, a.name);
-  const inv = enumerateInventory(pluginsDir);
+  // 분모: --plugins-dir 명시가 아니면 설치 목록이 우선(고아 캐시 디렉터리 배제), 없으면 디렉터리 열거 폴백
+  let inv =
+    pluginsDirSource === "flag" ? null : enumerateInstalled(root, opts.all);
+  if (inv) {
+    inv.source = "installed";
+    pluginsDir = installedPluginsPath();
+    pluginsDirSource = "installed";
+  } else inv = enumerateInventory(pluginsDir);
 
   // 미사용 판정 — 네임스페이스 정확 일치(usedFull) 또는 bare 이름의 tail 일치(usedTail)만 인정
   const isUsed = (item) =>
@@ -915,7 +943,7 @@ function main() {
   const rec = recommend.analyze({
     records,
     digests,
-    items: matchInventory(inv, root, pluginsDirSource === "flag"),
+    items: matchInventory(inv, root),
     events: root ? recommend.readEvents(root) : null, // null = 이벤트를 읽지 않는 실행(--all·--trace) — precision 도 null
     // git 반영 원장(Observe-Rec trailer) — 레포 모드만. --all 은 레포별 git 을 돌지 않는다(단순한 쪽 — 문서에 명시), --trace 는 레포가 없다
     applied: root ? recommend.gitApplied(root) : null,

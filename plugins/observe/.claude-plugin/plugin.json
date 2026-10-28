@@ -1,7 +1,7 @@
 {
   "name": "observe",
   "description": "Measures real harness usage (Claude Code + Codex hooks, Antigravity backfill, opt-in git hooks) into a per-repo .tracer/ store and turns it into improvement proposals with an explicit feedback loop",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"

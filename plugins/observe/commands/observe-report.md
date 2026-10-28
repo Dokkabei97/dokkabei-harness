@@ -59,7 +59,9 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
    `meta.schema.v0 > 0`이면 일회성 `node <observe>/bin/observe-migrate.js` 실행을 한 줄 안내(실행은 사용자 몫).
    Codex·Antigravity 도 쓰거나 훅을 켜기 전 Claude Code 기록이 있는 레포면 `node <observe>/bin/observe-backfill.js`(이 레포 세션만 다이제스트로 백필,
    다시 돌려도 중복 없음 — 턴 결과에 `runtime` 별로 섞여 들어간다)를 한 줄 안내(실행은 사용자 몫)
-3. **분모 검증**: `meta.plugins_dir`이 마켓플레이스 루트인지 확인. 특정 플러그인 하나의 설치
+3. **분모 검증**: 기본 분모는 설치 목록(`meta.plugins_dir_source: "installed"` — `installed_plugins.json` 의
+   플러그인당 installPath 하나, 캐시에 남은 archive·uninstall 고아 디렉터리 제외)이다. 출처가 `trace`/`self`
+   (설치 목록 없음·깨짐 폴백)면 `meta.plugins_dir`이 마켓플레이스 루트인지 확인. 특정 플러그인 하나의 설치
    루트(예: `.../cache/<마켓>/observe/1.1.0`)로 잡혀 `inventory.plugins`가 1로 붕괴하면 커버리지
    분석이 "unused 없음"이라는 잘못된 안심을 준다(실측 2026-07) — 집계기가 버전 레이아웃을 상향
    인식하지만, 의심스러우면 `--plugins-dir <마켓 캐시 루트 또는 레포 plugins/>`로 명시 오버라이드
