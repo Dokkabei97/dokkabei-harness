@@ -60,6 +60,8 @@ func Open(cfg Config) (*sql.DB, error) {
 
 ### 커넥션 풀 설정 가이드
 
+> 기본값 함정(MaxIdleConns 기본 2, ConnMaxLifetime 무제한)과 풀 고갈 진단은 `database-sql.md` GO-DB-01·02·05. 아래 값은 출발점일 뿐 — 인스턴스 수 × MaxOpenConns 가 DB `max_connections` 안에 들어오는지 먼저 계산한다.
+
 | 설정 | 권장값 | 이유 |
 |------|--------|------|
 | `MaxOpenConns` | 25~50 | DB 서버 `max_connections`의 일부 (다른 서비스 고려) |
@@ -438,6 +440,8 @@ r.db.QueryContext(ctx, `SELECT * FROM orders WHERE name = '`+userName+`'`)
 ---
 
 ## 마이그레이션
+
+> 프로젝트가 이미 쓰는 도구(디렉터리 구조·Makefile·CI 스크립트로 확인: golang-migrate, goose, dbmate, atlas 등)를 그대로 따른다. 아래는 도구가 아직 없을 때의 참고용 예시.
 
 ### golang-migrate
 

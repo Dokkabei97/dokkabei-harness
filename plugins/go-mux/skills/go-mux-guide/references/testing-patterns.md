@@ -589,12 +589,14 @@ func BenchmarkService_GetByID(b *testing.B) {
 	svc := NewService(repo)
 	ctx := context.Background()
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	b.ReportAllocs()
+	for b.Loop() { // Go 1.24+: 셋업은 -count 당 1회, 결과가 최적화로 제거되지 않음 (GO-OBS-07)
 		svc.GetByID(ctx, 1)
 	}
 }
 ```
+
+비교는 `go test -bench=GetByID -count=10 > new.txt` 후 `benchstat old.txt new.txt`. Go 1.23 이하 프로젝트는 `b.ResetTimer()` + `for range b.N` 사용.
 
 ---
 

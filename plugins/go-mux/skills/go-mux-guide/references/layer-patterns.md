@@ -83,7 +83,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 // Create — 생성 201 Created
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var req CreateRequest
-	if err := decodeJSON(r, &req); err != nil {
+	if err := decodeJSON(w, r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "INVALID_BODY", "invalid request body")
 		return
 	}
@@ -106,7 +106,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req UpdateRequest
-	if err := decodeJSON(r, &req); err != nil {
+	if err := decodeJSON(w, r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "INVALID_BODY", "invalid request body")
 		return
 	}
@@ -140,25 +140,44 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 ### HTTP 유틸리티 함수
 
 ```go
+// 먼저 인코딩한 뒤 헤더를 쓴다 — 인코딩 실패 시 200 + 잘린 바디를 막는다 (GO-HTTP-11)
 func writeJSON(w http.ResponseWriter, status int, data any) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		slog.Error("failed to encode response", "error", err)
+		http.Error(w, `{"error_code":"INTERNAL_ERROR","message":"internal server error"}`, http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		slog.Error("failed to encode response", "error", err)
-	}
+	w.Write(b)
 }
 
 func writeError(w http.ResponseWriter, status int, code, message string) {
-	writeJSON(w, status, map[string]string{
-		"error_code": code,
-		"message":    message,
-	})
+	writeJSON(w, status, ErrorResponse{ErrorCode: code, Message: message})
 }
 
-func decodeJSON(r *http.Request, dst any) error {
+type ErrorResponse struct {
+	ErrorCode string `json:"error_code"`
+	Message   string `json:"message"`
+}
+
+const maxBodyBytes = 1 << 20 // 1MiB — 엔드포인트 특성에 맞게 조정 (GO-HTTP-06)
+
+// decodeJSON 은 바디 크기를 제한하고, 알 수 없는 필드와 후행 데이터를 거부한다.
+// 초과 시 errors.As(err, new(*http.MaxBytesError)) 로 413 매핑.
+func decodeJSON(w http.ResponseWriter, r *http.Request, dst any) error {
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
-	return dec.Decode(dst)
+	if err := dec.Decode(dst); err != nil {
+		return err
+	}
+	// dec.More() 는 후행 `]`/`}` 를 못 잡는다(`{"a":1}}` 통과) — 두 번째 Decode 가 io.EOF 여야 한다.
+	if err := dec.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+		return errors.New("request body must contain a single JSON value")
+	}
+	return nil
 }
 
 func parseIntDefault(s string, defaultVal int) int {
@@ -537,14 +556,11 @@ func (s *service) GetByID(ctx context.Context, id int64) (*OrderResponse, error)
 	}
 }
 
-// Handler → HTTP 상태 코드 매핑
-func handleServiceError(w http.ResponseWriter, err error) {
-	var notFound *NotFoundError
-	if errors.As(err, &notFound) {
-		writeError(w, http.StatusNotFound, notFound.Code(), notFound.Error())  // ✅ 404
-		return
-	}
-}
+// Handler → HTTP 상태 코드 매핑 (발췌 — 전체 handleServiceError 는 Error Handling 절)
+//	var notFound *NotFoundError
+//	if errors.As(err, &notFound) {
+//		writeError(w, http.StatusNotFound, notFound.Code(), notFound.Error())  // ✅ 404
+//	}
 ```
 
 ### rows.Close()와 rows.Err() 패턴
@@ -736,13 +752,42 @@ mux := http.NewServeMux()
 orderHandler.RegisterRoutes(mux)
 
 wrapped := Chain(mux,
-	middleware.Recovery,
+	middleware.Recovery, // 핸들러 고루틴만 보호 — 핸들러가 띄운 고루틴은 별도 recover 필요 (GO-CON-12)
 	middleware.Logging,
-	middleware.CORS([]string{"*"}),
+	middleware.CORS([]string{"https://app.example.com"}),
 )
-
-http.ListenAndServe(":8080", wrapped)
+// 서빙은 타임아웃을 설정한 http.Server 로 (아래 main.go 와이어링, GO-HTTP-05) — http.ListenAndServe 직접 호출 금지
 ```
+
+### CORS — 허용 출처 반사 시 `Vary: Origin` 필수
+
+```go
+func CORS(allowedOrigins []string) Middleware {
+	allowed := make(map[string]struct{}, len(allowedOrigins))
+	for _, o := range allowedOrigins {
+		allowed[o] = struct{}{}
+	}
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// 응답이 Origin 에 따라 달라지므로 캐시/CDN 이 다른 출처의 응답을 재사용하지 않게 한다
+			w.Header().Add("Vary", "Origin")
+			origin := r.Header.Get("Origin")
+			if _, ok := allowed[origin]; ok {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			}
+			if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+				w.WriteHeader(http.StatusNoContent) // preflight 만 단락 — 일반 OPTIONS 는 mux 로
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+```
+
+쿠키 세션 기반이면 CSRF 는 Go 1.25+ `http.CrossOriginProtection` 을 우선 검토 (GO-HTTP-12).
 
 ### statusWriter — 응답 상태 캡처
 
@@ -805,16 +850,31 @@ func main() {
 
 	// Server
 	srv := &http.Server{
-		Addr:         ":" + cfg.Port,
-		Handler:      handler,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		Addr:              ":" + cfg.Port,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,   // 기본 0 = 무제한 (GO-HTTP-05)
+		ReadTimeout:       15 * time.Second,  // 바디 포함 — 업로드 경로는 별도 조정
+		IdleTimeout:       120 * time.Second, // 앞단 LB 유휴 타임아웃보다 길게
+		// WriteTimeout 은 스트리밍을 끊으므로 필요한 핸들러에서 ResponseController 로 개별 설정
 	}
 
-	slog.Info("server starting", "addr", srv.Addr)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
+	go func() {
+		slog.Info("server starting", "addr", srv.Addr)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatal(err)
+		}
+	}()
+
+	// Graceful shutdown (GO-HTTP-10): SIGTERM → (readiness 실패 전환·짧은 대기) → Shutdown
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		slog.Error("graceful shutdown failed", "error", err)
+		srv.Close()
 	}
 }
 ```

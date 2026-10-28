@@ -3,17 +3,13 @@ name: go-gen
 description: |
   Go stdlib mux CRUD 계층 코드 생성. 도메인명을 입력하면 Model, Repository, Service, Handler, DTO, Test를 프로젝트 컨벤션에 맞춰 자동 생성한다.
   Generates CRUD layer code for Go stdlib net/http mux projects: given a domain name, scaffolds Model, Repository, Service, Handler, DTO, and Test to match project conventions. Use when: "create an Order handler", "generate Product CRUD", adding a new domain layer to an existing Go project, or scaffolding the standard layer structure in a Go stdlib mux codebase.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /go-gen - Go stdlib mux CRUD 코드 생성
 
-## Triggers
-- 새로운 도메인 모델의 CRUD 코드가 필요할 때
-- "Order 핸들러 만들어줘", "Product CRUD 생성해줘"
+## When to Use
+- 새로운 도메인 모델의 CRUD 코드가 필요할 때 (`/go-gen` 직접 호출 — 자연어 요청은 `go-mux-developer` 에이전트·`go-mux-guide` 스킬이 담당)
 - 기존 Go 프로젝트에 새 도메인 계층을 추가할 때
 - Go stdlib mux 프로젝트에서 표준 계층 구조를 스캐폴딩할 때
 
@@ -113,6 +109,8 @@ Options:
 ```
 
 ## Generated Code Patterns
+
+> 공용 유틸(`writeJSON`/`writeError`/`decodeJSON`/`handleServiceError`), 에러 타입, 미들웨어, 서버 와이어링(타임아웃·graceful shutdown)은 `go-mux:go-mux-guide` 의 `references/layer-patterns.md` 를 따른다. 아래는 도메인 계층 골격만 보여준다.
 
 ### Model
 ```go
@@ -341,7 +339,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 func (h *Handler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeError(w, http.StatusBadRequest, "INVALID_ID", "invalid id")
 		return
 	}
 
@@ -356,8 +354,8 @@ func (h *Handler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var req CreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+	if err := decodeJSON(w, r, &req); err != nil { // 바디 상한·후행 데이터 거부 (layer-patterns 유틸, GO-HTTP-06)
+		writeError(w, http.StatusBadRequest, "INVALID_BODY", "invalid request body")
 		return
 	}
 

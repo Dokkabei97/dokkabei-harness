@@ -3,18 +3,14 @@ name: go-api-design
 description: |
   Go stdlib mux REST API 설계 및 구현. 요구사항을 기반으로 API 엔드포인트를 설계하고, Handler + DTO + 에러 핸들링 + 미들웨어 코드를 생성한다.
   Designs and implements REST APIs for Go stdlib net/http mux projects: turns requirements into endpoint designs and generates Handler + DTO + error handling + middleware code. Use when: designing a new Go REST API, adding or refactoring endpoints, deciding response/error formats, or structuring middleware chains and auth in a Go stdlib mux project.
-category: development
-complexity: advanced
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /go-api-design - Go REST API 설계 및 구현
 
-## Triggers
-- Go stdlib mux 프로젝트에서 새로운 API 엔드포인트를 설계해야 할 때
+## When to Use
+- Go stdlib mux 프로젝트에서 새로운 API 엔드포인트를 설계해야 할 때 (`/go-api-design` 직접 호출 — 자연어 요청은 `go-mux-developer` 에이전트·`go-mux-guide` 스킬이 담당)
 - 기존 Go API를 리팩토링하거나 버전업할 때
-- "주문 API 설계해줘", "결제 API 만들어줘" (Go 프로젝트 대상)
 - API 응답 형식이나 에러 처리 전략을 결정해야 할 때
 - 미들웨어 체인이나 인증 구조를 설계해야 할 때
 
@@ -107,314 +103,44 @@ Options:
 
 ## Generated Code Patterns
 
-### Handler — 라우팅 등록
-```go
-package order
+코드 템플릿은 중복 관리하지 않는다 — 생성 시 아래 레퍼런스를 읽고 **프로젝트 기존 컨벤션이 있으면 그쪽을 우선**한다.
 
-import "net/http"
+| 생성물 | 기준 레퍼런스 (`go-mux:go-mux-guide`) |
+|--------|----------------------------------------|
+| 라우트 등록(`RegisterRoutes`, Go 1.22 패턴), CRUD 핸들러 | `references/layer-patterns.md` → Handler Layer |
+| `writeJSON`/`writeError`/`decodeJSON`(바디 상한·후행 데이터 거부) | `references/layer-patterns.md` → HTTP 유틸리티 함수 |
+| 커스텀 에러 타입, Service→Handler 에러 매핑 | `references/layer-patterns.md` → Error Handling |
+| 미들웨어 Chain·Logging·Recovery·CORS·statusWriter, 서버 와이어링 | `references/layer-patterns.md` → Middleware Pattern, Dependency Injection |
 
-type Handler struct {
-	svc Service
-}
+생성 코드에 기본 반영할 스페셜리스트 항목(비용 없는 처방만): GO-HTTP-05(서버 타임아웃), GO-HTTP-06(바디 상한),
+GO-HTTP-07(패턴 충돌·`{$}`·405), GO-HTTP-08(메트릭 라벨은 `r.Pattern`), GO-HTTP-11(인코딩 후 헤더 기록),
+GO-CON-12(핸들러가 띄운 고루틴 recover), 쿠키 세션이면 GO-HTTP-12(`http.CrossOriginProtection`).
 
-func NewHandler(svc Service) *Handler {
-	return &Handler{svc: svc}
-}
+### 커서 기반 페이지네이션 (`--pagination cursor`)
 
-func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/v1/orders", h.List)
-	mux.HandleFunc("GET /api/v1/orders/{id}", h.GetByID)
-	mux.HandleFunc("POST /api/v1/orders", h.Create)
-	mux.HandleFunc("PUT /api/v1/orders/{id}", h.Update)
-	mux.HandleFunc("DELETE /api/v1/orders/{id}", h.Delete)
-}
-```
+layer-patterns 에 없는 부분만 둔다. 커서는 정렬 키(예: `created_at`, `id`)를 인코딩한 불투명 문자열이고, 조회는 keyset 조건으로 한다(OFFSET 금지).
 
-### Handler — CRUD 구현
-```go
-func (h *Handler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_ID", "invalid order id")
-		return
-	}
-
-	resp, err := h.svc.GetByID(r.Context(), id)
-	if err != nil {
-		handleServiceError(w, err)
-		return
-	}
-
-	writeJSON(w, http.StatusOK, resp)
-}
-
-func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
-	opts, err := parseListOptions(r)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_PARAMS", err.Error())
-		return
-	}
-
-	resp, err := h.svc.List(r.Context(), opts)
-	if err != nil {
-		handleServiceError(w, err)
-		return
-	}
-
-	writeJSON(w, http.StatusOK, resp)
-}
-
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
-	var req CreateRequest
-	if err := decodeJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_BODY", "invalid request body")
-		return
-	}
-
-	resp, err := h.svc.Create(r.Context(), req)
-	if err != nil {
-		handleServiceError(w, err)
-		return
-	}
-
-	writeJSON(w, http.StatusCreated, resp)
-}
-
-func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_ID", "invalid order id")
-		return
-	}
-
-	var req UpdateRequest
-	if err := decodeJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_BODY", "invalid request body")
-		return
-	}
-
-	resp, err := h.svc.Update(r.Context(), id, req)
-	if err != nil {
-		handleServiceError(w, err)
-		return
-	}
-
-	writeJSON(w, http.StatusOK, resp)
-}
-
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_ID", "invalid order id")
-		return
-	}
-
-	if err := h.svc.Delete(r.Context(), id); err != nil {
-		handleServiceError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-}
-```
-
-### 에러 응답 — JSON 에러 형식
-```go
-package httputil
-
-import (
-	"encoding/json"
-	"errors"
-	"log/slog"
-	"net/http"
-)
-
-type ErrorResponse struct {
-	ErrorCode string `json:"error_code"`
-	Message   string `json:"message"`
-}
-
-func writeJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
-}
-
-func writeError(w http.ResponseWriter, status int, code, message string) {
-	writeJSON(w, status, ErrorResponse{
-		ErrorCode: code,
-		Message:   message,
-	})
-}
-
-func decodeJSON(r *http.Request, dst any) error {
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-	return dec.Decode(dst)
-}
-
-func handleServiceError(w http.ResponseWriter, err error) {
-	var notFound *NotFoundError
-	var validation *ValidationError
-	var conflict *ConflictError
-
-	switch {
-	case errors.As(err, &notFound):
-		writeError(w, http.StatusNotFound, notFound.Code(), notFound.Error())
-	case errors.As(err, &validation):
-		writeError(w, http.StatusBadRequest, "VALIDATION_ERROR", validation.Error())
-	case errors.As(err, &conflict):
-		writeError(w, http.StatusConflict, conflict.Code(), conflict.Error())
-	default:
-		slog.Error("unexpected error", "error", err)
-		writeError(w, http.StatusInternalServerError, "INTERNAL_ERROR", "internal server error")
-	}
-}
-```
-
-### 커스텀 Error 타입
-```go
-package order
-
-import "fmt"
-
-type NotFoundError struct {
-	Resource string
-	ID       int64
-}
-
-func (e *NotFoundError) Error() string {
-	return fmt.Sprintf("%s not found: %d", e.Resource, e.ID)
-}
-
-func (e *NotFoundError) Code() string {
-	return fmt.Sprintf("%s_NOT_FOUND", strings.ToUpper(e.Resource))
-}
-
-type ConflictError struct {
-	Resource string
-	Reason   string
-}
-
-func (e *ConflictError) Error() string {
-	return fmt.Sprintf("%s conflict: %s", e.Resource, e.Reason)
-}
-
-func (e *ConflictError) Code() string {
-	return fmt.Sprintf("%s_CONFLICT", strings.ToUpper(e.Resource))
-}
-
-type ValidationError struct {
-	Field   string
-	Message string
-}
-
-func (e *ValidationError) Error() string {
-	return fmt.Sprintf("validation failed: %s %s", e.Field, e.Message)
-}
-```
-
-### 미들웨어 패턴
-```go
-package middleware
-
-import (
-	"log/slog"
-	"net/http"
-	"time"
-)
-
-type Middleware func(http.Handler) http.Handler
-
-// Chain — 미들웨어 체이닝 (왼쪽부터 바깥 → 안쪽)
-func Chain(h http.Handler, mws ...Middleware) http.Handler {
-	for i := len(mws) - 1; i >= 0; i-- {
-		h = mws[i](h)
-	}
-	return h
-}
-
-// Logging — 요청/응답 로깅
-func Logging(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		sw := &statusWriter{ResponseWriter: w, status: http.StatusOK}
-		next.ServeHTTP(sw, r)
-		slog.Info("request",
-			"method", r.Method,
-			"path", r.URL.Path,
-			"status", sw.status,
-			"duration", time.Since(start),
-		)
-	})
-}
-
-// Recovery — panic 복구
-func Recovery(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				slog.Error("panic recovered", "error", err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
-			}
-		}()
-		next.ServeHTTP(w, r)
-	})
-}
-
-// CORS — Cross-Origin Resource Sharing
-func CORS(allowedOrigins []string) Middleware {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			origin := r.Header.Get("Origin")
-			for _, allowed := range allowedOrigins {
-				if origin == allowed || allowed == "*" {
-					w.Header().Set("Access-Control-Allow-Origin", origin)
-					w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-					w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-					break
-				}
-			}
-			if r.Method == http.MethodOptions {
-				w.WriteHeader(http.StatusNoContent)
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
-}
-
-type statusWriter struct {
-	http.ResponseWriter
-	status int
-}
-
-func (w *statusWriter) WriteHeader(status int) {
-	w.status = status
-	w.ResponseWriter.WriteHeader(status)
-}
-```
-
-### 커서 기반 페이지네이션
 ```go
 type CursorPageResponse[T any] struct {
-	Items      []T    `json:"items"`
+	Items      []T    `json:"items"` // 빈 결과도 [] 로 — make([]T, 0, n) 로 초기화 (GO-SLC-09)
 	NextCursor string `json:"next_cursor,omitempty"`
 	HasNext    bool   `json:"has_next"`
 }
 
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
-	cursor := r.URL.Query().Get("cursor")
-	limit := parseIntDefault(r.URL.Query().Get("limit"), 20)
+	q := r.URL.Query()
+	limit := clamp(parseIntDefault(q.Get("limit"), 20), 1, 100)
 
-	resp, err := h.svc.ListByCursor(r.Context(), cursor, limit)
+	resp, err := h.svc.ListByCursor(r.Context(), q.Get("cursor"), limit)
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
-
 	writeJSON(w, http.StatusOK, resp)
 }
+
+// Repository: limit+1 개를 읽어 HasNext 판정
+// WHERE (created_at, id) < ($1, $2) ORDER BY created_at DESC, id DESC LIMIT $3
 ```
 
 ## Output — API Spec Summary

@@ -1,12 +1,10 @@
 {
   "name": "go-mux",
-  "description": "Go stdlib net/http mux code generation, API design, and guide",
-  "version": "1.0.1",
+  "description": "Go runtime and performance specialist layer (maps, GC, concurrency, net/http, database/sql) plus stdlib net/http mux code generation and API design",
+  "version": "1.1.0",
   "author": {
     "name": "Dokkabei97",
     "email": "wkdrn970@gmail.com"
   },
-  "dependencies": [
-    "backend-shared"
-  ]
+  "dependencies": ["backend-shared"]
 }
