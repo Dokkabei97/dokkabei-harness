@@ -3,10 +3,7 @@ name: event-gen
 description: |
   이벤트 기반 코드 스캐폴딩 생성 — Kafka Producer/Consumer, Spring ApplicationEvent, AsyncAPI 스펙
   Scaffolds event-driven code — Kafka Producer/Consumer, Spring ApplicationEvent, and AsyncAPI specs. Use when: adding Kafka producers or consumers, wiring Spring application events, writing an AsyncAPI spec for event contracts.
-category: scaffold
-complexity: basic
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /event-gen - 이벤트 기반 코드 스캐폴딩
@@ -145,6 +142,5 @@ app/
 - 운영 환경 배포 및 모니터링 설정
 
 ## Related
-- `async-event-patterns` 스킬 — 이벤트 패턴 레퍼런스
-- `/api-gen --style event` — REST/GraphQL + 이벤트 통합 스캐폴딩
+- `async-event-patterns` 스킬 references/kafka.md·distributed.md — 프로듀서 기본값(KFK-PRD-*), 컨슈머 리밸런스·에러 핸들러(KFK-CON-*), outbox(DIST-MSG-01)
 - `/api-test --with-events` — 이벤트 검증 테스트

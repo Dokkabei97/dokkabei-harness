@@ -3,10 +3,7 @@ name: api-test
 description: |
   기존 API 엔드포인트 통합 테스트 자동 생성 — @WebMvcTest/TestClient, MockK/pytest-mock, 인증/GraphQL 시나리오
   Auto-generates integration tests for existing API endpoints — @WebMvcTest/TestClient, MockK/pytest-mock, auth and GraphQL scenarios. Use when: adding integration tests to existing endpoints, covering auth flows or GraphQL queries, generating controller test suites.
-category: testing
-complexity: basic
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /api-test - API 통합 테스트 자동 생성
@@ -154,6 +151,6 @@ Options:
 - 외부 서비스 연동 테스트 (Mock 처리)
 
 ## Related
-- `/api-gen` — API 스캐폴딩 생성 후 테스트 추가
+- 스택별 생성기(`/spring-gen`, `/go-gen`, `/fastapi-gen`) — 스캐폴딩 생성 후 테스트 추가
 - `/bean-check` — 테스트에서 발견된 DI 문제 진단
 - `/graphql-check` — GraphQL 테스트와 함께 스키마 검증

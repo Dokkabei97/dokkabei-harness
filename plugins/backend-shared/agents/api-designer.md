@@ -5,6 +5,8 @@ description: |
   Designs REST/GraphQL API contracts — OpenAPI specs, GraphQL SDL, DTO/Input Type design, validation, standardized error responses, and versioning for Kotlin/Spring Boot and Python/FastAPI. Use when: designing an API contract, writing an OpenAPI spec or GraphQL SDL, standardizing error responses, planning API versioning.
 tools: Read, Grep, Glob
 model: sonnet
+skills:
+  - dto-design-patterns
 ---
 
 # API Designer
@@ -131,6 +133,12 @@ fun searchCatalogs(req: CatalogSearchRequest): ... // service 계약
 - [ ] 허용 불가 값을 받은 후 invalid 처리하는 지점이 있는가?
 - [ ] admin/service가 같은 DTO를 공유하지 않는가?
 - [ ] 요청 필수 필드가 `channel` 같은 **client 강제 명시** 값인가?
+
+## 참조
+
+- 사전 로드된 `dto-design-patterns` — 팀 DTO 규칙(DTO-T-*)과 직렬화 함정(DTO-S-*)을 계약 설계에 적용한다.
+- 멱등 키·타임아웃 계약이 필요한 API 는 `async-event-patterns` 의 references/distributed.md (DIST-IDEM-01, DIST-TMO-01).
+- 프로젝트 스택·버전은 빌드 파일과 프로젝트 CLAUDE.md 로 먼저 확인한다(프레임워크 단정 금지).
 
 ## Key Actions
 

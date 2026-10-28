@@ -1,19 +1,16 @@
 ---
 name: api-perf
 description: |
-  API 성능 분석 — N+1 쿼리(JPA/SQLAlchemy), 커넥션 풀 설정, 쿼리 실행계획 힌트
-  Analyzes API performance — N+1 queries (JPA/SQLAlchemy), connection pool configuration, and query execution plan hints. Use when: an API endpoint is slow, hunting N+1 query problems, tuning connection pools, reviewing query execution plans.
-category: validation
-complexity: intermediate
-mcp-servers: []
-personas: []
+  API 성능 분석 — N+1 쿼리(ORM·원시 SQL), 커넥션 풀 설정(HikariCP/pgxpool/database/sql/psycopg), 쿼리 실행계획 힌트. 데이터 접근 방식은 빌드 파일로 먼저 확인
+  Analyzes API performance — N+1 queries (ORM or raw SQL), connection pool configuration (HikariCP, pgxpool, database/sql, psycopg), and query execution plan hints, after detecting the project's data-access stack. Use when: an API endpoint is slow, hunting N+1 query problems, tuning connection pools, reviewing query execution plans.
+disable-model-invocation: true
 ---
 
 # /api-perf - API 성능 분석
 
 ## Triggers
 - API 응답 시간이 느려졌을 때
-- JPA/SQLAlchemy 쿼리 최적화가 필요할 때
+- 데이터 접근 계층(ORM 또는 원시 SQL) 쿼리 최적화가 필요할 때
 - 커넥션 풀 설정이 적절한지 확인하고 싶을 때
 - N+1 쿼리 문제가 의심될 때
 - 대량 데이터 조회 성능을 개선하고 싶을 때
@@ -31,7 +28,7 @@ Options:
 ## Behavioral Flow
 
 ### 분석 플로우
-1. **Discover**: Repository/Query 파일 스캔, JPA 엔티티 관계 분석, SQLAlchemy relationship 매핑
+1. **Discover**: 먼저 프로젝트의 데이터 접근 방식(JPA/jOOQ, SQLAlchemy/원시 SQL(psycopg·asyncpg), Go database/sql·pgx)과 드라이버를 빌드 파일로 확인해 해당 패턴만 적용. Repository/Query 파일 스캔, JPA 엔티티 관계 분석, SQLAlchemy relationship 매핑
    - Kotlin: `@Entity`, `@Repository`, `@Query`, `@EntityGraph` 스캔
    - Python: `relationship()`, `selectinload`, `joinedload`, `session.execute()` 패턴 스캔
 2. **Analyze**: focus 영역별 성능 분석
@@ -50,7 +47,7 @@ Options:
 | List<Entity> 반환 + @EntityGraph 없음 | 🔴 Critical | N+1 쿼리 — 개별 연관 로딩 |
 | `@ManyToOne(fetch = EAGER)` | 🟡 High | 불필요한 연관 항상 로딩 |
 | SELECT * 패턴 (DTO projection 미사용) | 🟡 Medium | 불필요한 컬럼 전송 |
-| HikariCP maximumPoolSize 기본값(10) 사용 | 🟡 Medium | 고부하 시 커넥션 고갈 위험 |
+| 풀 크기 × 파드 수 > DB max_connections, 또는 근거 없는 대형 풀 | 🟡 Medium | 크다고 빠르지 않음 — 산정법 PG-POOL-01 |
 | connectionTimeout < 3000ms | 🟡 High | 커넥션 대기 시 빠른 실패 |
 | `findAll()` 무조건 호출 (페이징 없음) | 🔴 Critical | 대량 데이터 OOM 위험 |
 | 복합 WHERE 조건 인덱스 미확인 | 🟡 Medium | 풀 테이블 스캔 가능 |
@@ -139,4 +136,5 @@ Options:
 ## Related
 - `/bean-check` — DI/트랜잭션 검증
 - `/graphql-check` — GraphQL N+1 특화 분석
-- `spring-boot-patterns` 스킬 — JPA 쿼리 패턴 레퍼런스
+- `kotlin-spring:kotlin-spring-guide` 스킬 references/spring-data-tx.md — JPA N+1·페이징·대량 조회(SPR-JPA-*), HikariCP 풀(SPR-POOL-*)
+- `async-event-patterns` 스킬 references/postgres.md — 풀 크기(PG-POOL-*), 플래너 함정(PG-PLAN-*), 인덱스 선택(PG-IDX-*)

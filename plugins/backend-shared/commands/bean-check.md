@@ -3,10 +3,7 @@ name: bean-check
 description: |
   DI 설정 검증 — 순환 의존성, 누락된 Bean, @Transactional 오용, Depends 체인 분석, GraphQL DataLoader 검증 (Spring Boot/FastAPI)
   Validates dependency-injection configuration — circular dependencies, missing beans, @Transactional misuse, Depends chain analysis, and GraphQL DataLoader checks for Spring Boot/FastAPI. Use when: debugging bean wiring errors, circular dependencies, transaction boundary issues, or DataLoader registration.
-category: validation
-complexity: intermediate
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /bean-check - DI/트랜잭션 설정 검증
@@ -143,4 +140,4 @@ Options:
 ## Related
 - `/graphql-check` — GraphQL 스키마/성능/보안 종합 검증
 - `/api-test` — 발견된 문제 수정 후 테스트 작성
-- `/migrate` — 트랜잭션과 관련된 DB 마이그레이션 검토
+- `migration-safety-checklist` 스킬 — 트랜잭션과 관련된 DB 마이그레이션 검토

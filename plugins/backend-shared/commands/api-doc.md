@@ -3,10 +3,7 @@ name: api-doc
 description: |
   코드 기반 API 문서 생성 — OpenAPI 3.0 스펙, GraphQL SDL, 요청/응답 예시, springdoc/FastAPI 어노테이션
   Generates API documentation from code — OpenAPI 3.0 specs, GraphQL SDL, request/response examples, and springdoc/FastAPI annotations. Use when: documenting existing endpoints, producing an OpenAPI spec or GraphQL SDL from code, adding swagger/springdoc annotations.
-category: documentation
-complexity: basic
-mcp-servers: []
-personas: []
+disable-model-invocation: true
 ---
 
 # /api-doc - API 문서 자동 생성
@@ -131,6 +128,6 @@ Options:
 - 외부 서비스 API 문서 생성 (프로젝트 코드 기반만)
 
 ## Related
-- `/api-gen` — API 스캐폴딩 생성 시 문서 동시 생성 (--with-docs)
+- 스택별 생성기(`/spring-gen`, `/go-gen`, `/fastapi-gen`) — 새 엔드포인트 스캐폴딩
 - `/api-test` — 문서화된 API에 대한 테스트 생성
 - `/graphql-check --focus schema` — GraphQL 스키마 네이밍/구조 검증
