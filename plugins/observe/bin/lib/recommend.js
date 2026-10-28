@@ -31,7 +31,14 @@
 //   accepted·rejected·snoozed 는 사용자가 ID 별로 명시 응답한 것만 status 이벤트로 append(feedback — observe-report --accept 등).
 //   expired 는 쓰는 주체가 없는 파생 상태다(currentStatus): 응답 없이 expireDays 가 지난 제안. 파일은 갱신하지 않고 매번 다시 계산한다.
 //   precision(precisionOf) = 유형별 accepted / (accepted + rejected), 분모 < 10 이면 "표본 부족". θ 는 수동 상수(자동 보정은 백로그).
+// 반영(git 원장): 커밋 메시지 trailer "Observe-Rec: <id>"(harness:evolve 가 반영 커밋에 붙인다)를 git log 로 결정론 수집한다(gitApplied).
+//   trailer 가 있는 추천 = applied — accepted 를 포함하는 상위 상태라 다시 제안하지 않는다. recommendations.jsonl 에는 쓰지 않는다
+//   (git 이 원장 — 리포트가 매번 다시 계산). precision 에서는 그 회차를 수락으로 센다(명시 응답이 없어도).
+//   효과: 마지막 반영 커밋 전/후 같은 길이 창(effectDays, 경과일이 더 짧으면 그만큼)에서 대상 자산의 "매칭 턴 중 실제 호출 비율"
+//   = 호출 턴 / (호출 턴 + missed 근거 턴)을 비교한다. 어느 쪽이든 매칭 턴 < effectMin 이면 "표본 부족". 레포 모드만(--all·--trace 는 git 을 읽지 않는다).
+//   "암묵 수락(SKILL.md diff 추측)" 백로그는 이 결정론 방식으로 대체됐다 — diff 를 해석하지 않고 커밋에 남긴 ID 만 믿는다.
 const fs = require('fs');
+const cp = require('child_process');
 const crypto = require('crypto');
 const P = require('../hooks/_lib/paths');
 const { commandOf } = require('../hooks/_lib/writer');
@@ -40,8 +47,9 @@ const M = require('./match');
 // θ·margin 은 수동 상수(자동 보정은 백로그) — 이 레포 실데이터(미발화 확정 턴 45건) 점수 분포 기준:
 // "이어서 진행해"·"좋아 진행해"·"푸시해줘"류 짧은 범용 후속은 top1 ≤6, 짧지만 명백한 요청("커밋 푸시 진행해줘" →
 // sync-claude-md)은 top1 ≈11·margin ≈6. 긴 프롬프트는 점수가 커지므로 margin 3 으로 애매한 1·2위 근접을 거른다.
-// expireDays: 응답 없는 제안의 만료(파생) · snoozeDays: --snooze 기본 기간 · precisionMin: precision 을 보여 줄 최소 분모 — 전부 수동 상수
-const DEFAULTS = { theta: 10, margin: 3, minSample: 20, orchMin: 3, cap: 3, tuneMin: 3, cooldownDays: 30, expireDays: 30, snoozeDays: 7, precisionMin: 10 };
+// expireDays: 응답 없는 제안의 만료(파생) · snoozeDays: --snooze 기본 기간 · precisionMin: precision 을 보여 줄 최소 분모
+// effectDays: 반영 전후 비교 창(--effect-days) · effectMin: 전후 각 창의 최소 매칭 턴 수 — 전부 수동 상수
+const DEFAULTS = { theta: 10, margin: 3, minSample: 20, orchMin: 3, cap: 3, tuneMin: 3, cooldownDays: 30, expireDays: 30, snoozeDays: 7, precisionMin: 10, effectDays: 30, effectMin: 5 };
 const TYPES = ['missed', 'tune', 'orchestrate'];
 const EVIDENCE_MAX = 20; // 이벤트 한 줄에 싣는 근거 ref 상한 (PIPE_BUF 이하 유지)
 const LINE_MAX = 4000;
@@ -127,8 +135,47 @@ const brokenStatus = (e) => (e.status === 'rejected' || e.status === 'snoozed') 
 // 돌아가거나(없으면 new) 다음 기록 리포트가 새 created 를 붙여 스스로 낫는다. 코드가 쓰는 created 는 늘 ISO ts 다.
 const brokenCreated = (e) => Number.isNaN(Date.parse(e.ts));
 
-// id → { created(마지막 created), status(그 뒤 파일 순서상 마지막 status), createdAtStatus(status 직전 created) }
-function stateOf(events) {
+// ── git 반영 원장 ─────────────────────────────────────────────────────────────
+// HEAD 에서 닿는 커밋 중 Observe-Rec trailer 가 있는 것 → { ok, commits, malformed, byId: Map id → { first, last, commits:[{sha, ts}] } }.
+// trailer 해석은 git 자신의 파서(%(trailers:key=…))에 맡긴다 — 메시지 마지막 문단의 trailer 블록만 인정하고 본문 중간의 같은 문자열은
+// 세지 않는다. --grep 은 후보 커밋을 좁히는 용도일 뿐이다. 값은 rec_<12 hex> 만 받는다(한 줄에 쉼표·공백으로 여러 개도 허용) —
+// 그 밖의 값은 원문일 수 있어 개수(malformed)만 세고 싣지 않는다. 시각은 커밋 시각(%cI).
+// git 이 없거나 저장소 밖·커밋 없음·시간 초과면 조용히 ok:false(0건). 읽기만 한다(--no-show-signature: 서명 출력이 stdout 에 섞이지 않게).
+const REC_ID = /^rec_[0-9a-f]{12}$/;
+function gitApplied(root) {
+  const out = { ok: false, commits: 0, malformed: 0, byId: new Map() };
+  if (!root) return out;
+  let text = '';
+  try {
+    text = cp.execFileSync('git', ['-C', root, 'log', '--no-show-signature', '--basic-regexp', '--regexp-ignore-case', '--grep=^observe-rec[[:space:]]*:',
+      '--format=%x1e%H%x1f%cI%x1f%(trailers:key=Observe-Rec,valueonly)'],
+    { encoding: 'utf8', timeout: 5000, maxBuffer: 16 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch (_) { return out; }
+  out.ok = true;
+  for (const rec of text.split('\x1e')) {
+    const [sha, ts, vals] = rec.split('\x1f');
+    if (!/^[0-9a-f]{40}([0-9a-f]{24})?$/.test(sha || '') || Number.isNaN(Date.parse(ts)) || !vals) continue;
+    let hit = false;
+    for (const v of vals.split(/[\s,]+/).filter(Boolean)) {
+      if (!REC_ID.test(v)) { out.malformed++; continue; }
+      if (!out.byId.has(v)) out.byId.set(v, { first: null, last: null, commits: [] });
+      const a = out.byId.get(v);
+      if (!a.commits.some((c) => c.sha === sha)) a.commits.push({ sha, ts }); // 한 커밋에 같은 ID 두 줄이어도 1회
+      hit = true;
+    }
+    if (hit) out.commits++;
+  }
+  for (const a of out.byId.values()) {
+    a.commits.sort((x, y) => Date.parse(x.ts) - Date.parse(y.ts) || (x.sha < y.sha ? -1 : 1));
+    a.first = a.commits[0].ts;
+    a.last = a.commits[a.commits.length - 1].ts;
+  }
+  return out;
+}
+
+// id → { created(마지막 created), status(그 뒤 파일 순서상 마지막 status), createdAtStatus(status 직전 created), applied? }
+// applied(gitApplied().byId — 선택): 그 ID 의 git 반영 기록. 파일 순서와 무관하게 상태를 덮는다(반영 뒤의 created·응답보다 우선).
+function stateOf(events, applied) {
   const st = new Map();
   for (const e of events) {
     if (!st.has(e.id)) st.set(e.id, { created: null, status: null, createdAtStatus: null });
@@ -139,14 +186,17 @@ function stateOf(events) {
       s.status = e; s.createdAtStatus = s.created;
     }
   }
+  if (applied) for (const [id, a] of applied) if (st.has(id)) st.get(id).applied = a;
   return st;
 }
 
-// 현재 상태 — stateOf 한 항목 → 'proposed' | 'accepted' | 'rejected' | 'snoozed' | 'expired' | null(기록 없음).
+// 현재 상태 — stateOf 한 항목 → 'applied' | 'proposed' | 'accepted' | 'rejected' | 'snoozed' | 'expired' | null(기록 없음).
+// applied = git 반영(stateOf 에 applied 를 넘긴 경우만) — 다른 상태보다 우선한다.
 // expired = 마지막 created 뒤 응답 없이 expireDays 경과(파생, 이벤트 없음). 쿨다운 경과 여부는 analyze 가 따로 본다.
 function currentStatus(s, nowMs, params) {
   const p = { ...DEFAULTS, ...(params || {}) };
   if (!s) return null;
+  if (s.applied) return 'applied';
   if (s.status) return s.status.status;
   if (!s.created) return null;
   const t = Date.parse(s.created.ts);
@@ -160,13 +210,19 @@ function currentStatus(s, nowMs, params) {
 // 쿨다운 안의 근거 2배 재노출은 시각으로 가려지지 않으니 created 로만 나뉜다 — 기록 실행은 리포트가, 미기록 실행에서 본 것은 feedback 이
 // 응답 직전에 created(source:feedback)를 쓴다. 그래서 사용자에게 보인 재노출에 대한 응답은 어느 실행에서든 새 회차다.
 // 분모 < precisionMin 이면 값 대신 "표본 부족"(로드맵 5.4 — 리포트당 유형별 ≤3 이라 분모가 몇 달 한 자릿수에 머문다).
-function precisionOf(events, params) {
+// applied([{id, type, target, ts}] — 선택): git 반영을 그 시각의 수락 응답으로 끼운다(withApplied). 명시 응답 없이 반영만 있어도
+// 그 회차는 수락이다. 유형별 applied = git 반영으로 닫힌 회차 수(accepted 에 포함).
+function precisionOf(events, params, applied) {
   const p = { ...DEFAULTS, ...(params || {}) };
   const acc = {};
-  for (const t of TYPES) acc[t] = { accepted: 0, rejected: 0 };
+  for (const t of TYPES) acc[t] = { accepted: 0, rejected: 0, applied: 0 };
   const cur = new Map(); // id → { type, last, until(마지막 거절·보류의 쿨다운 끝 ms) }
-  const close = (c) => { if (c && acc[c.type] && (c.last === 'accepted' || c.last === 'rejected')) acc[c.type][c.last]++; };
-  for (const e of events || []) {
+  const close = (c) => {
+    if (!c || !acc[c.type]) return;
+    if (c.last === 'applied') { acc[c.type].accepted++; acc[c.type].applied++; }
+    else if (c.last === 'accepted' || c.last === 'rejected') acc[c.type][c.last]++;
+  };
+  for (const e of withApplied(events || [], applied || [])) {
     if (e.ev === 'created') { if (!brokenCreated(e)) { close(cur.get(e.id)); cur.set(e.id, { type: e.type, last: null, until: NaN }); } }
     else if (e.ev === 'status' && cur.has(e.id) && !brokenStatus(e)) {
       let c = cur.get(e.id);
@@ -182,6 +238,27 @@ function precisionOf(events, params) {
     const n = acc[t].accepted + acc[t].rejected;
     const okN = n >= p.precisionMin;
     out[t] = { ...acc[t], n, min: p.precisionMin, precision: okN ? Math.round((acc[t].accepted / n) * 1000) / 1000 : null, status: okN ? 'ok' : '표본 부족' };
+  }
+  return out;
+}
+
+// git 반영을 가상 이벤트(source git, 파일에는 쓰지 않음)로 이벤트열에 끼운다 — 커밋 시각 순 자리, 단 그 ID 의 첫 created 보다
+// 앞이면 그 바로 뒤(반영이 제안보다 먼저 기록된 경우에도 그 회차를 닫게). created 가 아예 없는 ID 는 유형을 아는 경우만
+// (이번 후보에서 해석된 ID) 가상 created 를 함께 끼워 회차 하나로 센다.
+function withApplied(events, applied) {
+  if (!applied.length) return events;
+  const out = [...events];
+  for (const a of applied) {
+    if (!a.type) continue;
+    const t = Date.parse(a.ts);
+    let at = out.findIndex((e) => Date.parse(e.ts) > t);
+    if (at < 0) at = out.length;
+    const first = out.findIndex((e) => e.ev === 'created' && e.id === a.id && !brokenCreated(e));
+    const ins = [];
+    if (first < 0) ins.push({ ev: 'created', id: a.id, type: a.type, target: a.target, ts: a.ts, source: 'git' });
+    else if (at <= first) at = first + 1;
+    ins.push({ ev: 'status', id: a.id, type: a.type, target: a.target, status: 'applied', ts: a.ts, source: 'git' });
+    out.splice(at, 0, ...ins);
   }
   return out;
 }
@@ -245,7 +322,8 @@ function feedback(root, decisions, nowMs, params) {
 }
 
 // ── 본체 ─────────────────────────────────────────────────────────────────────
-// args: { records, digests, items, events, raw(원문 사용 가능), showTerms(원문 파생 tune 용어 출력), listLimit(matches.turns 출력 상한), now(ms), params }
+// args: { records, digests, items, events, applied(gitApplied 결과 — null 이면 git 을 읽지 않는 실행), raw(원문 사용 가능),
+//   showTerms(원문 파생 tune 용어 출력), listLimit(matches.turns 출력 상한), now(ms), params }
 function analyze(args) {
   const p = { ...DEFAULTS, ...(args.params || {}) };
   const nowMs = args.now;
@@ -423,7 +501,57 @@ function analyze(args) {
   for (const [target, m] of orchestrate)
     cands.push({ type: 'orchestrate', target, m, strength: [m.sessions.size, m.n, 0], signal: { source: m.source, n: m.n } });
 
-  const state = stateOf(args.events || []);
+  const appliedById = (args.applied && args.applied.byId) || new Map();
+  const state = stateOf(args.events || [], appliedById);
+
+  // ⑥ git 반영(applied) — 대상은 recommendations.jsonl 의 created 우선, 없으면 이번 후보(ID = sha1(type|target) 이라 같은 대상이면
+  // 같은 ID). 둘 다 없으면 모르는 ID(unknown — 다른 레포의 ID·오타·후보에서 사라진 미기록 추천)로 따로 센다.
+  // 효과: 마지막 반영 커밋 C 기준 [C-L, C) vs [C, C+L), L = min(effectDays, 경과일). 매칭 턴 = 사람 턴(커맨드 턴 제외, 확정 턴)
+  // 중 대상 스킬을 호출한 턴(fired) 또는 대상이 missed 근거가 되는 미발화 턴(top1=대상·θ·margin 통과, 또는 골드). 원문이 있어야 채점된다.
+  const candById = new Map(cands.map((c) => [recId(c.type, c.target), c]));
+  const round3 = (x) => Math.round(x * 1000) / 1000;
+  const effectOf = (type, target, C) => {
+    if (type === 'orchestrate' || !docById.has(target)) return { status: '측정 대상 아님' };
+    if (!args.raw) return { status: '측정 불가' };
+    const L = Math.max(0, Math.min(p.effectDays * 86400000, nowMs - C));
+    const before = { fired: 0, missed: 0 };
+    const after = { fired: 0, missed: 0 };
+    const side = (ts) => {
+      const t = Date.parse(ts);
+      if (!Number.isFinite(t) || !L) return null;
+      return t >= C - L && t < C ? before : t >= C && t < C + L ? after : null;
+    };
+    for (const turns of sessions) for (const t of turns) {
+      if (t.is_command || !t.settled || !t.acts.some((a) => a.kind === 'skill' && (resolve(a.name) || {}).id === target)) continue;
+      const sd = side(t.ts);
+      if (sd) sd.fired++;
+    }
+    for (const s of scored) {
+      const top = s.top3[0];
+      if (!((top && top.id === target && top.score >= p.theta && s.margin >= p.margin) || s.gold === target)) continue;
+      const sd = side(s.t.ts);
+      if (sd) sd.missed++;
+    }
+    const fin = (x, from, to) => {
+      const n = x.fired + x.missed;
+      return { from: new Date(from).toISOString(), to: new Date(to).toISOString(), fired: x.fired, missed: x.missed, n, rate: n ? round3(x.fired / n) : null };
+    };
+    const b = fin(before, C - L, C);
+    const a = fin(after, C, C + L);
+    const ok = b.n >= p.effectMin && a.n >= p.effectMin;
+    return { metric: 'fire_rate', window_days: Math.round((L / 86400000) * 10) / 10, before: b, after: a, min: p.effectMin, delta: ok ? round3(a.rate - b.rate) : null, status: ok ? 'ok' : '표본 부족' };
+  };
+  const appliedItems = [];
+  const appliedUnknown = [];
+  const appliedPrec = []; // precisionOf 입력 — 유형을 아는 반영만
+  for (const [id, a] of [...appliedById].sort((x, y) => Date.parse(x[1].first) - Date.parse(y[1].first) || (x[0] < y[0] ? -1 : 1))) {
+    const s = state.get(id);
+    const c = (s && s.created) || candById.get(id);
+    if (!c) { appliedUnknown.push(id); continue; }
+    appliedPrec.push({ id, type: c.type, target: c.target, ts: a.first });
+    appliedItems.push({ id, type: c.type, target: c.target, applied_at: a.first, commits: a.commits.map((x) => ({ sha: x.sha, ts: x.ts })),
+      effect: effectOf(c.type, c.target, Date.parse(a.last)) });
+  }
   // exact=false: 원문이 없어(--all) 시스템 주입을 다이제스트 prompt_kind 로만 거른 값 — 다이제스트 없는 세션 몫만큼 상한값이다
   const sample = { human_prompts: humanPrompts, min: p.minSample, ok: humanPrompts >= p.minSample, exact: !!args.raw };
   const items_out = [];
@@ -443,6 +571,8 @@ function analyze(args) {
       let status = s && s.created ? 'proposed' : 'new';
       let resurfacedFrom = null; // resurfaced 의 이유 — rejected·snoozed(쿨다운 경과·2배) 또는 expired(무응답 만료 뒤 재제안)
       if (!sample.ok) { suppressed.push({ id, type, target: c.target, reason: 'sample', evidence_n }); continue; }
+      // git 반영(커밋 trailer)이 있으면 응답·쿨다운과 무관하게 다시 내지 않는다(accepted 를 포함하는 상위 상태)
+      if (appliedById.has(id)) { suppressed.push({ id, type, target: c.target, reason: 'applied', evidence_n }); continue; }
       if (s && s.status) {
         const st = s.status.status;
         if (st === 'accepted') { suppressed.push({ id, type, target: c.target, reason: 'accepted', evidence_n }); continue; }
@@ -507,12 +637,17 @@ function analyze(args) {
     recommendations: {
       sample,
       params: { min_sample: p.minSample, cap: p.cap, orch_min: p.orchMin, tune_min: p.tuneMin, cooldown_days: p.cooldownDays, expire_days: p.expireDays, snooze_days: p.snoozeDays },
-      // 유형별 precision(명시 피드백 기준) — 이벤트를 읽지 않는 실행(--all·--trace)은 null
-      precision: args.events ? precisionOf(args.events, p) : null,
+      // 유형별 precision(명시 피드백 + git 반영 기준) — 이벤트를 읽지 않는 실행(--all·--trace)은 null
+      precision: args.events ? precisionOf(args.events, p, appliedPrec) : null,
       candidates: { missed: cands.filter((c) => c.type === 'missed').length, tune: cands.filter((c) => c.type === 'tune').length, orchestrate: cands.filter((c) => c.type === 'orchestrate').length },
       items: items_out,
       counts: { missed: byType('missed'), tune: byType('tune'), orchestrate: byType('orchestrate') },
       suppressed,
+      // git 반영(Observe-Rec trailer) — git 을 읽지 않는 실행(--all·--trace)은 null, git 없음·실패는 available:false(0건)
+      applied: args.applied ? {
+        source: 'git', available: !!args.applied.ok, commits: args.applied.commits, malformed: args.applied.malformed,
+        params: { effect_days: p.effectDays, effect_min: p.effectMin }, items: appliedItems, unknown: appliedUnknown,
+      } : null,
       recorded: 0,
     },
     append,
@@ -523,4 +658,4 @@ function analyze(args) {
   };
 }
 
-module.exports = { analyze, extractTurns, readEvents, appendEvents, stateOf, currentStatus, precisionOf, feedback, recId, recFile, DEFAULTS, SYS_TEXT };
+module.exports = { analyze, extractTurns, readEvents, appendEvents, stateOf, currentStatus, precisionOf, feedback, gitApplied, recId, recFile, DEFAULTS, SYS_TEXT };

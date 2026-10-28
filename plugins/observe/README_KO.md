@@ -20,7 +20,7 @@ Claude Code 의 `/usage` 는 스킬·서브에이전트·MCP 별 사용량을 �
 
 | 커맨드 | 하는 일 |
 |---|---|
-| `/observe-report` | 하네스 건강 리포트: 집계 → 해석 → 제안 → 추천 ID 마다 사용자 응답 요청. 옵션: `--raw`(집계 JSON 만), `--window <days>`, `--focus skills\|agents\|prompts`, `--stale-days`/`--archive-days`, `--followups <n>`, `--all`(등록된 모든 레포 합산, 원문 제외), `--theta`/`--margin`/`--min-sample`/`--orch-min`(실험용, 기록 안 함), `--no-record`. |
+| `/observe-report` | 하네스 건강 리포트: 집계 → 해석 → 제안 → 추천 ID 마다 사용자 응답 요청. 옵션: `--raw`(집계 JSON 만), `--window <days>`, `--focus skills\|agents\|prompts`, `--stale-days`/`--archive-days`, `--followups <n>`, `--all`(등록된 모든 레포 합산, 원문 제외), `--theta`/`--margin`/`--min-sample`/`--orch-min`(실험용, 기록 안 함), `--no-record`, `--effect-days <n>`(반영 전후 비교 창). |
 | `/observe-git-hooks` | opt-in 커밋 경계 git 훅: `install [--no-pre-commit] [--trailer]`, `uninstall`, `status`, `print <hook>`. |
 
 ### Claude Code 훅 (`hooks/hooks.json`)
@@ -68,6 +68,8 @@ matcher 는 툴 이름 regex 만 쓴다(표현식 matcher 는 발화하지 않�
 
   노이즈 제한: 사람 프롬프트 20개 미만이면 추천하지 않고, 근거는 세션당 1회만 세며, 원오프는 버리고, 유형당 최대 3개다. ID 는 `sha1(type|target)` 이고 `.tracer/recommendations.jsonl` 에 append 된다(append-only, 원문 없음).
 - **피드백 루프**. `/observe-report` 는 마지막에 추천 ID 마다 응답을 묻고, 그 응답만 `observe-report.js --accept|--reject|--snooze <id>[,<id>…]`(`--snooze-days <n>`, 양의 정수)로 기록한다. 재노출 항목은 `<id>@<evidence_n>` 으로 넘겨, 기록하지 않은 실행에서 본 것이어도 응답이 늘 새 회차가 된다. 모르는 ID 나 서로 다른 응답이 섞이면 아무것도 쓰지 않고 exit 1 이다. 상태는 `proposed`·`accepted`·`rejected`(30일 쿨다운, 근거가 2배가 되면 일찍 재노출)·`snoozed`(기본 7일)·`expired`(30일 무응답, 기록하지 않고 계산으로 얻는 파생 상태) 가운데 하나다. 명시 응답만 기록한다. 리포트 머리에는 응답이 10건 이상일 때 유형별 `precision = 수락 / (수락 + 거절)` 을 보여 주고, 그보다 적으면 `표본 부족` 으로 표시한다. θ, margin, 만료 기간, 최소 분모는 수동 상수이고 자동 보정은 없다.
+- **반영 측정(git trailer)**. 추천을 반영한 커밋 메시지에 `Observe-Rec: <id>` trailer(여러 개면 여러 줄)를 붙이면, 리포트가 레포 모드에서 `git log` 로 그 trailer 를 읽어 그 추천을 `applied` 로 계산한다. `applied` 는 `accepted` 를 포함하는 상위 상태라 다시 제안하지 않고, precision 에서는 명시 응답이 없어도 수락으로 센다. 상태는 `recommendations.jsonl` 에 쓰지 않는다(git 이 원장이고 리포트가 매번 다시 계산한다). 효과는 마지막 반영 커밋 전/후 같은 길이 창(기본 30일, `--effect-days`)에서 대상 스킬의 호출 비율(호출 턴 / (호출 턴 + missed 근거 턴))을 비교하고, 어느 쪽이든 매칭 턴이 5 미만이면 `표본 부족` 으로 표시한다. `--json` 의 `recommendations.applied` 와 텍스트 리포트의 "반영된 추천" 절에 나온다. git 이 없거나 trailer 가 없으면 조용히 건너뛴다. `--all`·`--trace` 는 git 을 읽지 않는다. 반영 사실을 SKILL.md diff 로 추측하던 "암묵 수락" 백로그는 이 방식으로 대체됐다.
+- **수락 뒤 다음 단계**. `/observe-report` 는 마지막에 수락한 추천마다 넘길 곳과 브리프(ID, 대상 원본 경로, 현재 description 요지, `terms` 같은 수정안 재료, 근거 ref, 붙일 `Observe-Rec: <id>` 줄)를 보여 준다. `missed`·`tune` 과 기존 오케스트레이터로 라우팅된 연쇄는 `harness:evolve`, `orchestrate` 연쇄는 흡수할 기존 오케스트레이터가 있으면 `harness:evolve`·새로 만들어야 하면 `harness:team-harness`, 라이프사이클 stale·archive 후보는 `workflow:deprecation-guide` 로 넘긴다. observe 는 여전히 아무 파일도 고치지 않고, harness 플러그인이 없으면 브리프만 보여 준다. `harness:evolve` 는 observe 가 있으면 이 리포트를 직접 읽고(`--json --no-record`) 반영 커밋에 trailer 를 붙여 루프를 닫는다.
 - **호환 reader**(`bin/lib/reader.js`). `.tracer/` v1 과 구 경로 `.claude/skill-trace.jsonl(.1)` v0 을 한 스트림으로 읽는다. 구 경로 폴백은 2.x 메이저 내내 유지한다.
 
 ## 세팅
@@ -192,7 +194,7 @@ node <observe>/bin/observe-backfill.js --dry-run  # 개수만 센다
 ## 의존성
 
 - `requires`: 없음. observe 는 자체 완결형이고 `hook-stdin` 사본을 함께 담고 있다. Node 22 내장 모듈만 쓴다.
-- 함께 쓰면 좋은 플러그인: `workflow:deprecation-guide`(사장 자산), `harness:create-flow`(새 스킬·훅 후보), `skill-creator` eval(description 초안을 채택하기 전 발화율 확인), `workflow:retro`(일화 기반 교훈, 상호 보완), `wiki-ops:wiki-harness-feed`(`observe-export.js` 를 거친 위키 스냅샷).
+- 함께 쓰면 좋은 플러그인: `harness:evolve`(수락한 추천을 `Observe-Rec` trailer 와 함께 1커밋씩 반영), `harness:team-harness`(새 오케스트레이터가 필요한 연쇄), `workflow:deprecation-guide`(사장 자산), `harness:create-flow`(새 스킬·훅 후보), `skill-creator` eval(description 초안을 채택하기 전 발화율 확인), `workflow:retro`(일화 기반 교훈, 상호 보완), `wiki-ops:wiki-harness-feed`(`observe-export.js` 를 거친 위키 스냅샷).
 
 ## 참고
 

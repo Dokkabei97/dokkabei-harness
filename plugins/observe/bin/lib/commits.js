@@ -113,10 +113,16 @@ function attribute(c, turns, rcommits) {
 // 미처리 추천 1줄 — recommendations.jsonl 의 상태가 proposed(마지막 created 뒤 수락·거절·스누즈 없음, 만료 전)인 것만
 // 결정론으로. 없으면 ''. "마지막 리포트" 의 근사다: created 는 새 추천·근거 변경 때만 append 되므로, 그 뒤 리포트에서 빠진
 // 추천은 응답하거나 만료(expireDays, 파생 상태 — Phase 5)될 때까지 남는다. 줄 안에는 유형·대상·근거 세션 수·날짜만 있다(원문 없음).
+// git 반영(Observe-Rec trailer — applied)된 추천도 뺀다. git log 는 열린 추천이 있을 때만 띄운다(빈 줄 경로는 git 호출 0).
 function precommitLine(root, nowMs = Date.now()) {
   const events = R.readEvents(root);
-  const open = [];
-  for (const s of R.stateOf(events).values()) if (R.currentStatus(s, nowMs) === 'proposed') open.push(s.created);
+  const openOf = (applied) => {
+    const out = [];
+    for (const s of R.stateOf(events, applied).values()) if (R.currentStatus(s, nowMs) === 'proposed') out.push(s.created);
+    return out;
+  };
+  let open = openOf(null);
+  if (open.length) open = openOf(R.gitApplied(root).byId);
   if (!open.length) return '';
   let last = '';
   for (const e of open) if (typeof e.ts === 'string' && e.ts > last) last = e.ts;

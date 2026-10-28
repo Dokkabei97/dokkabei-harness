@@ -59,7 +59,7 @@ the completion promise.
 
 `plugin.json` has no hard dependencies. It has synergy when used together with the following plugins.
 
-- `observe`(`/observe-report`) — Observes and improves which prompts the harnesses built here actually activated on and how those turns ended (outcome).
+- `observe`(`/observe-report`) — Observes and improves which prompts the harnesses built here actually activated on and how those turns ended (outcome). When it is present, `evolve` reads its aggregate (`--json --no-record`) as observed signals and adds an `Observe-Rec: <id>` trailer to commits that apply an observe recommendation, so the next report marks it applied and compares before and after. Without observe, `evolve` skips this step.
 - `workflow`(`/retro`) — Tags recurring mistakes into `tasks/lessons.md` as `#가드-훅-후보`. It is the input source for `/create-flow --from-lessons`.
 
 ## Notes

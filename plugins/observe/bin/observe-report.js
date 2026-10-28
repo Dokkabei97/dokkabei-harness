@@ -54,19 +54,27 @@ function parseArgs(argv) {
     minSample: recommend.DEFAULTS.minSample,
     orchMin: recommend.DEFAULTS.orchMin,
     record: true, // .tracer 가 있는 레포 모드에서 recommendations.jsonl 에 생성 이벤트 append (--no-record 로 끔)
+    effectDays: recommend.DEFAULTS.effectDays, // git 반영(Observe-Rec) 전후 비교 창 — 추천·기록과 무관한 읽기 전용 파라미터
     // 명시 피드백(P5) — --accept/--reject/--snooze <id>[,<id>…] 가 하나라도 있으면 집계 대신 status 이벤트만 append
     feedbackMode: false,
     feedback: [],
     feedbackBad: [], // 값 없는 피드백 플래그(끝에 오거나 값 자리에 다른 플래그) — runFeedback 이 아무것도 쓰지 않고 exit 1
     snoozeDays: recommend.DEFAULTS.snoozeDays,
   };
-  const FEEDBACK_FLAG = { "--accept": "accepted", "--reject": "rejected", "--snooze": "snoozed" };
+  const FEEDBACK_FLAG = {
+    "--accept": "accepted",
+    "--reject": "rejected",
+    "--snooze": "snoozed",
+  };
   for (let i = 2; i < argv.length; i++) {
     let a = argv[i];
     // 피드백 플래그·--snooze-days 는 --flag=값 형태도 받는다 — 못 알아보면 일반 리포트(기록 실행)로 빠져 응답이 조용히 사라진다
     let inline = null;
     const eq = a.indexOf("=");
-    if (eq > 0 && (FEEDBACK_FLAG[a.slice(0, eq)] || a.slice(0, eq) === "--snooze-days")) {
+    if (
+      eq > 0 &&
+      (FEEDBACK_FLAG[a.slice(0, eq)] || a.slice(0, eq) === "--snooze-days")
+    ) {
       inline = a.slice(eq + 1);
       a = a.slice(0, eq);
     }
@@ -86,19 +94,37 @@ function parseArgs(argv) {
     else if (a === "--now") opts.now = argv[++i];
     else if (a === "--theta") opts.theta = parseFloat(argv[++i]) || 0;
     else if (a === "--margin") opts.margin = parseFloat(argv[++i]) || 0;
-    else if (a === "--min-sample") opts.minSample = parseInt(argv[++i], 10) || 0;
+    else if (a === "--min-sample")
+      opts.minSample = parseInt(argv[++i], 10) || 0;
     else if (a === "--orch-min") opts.orchMin = parseInt(argv[++i], 10) || 1;
     else if (a === "--no-record") opts.record = false;
+    else if (a === "--effect-days")
+      opts.effectDays =
+        Math.max(0, parseInt(argv[++i], 10) || 0) ||
+        recommend.DEFAULTS.effectDays; // 0·음수·숫자 아님 = 기본값
     else if (FEEDBACK_FLAG[a]) {
       opts.feedbackMode = true;
       // 값 자리에 다른 플래그가 오면 ID 로 먹지 않는다(그 플래그는 다음 회차에 정상 처리)
-      const v = inline !== null ? inline : argv[i + 1] === undefined || argv[i + 1].startsWith("--") ? "" : argv[++i];
-      const ids = v.split(",").map((s) => s.trim()).filter(Boolean);
+      const v =
+        inline !== null
+          ? inline
+          : argv[i + 1] === undefined || argv[i + 1].startsWith("--")
+            ? ""
+            : argv[++i];
+      const ids = v
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
       if (!ids.length) opts.feedbackBad.push(a);
       for (const tok of ids) {
         // <id>@<evidence_n> — Phase 6 이 보여 준 재노출 항목의 근거 수(쿨다운 안 2배 재노출이면 feedback 이 새 회차 created 를 먼저 쓴다)
         const at = tok.lastIndexOf("@");
-        if (at > 0) opts.feedback.push({ id: tok.slice(0, at), status: FEEDBACK_FLAG[a], evidence_n: Number(tok.slice(at + 1)) });
+        if (at > 0)
+          opts.feedback.push({
+            id: tok.slice(0, at),
+            status: FEEDBACK_FLAG[a],
+            evidence_n: Number(tok.slice(at + 1)),
+          });
         else opts.feedback.push({ id: tok, status: FEEDBACK_FLAG[a] });
       }
     } else if (a === "--snooze-days")
@@ -117,22 +143,41 @@ function runFeedback(opts) {
     process.exitCode = 1;
   };
   if (opts.all || opts.trace)
-    return fail("--accept/--reject/--snooze 는 레포 모드에서만 쓴다 (--all·--trace 와 함께 쓸 수 없다)");
+    return fail(
+      "--accept/--reject/--snooze 는 레포 모드에서만 쓴다 (--all·--trace 와 함께 쓸 수 없다)",
+    );
   if (opts.feedbackBad.length)
-    return fail(`${opts.feedbackBad.join("·")} 뒤에 추천 ID 가 없다 (예: --reject rec_0123456789ab) — 아무것도 쓰지 않았다`);
-  if (!opts.feedback.length) return fail("응답할 추천 ID 가 없다 (예: --reject rec_0123456789ab)");
+    return fail(
+      `${opts.feedbackBad.join("·")} 뒤에 추천 ID 가 없다 (예: --reject rec_0123456789ab) — 아무것도 쓰지 않았다`,
+    );
+  if (!opts.feedback.length)
+    return fail("응답할 추천 ID 가 없다 (예: --reject rec_0123456789ab)");
   if (!/^[1-9]\d*$/.test(String(opts.snoozeDays)))
-    return fail(`--snooze-days 는 양의 정수여야 한다 (받은 값: ${opts.snoozeDays}) — 아무것도 쓰지 않았다`);
+    return fail(
+      `--snooze-days 는 양의 정수여야 한다 (받은 값: ${opts.snoozeDays}) — 아무것도 쓰지 않았다`,
+    );
   const root = opts.root || P.findRoot(process.cwd());
   const nowParsed = opts.now ? Date.parse(opts.now) : NaN;
   const nowMs = Number.isFinite(nowParsed) ? nowParsed : Date.now();
-  const r = recommend.feedback(root, opts.feedback, nowMs, { snoozeDays: Number(opts.snoozeDays) });
+  const r = recommend.feedback(root, opts.feedback, nowMs, {
+    snoozeDays: Number(opts.snoozeDays),
+  });
   if (r.error === "no_recommendations")
-    return fail(`${P.recommendationsFile(root)} 가 없다 — 기록된 추천이 없어 응답을 남길 수 없다`);
-  if (r.error === "invalid") return fail(`응답을 하나도 쓰지 않았다 — ${r.detail.join(" / ")}`);
-  if (r.error) return fail(`응답 기록 실패(${r.error}) — ${r.recorded}건만 기록됐다`);
+    return fail(
+      `${P.recommendationsFile(root)} 가 없다 — 기록된 추천이 없어 응답을 남길 수 없다`,
+    );
+  if (r.error === "invalid")
+    return fail(`응답을 하나도 쓰지 않았다 — ${r.detail.join(" / ")}`);
+  if (r.error)
+    return fail(`응답 기록 실패(${r.error}) — ${r.recorded}건만 기록됐다`);
   if (opts.json) {
-    process.stdout.write(JSON.stringify({ feedback: { applied: r.applied, recorded: r.recorded } }, null, 2) + "\n");
+    process.stdout.write(
+      JSON.stringify(
+        { feedback: { applied: r.applied, recorded: r.recorded } },
+        null,
+        2,
+      ) + "\n",
+    );
     return;
   }
   const L = r.applied.map(
@@ -293,7 +338,10 @@ function matchInventory(inv, root, preferInv) {
   if (!preferInv) {
     try {
       const j = JSON.parse(
-        fs.readFileSync(path.join(home, ".claude", "plugins", "installed_plugins.json"), "utf8"),
+        fs.readFileSync(
+          path.join(home, ".claude", "plugins", "installed_plugins.json"),
+          "utf8",
+        ),
       );
       installed = [];
       for (const [key, list] of Object.entries(j.plugins || {}).sort()) {
@@ -321,10 +369,12 @@ function matchInventory(inv, root, preferInv) {
     for (const n of listDir(dir).sort()) {
       const d = path.join(dir, n);
       const f = path.join(d, "SKILL.md");
-      if (fs.existsSync(f)) found.push({ id: frontmatterName(f) || n, kind: "skill", path: f });
+      if (fs.existsSync(f))
+        found.push({ id: frontmatterName(f) || n, kind: "skill", path: f });
       else if (depth > 1) {
         try {
-          if (fs.statSync(d).isDirectory()) found.push(...skillsUnder(d, depth - 1));
+          if (fs.statSync(d).isDirectory())
+            found.push(...skillsUnder(d, depth - 1));
         } catch (_) {
           /* 깨진 링크 */
         }
@@ -338,7 +388,11 @@ function matchInventory(inv, root, preferInv) {
       .sort()
       .map((n) => {
         const f = path.join(dir, n);
-        return { id: frontmatterName(f) || n.replace(/\.md$/, ""), kind, path: f };
+        return {
+          id: frontmatterName(f) || n.replace(/\.md$/, ""),
+          kind,
+          path: f,
+        };
       });
   const bases = [
     ...(root ? [[path.join(root, ".claude"), "project"]] : []),
@@ -349,7 +403,11 @@ function matchInventory(inv, root, preferInv) {
     add(mdUnder(path.join(b, "commands"), "command"), `${src}-commands`);
     add(mdUnder(path.join(b, "agents"), "agent"), `${src}-agents`);
   }
-  if (root) add(skillsUnder(path.join(root, ".agents", "skills")), "project-agents-skills");
+  if (root)
+    add(
+      skillsUnder(path.join(root, ".agents", "skills")),
+      "project-agents-skills",
+    );
   add(skillsUnder(path.join(home, ".agents", "skills")), "user-agents-skills");
   return out;
 }
@@ -417,7 +475,13 @@ function aggregate(records, opts, digests = []) {
     return e;
   };
   const pushPre = (sid, target, entry, r, idx) => {
-    const pre = { entry, ts: r.ts, idx, joined: false, id: r.tool_use_id || null };
+    const pre = {
+      entry,
+      ts: r.ts,
+      idx,
+      joined: false,
+      id: r.tool_use_id || null,
+    };
     if (r.tool_use_id) preByToolUse.set(r.tool_use_id, pre);
     const key = sid + " " + target;
     if (!prePending.has(key)) prePending.set(key, []);
@@ -526,15 +590,20 @@ function aggregate(records, opts, digests = []) {
   const unmatched = [];
   for (const x of results) {
     const pre = x.r.tool_use_id ? preByToolUse.get(x.r.tool_use_id) : null;
-    if (pre) { if (!pre.joined) joinTo(pre, x.r); }
-    else unmatched.push(x);
+    if (pre) {
+      if (!pre.joined) joinTo(pre, x.r);
+    } else unmatched.push(x);
   }
   for (const { r, sid, idx } of unmatched) {
     const fallbackKey =
       sid + "\0" + (r.target || (r.tool === "Skill" ? "(null)" : "(default)"));
     const list = prePending.get(fallbackKey) || [];
     for (let k = list.length - 1; k >= 0; k--)
-      if (!list[k].joined && list[k].idx < idx && !(r.tool_use_id && list[k].id)) {
+      if (
+        !list[k].joined &&
+        list[k].idx < idx &&
+        !(r.tool_use_id && list[k].id)
+      ) {
         joinTo(list[k], r);
         break;
       }
@@ -563,8 +632,14 @@ function aggregate(records, opts, digests = []) {
   // 없이 turn_summary.skills 에만 남는다(미사용·라이프사이클 오판 방지). 호출수(calls)에는 넣지 않는다(턴 단위라 이벤트와
   // 단위가 다르다). Claude 턴은 같은 사용이 skill_use 이벤트로 이미 들어오므로 건너뛴다(Claude 집계 무변경).
   for (const t of digests)
-    if (t && t.kind === "turn_summary" && t.runtime && t.runtime !== "claude-code")
-      for (const x of t.skills || []) if (x && x.name) addUsed(x.name, t.ts_end || t.ts_start || null);
+    if (
+      t &&
+      t.kind === "turn_summary" &&
+      t.runtime &&
+      t.runtime !== "claude-code"
+    )
+      for (const x of t.skills || [])
+        if (x && x.name) addUsed(x.name, t.ts_end || t.ts_start || null);
 
   return {
     prompts,
@@ -591,11 +666,20 @@ const zeroOutcomes = () => Object.fromEntries(OUTCOMES.map((k) => [k, 0]));
 // 시스템 주입 턴은 system 으로만 센다(턴 결과 분모를 부풀리지 않게). commits·tokens 는 모든 턴 합.
 // by_skill/by_agent: 그 이름을 쓴 턴 수와 그 턴들의 outcome 분포 (한 턴에 같은 이름 여러 번이어도 1턴).
 function aggregateTurns(digests) {
-  const out = { count: 0, system: 0, outcomes: zeroOutcomes(), commits: 0, tokens: { in: 0, out: 0, cache_r: 0, cache_w: 0 }, by_skill: [], by_agent: [] };
+  const out = {
+    count: 0,
+    system: 0,
+    outcomes: zeroOutcomes(),
+    commits: 0,
+    tokens: { in: 0, out: 0, cache_r: 0, cache_w: 0 },
+    by_skill: [],
+    by_agent: [],
+  };
   const bySkill = new Map();
   const byAgent = new Map();
   const bump = (map, name, outcome) => {
-    if (!map.has(name)) map.set(name, { name, turns: 0, outcomes: zeroOutcomes() });
+    if (!map.has(name))
+      map.set(name, { name, turns: 0, outcomes: zeroOutcomes() });
     const e = map.get(name);
     e.turns++;
     if (outcome in e.outcomes) e.outcomes[outcome]++;
@@ -604,7 +688,8 @@ function aggregateTurns(digests) {
     if (!t || t.kind !== "turn_summary") continue;
     out.commits += ((t.git && t.git.commits) || []).length;
     for (const k of Object.keys(out.tokens))
-      out.tokens[k] += (t.tokens && Number.isFinite(t.tokens[k]) && t.tokens[k]) || 0;
+      out.tokens[k] +=
+        (t.tokens && Number.isFinite(t.tokens[k]) && t.tokens[k]) || 0;
     if (t.prompt_kind && t.prompt_kind !== "user") {
       out.system++;
       continue;
@@ -612,10 +697,19 @@ function aggregateTurns(digests) {
     out.count++;
     const oc = OUTCOMES.includes(t.outcome) ? t.outcome : "unknown";
     out.outcomes[oc]++;
-    for (const n of new Set((t.skills || []).map((x) => x.name).filter(Boolean))) bump(bySkill, n, oc);
-    for (const n of new Set((t.subagents || []).map((x) => x.type || "(default)"))) bump(byAgent, n, oc);
+    for (const n of new Set(
+      (t.skills || []).map((x) => x.name).filter(Boolean),
+    ))
+      bump(bySkill, n, oc);
+    for (const n of new Set(
+      (t.subagents || []).map((x) => x.type || "(default)"),
+    ))
+      bump(byAgent, n, oc);
   }
-  const sorted = (m) => [...m.values()].sort((a, b) => b.turns - a.turns || (a.name < b.name ? -1 : 1));
+  const sorted = (m) =>
+    [...m.values()].sort(
+      (a, b) => b.turns - a.turns || (a.name < b.name ? -1 : 1),
+    );
   out.by_skill = sorted(bySkill);
   out.by_agent = sorted(byAgent);
   return out;
@@ -662,7 +756,12 @@ function main() {
     // 남기므로, 런타임을 안 가리면 마지막에 시작한 런타임에 따라 분모가 바뀐다.
     const withRoot = [...all]
       .reverse()
-      .find((r) => r.type === "session_start" && r.plugin_root && (!r.runtime || r.runtime === "claude-code"));
+      .find(
+        (r) =>
+          r.type === "session_start" &&
+          r.plugin_root &&
+          (!r.runtime || r.runtime === "claude-code"),
+      );
     const derived = withRoot ? pluginsDirFromRoot(withRoot.plugin_root) : null;
     if (derived) {
       pluginsDir = derived;
@@ -674,7 +773,9 @@ function main() {
   }
 
   const digests = cutoff
-    ? (loaded.digests || []).filter((d) => !d.ts_end || Date.parse(d.ts_end) >= cutoff)
+    ? (loaded.digests || []).filter(
+        (d) => !d.ts_end || Date.parse(d.ts_end) >= cutoff,
+      )
     : loaded.digests || [];
   const agg = aggregate(records, opts, digests);
   const turns = aggregateTurns(digests);
@@ -816,6 +917,8 @@ function main() {
     digests,
     items: matchInventory(inv, root, pluginsDirSource === "flag"),
     events: root ? recommend.readEvents(root) : null, // null = 이벤트를 읽지 않는 실행(--all·--trace) — precision 도 null
+    // git 반영 원장(Observe-Rec trailer) — 레포 모드만. --all 은 레포별 git 을 돌지 않는다(단순한 쪽 — 문서에 명시), --trace 는 레포가 없다
+    applied: root ? recommend.gitApplied(root) : null,
     raw: !opts.all,
     showTerms: !opts.all && opts.candidates > 0,
     listLimit: opts.all ? 0 : opts.candidates,
@@ -825,6 +928,7 @@ function main() {
       margin: opts.margin,
       minSample: opts.minSample,
       orchMin: opts.orchMin,
+      effectDays: opts.effectDays,
     },
   });
   // 생성 이벤트 기록 — 기본 파라미터로 레포 전체를 본 실행일 때만, .tracer 가 있어야 한다.
@@ -836,7 +940,13 @@ function main() {
     opts.margin === D.margin &&
     opts.minSample === D.minSample &&
     opts.orchMin === D.orchMin;
-  if (root && opts.record && !opts.window && defaultParams && opts.candidates > 0) {
+  if (
+    root &&
+    opts.record &&
+    !opts.window &&
+    defaultParams &&
+    opts.candidates > 0
+  ) {
     const w = recommend.appendEvents(root, rec.append);
     rec.recommendations.recorded = w.recorded;
     if (w.error) rec.recommendations.record_error = w.error; // 부수 기록 실패는 리포트를 막지 않는다
@@ -846,7 +956,8 @@ function main() {
   // 노출 추천의 근거 턴은 --candidates 상한 밖이어도 candidates 에 보강한다 — Phase 3 가 근거 ref 로 원문을 찾는 곳
   const candKey = (c) => `${c.session_id}#${c.turn || c.ts || "?"}`;
   const haveCand = new Set(report.candidates.map(candKey));
-  for (const c of rec.evidenceTurns) if (!haveCand.has(candKey(c))) report.candidates.push(c);
+  for (const c of rec.evidenceTurns)
+    if (!haveCand.has(candKey(c))) report.candidates.push(c);
 
   if (opts.json) {
     process.stdout.write(JSON.stringify(report, null, 2) + "\n");
@@ -871,11 +982,13 @@ function main() {
   const PR = rec.recommendations.precision;
   L.push(
     PR
-      ? `추천 precision(명시 응답 기준): ${Object.entries(PR)
-          .map(([t, x]) =>
-            x.status === "ok"
-              ? `${t} ${x.precision} (수락 ${x.accepted}/응답 ${x.n})`
-              : `${t} 표본 부족 (응답 ${x.n}<${x.min})`,
+      ? `추천 precision(명시 응답 + git 반영 기준): ${Object.entries(PR)
+          .map(
+            ([t, x]) =>
+              (x.status === "ok"
+                ? `${t} ${x.precision} (수락 ${x.accepted}/응답 ${x.n})`
+                : `${t} 표본 부족 (응답 ${x.n}<${x.min})`) +
+              (x.applied ? ` [git 반영 ${x.applied} 포함]` : ""),
           )
           .join(" · ")}`
       : "추천 precision: 레포 모드에서만 집계 (--all·--trace 는 recommendations.jsonl 을 읽지 않는다)",
@@ -889,11 +1002,17 @@ function main() {
   L.push("");
   L.push(`## 에이전트 호출 (${agg.agents.length}종)`);
   for (const a of agg.agents.slice(0, 20))
-    L.push(`- ${a.name}: ${a.calls}회 (반환 ${a.loaded}${outcomeText(a.outcome)})`);
+    L.push(
+      `- ${a.name}: ${a.calls}회 (반환 ${a.loaded}${outcomeText(a.outcome)})`,
+    );
   L.push("");
-  L.push(`## 턴 결과 (Stop 다이제스트 ${turns.count}턴${turns.system ? ` + 시스템 주입 ${turns.system}턴 제외` : ""})`);
+  L.push(
+    `## 턴 결과 (Stop 다이제스트 ${turns.count}턴${turns.system ? ` + 시스템 주입 ${turns.system}턴 제외` : ""})`,
+  );
   if (!turns.count)
-    L.push("- 다이제스트 없음 — Stop 훅이 기록한 turn_summary 가 아직 없다 (OBSERVE_TRACE=1 세션의 턴이 끝나면 쌓인다)");
+    L.push(
+      "- 다이제스트 없음 — Stop 훅이 기록한 turn_summary 가 아직 없다 (OBSERVE_TRACE=1 세션의 턴이 끝나면 쌓인다)",
+    );
   else {
     const o = turns.outcomes;
     L.push(
@@ -947,6 +1066,31 @@ function main() {
   L.push(
     `- 매칭: 미발화 턴 ${rec.matches.turns_scored}건 채점 / 골드 라벨 N=${G.n}${G.status === "ok" ? ` top-3 ${Math.round(G.rate * 100)}%` : " (측정불가 — N<10)"}`,
   );
+  // git 반영(Observe-Rec trailer) — 반영 기록이나 모르는 ID 가 있을 때만 절을 낸다(git 없음·trailer 없음은 조용히 생략)
+  const AP = R.applied;
+  if (AP && AP.available && (AP.items.length || AP.unknown.length)) {
+    L.push("");
+    L.push(
+      `## 반영된 추천 ${AP.items.length}건 (커밋 trailer Observe-Rec — 다시 제안하지 않음)`,
+    );
+    const pctOf = (x) =>
+      x.rate == null ? "-" : `${Math.round(x.rate * 100)}%`;
+    for (const it of AP.items) {
+      const last = it.commits[it.commits.length - 1];
+      const e = it.effect;
+      const eff =
+        e.status === "ok" || e.status === "표본 부족"
+          ? `호출 비율 ${pctOf(e.before)} → ${pctOf(e.after)} (전 ${e.before.fired}/${e.before.n} · 후 ${e.after.fired}/${e.after.n}턴, 각 ${e.window_days}일 창)${e.status === "ok" ? "" : ` — 표본 부족(각 ≥${e.min}턴 필요)`}`
+          : e.status;
+      L.push(
+        `- [${it.type}] ${it.target} ${it.id} 커밋 ${last.sha.slice(0, 7)} ${last.ts.slice(0, 10)}${it.commits.length > 1 ? ` 외 ${it.commits.length - 1}개` : ""} — ${eff}`,
+      );
+    }
+    if (AP.unknown.length)
+      L.push(
+        `- 모르는 ID trailer ${AP.unknown.length}건 (recommendations.jsonl·이번 후보에 없음): ${AP.unknown.slice(0, 5).join(", ")}${AP.unknown.length > 5 ? " 외" : ""}`,
+      );
+  }
   process.stdout.write(L.join("\n") + "\n");
 }
 

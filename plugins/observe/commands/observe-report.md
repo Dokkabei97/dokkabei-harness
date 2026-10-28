@@ -34,6 +34,7 @@ Options:
                       (임계를 기본값과 다르게 준 실행은 실험으로 보고 recommendations.jsonl 에 기록하지 않는다)
   --no-record         recommendations.jsonl 에 생성 이벤트를 쓰지 않음 (기본: .tracer 가 있는 레포 모드에서 기록 —
                       --window·--all·--trace·임계 오버라이드·--candidates 0(export 파이프) 실행도 기록하지 않음)
+  --effect-days <n>   git 반영(Observe-Rec trailer) 추천의 전후 비교 창 (기본 30 — 기록 여부와 무관)
 
 피드백 (Phase 6 에서 사용자 응답을 받은 뒤에만 실행 — 집계 없이 status 이벤트만 append):
   --accept <id>[,<id>…]   수락 (이후 그 추천은 다시 내지 않음)
@@ -84,9 +85,15 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 5. **계측 품질**: parse_errors, trigger null 비율, why 커버리지, 인벤토리 밖 호출(unknown_called)
 6. **추천 엔진 상태**: `recommendations.sample`(사람 프롬프트 < 20 이면 추천 없음 — "표본 부족"으로 보고),
    `matches.gold`(골드 라벨 N 과 top-3 비율 — `status` 가 `측정불가`(N<10)면 비율을 말하지 않는다),
-   `recommendations.counts`·`suppressed`(cap·cooldown·accepted·sample 사유별 억제 수)
+   `recommendations.counts`·`suppressed`(cap·cooldown·accepted·applied·sample 사유별 억제 수)
 7. **추천 precision**(보고 머리에 둔다): `recommendations.precision.<유형>` — `status` 가 `ok` 면 `precision`(= 수락/(수락+거절),
-   명시 응답 기준)과 분모 `n` 을, `표본 부족`(n < 10)이면 값 없이 "표본 부족(응답 n건)"만 쓴다. 값을 추정·보간하지 않는다
+   명시 응답 + git 반영 기준 — `applied` 는 수락에 포함된 git 반영 회차 수)과 분모 `n` 을, `표본 부족`(n < 10)이면 값 없이
+   "표본 부족(응답 n건)"만 쓴다. 값을 추정·보간하지 않는다
+8. **반영된 추천**: `recommendations.applied` — 커밋 메시지 trailer `Observe-Rec: <id>`(HEAD 에서 닿는 커밋, git 이 원장)로 반영이
+   확인된 추천. `items[]` 는 커밋 SHA·시각과 `effect`(마지막 반영 커밋 전/후 같은 길이 창의 호출 비율 = 호출 턴/(호출 턴+missed 근거 턴))를
+   싣는다. `effect.status` 가 `ok` 면 전→후 비율과 `delta` 를, `표본 부족`(어느 쪽이든 매칭 턴 < `effect_min`)이면 숫자를 효과로
+   해석하지 않는다(orchestrate 는 `측정 대상 아님`). `unknown` 은 기록·후보에 없는 ID(다른 레포·오타)다. `available:false`(git 없음)·
+   `null`(`--all`·`--trace` — git 을 읽지 않음)이면 이 항목은 생략한다
 
 ### Phase 3: 해석 (LLM 판정)
 집계가 제공한 후보를 판정한다 — 집계 스크립트는 후보 추출·랭킹까지, 판정은 여기서만.
@@ -138,7 +145,7 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 |------|------|----------|
 | **(a) description 튜닝** | `missed` 항목과 그 `tune` 하위 제안(`item.tune`), `tune` 항목(`terms` 는 description 에 없는 프롬프트 용어 — Use when 추가안 재료, `reason: no_use_when` 은 Use when 절 부재. tune 근거는 프롬프트 텍스트 근거만이라 orchestrate 경유(`signal.chain`) 세션엔 붙지 않는다), user-only 스킬 | 대상 SKILL.md 경로 + 현재 description + 수정안 + 근거 턴 인용(`items[].evidence`). 적용 후 검증은 skill-creator eval 권고 |
 | **(b) 사장 자산 정리** | 미사용 + 사장 분류, lifecycle stale/archive 후보 | `workflow:deprecation-guide` 절차로 넘길 후보 목록 + idle_days 근거 (전이 실행은 사용자 승인 후) |
-| **(c) 하네스 구조** | `orchestrate` 항목(`chain:` 스킬 연쇄 / `flow:` 툴 흐름 n-gram 의 반복), 미발화가 스킬 부재 때문(기존 스킬로 커버 불가) | 신규 스킬/훅 후보 메모 — 스캐폴딩은 `harness:create-flow` 소관, 여기서는 후보 식별까지 |
+| **(c) 하네스 구조** | `orchestrate` 항목(`chain:` 스킬 연쇄 / `flow:` 툴 흐름 n-gram 의 반복), 미발화가 스킬 부재 때문(기존 스킬로 커버 불가) | 신규 스킬/훅 후보 메모 — 스캐폴딩은 `harness:create-flow` 소관(`chain:` 연쇄를 맡을 오케스트레이터는 Phase 6 의 5번 라우팅), 여기서는 후보 식별까지 |
 | **(d) 계측 개선** | trigger null·조인 실패·표본 편향 | observe 플러그인 자체 개선 항목 (훅 버그는 플래그만 — 무단 수정 금지 원칙) |
 
 제안 공통 규율 (hermes-agent 학습 루프 이식 — .planning/hermes-research.md):
@@ -168,12 +175,36 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
    한 줄 알리고 이 단계를 건너뛴다
 2. **질문**: 추천마다 `id`·유형·대상·Phase 3 판정 한 줄을 보여 주고 수락 / 거절 / 보류 / 건너뛰기 중 하나를 묻는다
    (AskUserQuestion 이 있으면 그것으로, 없으면 번호 목록으로 한 번에). 판정이 "기각"이었던 항목도 그대로 묻는다 — 기각 판정은
-   사용자 응답이 아니다. 응답을 대신 추정하거나, 제안 적용 여부·git diff 로 수락을 추론하지 않는다(암묵 수락은 백로그)
+   사용자 응답이 아니다. 응답을 대신 추정하거나 git diff 로 수락을 추론하지 않는다 — 반영 사실은 커밋의 `Observe-Rec: <id>` trailer 로만
+   결정론으로 읽는다(그러면 `applied` 로 계산되어 다시 묻지 않는다. 옛 "암묵 수락" 백로그를 대체)
 3. **기록**: 답한 것만 한 번에 `node ${CLAUDE_PLUGIN_ROOT}/bin/observe-report.js --accept <id,…> --reject <id,…> --snooze <id,…>`
    로 append 한다 — `status: resurfaced` 항목은 ID 를 `<id>@<evidence_n>`(보여 준 항목의 근거 수)으로 쓴다(건너뛰기는 아무것도 쓰지 않음 — 응답 없는 제안은 30일 뒤 만료로 계산된다). 모르는 ID·한 ID 에 서로 다른 응답이면
    집계기가 exit 1 로 아무것도 쓰지 않는다 — 출력 한 줄을 사용자에게 그대로 전한다
-4. **확인**: 집계기가 출력한 `<id> → <상태>` 줄(거절·보류는 쿨다운 끝 날짜 포함)을 보여 주고 끝낸다. 상태·precision 은 다음
+4. **확인**: 집계기가 출력한 `<id> → <상태>` 줄(거절·보류는 쿨다운 끝 날짜 포함)을 보여 준다. 상태·precision 은 다음
    리포트가 append-only 이벤트에서 다시 계산한다(파일을 고쳐 쓰지 않는다)
+5. **다음 단계 라우팅**: 수락한 추천마다 넘길 곳과 브리프를 보여 주고 끝낸다 — 반영은 사용자가 그 스킬을 불러 별도 작업으로 한다
+   (이 커맨드는 여전히 파일을 고치지 않는다). 넘길 곳이 세션의 스킬 목록에 없으면(`harness`·`workflow` 플러그인 미설치) 브리프만
+   보여 주고 끝낸다 — observe 는 harness 에 의존하지 않는다
+
+   | 수락 항목 | 다음 단계 |
+   |----------|----------|
+   | `missed`·`tune` (대상의 `tune` 하위 제안 포함) | `harness:evolve` — description 조정, 1변경 1커밋 |
+   | `missed` 중 `signal.chain` 이 있는 항목(연쇄가 기존 호스트 오케스트레이터로 라우팅됨) | `harness:evolve` — 그 오케스트레이터 |
+   | `orchestrate` `chain:` | 연쇄를 흡수할 기존 오케스트레이터가 있으면 `harness:evolve`, 새로 만들어야 하면 `harness:team-harness` (Phase 3 에서 판정) |
+   | `orchestrate` `flow:` | `harness:create-flow` — 신규 스킬/훅 후보(Phase 4 (c)) |
+   | `inventory.lifecycle` 의 `stale`·`archive_candidates` (추천 ID 가 없어 응답 없이 Phase 4 (b) 후보로 넘긴다) | `workflow:deprecation-guide` — `id`·`kind`·`last_used`·`idle_days` |
+
+   브리프(추천 ID 가 있는 항목 — 원문 프롬프트는 싣지 않는다):
+   ```
+   추천: <id> · <type> · 근거 세션 <evidence_n>
+   대상: <target> → <Phase 3 에서 Read 한 원본 파일 경로 — 플러그인 레포 소스. 설치 캐시 경로는 넘기지 않는다>
+         (orchestrate 면 연쇄 원소와 흡수 후보 오케스트레이터)
+   현재 description 요지: <Read 한 description 한두 줄>
+   수정안 재료: <Phase 3 판정 한 줄> · terms <item.tune.terms 또는 tune 항목의 terms — 있을 때> · reason <no_use_when 이면 Use when 절 부재>
+   근거 ref: <evidence 의 session#turn 최대 3개>
+   반영 커밋: 본문 끝 trailer 에 Observe-Rec: <id> (여러 개면 한 줄에 하나) — 이 줄이 있어야 다음 리포트가 그 추천을
+             applied 로 보고 전후 효과를 잰다(Phase 2 의 8번). trailer 는 이 레포의 HEAD 에서 닿는 커밋에서만 읽힌다
+   ```
 
 ## Tool Coordination
 - **Bash**: `node ${CLAUDE_PLUGIN_ROOT}/bin/observe-report.js --json [--window N]` — 결정론 집계,
@@ -209,6 +240,7 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 - 미발화 후보를 스킬 description과 대조해 "놓친 발화" vs "스킬 불필요"로 판정
 - description 튜닝 제안서·사장 자산 후보·신규 스킬 후보·계측 개선 항목을 산출
 - 표본 부족·트레이스 부재를 명시하고 과잉 일반화를 방지
+- 수락한 추천의 다음 단계(`harness:evolve`·`harness:team-harness`·`workflow:deprecation-guide`)와 `Observe-Rec` trailer 를 담은 브리프 제시
 
 **Will Not:**
 - SKILL.md·커맨드·훅 등 어떤 파일도 수정하지 않음 — 제안서 산출까지만 (적용은 사용자 승인 후 별도 작업).
@@ -222,6 +254,8 @@ skill-creator eval 소관 — 이 커맨드는 **실사용 텔레메트리의 �
 
 ## Related
 - `observe` 훅 (`bin/hooks/adapters/claude/trace-{session,prompt,skill,agent,result,tool,stop}.js`) — 이 리포트의 데이터 생산자
+- `harness:evolve` — 수락한 `missed`·`tune`·호스트 오케스트레이터 연쇄의 반영 소관(1변경 1커밋, `Observe-Rec` trailer)
+- `harness:team-harness` — 새 오케스트레이터가 필요한 `orchestrate` 연쇄의 설계 소관
 - `workflow:deprecation-guide` — (b) 사장 자산 후보의 폐기 절차 소관
 - `harness:create-flow` — (c) 신규 스킬/훅 후보의 스캐폴딩 소관
 - `workflow:retro` — 세션 일화 기반 교훈 라우팅 (본 커맨드의 데이터 기반 보완재)

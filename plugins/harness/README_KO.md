@@ -58,7 +58,7 @@ completion promise를 직접 검증한다.
 
 `plugin.json`에 하드 의존성은 없다. 다음 플러그인과 함께 쓰면 시너지가 있다.
 
-- `observe`(`/observe-report`) — 여기서 만든 하네스가 실제로 어떤 프롬프트에서 발화했고 그 턴이 어떻게 끝났는지(outcome) 관측·개선한다.
+- `observe`(`/observe-report`) — 여기서 만든 하네스가 실제로 어떤 프롬프트에서 발화했고 그 턴이 어떻게 끝났는지(outcome) 관측·개선한다. observe 가 있으면 `evolve` 가 그 집계(`--json --no-record`)를 관찰 신호로 읽고, observe 추천을 반영한 커밋에 `Observe-Rec: <id>` trailer 를 붙여 다음 리포트가 반영 여부와 전후 효과를 재게 한다. observe 가 없으면 이 단계는 건너뛴다.
 - `workflow`(`/retro`) — 반복 실수를 `tasks/lessons.md`에 `#가드-훅-후보`로 태깅한다. `/create-flow --from-lessons`의 입력원이다.
 
 ## 참고
