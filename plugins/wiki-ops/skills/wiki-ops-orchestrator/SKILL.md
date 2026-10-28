@@ -1,7 +1,7 @@
 ---
 name: wiki-ops-orchestrator
 description: |
-  llmwiki CLI를 도구로 구동해 인용 기반 지식 vault를 운영하는 지식 운영 하네스 오케스트레이터. 문서 투입(feed)→결정론 감사(lint 구조·무결성·스키마)→큐레이션 루프(harness generic 루프 엔진 재사용)→인용 질의응답(ask)의 게이트 기반 상태기계. "위키/vault에 문서 넣어줘", "지식 베이스 감사·정리해줘", "vault에서 답 찾아줘" 요청과 /wiki-feed·/wiki-audit·/wiki-curate·/wiki-ask 실행 시 발동. llm-wiki 소스코드 개발에는 발동하지 않음 — 스택 플러그인에 위임. Outline 사내위키 문서화는 workflow:document-latest 소관.
+  llmwiki CLI를 도구로 구동해 인용 기반 지식 vault를 운영하는 지식 운영 하네스 오케스트레이터. 문서 투입(feed)→결정론 감사(lint 구조·무결성·스키마)→큐레이션 루프(harness generic 루프 엔진 재사용)→인용 질의응답(ask)의 게이트 기반 상태기계. "위키/vault에 문서 넣어줘", "지식 베이스 감사·정리해줘", "vault에서 답 찾아줘" 요청과 /wiki-feed·/wiki-audit·/wiki-curate·/wiki-ask 실행 시 발동. llm-wiki 소스코드 개발에는 발동하지 않음 — 스택 플러그인에 위임. Outline 사내위키 문서화는 사용자에게 /document-latest 실행을 안내(workflow:document-latest, 사용자 직접 호출 전용).
   Knowledge-ops orchestrator that drives the llmwiki CLI to operate a cited knowledge vault: gated feed → deterministic audit (structure/integrity/schema lint) → curation loop (reuses the harness generic loop engine) → cited Q&A. Use when: ingesting documents into an llm-wiki vault, auditing or curating wiki health, or answering questions from the compiled wiki. Does not fire for developing the llm-wiki source code itself.
 ---
 
@@ -23,7 +23,7 @@ LLM-0 결정론 게이트다 — 이 하네스는 게이트를 새로 만들지 
 
 미발동 (위임 경계):
 - llm-wiki 소스코드 개발·버그픽스 → python-fastapi 등 스택 플러그인
-- Outline 사내위키 문서화 → workflow:document-latest
+- Outline 사내위키 문서화 → 사용자에게 `/document-latest` 실행을 안내 (`workflow:document-latest` 는 `disable-model-invocation: true` — Skill 도구로 위임 불가)
 - 웹 기반 심층 리서치 리포트 → deep-research (vault 근거 리서치는 /wiki-ask --research)
 
 ## Architecture

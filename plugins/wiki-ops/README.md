@@ -52,5 +52,5 @@ they always escalate to a human decision (★G1 user gate).
 ## Boundaries
 
 - Developing the llm-wiki source code itself → stack plugins
-- Company wiki documentation (Outline) → `workflow:document-latest`
+- Company wiki documentation (Outline) → ask the user to run `/document-latest` (`workflow:document-latest` is user-invoked only)
 - Web-based deep research reports → `deep-research` (vault-grounded research: `/wiki-ask --research`)
