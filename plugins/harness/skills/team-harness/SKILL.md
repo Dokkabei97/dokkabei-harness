@@ -282,7 +282,7 @@ Bash: git log --oneline -- <하네스 경로>                  → 변경 이력
 
 - [execution-modes.md](references/execution-modes.md) — 실행 모드 3종 상세, 혼합 모드, v1→v2 전환
 - [workflow-recipes.md](references/workflow-recipes.md) — 워크플로 스크립트 스켈레톤과 함정 체크리스트
-- [model-selection-guide.md](references/model-selection-guide.md) — 모델 티어 기준과 적용 규칙
+- [model-selection-guide.md](references/model-selection-guide.md) — 모델 티어 기준과 적용 규칙, Codex·Antigravity 대응표
 - [team-patterns.md](references/team-patterns.md) — 6패턴·품질 패턴 상세, 분리 기준, 에이전트 정의 구조, 재사용 설계
 - [orchestrator-template.md](references/orchestrator-template.md) — 모드별(A/B/C) 오케스트레이터 템플릿
 - [team-examples.md](references/team-examples.md) — 실전 팀 구성 예시

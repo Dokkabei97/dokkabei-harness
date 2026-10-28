@@ -57,7 +57,7 @@
       "name": "harness",
       "source": "./plugins/harness",
       "description": "Meta-plugin for harness design (v2 execution modes), evolution, generation, validation, and lightweight loops",
-      "version": "2.2.1",
+      "version": "2.2.2",
       "category": "harness",
       "keywords": [
         "harness",

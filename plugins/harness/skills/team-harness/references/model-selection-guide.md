@@ -1,6 +1,8 @@
-# Claude 모델 선택 가이드
+# 모델 선택 가이드 (Claude Code · Codex · Antigravity)
 
-에이전트에 사용할 모델은 업무의 **복잡도, 예상 기간, 필요한 자율성, 응답 속도**라는 네 가지 기준으로 고른다. 모델은 에이전트 정의 파일의 YAML 프론트매터(머리말)에 있는 `model:`, `Agent` 도구의 `model` 매개변수, `Workflow`의 `agent()`에 전달하는 `opts.model`에서 지정할 수 있다. 선택한 이유는 에이전트 정의나 조율 스킬에 주석으로 남긴다.
+에이전트에 사용할 모델은 업무의 **복잡도, 예상 기간, 필요한 자율성, 응답 속도**라는 네 가지 기준으로 고른다. 이 기준은 런타임과 무관하다. 아래 본문은 Claude 티어(fable/opus/sonnet)로 설명하고, Codex·Antigravity에서는 [런타임별 대응](#런타임별-대응) 절의 표로 같은 업무 등급을 옮겨 고른다.
+
+Claude Code에서는 에이전트 정의 파일의 YAML 프론트매터(머리말)에 있는 `model:`, `Agent` 도구의 `model` 매개변수, `Workflow`의 `agent()`에 전달하는 `opts.model`에서 지정할 수 있다. 선택한 이유는 에이전트 정의나 조율 스킬에 주석으로 남긴다.
 
 ## 요약 결정표
 
@@ -112,16 +114,47 @@
 
 예를 들어 논문 한 편을 깊이 비판하는 작업에는 **Opus**가 알맞고, 논문 수십 편을 검토해 연구 전략을 세우고 최종 보고서까지 만드는 작업에는 **Fable**이 알맞다. 앞 단계의 결과가 다음 단계에 영향을 주며 모델이 여러 단계를 스스로 이어 가야 한다면 Fable을 쓴다. 범위가 분명한 문제 하나를 깊이 분석해야 한다면 Opus를 쓴다.
 
+## 런타임별 대응
+
+같은 업무 등급을 런타임마다 다음처럼 옮긴다. 모델 계열마다 강점이 달라 1:1 등가는 아니다 — **업무 등급의 대응**이지 성능 동급 표가 아니다.
+
+| 업무 등급 | Claude Code | Codex | Antigravity (서브에이전트 `model:`) |
+|---|---|---|---|
+| 장기·자율 실행, 최고난도 | `fable` | `gpt-6-astra` + effort `max`/`ultra` | `pro` |
+| 범위가 정해진 깊은 추론·설계·교차 검증 | `opus` | `gpt-6.1-sol` + effort `high`/`xhigh` (가장 어려운 것은 `gpt-6-astra`) | `pro` |
+| 일상 범용 (기본값) | `sonnet` | `gpt-6.1-sol` + effort `medium`, 단순 작업은 `gpt-6.1-terra` | `flash` 또는 `inherit` |
+| 판단이 거의 없는 초경량 반복 | `haiku` | `gpt-6-luna` (가벼운 에이전틱 코딩은 `gpt-reserve`) | `flash_lite` |
+
+근거(2026-10-28 실측): Codex 0.165 `~/.codex/models_cache.json`의 모델 설명 — astra "Frontier intelligence for the most demanding work", 6.1-sol "Latest workhorse model for coding and everyday work", luna "Fast and affordable model for easier tasks", reserve "Fast and affordable agentic coding model". terra 는 6.1 설명이 비어 있어 이전 세대 5.6-terra 의 "balanced model for straightforward work" 로 추정했다. Antigravity 는 `agy models` 목록과 agy 1.4.7 바이너리의 서브에이전트 검증 문자열로 확인했다. Antigravity 열의 별칭은 등급 요청일 뿐 실제 모델은 서버가 정한다(아래 Antigravity 절).
+
+### Codex
+
+- **두 축으로 고른다.** Codex 는 모델과 **reasoning effort**(`low`/`medium`/`high`/`xhigh`/`max`, sol·terra·astra 는 `ultra` 추가 — "Maximum reasoning with automatic task delegation")를 따로 지정한다. 같은 모델 안에서도 effort 로 등급을 조절할 수 있으므로, 모델을 바꾸기 전에 effort 를 먼저 조정한다.
+- **컨텍스트 창이 다르다.** `gpt-6.1-sol`·`gpt-6.1-terra` 500k, `gpt-6-astra`·`gpt-6-luna`·`gpt-reserve` 272k. 방대한 자료를 한 번에 다루는 단계는 6.1 계열이 유리하다.
+- **지정 위치.**
+  - 세션: `config.toml` 의 `model`·`model_reasoning_effort`, 또는 `codex -m <model> -c model_reasoning_effort=<effort>`.
+  - 서브에이전트: `spawn_agent` 는 기본적으로 **호출자 모델을 상속**하며, 도구 설명 자체가 "사용자가 명시적으로 요청하지 않으면 `model` 을 지정하지 말라"고 한다. 등급을 나누려면 에이전트 역할 파일(`.codex/agents/*.toml` 또는 `~/.codex/agents/*.toml`, `name`·`developer_instructions` 필수)에 둔다. 역할 파일 안의 모델 키 이름(`model`·`model_reasoning_effort` 로 추정)은 이 가이드 작성 시점에 실측하지 않았으니 처음 쓸 때 확인한다.
+- Claude 형식 `agents/*.md` 는 Codex 가 로드하지 않는다. Claude 에이전트의 `model:` 값은 Codex 에 영향이 없다.
+
+### Antigravity
+
+- **서브에이전트 `model:` 은 등급 별칭만 받는다:** `inherit`(기본, 호출자 모델) / `flash_lite`(매우 가벼움) / `flash`(조사·파일 읽기·빠른 검색 같은 단순 작업) / `pro`(깊은 추론·대규모 리팩터링·다단계 계획). 바이너리의 설명 문자열을 그대로 옮긴 것이다.
+- **세션 모델은 별도다:** `agy models` 기준 Gemini 4 Argon(low/medium/high), Gemini 3.8 Flash(low/medium/high), 그리고 Claude Opus 5.5·Sonnet 5.5, GPT-OSS 120B. `agy --model <id>` 로 고른다.
+- **별칭이 실제로 어느 모델이 되는지는 서버가 정한다.** CLI 는 별칭을 `MODEL_TIER_PRO`/`MODEL_TIER_FLASH`/`MODEL_TIER_FLASH_LITE`/`MODEL_TIER_INHERIT` 열거값으로 백엔드에 넘길 뿐이고, 모델 ID 매핑은 클라이언트에 없다. 2026-10-28 실측(agy 1.4.7, 세션 모델 Gemini 4 Argon Medium)에서 `Model: "pro"` 서브에이전트를 두 번 띄웠을 때, 서브에이전트 대화 기록의 단계 메타데이터에는 `gemini-3.8-flash-tiered` 가, 설정 레코드에는 `gemini-4-argon-medium` 이 남았고 `gemini-3.1-pro` 는 나타나지 않았다. 계정 등급(`gemini-4-argon-trial` 흔적)에 따라 라우팅이 달라질 수 있으므로, **`pro` 를 특정 모델로 가정하지 말고** "가능한 한 큰 모델을 요청하는 힌트"로만 쓴다.
+- **Claude 값이 들어간 에이전트는 통째로 건너뛴다.** `model: opus`/`sonnet` 처럼 위 네 값이 아니면 agy 가 그 에이전트를 로드하지 않는다(실측: `agy plugin validate`). 스킬은 영향 없이 동작한다.
+
 ## 하네스 적용 규칙
 
 1. **업무를 기준으로 판단한다** — "중요한 에이전트니까"라는 이유로 모델을 고르지 않는다. 에이전트가 맡을 업무의 복잡도, 예상 기간, 필요한 자율성, 응답 속도를 따져 모델을 고른다.
 2. **근거 없이 같은 모델을 일괄 지정하지 않는다** — 모든 에이전트를 fable이나 opus로 지정하면 비용만 늘어난다. 에이전트마다 알맞은 모델을 고르고 그 이유를 주석으로 남긴다.
 3. **조율 계층과 실행 계층을 구분한다** — 계획과 조율을 맡는 계층(메인 세션 또는 감독자 에이전트)에 fable을 썼더라도, 그 아래 작업 에이전트에는 각 업무에 알맞은 모델을 따로 지정한다. 조율 에이전트가 fable이라고 해서 작업 에이전트까지 fable일 필요는 없다.
 4. **워크플로 단계마다 모델을 고른다** — `Workflow` 스크립트에서는 `opts.model`로 단계마다 다른 모델을 지정할 수 있다. 반복적인 수집·변환 단계에는 sonnet, 깊이 있는 검증·심사·설계 단계에는 opus, 전체 계획을 세우고 장기간 실행하는 단계에는 fable을 사용한다.
+5. **여러 런타임에 배포하는 에이전트는 모델 고정의 대가를 안다** — 하나의 `agents/*.md` 는 `model:` 값이 하나뿐이다. Claude 값(`sonnet` 등)을 두면 Claude 에서는 비용을 아끼지만 Antigravity 에서는 그 에이전트가 빠진다. 값을 빼면(호출자 상속) 세 런타임 모두 로드되지만 Claude 에서 등급 조절이 사라진다. 비용 차이가 큰 반복 작업자만 고정하고, 판단형 에이전트는 상속을 검토한다. Antigravity 별칭(`pro` 등)을 이 파일에 쓰면 Claude 쪽이 깨지므로 쓰지 않는다.
 
 ## 유효값과 표기
 
-- **유효값:** `fable` / `opus` / `sonnet` / `haiku` / `inherit`(호출자 모델 상속) / full model ID. `/verify-flow`의 모델 값 검증 규칙이 이 범위를 확인한다. `haiku`는 판단이 거의 없는 초경량 반복(형식 검사·분류 라우팅)에, `inherit`는 메인 세션 모델을 의도적으로 따를 때만 쓴다.
+- **유효값 (Claude 형식 `agents/*.md`):** `fable` / `opus` / `sonnet` / `haiku` / `inherit`(호출자 모델 상속) / full model ID. `/verify-flow`의 모델 값 검증 규칙이 이 범위를 확인한다. `haiku`는 판단이 거의 없는 초경량 반복(형식 검사·분류 라우팅)에, `inherit`는 메인 세션 모델을 의도적으로 따를 때만 쓴다.
+- **다른 런타임의 값은 그 런타임의 파일에만 쓴다:** Codex 모델 ID 는 `.codex/agents/*.toml`·`config.toml`·`spawn_agent` 에, Antigravity 별칭(`inherit`/`flash_lite`/`flash`/`pro`)은 Antigravity 전용 에이전트 정의에만 쓴다.
 - **선택 이유는 주석으로 남긴다** — 다음 사람이 "왜 이 티어인가"를 재판단할 수 있어야 한다.
 
 ```yaml
