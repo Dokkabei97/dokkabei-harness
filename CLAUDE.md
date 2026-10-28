@@ -64,6 +64,8 @@ are registered in `.claude-plugin/marketplace.json`. Install: `/plugin install <
 - `archive/` = retired plugins (mvp, feature-loop, startup, scaleup, enterprise, eng-gov, legal, finance, hr, analyze, etc —
   archived 2026-10 after zero use) with their bats tests in `archive/tests/hooks/`. Not installable (no `.claude-plugin/`),
   not in marketplace.json, not run by CI. Restore = move back + re-add the manifest and marketplace entry.
+- `archive/components/<plugin>/` = partial archive: individual components (skills/commands/agents/references) retired from a
+  still-active plugin, mirroring the plugin-relative path (2026-10). Restore = `git mv` back to `plugins/<plugin>/`.
 - `archive/infra/otel/` = the retired local OTel/Grafana stack (archived 2026-10). observe does not integrate with OTel.
 - `.tracer/` = the observe plugin's runtime trace store (self-gitignored via its own `.gitignore` `*`; `~/.tracer/` is the
   global layer for `--all`) — unrelated to project memory or this file. The legacy `.claude/skill-trace.jsonl` is its v0 path.

@@ -25,8 +25,8 @@
     {
       "name": "test",
       "source": "./plugins/test",
-      "description": "TDD loop and E2E (Playwright/Chrome) test automation",
-      "version": "1.1.0",
+      "description": "Test-first guide with a specialist testing-pitfall index, a browser E2E verification checklist (Chrome / Playwright MCP), and user-invoked Playwright spec generation",
+      "version": "2.0.0",
       "category": "productivity",
       "keywords": [
         "test",
@@ -40,8 +40,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Workflow harness automating the full development lifecycle",
-      "version": "1.5.3",
+      "description": "Development lifecycle workflows: project rules (CLAUDE.md stack facts + .claude/rules specialist selection), spec/planning/shipping guides, MR review, handoff, release notes, retrospectives, and CLAUDE.md sync",
+      "version": "1.6.0",
       "category": "productivity",
       "keywords": [
         "workflow",
@@ -70,7 +70,7 @@
       "name": "observe",
       "source": "./plugins/observe",
       "description": "Measures real harness usage (Claude Code + Codex hooks, Antigravity backfill, opt-in git hooks) into a per-repo .tracer/ store and turns it into improvement proposals with an explicit feedback loop",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "category": "harness",
       "keywords": [
         "observe",
@@ -87,8 +87,8 @@
     {
       "name": "backend-shared",
       "source": "./plugins/backend-shared",
-      "description": "Stack-agnostic backend common design & operations pattern layer",
-      "version": "1.1.0",
+      "description": "Shared backend specialist layer: PostgreSQL, Kafka, Valkey and distributed-call pitfalls, migration safety, DTO/serialization rules, plus user-invoked API design, docs, test, and perf commands",
+      "version": "2.0.0",
       "category": "develop",
       "keywords": [
         "backend",
@@ -109,8 +109,8 @@
     {
       "name": "kotlin-spring",
       "source": "./plugins/kotlin-spring",
-      "description": "Kotlin + Spring CRUD generation, diagnosis, and pattern specialization",
-      "version": "1.0.1",
+      "description": "JVM, Kotlin and Spring specialist layer: symptom-to-pitfall triage (GC, collections, coroutines, transactions, JPA, pools), a read-only diagnostic agent, and convention-first CRUD scaffolding",
+      "version": "2.0.0",
       "category": "develop",
       "keywords": [
         "kotlin",
@@ -128,8 +128,8 @@
     {
       "name": "python-fastapi",
       "source": "./plugins/python-fastapi",
-      "description": "Python + FastAPI code generation, API design, and pattern guide bundle",
-      "version": "1.0.1",
+      "description": "Python + FastAPI specialist layer: async, pool, serialization, GC and deployment pitfall triage, plus convention-first code generation and API design",
+      "version": "2.0.0",
       "category": "develop",
       "keywords": [
         "python",
@@ -147,8 +147,8 @@
     {
       "name": "go-mux",
       "source": "./plugins/go-mux",
-      "description": "Go stdlib net/http mux code generation, API design, and guide",
-      "version": "1.0.1",
+      "description": "Go runtime and performance specialist layer (maps, GC, concurrency, net/http, database/sql) plus stdlib net/http mux code generation and API design",
+      "version": "1.1.0",
       "category": "develop",
       "keywords": [
         "go",
@@ -164,8 +164,8 @@
     {
       "name": "nextjs",
       "source": "./plugins/nextjs",
-      "description": "Next.js App Router frontend design and code generation",
-      "version": "1.0.1",
+      "description": "Next.js App Router specialist layer: version-aware caching, RSC boundary, data-waterfall and self-hosting pitfall triage, plus page design and code generation",
+      "version": "2.0.0",
       "category": "develop",
       "keywords": [
         "nextjs",
@@ -180,8 +180,8 @@
     {
       "name": "search",
       "source": "./plugins/search",
-      "description": "Elasticsearch search-engineering specialist agent-team harness",
-      "version": "1.0.0",
+      "description": "Elasticsearch specialist layer: ES/Lucene performance, relevance (Korean nori), and vector/hybrid search pitfall hubs, review commands, and a user-invoked agent-team orchestrator",
+      "version": "2.0.0",
       "category": "develop",
       "keywords": [
         "elasticsearch",
@@ -200,7 +200,7 @@
       "name": "wiki-ops",
       "source": "./plugins/wiki-ops",
       "description": "Operates a cited llm-wiki knowledge vault through gated feed, audit, curation-loop, and Q&A",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "productivity",
       "keywords": [
         "wiki",

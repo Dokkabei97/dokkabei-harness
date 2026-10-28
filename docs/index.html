@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>dokkabei-harness — Claude Code plugin marketplace</title>
-<meta name="description" content="A Claude Code plugin marketplace: 12 plugins bundling loop-engineering harnesses, multi-agent teams, and gated dev workflows.">
+<meta name="description" content="A Claude Code plugin marketplace: 12 plugins bundling loop-engineering harnesses, multi-agent teams, gated dev workflows, and specialist stack knowledge layers.">
 <style>
   :root{
     --bg:#0b0d12; --bg2:#12151d; --card:#161a24; --line:#242a38;
@@ -147,8 +147,8 @@
       <span data-ko><span class="g">Claude Code</span>를 위한<br>루프 엔지니어링 하네스</span>
     </h1>
     <p class="tag">
-      <span data-en>A plugin marketplace of <b>12 plugins</b> — gated dev loops, multi-agent teams, and hook-driven verification. Completion is judged by the harness, not by the model.</span>
-      <span data-ko><b>플러그인 12종</b>의 마켓플레이스 — 게이트 기반 개발 루프, 멀티 에이전트 팀, 훅 기반 검증. 완료 판정은 모델이 아니라 하네스가 합니다.</span>
+      <span data-en>A plugin marketplace of <b>12 plugins</b> — gated dev loops, multi-agent teams, hook-driven verification, and specialist stack knowledge. Completion is judged by the harness, not by the model.</span>
+      <span data-ko><b>플러그인 12종</b>의 마켓플레이스 — 게이트 기반 개발 루프, 멀티 에이전트 팀, 훅 기반 검증, 스택 스페셜리스트 지식. 완료 판정은 모델이 아니라 하네스가 합니다.</span>
     </p>
     <div class="cta">
       <a class="btn p" href="#install"><span data-en>Get started</span><span data-ko>시작하기</span></a>
@@ -159,9 +159,9 @@
 
   <div class="stats">
     <div class="stat"><b>12</b><span data-en>plugins</span><span data-ko>플러그인</span></div>
-    <div class="stat"><b>50</b><span data-en>skills</span><span data-ko>스킬</span></div>
-    <div class="stat"><b>19</b><span data-en>agents</span><span data-ko>에이전트</span></div>
-    <div class="stat"><b>173</b><span data-en>regression tests</span><span data-ko>회귀 테스트</span></div>
+    <div class="stat"><b>36</b><span data-en>skills</span><span data-ko>스킬</span></div>
+    <div class="stat"><b>16</b><span data-en>agents</span><span data-ko>에이전트</span></div>
+    <div class="stat"><b>30</b><span data-en>commands</span><span data-ko>커맨드</span></div>
   </div>
 
   <section id="features">
@@ -178,7 +178,7 @@
       </div>
       <div class="feat"><div class="ic">🚦</div>
         <h3><span data-en>Gated workflows</span><span data-ko>게이트 워크플로우</span></h3>
-        <p><span data-en>Spec-driven development, TDD loops, code review, retrospectives, and release flows — each gated so scope drift and unverified work can't slip through.</span><span data-ko>스펙 주도 개발, TDD 루프, 코드 리뷰, 회고, 릴리스 흐름 — 각각 게이트로 묶여 스코프 드리프트와 미검증 작업이 빠져나가지 못합니다.</span></p>
+        <p><span data-en>Spec-driven development, test-first guidance, code review, retrospectives, and release flows — each gated so scope drift and unverified work can't slip through. <code>/project-rules</code> writes each repo's stack facts and specialist rules into CLAUDE.md and <code>.claude/rules</code>.</span><span data-ko>스펙 주도 개발, 테스트 우선 가이드, 코드 리뷰, 회고, 릴리스 흐름 — 각각 게이트로 묶여 스코프 드리프트와 미검증 작업이 빠져나가지 못합니다. <code>/project-rules</code> 가 레포별 스택 사실과 스페셜리스트 규칙을 CLAUDE.md·<code>.claude/rules</code> 에 기록합니다.</span></p>
       </div>
       <div class="feat"><div class="ic">🪝</div>
         <h3><span data-en>Hook-driven verification</span><span data-ko>훅 기반 검증</span></h3>
@@ -236,26 +236,26 @@ export OBSERVE_TRACE=1</pre>
 
   <section id="plugins">
     <h2><span data-en>Plugin catalog</span><span data-ko>플러그인 카탈로그</span></h2>
-    <p class="sub"><span data-en>12 plugins across 3 categories. Install any with <code>/plugin install &lt;name&gt;@dokkabei-harness</code>.</span><span data-ko>3개 카테고리에 12개 플러그인. <code>/plugin install &lt;name&gt;@dokkabei-harness</code>로 설치합니다.</span></p>
+    <p class="sub"><span data-en>12 plugins across 3 categories. Install any with <code>/plugin install &lt;name&gt;@dokkabei-harness</code>. The stack plugins are specialist knowledge layers: ID'd pitfall items (applies-to, signal, mechanism, fix, counter-case, verification, source) that strong generalists still miss.</span><span data-ko>3개 카테고리에 12개 플러그인. <code>/plugin install &lt;name&gt;@dokkabei-harness</code>로 설치합니다. 스택 플러그인은 스페셜리스트 지식 레이어입니다: 강한 제너럴리스트도 놓치는 함정을 ID 항목(적용·신호·메커니즘·처방·반례·검증·근거)으로 담습니다.</span></p>
 
     <div class="cat">
       <div class="cat-h"><span class="k">develop</span><span class="n">7</span></div>
       <div class="plugs">
         <div class="plug"><h4>base</h4><p><span data-en>Foundational guard-hook &amp; LSP layer for the loop harness.</span><span data-ko>루프 하네스의 기반 가드-훅·LSP 계층.</span></p></div>
-        <div class="plug"><h4>backend-shared</h4><p><span data-en>Stack-agnostic backend design &amp; ops pattern layer.</span><span data-ko>스택 불문 백엔드 설계·운영 패턴 계층.</span></p></div>
-        <div class="plug"><h4>kotlin-spring</h4><p><span data-en>Kotlin + Spring CRUD generation, diagnosis, patterns.</span><span data-ko>Kotlin + Spring CRUD 생성·진단·패턴.</span></p></div>
-        <div class="plug"><h4>python-fastapi</h4><p><span data-en>Python + FastAPI codegen, API design, patterns.</span><span data-ko>Python + FastAPI 코드 생성·API 설계·패턴.</span></p></div>
-        <div class="plug"><h4>go-mux</h4><p><span data-en>Go stdlib net/http mux codegen &amp; API design.</span><span data-ko>Go stdlib net/http mux 코드 생성·API 설계.</span></p></div>
-        <div class="plug"><h4>nextjs</h4><p><span data-en>Next.js App Router frontend design &amp; codegen.</span><span data-ko>Next.js App Router 프론트엔드 설계·코드 생성.</span></p></div>
-        <div class="plug"><h4>search</h4><p><span data-en>Elasticsearch search-engineering agent team.</span><span data-ko>Elasticsearch 검색 엔지니어링 에이전트 팀.</span></p></div>
+        <div class="plug"><h4>backend-shared</h4><p><span data-en>PostgreSQL, Kafka, Valkey &amp; distributed-call pitfalls; migration safety; API commands.</span><span data-ko>PostgreSQL·Kafka·Valkey·분산 호출 함정, 마이그레이션 안전성, API 커맨드.</span></p></div>
+        <div class="plug"><h4>kotlin-spring</h4><p><span data-en>JVM/Kotlin/Spring pitfall triage, diagnostic agent, CRUD scaffolding.</span><span data-ko>JVM·Kotlin·Spring 함정 트리아지, 진단 에이전트, CRUD 스캐폴딩.</span></p></div>
+        <div class="plug"><h4>python-fastapi</h4><p><span data-en>Async, pool, serialization &amp; GC pitfall triage; codegen &amp; API design.</span><span data-ko>async·풀·직렬화·GC 함정 트리아지, 코드 생성·API 설계.</span></p></div>
+        <div class="plug"><h4>go-mux</h4><p><span data-en>Go runtime &amp; performance pitfalls; stdlib net/http mux codegen.</span><span data-ko>Go 런타임·성능 함정, stdlib net/http mux 코드 생성.</span></p></div>
+        <div class="plug"><h4>nextjs</h4><p><span data-en>Version-aware App Router pitfalls; page design &amp; codegen.</span><span data-ko>버전 인지 App Router 함정, 페이지 설계·코드 생성.</span></p></div>
+        <div class="plug"><h4>search</h4><p><span data-en>ES/Lucene, relevance &amp; vector search pitfall hubs; agent team.</span><span data-ko>ES·Lucene·관련성·벡터 검색 함정 허브, 에이전트 팀.</span></p></div>
       </div>
     </div>
 
     <div class="cat">
       <div class="cat-h"><span class="k">productivity</span><span class="n">3</span></div>
       <div class="plugs">
-        <div class="plug"><h4>workflow</h4><p><span data-en>Automates the full development lifecycle.</span><span data-ko>개발 라이프사이클 전반 자동화.</span></p></div>
-        <div class="plug"><h4>test</h4><p><span data-en>TDD loop and E2E (Playwright/Chrome) automation.</span><span data-ko>TDD 루프와 E2E(Playwright/Chrome) 자동화.</span></p></div>
+        <div class="plug"><h4>workflow</h4><p><span data-en>Project rules, spec, review, handoff, release &amp; retro workflows.</span><span data-ko>프로젝트 규칙·스펙·리뷰·핸드오프·릴리스·회고 워크플로우.</span></p></div>
+        <div class="plug"><h4>test</h4><p><span data-en>Test-first guide, testing pitfalls, browser E2E verification.</span><span data-ko>테스트 우선 가이드, 테스트 함정, 브라우저 E2E 검증.</span></p></div>
         <div class="plug"><h4>wiki-ops</h4><p><span data-en>Operates a cited llm-wiki knowledge vault.</span><span data-ko>인용 기반 llm-wiki 지식 vault 운영.</span></p></div>
       </div>
     </div>

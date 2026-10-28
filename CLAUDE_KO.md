@@ -61,6 +61,8 @@ Claude Code 플러그인 마켓플레이스(`dokkabei-harness`). 플러그인 12
 - `archive/` = 은퇴 플러그인(mvp·feature-loop·startup·scaleup·enterprise·eng-gov·legal·finance·hr·analyze·etc —
   실사용 0으로 2026-10 archive)과 그 bats(`archive/tests/hooks/`). 설치 불가(`.claude-plugin/` 없음)·marketplace.json
   미등재·CI 미실행. 복원 = 원위치 이동 + manifest·marketplace 엔트리 재추가.
+- `archive/components/<plugin>/` = 부분 archive: 살아 있는 플러그인에서 은퇴한 개별 컴포넌트(스킬·커맨드·에이전트·references)를
+  플러그인 기준 상대 경로 그대로 보관(2026-10). 복원 = `plugins/<plugin>/` 원위치로 `git mv`.
 - `archive/infra/otel/` = 은퇴한 로컬 OTel/Grafana 스택(2026-10 archive). observe 는 OTel 과 연동하지 않는다.
 - `.tracer/` = observe 플러그인의 런타임 기록 폴더(자체 `.gitignore` `*` 로 git 에서 무시, `~/.tracer/` 는 `--all` 용 전역 층) —
   프로젝트 메모리나 이 파일과 무관하다. 구 `.claude/skill-trace.jsonl` 은 그 v0 경로다.
