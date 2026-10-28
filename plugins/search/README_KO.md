@@ -2,72 +2,51 @@
 
 # search
 
-> Elasticsearch 검색 엔지니어링 전문 하네스 — 쿼리 최적화·관련성 튜닝·벡터/하이브리드 검색·인덱싱 파이프라인을 전문 에이전트 팀으로 설계·리뷰·진단한다.
+> Elasticsearch 스페셜리스트 레이어 — 강한 시니어도 놓치기 쉬운 ES/Lucene 성능·매핑·클러스터 운영·Kotlin/Java 클라이언트·색인 파이프라인·한국어(nori) 관련성·벡터/하이브리드 검색의 함정 모음. 모든 항목은 ID, 적용 조건, 신호, 메커니즘, 처방, 반례, 검증 방법, 공식 근거를 가진다.
 
-## 개요
+설치: `/plugin install search@dokkabei-harness`
 
-`search`는 프로덕션 Elasticsearch(8.x, 한국어 nori 컨텍스트) 검색 시스템을 다루는 검색플랫폼팀 전용 하네스다. ES 쿼리 DSL 최적화, 검색 관련성(BM25/분석기/동의어) 튜닝, 벡터·하이브리드 검색(kNN, dense_vector, HNSW, RRF), Kafka/Spark/Iceberg 데이터 파이프라인 연동, 인덱스 수명주기, 그리고 증상 기반 진단(`_profile`/`_explain`/`_termvectors`)까지 검색 도메인 전 범위를 다룬다.
+## 설계
 
-핵심 설계는 **Expert Pool + Fan-out/Fan-in** 팀 오케스트레이션이다. `search-team-orchestrator` 스킬이 작업을 Single/Multi/Full Review로 분류해 5명의 도메인 전문 에이전트를 단일 디스패치하거나 병렬로 Fan-out한 뒤 결과를 하나의 통합 보고서로 Fan-in한다. 정형화된 리뷰가 필요할 때는 슬래시 커맨드를, 심화 지식이 필요할 때는 스킬을 참조하는 3층 구조(커맨드 → 에이전트 → 스킬)로 구성된다.
+- **진입 허브 3개 + 레퍼런스.** 모델이 스스로 부르는 스킬은 3개뿐이다. 각 `SKILL.md` 는 짧은 트리아지 인덱스(증상 → 레퍼런스 파일 → 항목 ID)이고, 지식은 `references/*.md` 의 ID 항목(`ES-*`, `LUC-*`, `KO-*`, `VEC-*`)에 있다. 스킬 목록 예산을 줄여 description 이 목록에서 탈락하지 않게 한다.
+- **강제가 아니라 가이드.** 허브는 먼저 프로젝트 사실(ES 버전, 배포 형태, 클라이언트, 매핑 원본, 색인 경로)을 확인하라고 안내하며 스택을 단정하지 않는다. 항목의 `적용`·`반례` 로 맞지 않는 항목은 버린다.
+- **프로젝트별 선별.** 어떤 ID 가 해당 저장소에 유효한지는 프로젝트 `CLAUDE.md`/`.claude/rules` 에 기록한다(예: `workflow:project-rules`). 이 플러그인은 스택 공통 레이어다.
 
-Kotlin/Spring Boot 검색 서비스 코드 관점을 포함하지만, 오케스트레이터와 에이전트는 직접 코드를 수정하거나 ES 클러스터에 접근하지 않고 설계·리뷰·진단 조언을 산출하는 것을 경계로 삼는다.
+## 구성 요소
 
-## 구성요소
+### 스킬 (모델 발화 진입 허브)
 
-### 커맨드
+| 스킬 | 범위 | 항목 접두어 |
+|---|---|---|
+| `es-deep-patterns` | ES/Lucene 성능, 샤드, 대량 색인, 매핑, 쿼리·집계 비용, 세그먼트·머지, JVM·서킷 브레이커·429, Kotlin/Java·Go 클라이언트, Kafka/Spark→ES 색인, 증상 기반 진단 | `ES-SHD` `ES-IDX` `ES-MAP` `ES-QRY` `ES-AGG` `LUC-SEG` `LUC-EXE` `ES-JVM` `ES-OPS` `ES-CLI` `ES-ING` |
+| `search-relevance-engineering` | 관련성, nori 분석, 동의어, 자동완성, BM25·multi_match, 리랭킹·RRF, 품질 평가 | `KO-ANA` `KO-SYN` `KO-AC` `ES-REL` `ES-RNK` `ES-EVL` |
+| `vector-hybrid-search-patterns` | dense_vector 메모리·양자화, kNN 필터·재현율, 하이브리드 융합, 한국어 임베딩 | `VEC-MEM` `VEC-IDX` `VEC-QRY` `VEC-HYB` `VEC-EMB` |
 
-- `es-query-review` — ES query DSL 리뷰. 안티패턴 탐지, 복잡도 평가, 최적화 제안.
-- `es-mapping-review` — 인덱스 매핑 리뷰. 필드 타입 검증, analyzer 체크, 호환성 분석.
-- `vector-search-review` — 벡터 검색 리뷰. `dense_vector` 매핑 검증, kNN 쿼리 최적화, 임베딩 파이프라인 분석, 하이브리드(RRF) 설정 점검.
-- `search-architecture-review` — 다단계 검색(multi-stage retrieval) 아키텍처 리뷰. 파이프라인 단계 평가, 누락 단계 탐지, 지연 예산(latency budget) 분석.
-- `search-quality` — 검색 품질 평가. 관련성 테스트 케이스 설계, 메트릭 프레임워크, A/B 테스트 스펙.
-- `index-lifecycle` — 인덱스 수명주기 관리. ILM 정책 설계, 리인덱싱 계획, 샤드 사이징.
-- `index-pipeline-check` — 인덱싱 파이프라인 헬스 체크. Kafka 컨슈머 설정 검증, ES 벌크 인덱싱 패턴 리뷰, 모니터링 셋업 감사.
+사용자 호출 전용: `search-team-orchestrator`(`/search-team-orchestrator`) — 여러 영역에 걸친 작업을 아래 에이전트에 병렬로 나누고 보고서 하나로 통합한다.
+
+### 커맨드 (사용자 호출, `disable-model-invocation: true`)
+
+- `/es-query-review` — 쿼리 DSL·집계 비용 리뷰(`ES-QRY`/`ES-AGG`/`LUC-EXE`).
+- `/es-mapping-review` — 매핑·분석기 리뷰, 재색인 필요 변경 탐지.
+- `/index-lifecycle` — 샤드 산정, ILM, 무중단 재색인 런북, 색인 경로 점검(`--pipeline`, 구 `/index-pipeline-check`).
+- `/vector-search-review` — 벡터·하이브리드 리뷰와 메모리 산정.
+- `/search-quality` — 골든 질의셋, `_rank_eval`, 온라인 평가 설계.
 
 ### 에이전트
 
-오케스트레이터가 Fan-out으로 조율하는 5인 Expert Pool:
+| 에이전트 | 역할 | 사전 로드 스킬 |
+|---|---|---|
+| `es-query-optimizer` | 쿼리·클러스터 성능(profile, 집계, 매핑 비용, 샤드, JVM) | `es-deep-patterns` |
+| `search-relevance-engineer` | 관련성, 한국어 분석, 리랭킹, 벡터·하이브리드 | `search-relevance-engineering`, `vector-hybrid-search-patterns` |
+| `search-service-architect` | 클라이언트, 타임아웃·재시도, bulk, Kafka/Spark 색인, 재색인 | `es-deep-patterns` |
+| `search-code-reviewer` | 팀 테크리드 스타일 PR 전 Kotlin 리뷰(`[Sug]`/`[Q]`/`[High]`), 명시 호출 | — |
 
-- `es-query-optimizer` — 쿼리 DSL 성능 분석·최적화. 안티패턴 탐지, `_profile` 출력 해석, 쿼리 리라이트 제안. (QO)
-- `search-relevance-engineer` — 검색 품질·관련성 튜닝. 분석기 설계, 스코어링 전략, 동의어 관리, 한국어 형태소 분석, 품질 평가. (RE)
-- `search-service-architect` — Kotlin(Spring Boot)+ES 서비스 아키텍처 설계. 클라이언트 설정, 벌크 인덱싱, 비동기 검색, 서킷브레이커, 관찰 가능성. (SA)
-- `hybrid-search-architect` — 벡터·시맨틱·하이브리드(RRF) 검색 설계. 임베딩 모델 선택, `dense_vector` 매핑, HNSW 튜닝, 한국어 임베딩 최적화. (HA)
-- `search-pipeline-engineer` — 데이터 파이프라인→ES 인덱싱 통합. Kafka 컨슈머, Spark 배치 인덱싱, Iceberg 동기화, DLQ, 파이프라인 모니터링. (PE)
+## 아카이브 (2026-10)
 
-Pool과 별개로 명시 호출하는 온디맨드 리뷰어:
-
-- `search-code-reviewer` — 검색 서비스 Kotlin 코드 리뷰(테크 리드 스타일, `[Sug]`/`[Q]`/`[High]` 태그). 네이밍·헥사고날 경계·DTO·Nullable·하드코딩·검색 도메인 관점. 개발자가 PR 전 셀프 리뷰용으로 직접 호출한다(자동 Fan-out 대상 아님).
-
-### 스킬
-
-- `search-team-orchestrator` — 팀 오케스트레이터. 작업 분류(Single/Multi/Full Review), 키워드·증상 기반 라우팅, 병렬 디스패치, 통합 보고서 산출.
-- `es-deep-patterns` — ES 쿼리·매핑·인덱싱·운영 심화 패턴/안티패턴(한국어 분석 지원).
-- `search-relevance-engineering` — 관련성 튜닝, 분석기 설계, 멀티필드 검색, 동의어, BM25 튜닝, 한국어 분석기, 품질 메트릭.
-- `vector-hybrid-search-patterns` — 벡터(kNN)/시맨틱(ELSER·임베딩)/하이브리드(RRF) 설계. `dense_vector` 매핑, HNSW 튜닝, 한국어 임베딩, RRF 융합, Kotlin 클라이언트 패턴.
-- `search-pipeline-reranking` — 다단계 검색, 리랭킹(rescore/Retriever/LTR/cross-encoder), 쿼리 이해, 결과 다양화, 개인화. ES 8.x Retriever 추상화 포함.
-- `search-data-pipeline` — ES 적재용 데이터 인제스천 파이프라인. Kafka 컨슈머 패턴, Iceberg/Spark/Trino 배치 리인덱싱, 파이프라인 모니터링.
-- `kotlin-es-client-patterns` — Kotlin/Python ES 통합 구현. 클라이언트 설정, 검색 구현, 벌크 인덱싱, 테스트, 흔한 실수(elasticsearch-java v8, elasticsearch-py).
-- `lucene-internals` — 세그먼트/Lucene 레벨 성능 진단. `_profile`/`_explain` 해석, 스코어링 내부, 역색인 구조, merge policy 튜닝, OS 레벨 성능 요인.
-- `search-observability` — 검색 메트릭 수집, 클릭 추적, 검색 A/B 테스트, 품질 모니터링, 슬로우 쿼리 분석. Micrometer, Kotlin/Spring Boot 대시보드 설계.
-- `search-diagnostics` — 증상 기반 진단 허브. 무결과·오정렬·느림·불안정 지연 등 증상을 올바른 진단 API(`_profile`/`_explain`/`_termvectors`/`_validate`/`_analyze`/`_tasks`/`hot_threads`/`breaker`)로 라우팅하는 의사결정 트리.
-
-## 사용법
-
-- **정형 리뷰**: `/es-query-review`, `/vector-search-review`, `/search-architecture-review` 등 슬래시 커맨드로 특정 대상을 즉시 점검한다.
-- **복합 작업 오케스트레이션**: "검색팀", "하네스" 키워드나 2개 이상 도메인이 교차하는 작업이 감지되면 `search-team-orchestrator`가 자동 트리거되어 적합한 전문가를 선택·조합한다.
-  - Single(단일 도메인) → 1명 디스패치, Multi(2~3개 교차) → 해당 에이전트 병렬 Fan-out, Full Review(종합 리뷰/신규 설계) → 5인 전원 Fan-out.
-  - 사전 정의 시나리오 예: 신규 검색 기능 설계(SA+RE+QO), 벡터 검색 도입(HA+SA+RE), 인덱싱 파이프라인 점검(PE+SA), 검색 성능 종합 진단(QO+SA+PE).
-- **증상 기반 진단**: 검색이 오동작할 때(문서가 안 잡힘/순서 이상/느림/p99 튐) `search-diagnostics`가 증상을 진단 API로 라우팅하고 필요 시 RE·QO 에이전트로 연결한다.
-- **PR 전 셀프 리뷰**: `search-code-reviewer`를 명시적으로 호출해 Kotlin 검색 서비스 코드를 로컬에서 점검한다.
-- **심화 학습**: 에이전트 분석 후 심화가 필요하면 오케스트레이터가 도메인별 스킬(es-deep-patterns, lucene-internals 등)을 참조로 안내한다.
-
-## 의존성
-
-`plugin.json`/`marketplace.json`에 강제 의존성(`requires`)은 없다. 다만 검색 서비스가 Kotlin/Spring Boot로 구현되는 경우 `backend-kotlin` 플러그인과 함께 쓰면 상호 보완적이다.
+`archive/components/search/` 로 이동 — 스페셜리스트 내용은 허브 references 로 추출했다:
+스킬 `kotlin-es-client-patterns`, `lucene-internals`, `search-data-pipeline`, `search-diagnostics`(→ `es-deep-patterns/references/diagnostics.md`), `search-observability`, `search-pipeline-reranking`; 커맨드 `index-pipeline-check`(→ `/index-lifecycle --pipeline`), `search-architecture-review`; 에이전트 `hybrid-search-architect`(→ `search-relevance-engineer`), `search-pipeline-engineer`(→ `search-service-architect`).
 
 ## 참고
 
-- 대상 스택은 **Elasticsearch 8.x**, 한국어 분석은 **nori** 형태소 분석기 컨텍스트를 전제로 한다.
-- 오케스트레이터와 5인 Pool 에이전트는 **직접 코드를 수정하거나 ES 클러스터에 접근하지 않는다** — 설계·리뷰·진단 조언을 산출하고 실제 변경은 사용자/개발자가 수행한다.
-- `search-code-reviewer`는 자동 Fan-out 대상이 아니며 PR 전 셀프 리뷰용으로 **명시 호출**해야 한다.
-- 산출물은 관련성·성능 개선 조언이며, 프로덕션 부하 테스트나 실제 색인 데이터 기반 검증을 대체하지 않는다. 매핑 변경·리인덱싱 등 파괴적 작업은 반영 전 검증 환경에서 확인하라.
+- 항목마다 적용 ES 버전을 적었다(8.x/9.x 차이: `dense_vector` 기본 index_options, `exclude_source_vectors`, Rest5Client 등). 기본값·수치는 링크된 공식 문서 기준이며 사용 중인 클러스터 버전으로 재확인한다.
+- 라이브 클러스터에 접근하지 않는다. 에이전트·커맨드는 검증용 요청(`_profile`, `_analyze`, `_rank_eval`, recall@k)을 함께 제시한다.

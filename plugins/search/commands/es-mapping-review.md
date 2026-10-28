@@ -1,176 +1,34 @@
 ---
 name: es-mapping-review
-description: "Elasticsearch index mapping review with field type validation, analyzer checks, and compatibility analysis"
-category: utility
-complexity: basic
-mcp-servers: []
-personas: []
+description: |
+  Elasticsearch 매핑·분석기 리뷰 — 필드 타입·매핑 폭발·nested 비용·nori 체인과 재색인 필요 변경을 항목 ID(ES-MAP/KO)로 판정.
+  Reviews ES mappings and analyzers, flags reindex-requiring changes. Use when: running /es-mapping-review.
+disable-model-invocation: true
 ---
 
-# /es-mapping-review - Elasticsearch Index Mapping Review
-
-## Triggers
-- New index mapping design review before deployment
-- Mapping change validation to detect breaking changes
-- Korean search analyzer (nori) configuration audit
-- Storage optimization and field type correctness checks
+# /es-mapping-review
 
 ## Usage
 ```
-/es-mapping-review [target] [options]
-
-Options:
-  --check-compatibility [old-mapping]   Compare mapping versions, detect breaking changes
-  --suggest-optimizations               Recommend copy_to, flattened type, runtime fields
+/es-mapping-review [path] [--check-compatibility <old-mapping>]
 ```
+- `--check-compatibility`: 구/신 매핑 diff → 재색인 필요 변경(타입·analyzer·index_options·similarity·nested 전환·index sorting·dense_vector 파라미터) vs 무중단 가능 변경(새 필드 추가, search-time `updateable` 동의어, 일부 동적 설정)을 구분
 
-## Behavioral Flow
+## Flow
+1. **사실 확인** — 매핑 원본(인덱스 템플릿/컴포넌트 템플릿/마이그레이션 스크립트), ES 버전, 쿼리 코드에서 각 필드의 실제 용도(검색·필터·정렬·집계·표시). 용도표 없이 타입을 판정하지 않는다.
+2. **필드 판정** — `es-deep-patterns` 의 `references/mapping.md`(ES-MAP-*). 대용량·갱신형이면 `shards-indexing.md`(ES-IDX-07)도.
+3. **분석 체인 판정** — `search-relevance-engineering` 의 `references/korean-analysis.md`(KO-*): decompound_mode 의 색인/검색 분리, 품사 필터 위치 간격, 사용자 사전 반영 경로, 동의어 위치(search analyzer), edge_ngram 의 search_analyzer. `_analyze` 검증 요청을 함께 제시.
+4. **벡터 필드** — `dense_vector` 가 있으면 `vector-hybrid-search-patterns` 의 VEC-IDX-*.
+5. **보고**
 
-### Standard Flow
-1. **Load**: Read mapping JSON files from target path, supporting both standalone mapping files and index template definitions
-2. **Validate**: Apply field-level and structure-level validation rules against each mapping
-3. **Compare** (optional): When `--check-compatibility` is provided, diff old vs new mapping for breaking changes
-4. **Report**: Present findings with severity, field paths, and corrective guidance
-
-### Validation Rules
-| Issue | Severity | Description |
-|---|---|---|
-| `text` without `keyword` sub-field | High | Full-text field lacks exact-match capability for aggregations and sorting |
-| Date stored as `text` | Critical | Date fields lose range query and date math capability |
-| Numeric stored as `keyword` | High | Numeric fields lose range query efficiency and numeric aggregations |
-| Missing `ignore_above` on keyword | Medium | Unbounded keyword values waste storage and can cause indexing failures |
-| Incorrect `nori` decompound_mode | High | Wrong mode (`none`/`discard`/`mixed`) degrades Korean search quality |
-| `text` without analyzer specification | Medium | Relies on default analyzer, may not match search requirements |
-| `nested` where `object` suffices | Medium | Nested type adds overhead — only needed when array element independence matters |
-| `dynamic: true` on production index | High | Uncontrolled field creation risks mapping explosion and cluster instability |
-| Missing `doc_values: false` on text-only fields | Low | Text fields with doc_values enabled waste disk (default disabled, but check explicit settings) |
-| Excessive field count (> 1000) | High | Large mappings increase cluster state size and slow down queries |
-
-### Korean Analyzer Checks
-- `nori_tokenizer` presence and `decompound_mode` setting (`mixed` recommended for general search)
-- Custom `nori_part_of_speech` stop tag configuration
-- `nori_readingform` filter for Hanja-to-Hangul conversion
-- Synonym filter ordering relative to nori tokenizer in analysis chain
-- `user_dictionary` path validity for custom compound noun splitting
-
-### Compatibility Check Rules (--check-compatibility)
-| Change Type | Breaking? | Description |
-|---|---|---|
-| Field type change | Yes | Changing `keyword` to `text` or vice versa requires reindex |
-| Analyzer change on existing field | Yes | Existing documents retain old analysis — new docs differ |
-| Field removal | No | Removed fields remain in existing documents |
-| New field addition | No | Safe — existing documents lack the field but queries work |
-| `nested` to `object` | Yes | Query semantics change, existing nested docs incompatible |
-| Parameter change (e.g., `ignore_above`) | Conditional | Some params apply only to new docs |
-
-## Tool Coordination
-- **Glob**: Discover mapping JSON files, index templates, and component templates
-- **Read**: Load mapping definitions and analyzer configurations
-- **Grep**: Locate mapping references in Kotlin code and configuration files
-- **Bash**: Validate JSON syntax of mapping files
-
-## Key Patterns
-- **Field Path Tracking**: Report issues with full dotted field path (e.g., `properties.address.properties.city`)
-- **Analyzer Chain Validation**: Verify tokenizer → filter ordering and compatibility
-- **Template Resolution**: Resolve component templates into final merged mapping for analysis
-
-## Examples
-
-### Review a mapping file
+## Output
 ```
-/es-mapping-review mappings/product-index.json
-# Validates field types, analyzers, and structural issues
-# Reports findings with field paths and severity
-```
-
-### Check compatibility between versions
-```
-/es-mapping-review mappings/product-v2.json --check-compatibility mappings/product-v1.json
-# Compares old vs new mapping
-# Identifies breaking changes requiring reindex
-```
-
-### Review with optimization suggestions
-```
-/es-mapping-review mappings/ --suggest-optimizations
-# Reviews all mapping files in directory
-# Suggests copy_to, flattened type, and runtime field opportunities
-```
-
-## Output Format
-
-### Standard Output
-```
-## Mapping Review
-- Target: [path]
-- Index: [index name]
-- Fields: [total count]
-- Analyzers: [custom analyzer count]
-
-## Field Validation
-
-### Critical Issues
-- `order_date` (text) → Should be `date` with format `yyyy-MM-dd'T'HH:mm:ss`
-- `dynamic: true` on root mapping → Set explicit `dynamic: strict` for production
-
-### High Issues
-- `product_name` (text) → Missing `keyword` sub-field for aggregation/sorting
-- `price` (keyword) → Should be `scaled_float` or `long` for range queries
-- `nori_tokenizer.decompound_mode: none` → Use `mixed` for better Korean recall
-
-### Medium Issues
-- `description.keyword` → Missing `ignore_above`, recommend `ignore_above: 256`
-
-## Korean Analyzer Review
-- Tokenizer: nori_tokenizer (decompound_mode: [value])
-- Filters: [filter chain]
-- Issues: [findings]
-
-## Summary
-- Critical: [count] | High: [count] | Medium: [count] | Low: [count]
-```
-
-### With --check-compatibility
-```
-## Compatibility Report
-- Old: [old mapping path]
-- New: [new mapping path]
-
-### Breaking Changes (Require Reindex)
-- `category`: type changed `keyword` → `text`
-- `tags`: changed from `nested` to `object`
-
-### Safe Changes
-- `new_field`: added as `keyword`
-- `old_field`: removed (no impact on existing docs)
-
-### Verdict: [Compatible|Reindex Required]
-```
-
-### With --suggest-optimizations
-```
-## Optimization Suggestions
-
-### copy_to Opportunities
-- `first_name` + `last_name` → `copy_to: full_name` for combined search
-
-### Flattened Type Candidates
-- `metadata` (object with 50+ dynamic sub-fields) → Consider `flattened` type
-
-### Runtime Field Candidates
-- `full_address` (concatenation of address parts) → Runtime field saves storage
+## ES Mapping Review — [path]
+가정: [...]
+| 필드 경로 | 용도(근거 코드) | 항목 ID | 신호 | Severity | 처방(매핑 JSON) | 재색인 필요 |
+### 호환성 (--check-compatibility): 변경 목록 → 재색인 필요/불필요 → alias 스왑 절차(ES-ING-04)
+### 검증 요청: _analyze / _disk_usage / _field_caps 예시
 ```
 
 ## Boundaries
-
-**Will:**
-- Validate field types, analyzers, and mapping structure against best practices
-- Detect breaking changes between mapping versions
-- Audit Korean analyzer (nori) configuration for correctness
-- Suggest optimizations for storage and query performance
-
-**Will Not:**
-- Apply mapping changes to a live Elasticsearch cluster
-- Analyze query performance against the mapping (use `/es-query-review` instead)
-- Generate complete mappings from scratch without input
-- Validate cluster-level settings (shard count, replicas) — use `/index-lifecycle` instead
+- 매핑을 클러스터에 적용하지 않는다. 변경안은 새 인덱스 기준으로 제시한다.

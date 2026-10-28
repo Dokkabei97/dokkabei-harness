@@ -1,278 +1,37 @@
 ---
 name: index-lifecycle
-description: "Elasticsearch index lifecycle management with ILM policy design, reindexing plans, and shard sizing"
-category: utility
-complexity: basic
-mcp-servers: []
-personas: []
+description: |
+  인덱스 수명주기·색인 경로 점검 — 샤드 산정, ILM, 무중단 재색인 런북, Kafka/Spark→ES 색인 정합성(ES-SHD/ES-IDX/ES-ING). 구 /index-pipeline-check 통합.
+  Shard sizing, ILM, reindex runbook, and ingestion-path checks. Use when: running /index-lifecycle.
+disable-model-invocation: true
 ---
 
-# /index-lifecycle - Index Lifecycle Management
-
-## Triggers
-- ILM policy design or review for time-series or append-only indices
-- Zero-downtime reindexing planning for mapping changes or version upgrades
-- Alias configuration review and strategy design
-- Shard sizing estimation for new or growing indices
+# /index-lifecycle
 
 ## Usage
 ```
-/index-lifecycle [target] [options]
-
-Options:
-  --design-ilm          Design ILM policy with phase transitions and rollover conditions
-  --reindex-plan        Generate zero-downtime reindexing plan with Kotlin service changes
-  --alias-strategy      Review and design alias configurations
+/index-lifecycle [path] [--sizing] [--ilm] [--reindex-plan] [--pipeline]
 ```
+- `--sizing`: 프라이머리/레플리카 수 산정 (ES-SHD-01~05)
+- `--ilm`: rollover 조건·단계 설계 (시계열/append-only 인덱스만)
+- `--reindex-plan`: 무중단 재색인 절차 + 서비스 코드 변경점 (ES-ING-04, ES-IDX-02, ES-MAP-13)
+- `--pipeline`: 색인 경로 점검 — 컨슈머 설정·리스너·bulk 코드 (ES-ING-01~06, ES-CLI-04/05) — 구 `/index-pipeline-check`
+- 옵션 없음: 대상에서 감지된 영역 전부
 
-## Behavioral Flow
+## Flow
+1. **사실 확인** — 현재 문서 수·프라이머리 용량·증가율(없으면 사용자에게 `_cat/indices?bytes=gb` 결과 요청), ES 버전·배포 형태, 인덱스 성격(시계열 vs 갱신형 카탈로그), alias 사용 여부, 색인 소스와 커밋 방식, 이벤트의 단조 버전 필드.
+2. **판정** — `es-deep-patterns` 의 `references/shards-indexing.md`, `ingest-pipeline.md`, `client-kotlin.md`, `segments-lucene.md`(LUC-SEG-01: force merge 는 읽기 전용만). 각 지적에 항목 ID·신호(파일:라인)·반례.
+3. **산출** — 산정표/ILM JSON/재색인 런북/코드 변경점. 수치는 출발점이며 Rally·스테이징 측정으로 확정한다고 명시.
 
-### Standard Flow
-1. **Assess**: Analyze current index configuration, data volume, growth rate, and access patterns
-2. **Design**: Create lifecycle strategy covering ILM, aliases, shard sizing, or reindexing as needed
-3. **Generate**: Produce actionable artifacts — ILM policy JSON, reindex scripts, Kotlin code changes
-4. **Validate**: Cross-check design against ES best practices and operational constraints
-
-### ILM Phase Design (--design-ilm)
-| Phase | Purpose | Typical Actions |
-|---|---|---|
-| Hot | Active indexing and search | Rollover by size/age/doc count, priority 100 |
-| Warm | Search-only, reduced resources | Force merge to 1 segment, shrink replicas, read-only, priority 50 |
-| Cold | Infrequent access, archival | Freeze index, searchable snapshot, priority 0 |
-| Delete | Data retention expiry | Delete index after retention period |
-
-### Rollover Conditions
-| Condition | Recommended Default | Rationale |
-|---|---|---|
-| max_primary_shard_size | 50GB | Keep shards in 10-50GB optimal range |
-| max_age | 30d | Time-based partitioning for predictable lifecycle |
-| max_docs | 200,000,000 | Prevent excessive doc count per shard |
-
-### Shard Sizing Guidelines
-| Data Volume | Recommended Shards | Shard Size Target |
-|---|---|---|
-| < 10GB | 1 primary | Single shard sufficient |
-| 10-50GB | 1 primary | Within optimal range |
-| 50-200GB | 2-4 primaries | 25-50GB per shard |
-| 200GB-1TB | 5-20 primaries | 20-50GB per shard |
-| > 1TB | Calculate: total / 40GB | 30-50GB per shard target |
-
-### Zero-Downtime Reindex Strategy (--reindex-plan)
-1. **Prepare**: Create new index with updated mapping, verify settings
-2. **Alias Setup**: Ensure read/write aliases point to current index
-3. **Dual-Write**: Modify Kotlin service to write to both old and new indices
-4. **Backfill**: Reindex existing data from old to new index (background task)
-5. **Verify**: Compare document counts and spot-check data integrity
-6. **Switch**: Atomically swap read alias to new index
-7. **Cleanup**: Remove dual-write code, delete old index after confirmation period
-
-## Tool Coordination
-- **Glob**: Discover index configuration files, ILM policies, and index templates
-- **Grep**: Locate index/alias references in Kotlin services and configuration
-- **Read**: Examine existing ILM policies, index templates, and service code
-- **Write**: Generate ILM policy JSON, reindex scripts, and updated configurations
-
-## Key Patterns
-- **Phase Transition Planning**: Match phase durations to business data access patterns (hot queries vs archival)
-- **Alias Abstraction**: Always use aliases for application access — never reference concrete index names in code
-- **Rollover Estimation**: Calculate rollover triggers from observed ingestion rate and shard size targets
-- **Dual-Write Safety**: Kotlin service changes must handle partial failures during dual-write window
-
-## Examples
-
-### Design ILM policy for log indices
+## Output
 ```
-/index-lifecycle mappings/access-log-template.json --design-ilm
-# Analyzes data volume and access patterns
-# Generates ILM policy with hot/warm/cold/delete phases
-```
-
-### Plan zero-downtime reindexing
-```
-/index-lifecycle src/main/kotlin/com/example/search/ --reindex-plan
-# Identifies index references and alias usage in code
-# Generates step-by-step reindex plan with Kotlin code changes
-```
-
-### Review alias strategy
-```
-/index-lifecycle config/elasticsearch/ --alias-strategy
-# Reviews current alias configurations
-# Recommends read/write alias separation and naming conventions
-```
-
-### Full lifecycle assessment
-```
-/index-lifecycle mappings/product-index.json
-# Comprehensive lifecycle assessment: ILM, sharding, aliases
-# Produces complete operational blueprint
-```
-
-## Output Format
-
-### Standard Output
-```
-## Index Lifecycle Assessment
-- Target: [path]
-- Index Pattern: [index name/pattern]
-- Estimated Data Volume: [current size]
-- Estimated Growth Rate: [per day/month]
-
-## Current Configuration
-- Shards: [primary] x [replica]
-- ILM Policy: [attached policy or none]
-- Aliases: [alias list]
-
-## Recommendations
-1. [Priority] [Recommendation description]
-```
-
-### With --design-ilm
-```
-## ILM Policy Design
-
-### Policy: [policy-name]
-#### Phase Transitions
-| Phase | Min Age | Actions |
-|---|---|---|
-| Hot | 0 | Rollover (max_size: 50GB, max_age: 30d), priority: 100 |
-| Warm | 30d | Force merge (1 segment), shrink (1 replica), read-only, priority: 50 |
-| Cold | 90d | Freeze, priority: 0 |
-| Delete | 365d | Delete |
-
-#### ILM Policy JSON
-```json
-{
-  "policy": {
-    "phases": {
-      "hot": {
-        "min_age": "0ms",
-        "actions": {
-          "rollover": {
-            "max_primary_shard_size": "50gb",
-            "max_age": "30d"
-          },
-          "set_priority": { "priority": 100 }
-        }
-      },
-      "warm": { ... },
-      "cold": { ... },
-      "delete": { ... }
-    }
-  }
-}
-```
-
-#### Index Template
-```json
-{
-  "index_patterns": ["[pattern]-*"],
-  "settings": {
-    "index.lifecycle.name": "[policy-name]",
-    "index.lifecycle.rollover_alias": "[alias-name]"
-  }
-}
-```
-```
-
-### With --reindex-plan
-```
-## Reindex Plan
-
-### Prerequisites
-- New index: [index-name-v2] with updated mapping
-- Current index: [index-name-v1]
-- Estimated reindex duration: [time] (based on [doc count] docs, [size])
-
-### Step-by-Step
-
-#### Step 1: Create New Index
-```json
-PUT /index-name-v2
-{ "mappings": { ... }, "settings": { ... } }
-```
-
-#### Step 2: Dual-Write Service Changes
-```kotlin
-// ProductSearchService.kt
-// Add dual-write to both v1 and v2 indices
-```
-
-#### Step 3: Backfill
-```json
-POST /_reindex
-{
-  "source": { "index": "index-name-v1" },
-  "dest": { "index": "index-name-v2" }
-}
-```
-
-#### Step 4: Alias Switch
-```json
-POST /_aliases
-{
-  "actions": [
-    { "remove": { "index": "index-name-v1", "alias": "index-name" }},
-    { "add": { "index": "index-name-v2", "alias": "index-name" }}
-  ]
-}
-```
-
-#### Step 5: Cleanup Checklist
-- [ ] Remove dual-write code from Kotlin service
-- [ ] Verify query results on new index
-- [ ] Delete old index after [retention period]
-```
-
-### With --alias-strategy
-```
-## Alias Strategy
-
-### Current State
-| Alias | Index | Is Write Index |
-|---|---|---|
-| product-search | product-v1 | Yes |
-
-### Recommended Configuration
-| Alias | Purpose | Index Pattern |
-|---|---|---|
-| product-search-read | Application reads | Current + rollover indices |
-| product-search-write | Application writes | Latest rollover index only |
-
-### Naming Convention
-- Read alias: `{domain}-{purpose}-read`
-- Write alias: `{domain}-{purpose}-write`
-- Concrete index: `{domain}-{purpose}-{version|date}`
-```
-
-### Shard Sizing Output
-```
-## Shard Sizing
-
-### Input
-- Current data size: [size]
-- Daily growth: [size/day]
-- Retention: [days]
-- Projected total: [size]
-
-### Recommendation
-- Primary shards: [count]
-- Replica shards: [count]
-- Estimated shard size: [size] (target: 10-50GB)
-- Total shards: [count] (primaries + replicas)
+## Index Lifecycle Review — [path]
+가정: [...]
+### 샤드 산정: 입력(용량·증가율) → 프라이머리 N, 레플리카 M, 근거 ID
+### ILM: rollover 조건, 단계 전이(읽기 전용 이후 force merge)
+### 재색인 런북: 단계 / 명령 / 확인 지표 / 롤백
+### 색인 경로: | 위치 | 항목 ID | 신호 | Severity | 처방 | 장애 주입 검증 |
 ```
 
 ## Boundaries
-
-**Will:**
-- Design ILM policies with phase transitions and rollover conditions
-- Plan zero-downtime reindexing with alias swaps and Kotlin service changes
-- Review and design alias configurations and naming conventions
-- Calculate shard sizing based on data volume and growth projections
-- Generate ready-to-use ILM policy JSON and index templates
-
-**Will Not:**
-- Execute ILM policies, reindex operations, or alias changes on a live cluster
-- Modify Kotlin service code without explicit user consent
-- Make decisions about data retention periods (requires business input)
-- Manage cluster-level settings (node allocation, circuit breakers)
+- 클러스터에 정책·설정을 적용하지 않는다. Kafka 일반 튜닝은 팀 컨벤션을 따르고 ES 와 맞물리는 지점만 판정한다.

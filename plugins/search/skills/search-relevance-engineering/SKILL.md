@@ -1,632 +1,82 @@
 ---
 name: search-relevance-engineering
-description: Use this skill when tuning search relevance, designing analyzers, configuring multi-field search, managing synonyms, or evaluating search quality. Covers BM25 tuning, Korean analyzer design, and search quality metrics.
+description: |
+  검색 관련성·한국어 분석 허브 — 순위가 이상함·엉뚱한 결과·0건, nori 형태소(decompound_mode·사용자 사전·품사 필터), 동의어(synonym_graph·Synonyms API), 자동완성(edge_ngram·자모), BM25·multi_match·minimum_should_match, 점수 흔들림(샤드 IDF·preference), rescore·RRF·리랭커, _rank_eval·CTR 평가. 증상에서 ID 붙은 함정 항목(KO-*/ES-REL/ES-RNK/ES-EVL)으로 안내한다.
+  Hub for search relevance and Korean (nori) text analysis. Use when: ranking looks wrong or unstable, designing analyzers or synonyms, Korean autocomplete, tuning BM25/multi_match, reranking with rescore/RRF/cross-encoder, or evaluating search quality.
 ---
 
-# Search Relevance Engineering
-
-검색 품질(relevance)을 설계하고 측정하는 종합 가이드입니다. 스코어링 원리, 분석기 설계, 다중 필드 검색, 동의어 관리, 품질 평가까지 다룹니다.
-
-## When to Activate
-
-- 검색 결과 품질 개선 또는 relevance 튜닝 시
-- 새로운 analyzer 설계 또는 기존 analyzer 수정 시
-- multi_match, function_score 등 검색 쿼리 최적화 시
-- 동의어 사전 구축 또는 관리 시
-- 검색 품질 평가 메트릭 설계 또는 측정 시
-- BM25 파라미터 조정 검토 시
-- 한국어 형태소 분석기 설정 시
-
-## 1. Relevance Scoring Fundamentals
-
-### BM25 알고리즘 이해
-
-Elasticsearch 기본 스코어링 알고리즘. 두 핵심 파라미터:
-
-| Parameter | Default | 역할 | 효과 |
-|-----------|---------|------|------|
-| **k1** | 1.2 | term frequency saturation | 높을수록 TF 영향 증가 |
-| **b** | 0.75 | field-length normalization | 높을수록 짧은 필드 선호 |
-
-**k1 튜닝 가이드**:
-- `k1 = 0`: TF 무시 (키워드 반복 무의미)
-- `k1 = 1.2` (기본): 대부분의 경우 적절
-- `k1 > 2.0`: 긴 문서에서 반복 등장이 중요한 경우 (논문, 블로그)
-- 상품 검색은 기본값 유지 권장 (제목이 짧아 TF 변동 적음)
-
-**b 튜닝 가이드**:
-- `b = 0`: 필드 길이 무시 (긴 문서와 짧은 문서 동등 취급)
-- `b = 0.75` (기본): 짧은 필드에 약간의 보너스
-- `b = 1.0`: 필드 길이 정규화 극대화
-- 상품 제목 검색: `b = 0.3` 정도로 낮추면 긴 제목 불이익 완화
-
-```json
-// 인덱스 레벨 BM25 파라미터 커스텀
-PUT /products
-{
-  "settings": {
-    "index": {
-      "similarity": {
-        "custom_bm25": {
-          "type": "BM25",
-          "k1": "1.2",
-          "b": "0.3"
-        }
-      }
-    }
-  },
-  "mappings": {
-    "properties": {
-      "title": {
-        "type": "text",
-        "similarity": "custom_bm25"
-      }
-    }
-  }
-}
-```
-
-### Practical Tuning 예시
-
-```
-문제: "삼성 갤럭시 S24 울트라 256GB" 같은 긴 제목이 "갤럭시 S24"보다 점수가 낮음
-원인: b=0.75가 긴 제목에 페널티 적용
-해결: b를 0.3으로 낮춰 필드 길이 페널티 완화
-
-문제: "이어폰 이어폰 이어폰" 같은 키워드 스터핑이 높은 점수
-원인: k1이 높아 TF가 과도하게 반영
-해결: k1을 0.8로 낮추거나, 쿼리 레벨에서 제한
-```
-
-## 2. Analyzer Design Workflow
-
-### 5-Step Process
-
-```
-Step 1: Define Requirements
-  ├── 대상 언어 (한국어, 영어, 혼합)
-  ├── 검색 시나리오 (full-text, autocomplete, exact)
-  └── 토큰화 수준 (형태소, 어절, 음절)
-
-Step 2: Select Tokenizer
-  ├── Korean → nori_tokenizer
-  ├── English → standard
-  ├── Autocomplete → edge_ngram
-  └── 패턴 기반 → pattern tokenizer
-
-Step 3: Design Filter Chain
-  ├── nori_part_of_speech (불용 품사 제거)
-  ├── nori_readingform (한자 → 한글)
-  ├── lowercase
-  ├── synonym_graph (동의어)
-  └── stop (불용어)
-
-Step 4: Test with _analyze API
-  └── 각 단계별 토큰 출력 확인
-
-Step 5: Validate with Sample Queries
-  └── 실제 검색 쿼리로 relevance 검증
-```
-
-### _analyze API 활용
-
-```json
-// 단계별 토큰 분석
-POST /products/_analyze
-{
-  "analyzer": "nori_standard",
-  "text": "삼성전자 무선 이어폰 갤럭시 버즈3",
-  "explain": true
-}
-
-// 특정 tokenizer만 테스트
-POST /_analyze
-{
-  "tokenizer": {
-    "type": "nori_tokenizer",
-    "decompound_mode": "mixed"
-  },
-  "text": "삼성전자"
-}
-// 결과(예시): ["삼성전자", "삼성", "전자"] — 단, 합성어 분해 여부는 사전/품사에 좌우된다.
-//   고유명사(NNP)나 user_dictionary 등재어는 단일 토큰일 수 있으니 반드시 _analyze로 실측할 것
-```
-
-### 색인 토큰 vs 검색 토큰 mismatch 디버깅 — _termvectors × _analyze 페어
-
-특정 문서가 "분명히 매칭돼야 하는데 안 나오는" 무결과/누락 증상의 가장 흔한 근본 원인은 **색인된 토큰**과 **검색 시 생성되는 토큰**이 서로 어긋나는 것입니다. 두 API를 페어로 써서 교차 검증합니다.
-
-**진단 원리**: `_termvectors`가 보여주는 *색인 현실*(실제 인덱스에 들어간 토큰)과 `_analyze`가 보여주는 *검색 토큰*(search_analyzer로 분석한 쿼리 토큰)의 **차집합이 발생하면(교집합 = ∅) 그 문서는 절대 그 쿼리에 매칭되지 않습니다**. 둘 중 하나만 봐서는 어느 쪽이 틀렸는지 알 수 없으므로 반드시 둘을 대조합니다.
-
-**표준 3스텝**:
-
-```json
-// ① _termvectors/{id}: 이 문서에 색인된 실제 토큰 확인 (색인 현실)
-GET /products/_termvectors/42
-{
-  "fields": ["title"],
-  "term_statistics": true
-}
-// 응답 루트: term_vectors(복수형) → title → terms 맵
-// (키 = 색인된 실제 토큰, 각 term의 term_freq / doc_freq / ttf)
-
-// ② _analyze: 쿼리를 search_analyzer로 분석한 토큰 (검색 의도)
-POST /products/_analyze
-{
-  "analyzer": "nori_search",
-  "text": "무선이어폰"
-}
-// ⚠️ analyzer를 명시하지 않고 field만 주면 index analyzer(nori_standard)가
-//    적용되어 '검색 시' 실제로 생성되는 토큰이 안 나옴 → analyzer 명시 필수
-
-// ③ 차집합 원인 분류
-//    - _termvectors에는 있는데 _analyze에는 없음 → search_analyzer가 토큰을 못 만듦
-//    - _analyze에는 있는데 _termvectors에는 없음 → index analyzer가 색인을 안 함
-//    - 교집합 = ∅ → 이 문서는 이 쿼리에 영원히 매칭 안 됨 (분석기 불일치 확정)
-```
-
-`_analyze` 미지정+field만 주는 함정 주의: ES는 그 필드의 **index analyzer**를 쓰므로 search 토큰이 안 나옵니다. mismatch를 보려면 반드시 `"analyzer": "nori_search"`처럼 **search_analyzer를 명시**해야 합니다.
-
-**한 호출로 색인 vs 검색 대조 (artificial doc + per_field_analyzer)**: 저장 문서 없이 임의 텍스트를 두 분석기로 각각 돌려 토큰을 비교할 수 있습니다.
-
-```json
-// artificial doc: 인덱스에 저장하지 않고 즉석 텍스트를 분석 → 통계 노이즈 없음
-GET /products/_termvectors
-{
-  "doc": { "title": "무선이어폰" },
-  "fields": ["title"],
-  "per_field_analyzer": { "title": "nori_search" }
-}
-```
-
-- `per_field_analyzer`는 **저장 문서(id)에 줘도 stored term을 무시하고 재생성**하므로, 통계 오염 없이 가장 깔끔하게 보려면 위처럼 **artificial doc**(`doc:{...}`)을 쓰는 것이 좋습니다. 단 artificial doc은 routing 미지정 시 무작위 샤드로 가 doc_freq 등 통계는 부정확하니, 통계가 필요 없는 토큰 대조 용도로만 사용하세요.
-
-**이 스킬의 분리 설계가 단골 원인**: 위 [Nori 설정](#korean-specific-nori-tokenizer-설정)에서 index용 `nori_standard`(synonym 없음)와 search용 `nori_search`(synonym_filter 포함)를 분리했습니다. 이 비대칭이 mismatch의 흔한 진원지이며, [동의어가 precision 저하](#6-common-problems--solutions)(search-time synonym 전환) 항목과 같은 맥락입니다 — 동의어를 search 쪽에만 두면 색인 토큰과 어긋날 수 있으니 _termvectors×_analyze로 실측하세요.
-
-**decompound_mode 차이 확인**: nori `decompound_mode` 기본값은 `discard`(분해 토큰만 남기고 원형 폐기)이고 `mixed`는 원형+분해 둘 다 남깁니다. `mixed`에서 복합 토큰은 **2개 position을 점유**해 `match_phrase`/slop 계산에 영향을 줍니다. 또한 nori는 형태소·user_dictionary로 인식 가능한 합성어만 분해하므로 **"안 분해됨 = 설정 오류"로 단정하지 말고** 반드시 `_analyze`로 실측해 확인하세요.
-
-**역할 분담표**:
-
-| API | 보여주는 것 | 보여주지 않는 것 |
-|-----|-----------|----------------|
-| `_analyze` | 검색/색인 의도 토큰(analyzer 지정대로) | 통계 없음, 실제 색인 여부 모름 |
-| `_termvectors` | 색인 현실(실제 토큰), `doc_freq`/`ttf` | 점수·쿼리 매칭 여부 아님 |
-| `_explain` | 점수 분해, idf의 `n`(=doc_freq) | 토큰 목록·분석기 동작 아님 |
-
-> 증상 기반 진입(무결과/누락 디버깅 시퀀스)은 search-diagnostics 스킬 참조.
-
-### Korean-Specific: Nori Tokenizer 설정
-
-```json
-{
-  "settings": {
-    "analysis": {
-      "tokenizer": {
-        "nori_mixed": {
-          "type": "nori_tokenizer",
-          "decompound_mode": "mixed",
-          "user_dictionary_rules": [
-            "삼성전자", "갤럭시버즈", "에어팟프로", "쿠팡로켓"
-          ],
-          "discard_punctuation": true
-        }
-      },
-      "filter": {
-        "pos_filter": {
-          "type": "nori_part_of_speech",
-          "stoptags": ["E", "IC", "J", "MAG", "MAJ", "MM",
-                       "SP", "SSC", "SSO", "SC", "SE",
-                       "XPN", "XSA", "XSN", "XSV",
-                       "UNA", "NA", "VSV"]
-        }
-      },
-      "analyzer": {
-        "nori_standard": {
-          "type": "custom",
-          "tokenizer": "nori_mixed",
-          "filter": ["pos_filter", "nori_readingform", "lowercase"]
-        },
-        "nori_search": {
-          "type": "custom",
-          "tokenizer": "nori_mixed",
-          "filter": ["pos_filter", "nori_readingform", "lowercase", "synonym_filter"]
-        }
-      }
-    }
-  }
-}
-```
-
-### Custom Morphological Analyzer Integration
-
-Nori 외 사내 자체 형태소 분석기 플러그인 통합 시:
-
-```json
-{
-  "analyzer": {
-    "custom_korean_analyzer": {
-      "type": "custom",
-      "tokenizer": "custom_morph_tokenizer",
-      "filter": ["lowercase", "custom_pos_filter", "synonym_filter"]
-    }
-  }
-}
-```
-
-- 플러그인 JAR을 모든 노드 `plugins/` 디렉토리에 배포
-- `elasticsearch.yml`에서 플러그인 활성화 확인
-- 클러스터 롤링 리스타트로 적용 (shard allocation 일시 비활성화)
-- _analyze API로 토큰화 결과 검증 후 인덱스 적용
-
-## 3. Multi-Field Search Strategy
-
-### multi_match Type Decision Matrix
-
-| Type | 동작 | 적합 케이스 | 예시 |
-|------|------|-----------|------|
-| `best_fields` | 가장 높은 점수 필드 사용 | 하나의 필드에 정답이 있을 때 | 상품명 or 설명 중 하나 |
-| `most_fields` | 모든 필드 점수 합산 | 동일 내용의 다중 분석 | `title` + `title.search` |
-| `cross_fields` | 모든 필드를 하나처럼 | 이름+성 같은 분산 정보 | `first_name` + `last_name` |
-| `phrase` | 구문 매칭 | 어순이 중요한 검색 | 영화 제목, 노래 가사 |
-| `phrase_prefix` | 접두사 구문 매칭 | 자동완성 | 타이핑 중 실시간 검색 |
-
-### Field Boost 전략
-
-```json
-{
-  "query": {
-    "multi_match": {
-      "query": "무선 이어폰",
-      "type": "best_fields",
-      "fields": [
-        "title^5",           // 제목 최우선
-        "title.search^3",    // 검색 최적화 분석 결과
-        "brand^2",           // 브랜드명
-        "description",       // 설명 (boost 1, 기본)
-        "tags^1.5"           // 태그
-      ],
-      "tie_breaker": 0.3
-    }
-  }
-}
-```
-
-**`tie_breaker` 역할**: `best_fields`에서 최고 점수 필드 외 나머지 필드 점수 반영 비율. 0이면 최고만, 1이면 `most_fields`와 동일. 보통 `0.1 ~ 0.3` 권장.
-
-### copy_to vs multi_match
-
-| 전략 | 장점 | 단점 |
-|------|------|------|
-| `copy_to` | 단일 필드 쿼리, 성능 좋음 | 필드별 boost 불가, 인덱스 크기 증가 |
-| `multi_match` | 필드별 boost 가능, 유연 | 쿼리 복잡, 약간 느릴 수 있음 |
-
-```json
-// copy_to 예시
-"title": { "type": "text", "copy_to": "all_text" },
-"description": { "type": "text", "copy_to": "all_text" },
-"all_text": { "type": "text" }
-```
-
-**권장**: 필드별 가중치가 필요하면 `multi_match`, 단순 통합 검색이면 `copy_to`.
-
-### Phrase Matching & Slop
-
-```json
-// 정확한 구문 매칭
-{ "match_phrase": { "title": "무선 이어폰" } }
-
-// slop으로 단어 사이 허용 거리 설정
-{ "match_phrase": { "title": { "query": "삼성 이어폰", "slop": 2 } } }
-// "삼성 무선 이어폰" 매칭 (사이에 1단어)
-// "삼성 갤럭시 무선 이어폰" 매칭 (사이에 2단어)
-```
-
-## 4. Synonym Management
-
-### synonym vs synonym_graph
-
-| Type | 멀티토큰 동의어 | 사용 위치 | 권장 |
-|------|--------------|----------|------|
-| `synonym` | 부정확 (단일 토큰으로 취급) | index/search | 단일 단어 동의어만 |
-| `synonym_graph` | 정확 (그래프 기반) | search-time만 | 멀티토큰 포함 시 필수 |
-
-### Index-time vs Search-time Synonyms
-
-| 기준 | Index-time | Search-time |
-|------|-----------|-------------|
-| 적용 시점 | 인덱싱 시 토큰 확장 | 검색 시 쿼리 확장 |
-| 사전 업데이트 | reindex 필요 | reload search analyzers로 반영 |
-| 인덱스 크기 | 증가 (확장된 토큰 저장) | 변화 없음 |
-| 성능 | 검색 시 빠름 | 검색 시 약간 느림 (확장 처리) |
-| 권장 | 거의 변하지 않는 동의어 | 자주 변경되는 동의어 |
-
-**권장**: search-time synonym 우선. 사전 업데이트가 reindex 없이 가능.
-
-```json
-// search-time synonym 설정
-{
-  "settings": {
-    "analysis": {
-      "filter": {
-        "search_synonyms": {
-          "type": "synonym_graph",
-          "synonyms_path": "synonyms.txt",
-          "updateable": true
-        }
-      },
-      "analyzer": {
-        "search_analyzer": {
-          "type": "custom",
-          "tokenizer": "nori_mixed",
-          "filter": ["pos_filter", "lowercase", "search_synonyms"]
-        }
-      }
-    }
-  },
-  "mappings": {
-    "properties": {
-      "title": {
-        "type": "text",
-        "analyzer": "nori_standard",
-        "search_analyzer": "search_analyzer"
-      }
-    }
-  }
-}
-
-// 사전 업데이트 후 reload (reindex 불필요!)
-POST /products/_reload_search_analyzers
-```
-
-### Korean Synonym Handling
-
-```
-// synonyms.txt (Solr format)
-노트북, 랩탑, laptop
-핸드폰, 휴대폰, 스마트폰, mobile phone, cellphone
-TV, 텔레비전, 티비, television
-냉장고, 냉동고, 김치냉장고 => 냉장고
-이어폰, 이어버드, earphone, earbud
-```
-
-**Solr Format 규칙**:
-- `A, B, C`: 양방향 (A→B→C 모두 상호 치환)
-- `A, B => C`: 단방향 (A, B 검색 시 C로 치환, C 검색 시 A/B 미매칭)
-
-**한국어 동의어 주의**:
-- 형태소 분석 후 동의어 적용: filter chain에서 nori 필터 → synonym 순서
-- 형태소 분석 결과 기준으로 동의어 작성 (원형이 아닌 분석 결과 토큰)
-- 복합어는 user dictionary에 등록 후 동의어 설정
-
-### _termvectors filter — 경량 키워드 추출 / MLT 시드
-
-`_termvectors`의 `filter` 옵션은 문서 내 토큰을 **tf-idf로 점수화해 상위 N개만** 돌려주므로, 동의어 후보·태그 자동 생성·MLT(more_like_this) 시드 추출에 쓸 수 있는 경량 도구입니다.
-
-```json
-GET /products/_termvectors/42
-{
-  "fields": ["title", "description"],
-  "term_statistics": true,
-  "filter": {
-    "max_num_terms": 5,
-    "min_doc_freq": 3,
-    "min_word_length": 2,
-    "max_word_length": 20
-  }
-}
-```
-
-| filter 키 | 역할 |
-|-----------|------|
-| `max_num_terms` | 반환할 상위 term 개수 상한 |
-| `min_doc_freq` | doc_freq 하한 — 너무 희귀한 term 제외 |
-| `min_word_length` / `max_word_length` | term 길이 컷 |
-
-- **한국어 품질**: nori의 josa(`J`)/eomi(`E`) 등 POS를 `pos_filter`의 stoptags로 제거해두면, 조사·어미가 빠져 키워드 후보 품질이 양호합니다(위 [Nori 설정](#korean-specific-nori-tokenizer-설정)의 stoptags 참조).
-- **주의 — score는 shard-local**: filter가 매기는 tf-idf 점수는 **해당 샤드 로컬 통계** 기반이라 절대 랭킹 용도로는 부정확합니다. "이 문서의 대표 키워드 후보" 추출이나 MLT 시드 용도로만 쓰고, 전역 일관 점수가 필요하면 단일 샤드 인덱스에서 산출하세요.
-
-## 5. Search Quality Evaluation
-
-### Offline Metrics
-
-| Metric | 설명 | 계산 | 적합 시나리오 |
-|--------|------|------|-------------|
-| **NDCG** | 등급화된 관련성 반영 (0-1) | graded relevance 기반 DCG 정규화 | 순위가 중요한 검색 |
-| **MRR** | 첫 관련 결과 순위의 역수 | 1/rank_of_first_relevant | 하나의 정답을 찾는 검색 |
-| **MAP** | 관련 문서 각 위치의 precision 평균 | avg(precision@k for relevant k) | 여러 관련 문서가 있는 검색 |
-| **Precision@K** | 상위 K개 중 관련 문서 비율 | relevant_in_K / K | 상위 결과 품질 |
-| **Recall@K** | 전체 관련 문서 중 상위 K에 포함된 비율 | relevant_in_K / total_relevant | 커버리지 중요 시 |
-
-### 5-Point Graded Relevance Scale
-
-| Grade | Label | 설명 | 예시 |
-|-------|-------|------|------|
-| 4 | **Perfect** | 정확히 원하는 결과 | "갤럭시 버즈3" → 갤럭시 버즈3 상품 |
-| 3 | **Excellent** | 매우 관련 있음 | "갤럭시 버즈3" → 갤럭시 버즈3 케이스 |
-| 2 | **Good** | 관련 있지만 최적은 아님 | "갤럭시 버즈3" → 갤럭시 버즈2 |
-| 1 | **Fair** | 약간 관련 | "갤럭시 버즈3" → 삼성 무선 이어폰 일반 |
-| 0 | **Bad** | 관련 없음 | "갤럭시 버즈3" → 갤럭시 S24 케이스 |
-
-### Elasticsearch Ranking Evaluation API
-
-```json
-// _rank_eval API로 오프라인 메트릭 계산
-GET /products/_rank_eval
-{
-  "requests": [
-    {
-      "id": "query_1",
-      "request": { "query": { "match": { "title": "무선 이어폰" } } },
-      "ratings": [
-        { "_index": "products", "_id": "1", "rating": 4 },
-        { "_index": "products", "_id": "2", "rating": 3 },
-        { "_index": "products", "_id": "5", "rating": 0 }
-      ]
-    },
-    {
-      "id": "query_2",
-      "request": { "query": { "match": { "title": "노트북 가방" } } },
-      "ratings": [
-        { "_index": "products", "_id": "10", "rating": 4 },
-        { "_index": "products", "_id": "11", "rating": 2 }
-      ]
-    }
-  ],
-  "metric": {
-    "dcg": {
-      "k": 10,
-      "normalize": true
-    }
-  }
-}
-```
-
-### _explain 기반 관련성 회귀 테스트
-
-`_rank_eval`(집계 메트릭, nDCG/MRR)이 "전체 품질이 떨어졌는가"를 측정한다면, `_explain` 기반 테스트는 "특정 골든셋 케이스가 깨졌는가"를 단언(assert)하는 **회귀 게이트**로 보완 사용합니다.
-
-**골든셋 케이스 스키마**: 각 쿼리에 대해 `must_match`(반드시 매칭), `must_not_match`(절대 매칭 금지), `must_rank_top`(상위에 와야 할 문서)을 단언으로 정의합니다.
-
-```json
-// 골든셋 1건 예시
-{
-  "query": "갤럭시 버즈3",
-  "must_match":     ["doc_buds3_white", "doc_buds3_black"],
-  "must_not_match": ["doc_s24_case"],
-  "must_rank_top":  "doc_buds3_white"
-}
-```
-
-**단언 방식**:
-- `must_match` / `must_not_match` → `GET /products/_explain/{id}` 의 `matched`(boolean)로 단언. matched가 false인데 매칭돼야 하면 회귀.
-- `must_rank_top` → 두 문서의 `_explain` 점수 **상대 순서**로 단언.
-
-```json
-// 매칭 여부 단언
-GET /products/_explain/doc_buds3_white
-{ "query": { "match": { "title": "갤럭시 버즈3" } } }
-// 응답의 "matched": true/false 로 must_match/must_not_match 검증
-```
-
-**중요 — 절대값이 아닌 상대 순서/매칭으로 단언**: `_explain` 점수는 **per-shard(샤드별 IDF 기반)** 이므로 절대 점수값을 회귀 기준으로 박으면 샤드 분포·문서 추가에 따라 비결정적으로 깨집니다. 따라서:
-- `matched` 불리언과 **두 문서 간 상대 순위**만 단언하거나,
-- 점수 절대값 비교가 꼭 필요하면 **단일 샤드 테스트 인덱스**(`number_of_shards: 1`)에서 실행해 IDF를 전역화하세요.
-
-> `_explain`은 `search_type`을 무시(issue#2612)해 per-shard IDF만 반영하고 dfs/rescore 점수는 안 나옵니다. 전역 IDF·rescore가 반영된 점수 비교가 필요하면 `_search`의 `explain:true`로 봐야 합니다 — 증상 기반 진입은 search-diagnostics 스킬 참조.
-
-`_rank_eval`(집계 추세)과 `_explain` 골든셋(개별 케이스 단언)을 함께 CI에 걸어, 전체 nDCG는 유지되는데 특정 핵심 쿼리만 깨지는 회귀를 잡습니다.
-
-### Online Metrics
-
-| Metric | 설명 | 목표 |
-|--------|------|------|
-| **CTR** (Click-Through Rate) | 검색 결과 클릭률 | > 30% (top 3) |
-| **Session Success Rate** | 검색 후 구매/전환까지 성공 | > 15% |
-| **Zero-Result Rate** | 결과 0건 비율 | < 5% |
-| **Reformulation Rate** | 검색어 수정 비율 | < 20% |
-| **Mean Reciprocal Rank** (live) | 클릭된 결과의 평균 순위 역수 | > 0.5 |
-| **Time to First Click** | 첫 클릭까지 시간 | < 5초 |
-
-### Test Set Design
-
-| Category | 비율 | 설명 | 예시 |
-|----------|------|------|------|
-| **Head** | 20% | 고빈도 인기 검색어 | "이어폰", "노트북", "신발" |
-| **Torso** | 30% | 중빈도 검색어 | "무선 이어폰 노이즈캔슬링", "남성 러닝화" |
-| **Tail** | 30% | 저빈도 롱테일 | "삼성 갤럭시 버즈3 화이트 256기가" |
-| **Zero-result** | 10% | 결과 없는 쿼리 | 오타, 신조어, 미등록 브랜드 |
-| **Edge cases** | 10% | 특수 케이스 | 숫자만, 특수문자, 한영 혼합 |
-
-## 6. Common Problems & Solutions
-
-| Problem | 원인 | Solution | 구현 |
-|---------|------|----------|------|
-| exact match가 상위에 안 옴 | full-text 스코어에 묻힘 | phrase boost + keyword field | `bool.should: [match_phrase(boost=10), match(boost=1)]` |
-| 짧은 쿼리 ("이어폰") 결과 너무 많음 | 하나의 토큰이 너무 많은 문서 매칭 | `minimum_should_match` 적용 | `multi_match.minimum_should_match: "75%"` |
-| 신규 상품이 검색 안 됨 | 기존 문서의 IDF 우세 | recency boost (decay function) | `function_score.gauss.created_at` |
-| 동의어가 precision 저하 | index-time synonym으로 과도한 토큰 확장 | search-time synonym으로 전환 | `search_analyzer`에만 synonym 적용 |
-| 카테고리 필터 후 결과 부족 | 필터가 너무 엄격 | 2단계 검색 (필터 → fallback 없이 검색) | 결과 < N이면 필터 완화 재검색 |
-| 한영 오타 ("dlfhsks" → "이어폰") | 키보드 전환 미스 | 한영 변환 사전 또는 전처리 | 입력 전처리 레이어에서 변환 후 검색 |
-| 특정 브랜드가 항상 상위 | 해당 브랜드 문서가 많아 TF 높음 | 브랜드 균형 boosting | `function_score.field_value_factor` 또는 결과 다양성 |
-| 복합어 검색 실패 ("무선이어폰") | 분석기가 분해 못함 | user dictionary에 등록 | `user_dictionary_rules: ["무선이어폰"]` |
-
-### Exact Match Boosting 패턴
-
-```json
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "multi_match": { "query": "갤럭시 버즈3", "fields": ["title^3", "description"], "type": "best_fields" } }
-      ],
-      "should": [
-        { "match_phrase": { "title": { "query": "갤럭시 버즈3", "boost": 10 } } },
-        { "term": { "title.raw": { "value": "갤럭시 버즈3", "boost": 20 } } }
-      ]
-    }
-  }
-}
-```
-
-### Recency Boost (시간 감쇠)
-
-```json
-{
-  "query": {
-    "function_score": {
-      "query": { "match": { "title": "이어폰" } },
-      "functions": [
-        {
-          "gauss": {
-            "created_at": {
-              "origin": "now",
-              "scale": "30d",
-              "offset": "7d",
-              "decay": 0.5
-            }
-          },
-          "weight": 2
-        }
-      ],
-      "boost_mode": "sum",
-      "score_mode": "multiply"
-    }
-  }
-}
-```
-
-### Result Diversity (다양성 확보)
-
-```json
-// field_value_factor로 인기도 반영하되 과도한 독점 방지
-{
-  "query": {
-    "function_score": {
-      "query": { "match": { "title": "이어폰" } },
-      "functions": [
-        {
-          "field_value_factor": {
-            "field": "sales_count",
-            "modifier": "log1p",  // log(1+x)로 극단값 완화
-            "factor": 0.5
-          }
-        }
-      ],
-      "boost_mode": "sum"
-    }
-  }
-}
-
-// collapse로 브랜드당 1개만 노출 (결과 다양성)
-{
-  "query": { "match": { "title": "이어폰" } },
-  "collapse": {
-    "field": "brand",
-    "inner_hits": { "name": "brand_variants", "size": 3 }
-  }
-}
-```
-
----
-
-**Remember**: 검색 품질은 한 번의 설정으로 완성되지 않습니다. 측정 → 분석 → 튜닝 → 측정 사이클을 반복하세요. 반드시 테스트 세트를 먼저 구축하고, 변경 전후의 NDCG를 비교하여 개선을 증명하세요.
+# Search Relevance Engineering (관련성·한국어 분석 허브)
+
+이 스킬은 **트리아지 인덱스**다. 증상 → 레퍼런스 경로와 항목 ID 만 담고, 지식은 `references/` 항목(적용/신호/메커니즘/처방/반례/검증/근거)에 있다.
+성능·매핑·클러스터는 `es-deep-patterns`, 벡터·하이브리드는 `vector-hybrid-search-patterns` 허브로.
+
+## 0. 먼저 확인할 사실 (단정 금지)
+
+- 실제 분석기 정의: `GET idx/_settings?filter_path=**.analysis` 와 매핑의 `analyzer`/`search_analyzer` — 저장소의 템플릿 JSON 이 원본이다.
+- 사용자 사전·동의어의 위치(파일/inline/Synonyms API)와 배포 방식.
+- 품질 판단 근거: 골든셋(`_rank_eval` 요청 파일), 클릭 로그, A/B 체계가 있는지. 없으면 "측정 없는 튜닝" 임을 먼저 밝힌다.
+- 프로젝트 CLAUDE.md·`.claude/rules` 의 도메인 규칙(브랜드 사전, 금칙어 등)이 이 허브보다 우선.
+
+## 1. 증상 → 레퍼런스
+
+| 증상 / 질문 | 먼저 볼 곳 | 이어서 |
+|---|---|---|
+| 특정 문서가 안 나옴(0건) | `_analyze` × `_termvectors` 비교 (es-deep-patterns 의 diagnostics.md "무결과") | KO-ANA-01/03, ES-MAP-13 |
+| 복합어·브랜드명 검색 품질 | `korean-analysis.md` KO-ANA-01/03 | KO-SYN-02 |
+| 구문(phrase) 검색이 한국어에서 안 맞음 | KO-ANA-02 | ES-REL-06 |
+| 동의어 추가·갱신 | KO-SYN-01~03 | — |
+| 자동완성·초성·입력 중 자모 | KO-AC-01/02 | ES-MAP-10 |
+| 무관 결과가 너무 많음 | `scoring-relevance.md` ES-REL-05 | ES-QRY-04 (es-deep-patterns) |
+| 순위가 환경·새로고침마다 다름 | ES-REL-01/02 | LUC-SEG-02 |
+| 짧은 제목·태그가 과대평가 | ES-REL-04 | — |
+| 여러 필드에 걸친 질의 | ES-REL-03 | — |
+| 인기도·평점 부스트 | ES-QRY-08/09 (es-deep-patterns) | ES-RNK-06 |
+| 2단계 재정렬·리랭커·RRF | `reranking.md` ES-RNK-* | VEC-HYB-* (벡터 허브) |
+| 품질 측정·A/B | ES-EVL-01/02 | — |
+
+## 2. 분석기 변경의 기본 루프
+
+1. 대표 질의 20~50개(헤드/토르소/테일, 한영 혼용·모델명·오타 포함)를 고정하고 현재 결과를 `_rank_eval` 로 기록한다.
+2. 후보 분석기를 **새 인덱스**에 정의하고 `_analyze`(`explain: true`)로 색인/검색 토큰을 비교한다.
+3. 샘플 재색인 → 같은 질의셋으로 `_rank_eval` 비교, unrated 문서 추가 판정(ES-EVL-01).
+4. 운영 반영은 재색인 + alias 원자 스왑(es-deep-patterns ES-MAP-13, ES-ING-04). search-time 동의어만이면 `updateable` 리로드.
+
+## 3. 사용법
+
+- 증상으로 파일을 고르고 해당 ID 만 읽는다. 항목의 **적용** 조건을 0절 사실과 대조한다.
+- 제안은 **ID + 근거가 된 `_analyze`/`_explain` 출력 + 처방 + 검증 지표**로. 품질 개선 주장은 측정(골든셋/A/B) 없이는 "가설"로 표기한다.
+- 프로젝트별로 유효한 ID 는 `workflow:project-rules` 로 규칙 파일에 선별해 두는 것을 권장한다.
+
+## 4. 항목 인덱스
+
+| ID | 함정 | 파일 |
+|---|---|---|
+| KO-ANA-01 | nori `decompound_mode` 기본은 `discard` — 원형이 사라진다 | korean-analysis |
+| KO-ANA-02 | 품사 필터(`nori_part_of_speech`)로 조사를 지우면 위치 간격이 남는다 — phrase 에는 slop 필요 | korean-analysis |
+| KO-ANA-03 | nori 사용자 사전은 리로드되지 않는다 — 색인 분석기에 쓰면 재색인까지 | korean-analysis |
+| KO-ANA-04 | `discard_punctuation` 기본 true — 모델명·버전 문자열이 쪼개진다 | korean-analysis |
+| KO-ANA-05 | 커스텀 analyzer 로 `nori_tokenizer` 를 쓰면 `nori_readingform`·`lowercase` 를 직접 넣어야 한다 | korean-analysis |
+| KO-SYN-01 | `synonym_graph` 는 검색 분석기 전용 — 다중어 동의어를 색인 시점에 쓰면 위치가 깨진다 | korean-analysis |
+| KO-SYN-02 | 동의어 규칙 자체가 앞단 토크나이저로 분석된다 — nori 가 규칙 문자열을 쪼갠다 | korean-analysis |
+| KO-SYN-03 | Synonyms API 세트는 인덱스보다 먼저 존재해야 하고, `lenient: false` 의 잘못된 규칙은 인덱스를 못 열게 한다 | korean-analysis |
+| KO-AC-01 | 한글 자동완성은 음절 edge_ngram 만으로 부족 — 입력 중 자모("검ㅅ")를 처리하려면 자모 분해 필드 | korean-analysis |
+| KO-AC-02 | edge_ngram 은 색인 분석기에만 — 검색 분석기까지 n-gram 하면 무관 결과 폭증 | korean-analysis |
+| ES-REL-01 | IDF 는 샤드 로컬 — 작은 인덱스·테스트 인덱스에서 순위가 샤드 배치에 좌우된다 | scoring-relevance |
+| ES-REL-02 | 같은 쿼리라도 프라이머리/레플리카에서 점수가 다르다 — 사용자별 `preference` 로 고정 | scoring-relevance |
+| ES-REL-03 | `cross_fields`/`combined_fields` 는 analyzer 가 같은 필드끼리만 하나로 묶인다 | scoring-relevance |
+| ES-REL-04 | 짧은 필드(상품명·태그)는 길이 정규화가 노이즈 — 필드별 `b` 조정 또는 norms 제거 | scoring-relevance |
+| ES-REL-05 | `minimum_should_match` 없는 한국어 `match` 는 OR — 분해된 형태소 하나만 맞아도 나온다 | scoring-relevance |
+| ES-REL-06 | 다중값 필드 phrase 는 `position_increment_gap`(기본 100) 때문에 값 경계를 넘지 못한다 | scoring-relevance |
+| ES-EVL-01 | `_rank_eval` 에서 라벨 없는 문서는 기본으로 무관 처리 — 골든셋 커버리지를 함께 본다 | scoring-relevance |
+| ES-EVL-02 | 클릭률은 위치 편향의 함수 — 순위 변경 효과를 CTR 로 직접 비교하지 않는다 | scoring-relevance |
+| ES-RNK-01 | "search pipeline" 은 OpenSearch 기능 — ES 에서는 retriever/rescore/애플리케이션 계층 | reranking |
+| ES-RNK-02 | rescore `window_size`(기본 10) 는 샤드당 — 전체 후보 수는 window × 샤드 수 | reranking |
+| ES-RNK-03 | RRF 는 sort·rescore·scroll 불가, `from + size ≤ rank_window_size` 를 넘으면 결과가 비어 있다 | reranking |
+| ES-RNK-04 | cross-encoder 재정렬(`text_similarity_reranker`)은 후보 수 × 추론 지연 — window 를 지연 예산에서 역산 | reranking |
+| ES-RNK-05 | `collapse` + `inner_hits` 는 그룹마다 추가 검색 — 그룹 수·동시성을 제한 | reranking |
+| ES-RNK-06 | 개인화 신호를 1단계 쿼리에 넣으면 캐시·WAND 를 모두 잃는다 — 2단계로 | reranking |
+
+## 5. 관련 컴포넌트
+
+- 커맨드(사용자 호출): `/search-quality`(골든셋·지표 설계), `/es-mapping-review`(분석기 점검 포함).
+- 에이전트: `search-relevance-engineer` — 이 스킬과 벡터 허브를 사전 로드한다.

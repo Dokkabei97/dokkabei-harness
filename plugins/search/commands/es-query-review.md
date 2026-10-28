@@ -1,147 +1,36 @@
 ---
 name: es-query-review
-description: "Elasticsearch query DSL review with anti-pattern detection, complexity rating, and optimization suggestions"
-category: utility
-complexity: basic
-mcp-servers: []
-personas: []
+description: |
+  Elasticsearch 쿼리 DSL·집계 비용 리뷰 — es-deep-patterns 항목 ID(ES-QRY/ES-AGG/LUC-EXE)로 판정하고 리라이트 제안.
+  Reviews ES query DSL and aggregation cost by item ID. Use when: running /es-query-review.
+disable-model-invocation: true
 ---
 
-# /es-query-review - Elasticsearch Query DSL Review
-
-## Triggers
-- Elasticsearch query performance tuning or optimization requests
-- Code review involving ES query construction in Kotlin services
-- Standalone ES query JSON file validation
-- Pre-deploy query safety checks for production indices
+# /es-query-review
 
 ## Usage
 ```
-/es-query-review [target] [options]
-
-Options:
-  --explain           Show conceptual execution plan for each query
-  --suggest-rewrite   Generate optimized query alternative
+/es-query-review [path] [--explain] [--suggest-rewrite]
 ```
+- `--explain`: 쿼리별 단계(can_match → query → collect/aggs → fetch) 비용 설명
+- `--suggest-rewrite`: 문제 쿼리의 리라이트(JSON + Kotlin elasticsearch-java 빌더)
 
-## Behavioral Flow
+## Flow
+1. **사실 확인** — ES 버전 단서(빌드 파일의 클라이언트 버전, 인프라 코드, 프로젝트 CLAUDE.md), 대상 인덱스 매핑 파일. 모르는 것은 보고서의 "가정" 칸에.
+2. **수집** — `co.elastic.clients.elasticsearch` 빌더(`Query.of`, `BoolQuery`, `SearchRequest`), JSON 문자열/리소스 파일, 템플릿(mustache)을 찾아 등가 JSON DSL 로 복원. 쿼리 vs filter vs post_filter vs aggs 컨텍스트를 구분.
+3. **판정** — `es-deep-patterns` 의 `references/query-aggregation.md`(ES-QRY/ES-AGG)와 `segments-lucene.md`(LUC-EXE) 항목을 기준으로. 각 지적에 **항목 ID, 신호(파일:라인), 적용 조건 충족 여부, 반례 검토**를 붙인다. 매핑이 원인이면 ES-MAP 항목으로 연결.
+4. **보고**
 
-### Standard Flow
-1. **Discover**: Scan target path for ES queries — Kotlin source files (QueryBuilders, SearchRequest, JSON string literals) and standalone JSON query files
-2. **Parse**: Extract and normalize query DSL structures into analyzable form, resolving Kotlin builder chains to equivalent JSON DSL
-3. **Analyze**: Apply anti-pattern checklist against each query and rate complexity
-4. **Report**: Present findings with severity, location, and actionable guidance
-
-### Anti-Pattern Checklist
-| Anti-Pattern | Severity | Description |
-|---|---|---|
-| Scoring in filter context | High | `must` used where `filter` suffices, wasting CPU on score calculation |
-| Missing `_source` filtering | Medium | Full `_source` returned when only specific fields are needed |
-| Unbounded aggregations | Critical | `terms` agg without explicit `size`, defaults may return excessive buckets |
-| Deep pagination | Critical | `from` + `size` exceeds 10,000 — use `search_after` or scroll instead |
-| Nested query depth > 3 | High | Deeply nested `bool` queries degrade readability and performance |
-| Script where native works | Medium | `script_score` or `script` fields used where native query/agg features suffice |
-| Leading wildcard | High | `wildcard` or `query_string` with leading `*` bypasses inverted index |
-| Missing filter context | Medium | `must` clause used for exact-match or boolean conditions that don't need scoring |
-
-### Complexity Rating
-- **Simple**: Single clause queries, basic filters, standard aggregations
-- **Moderate**: Multi-clause bool queries, nested aggregations, function_score with simple functions
-- **Complex**: Multi-level nested queries, pipeline aggregations, custom script scoring
-- **Dangerous**: Unbounded aggs + deep pagination, leading wildcards on high-cardinality fields, regex on analyzed fields
-
-## Tool Coordination
-- **Glob**: Discover Kotlin source files and JSON query files in target path
-- **Grep**: Locate QueryBuilders, SearchRequest, RestHighLevelClient, and JSON DSL patterns
-- **Read**: Extract full query construction context from source files
-- **Bash**: Validate JSON syntax of extracted query bodies
-
-## Key Patterns
-- **Builder Chain Resolution**: Trace Kotlin QueryBuilders / SearchSourceBuilder chains to reconstruct the equivalent JSON DSL
-- **Context Awareness**: Distinguish `query` vs `filter` vs `post_filter` vs `aggs` contexts
-- **Cascade Detection**: Identify queries where multiple anti-patterns compound (e.g., unbounded agg inside a script-scored query)
-
-## Examples
-
-### Review Kotlin ES queries in a service
+## Output
 ```
-/es-query-review src/main/kotlin/com/example/search/
-# Scans all Kotlin files for ES query patterns
-# Reports anti-patterns with file:line references
+## ES Query Review — [path]
+가정: [확인 못 한 버전/매핑 등]
+| # | 위치 | 항목 ID | 신호 | Severity | 처방 | 검증(_profile/took/캐시 통계) |
+### 리라이트 (--suggest-rewrite)
+### 단계별 비용 (--explain)
 ```
-
-### Review with execution plan
-```
-/es-query-review src/main/kotlin/com/example/search/ProductSearchService.kt --explain
-# Analyzes queries and shows conceptual execution plan
-# Explains how ES will process each query internally
-```
-
-### Review and suggest rewrites
-```
-/es-query-review queries/ --suggest-rewrite
-# Reviews standalone JSON query files
-# Generates optimized alternatives for problematic queries
-```
-
-## Output Format
-
-### Standard Output
-```
-## ES Query Review
-- Target: [path]
-- Queries Found: [count]
-- Files Scanned: [count]
-
-## Query Analysis
-
-### Query 1 — [File:Line or filename]
-- Complexity: [Simple|Moderate|Complex|Dangerous]
-- Anti-Patterns:
-  - [CRITICAL] Unbounded aggregation: `terms` agg on `category` without explicit size
-  - [HIGH] Scoring in filter context: `must` clause for exact `status` match → use `filter`
-- Recommendation: Move exact-match clauses to `filter`, add `size: 100` to terms agg
-
-### Query 2 — [File:Line or filename]
-...
-
-## Summary
-- Critical: [count] | High: [count] | Medium: [count]
-- Overall Risk: [Low|Medium|High|Critical]
-```
-
-### With --explain
-```
-### Execution Plan (Query 1)
-1. Filter phase: [filters applied, cache eligibility]
-2. Query phase: [scoring clauses, cost estimate]
-3. Aggregation phase: [agg tree traversal, memory estimate]
-4. Fetch phase: [_source fields, doc count]
-```
-
-### With --suggest-rewrite
-```
-### Suggested Rewrite (Query 1)
-#### Before
-{ "query": { "bool": { "must": [{ "term": { "status": "active" }}] }}}
-
-#### After
-{ "query": { "bool": { "filter": [{ "term": { "status": "active" }}] }}}
-
-#### Rationale
-- Moved exact-match `term` from `must` to `filter` to skip scoring and enable filter cache
-```
+Severity 기준: Critical = 장애·데이터 오류(빈 페이지, 잘못된 집계를 정답으로 사용), High = p99/자원에 측정 가능한 영향, Medium = 조건부 개선.
 
 ## Boundaries
-
-**Will:**
-- Extract and analyze ES queries from Kotlin source code and JSON files
-- Detect common anti-patterns and rate query complexity
-- Generate conceptual execution plans and optimized rewrites
-- Provide severity-rated findings with precise file locations
-
-**Will Not:**
-- Execute queries against a live Elasticsearch cluster
-- Analyze index mappings or cluster settings (use `/es-mapping-review` instead)
-- Modify source code without explicit user consent
-- Profile actual query execution time or resource consumption
+- 라이브 클러스터에 쿼리를 실행하지 않는다 — 실행할 `_profile`/`_validate` 요청을 제시만 한다.
+- 관련성(분석기·동의어·스코어링)은 `search-relevance-engineering` 항목으로 넘긴다.
